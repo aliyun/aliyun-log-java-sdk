@@ -31,7 +31,7 @@ public class OssShipperConfig implements ShipperConfig {
 	 * @param roleArn
 	 *            the ram arn used to get the temporary write permission to the
 	 *            oss bucket
-	 * @param bufferInteval
+	 * @param bufferInterval
 	 *            the time(seconds) to buffer before save to oss
 	 * @param bufferMb
 	 *            the data size(MB) to buffer before save to oss
