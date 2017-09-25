@@ -3,6 +3,8 @@
  */
 package com.aliyun.openservices.log.common;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,9 @@ import java.util.List;
 import com.aliyun.openservices.log.common.Logs.Log;
 import com.aliyun.openservices.log.common.Logs.Log.Content;
 import com.aliyun.openservices.log.common.Logs.LogGroup;
+import com.aliyun.openservices.log.exception.LogException;
+import com.google.protobuf.InvalidProtocolBufferException;
+
 /**
  * LogGroup is the basic data structure for send, contains meta and logs
  * 
@@ -25,24 +30,48 @@ public class LogGroupData implements Serializable {
 	protected String mSource = "";
 	protected String mMachineUUID = "";
 	protected ArrayList<LogItem> mLogs;
-	protected LogGroup mLogGroup;
+	protected LogGroup mLogGroup = null;
+	protected FastLogGroup mFastLogGroup = null;
+	protected byte[] rawBytes = null;
+	protected int offset;
+	protected int length;
+	protected String mRequestId = "";
+
 	/**
 	 * Construct a empty LogGroup
 	 */
 	public LogGroupData() {
 	}
-	
+
+	public LogGroupData(byte[] rawBytes, int offset, int length, String requestId) {
+		this.rawBytes = rawBytes;
+		this.offset = offset;
+		this.length = length;
+		mRequestId = requestId;
+	}
+
 	public LogGroupData(LogGroup logGroup) {
 		mLogGroup = logGroup;
 	}
-	
-	public LogGroup GetLogGroup() {
+
+	public LogGroup GetLogGroup() throws LogException {
+		if (mLogGroup == null) {
+			ParseLogGroupPb();
+		}
 		return mLogGroup;
 	}
 
 	public void SetLogGroup(LogGroup mLogGroup) {
 		this.mLogGroup = mLogGroup;
 	}
+
+	public FastLogGroup GetFastLogGroup() {
+	    if (mFastLogGroup == null) {
+			mFastLogGroup = new FastLogGroup(this.rawBytes, this.offset, this.length);
+		}
+		return mFastLogGroup;
+	}
+
 	@Deprecated
 	public LogGroupData(LogGroupData logGroup) {
 		mReserved = logGroup.GetReserved();
@@ -59,10 +88,24 @@ public class LogGroupData implements Serializable {
 		mSource = source;
 		SetAllLogs(logs);
 	}
-	protected void AutoDeserilize()
-	{
-		if(mLogs != null)
-		{
+
+	private boolean ParseLogGroupPb() throws LogException {
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(this.rawBytes, this.offset, this.length);
+		try {
+			mLogGroup = LogGroup.parseFrom(inputStream);
+		} catch (IOException e) {
+			throw new LogException("InitLogGroupsError", e.getMessage(), e, mRequestId);
+		}
+		return true;
+	}
+
+	protected void AutoDeserilize() throws LogException {
+		if (mLogGroup == null) {
+			if (!ParseLogGroupPb()) {
+				return;
+			}
+		}
+		if(mLogs != null) {
 			return;
 		}
 		if (mLogGroup.hasCategory()) {
@@ -94,7 +137,7 @@ public class LogGroupData implements Serializable {
 	 * @return the logs
 	 */
 	@Deprecated
-	public ArrayList<LogItem> GetAllLogs() {
+	public ArrayList<LogItem> GetAllLogs() throws LogException {
 		AutoDeserilize();
 		return mLogs;
 	}
@@ -104,7 +147,7 @@ public class LogGroupData implements Serializable {
 	 * @return the log
 	 */
 	@Deprecated
-	public LogItem GetLogByIndex(int index) {
+	public LogItem GetLogByIndex(int index) throws LogException {
 		AutoDeserilize();
 		return mLogs.get(index);
 	}

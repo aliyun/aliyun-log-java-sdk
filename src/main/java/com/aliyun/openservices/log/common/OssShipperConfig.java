@@ -13,6 +13,8 @@ public class OssShipperConfig implements ShipperConfig {
 	private int mBufferInterval;
 	private int mBufferMb;
 	private String mCompressType;
+	private String mPathFormat;
+	private OssShipperStorageDetail storageDetail;
 
 	public OssShipperConfig(String ossBucket, String ossPrefix, String roleArn,
 			int bufferInteval, int bufferMb) {
@@ -37,15 +39,34 @@ public class OssShipperConfig implements ShipperConfig {
 	 *            the compress type, only support 'snappy' or 'none'
 	 */
 	public OssShipperConfig(String ossBucket, String ossPrefix, String roleArn,
-			int bufferInteval, int bufferMb, String compressType) {
+			int bufferInterval, int bufferMb, String compressType) {
+		this(ossBucket, ossPrefix, roleArn, bufferInterval, bufferMb, compressType, "%Y/%m/%d/%H/%M", "json");
+	}
+	
+	public OssShipperConfig(String ossBucket, String ossPrefix, String roleArn,
+			int bufferInterval, int bufferMb, String compressType, String pathFormat) {
+		this(ossBucket, ossPrefix, roleArn, bufferInterval, bufferMb, compressType, pathFormat, "json");
+	}
+	
+
+	public OssShipperConfig(String ossBucket, String ossPrefix, String roleArn,
+			int bufferInteval, int bufferMb, String compressType, String pathFormat, String storageFormat) {
 		mOssBucket = ossBucket;
 		mOssPrefix = ossPrefix;
 		mRoleArn = roleArn;
 		mBufferInterval = bufferInteval;
 		mBufferMb = bufferMb;
 		mCompressType = compressType;
+		mPathFormat = pathFormat;
+		if (storageFormat.equals("parquet")) {
+			storageDetail = new OssShipperParquetStorageDetail();
+		} else if (storageFormat.equals("csv")) {
+			storageDetail = new OssShipperCsvStorageDetail();
+		} else {
+			storageDetail = new OssShipperJsonStorageDetail();
+		}
 	}
-
+	
 	public OssShipperConfig() {
 
 	}
@@ -58,12 +79,34 @@ public class OssShipperConfig implements ShipperConfig {
 			this.mBufferInterval = obj.getInt("bufferInterval");
 			this.mBufferMb = obj.getInt("bufferSize");
 			this.mCompressType = obj.getString("compressType");
+			this.mPathFormat = obj.getString("pathFormat");
+			JSONObject storage = obj.getJSONObject("storage");
+			String storageFormat = storage.getString("format");
+			
+			if (storageFormat.equals("parquet")) {
+				storageDetail = new OssShipperParquetStorageDetail();
+			} else if (storageFormat.equals("csv")) {
+				storageDetail = new OssShipperCsvStorageDetail();
+			} else {
+				storageDetail = new OssShipperJsonStorageDetail();
+			}
+			
+			storageDetail.FromJsonObject(obj);
+			
 		} catch (JSONException e) {
 			throw new LogException("FailToParseOssShipperConfig",
 					e.getMessage(), e, "");
 		}
 	}
 
+	public OssShipperStorageDetail GetStorageDetail() {
+		return storageDetail;
+	}
+	
+	public String GetPathFormat() {
+		return mPathFormat;
+	}
+	
 	public String GetOssBucket() {
 		return mOssBucket;
 	}
@@ -87,7 +130,7 @@ public class OssShipperConfig implements ShipperConfig {
 	public String GetCompressType() {
 		return mCompressType;
 	}
-
+	
 	@Override
 	public String GetShipperType() {
 		return "oss";
@@ -95,12 +138,23 @@ public class OssShipperConfig implements ShipperConfig {
 
 	public JSONObject GetJsonObj() {
 		JSONObject obj = new JSONObject();
+
+		if (storageDetail.getmStorageFormat().equals("parquet")) {
+			obj = ((OssShipperParquetStorageDetail)storageDetail).ToJsonObject();
+		} else if (storageDetail.getmStorageFormat().equals("csv")) {
+			obj = ((OssShipperCsvStorageDetail)storageDetail).ToJsonObject();
+		} else {
+			obj = ((OssShipperJsonStorageDetail)storageDetail).ToJsonObject();
+		}
+		
 		obj.put("ossBucket", this.mOssBucket);
 		obj.put("ossPrefix", this.mOssPrefix);
 		obj.put("roleArn", this.mRoleArn);
 		obj.put("bufferInterval", this.mBufferInterval);
 		obj.put("bufferSize", this.mBufferMb);
 		obj.put("compressType", this.mCompressType);
+		obj.put("pathFormat", this.mPathFormat);
+		
 		return obj;
 	}
 }

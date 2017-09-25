@@ -25,6 +25,7 @@ public class PutLogsRequest extends Request {
 	private ArrayList<LogItem> mlogItems;
 	private CompressType compressType = CompressType.LZ4;
 	private String mContentType = Consts.CONST_PROTO_BUF;
+	private byte[] mLogGroupBytes = null;
 	/**
 	 * @return the compressType
 	 */
@@ -118,6 +119,32 @@ public class PutLogsRequest extends Request {
 	}
 
 	/**
+	 * Construct a put log request
+	 *
+	 * @param project
+	 *            project name
+	 * @param logStore
+	 *            log store name of the project
+	 * @param topic
+	 *            topic name of the log store
+	 * @param source
+	 *            source of the log
+	 * @param logGroupBytes
+	 *            Porotbuf serialized string of LogGroup
+	 * @param hashKey
+	 * 			  hashKey
+	 */
+	public PutLogsRequest(String project, String logStore, String topic,
+						  String source, byte[] logGroupBytes, String hashKey) {
+		super(project);
+		mLogStore = logStore;
+		mTopic = topic;
+		mSource = source;
+		mLogGroupBytes = logGroupBytes;
+		mHashKey = hashKey;
+	}
+
+	/**
 	 * Get log store
 	 * 
 	 * @return log store
@@ -182,7 +209,13 @@ public class PutLogsRequest extends Request {
 	public ArrayList<LogItem> GetLogItems() {
 		return mlogItems;
 	}
-	
+
+	/**
+	 * Get all the logGroupBytes
+	 *
+	 * @return logGroupBytes
+	 */
+	public byte[] GetLogGroupBytes() { return mLogGroupBytes; }
 
 	/**
 	 * Set the log data , shallow copy is used to set the log data

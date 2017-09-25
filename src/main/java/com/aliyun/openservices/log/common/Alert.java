@@ -22,7 +22,21 @@ public class Alert implements Serializable {
 	protected String actionType;
 	protected String phoneNumber;
 	protected String roleArn;
+	protected String mnsParam;
+	protected String message;
 	
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public String getMnsParam() {
+		return mnsParam;
+	}
+	public void setMnsParam(String mnsParam) {
+		this.mnsParam = mnsParam;
+	}
 	public String getRoleArn() {
 		return roleArn;
 	}
@@ -128,7 +142,12 @@ public class Alert implements Serializable {
 		alertJson.put(Consts.CONST_ALERT_DETAIL, alertDetail);
 		alertJson.put(Consts.CONST_ALERT_ACTIONTYPE, getActionType());
 		JSONObject actionDetail = new JSONObject();
-		actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_PHONENUMBER, getPhoneNumber());
+		if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_SMS))
+			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_PHONENUMBER, getPhoneNumber());
+		else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_MNS))
+			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_MNS_PARAM, getMnsParam());
+		else
+			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE, getMessage());
 		alertJson.put(Consts.CONST_ALERT_ACTIONDETAIL, actionDetail);
 		return alertJson;
 	}
@@ -150,7 +169,13 @@ public class Alert implements Serializable {
 			setComparator(alertDetail.getString(Consts.CONST_ALERT_COMPARATOR));
 			setActionType(dict.getString(Consts.CONST_ALERT_ACTIONTYPE));
 			JSONObject actionDetail = dict.getJSONObject(Consts.CONST_ALERT_ACTIONDETAIL);
-			setPhoneNumber(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_PHONENUMBER));
+			if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_SMS))
+				setPhoneNumber(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_PHONENUMBER));
+			else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_MNS))
+				setMnsParam(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_MNS_PARAM));
+			else
+				setMessage(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE));
+			
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateAlert",  e.getMessage(), e, "");
 		}

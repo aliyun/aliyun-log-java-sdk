@@ -10,10 +10,8 @@ import java.util.Map;
 import com.aliyun.openservices.log.common.LZ4Encoder;
 import com.aliyun.openservices.log.common.LogGroupData;
 import com.aliyun.openservices.log.common.Consts;
-import com.aliyun.openservices.log.common.Logs.LogGroup;
-import com.aliyun.openservices.log.common.Logs.LogGroupList;
 import com.aliyun.openservices.log.exception.LogException;
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.aliyun.openservices.log.util.VarintUtil;
 
 
 public class BatchGetLogResponse extends Response{
@@ -33,6 +31,59 @@ public class BatchGetLogResponse extends Response{
 	}
 
 	/**
+	 * parse LogGroupList using fast deserialize methold
+	 * @param uncompressedData is LogGroupList bytes
+	 * @throws LogException
+	 */
+	public void ParseFastLogGroupList(byte[] uncompressedData) throws LogException {
+		int pos = 0;
+		int rawSize = uncompressedData.length;
+		int mode, index;
+		while (pos < rawSize) {
+			int[] value = VarintUtil.DecodeVarInt32(uncompressedData, pos, rawSize);
+			if (value[0] == 0) {
+				throw new LogException("InitLogGroupsError", "decode varint32 error", GetRequestId());
+			}
+			pos = value[2];
+			mode = value[1] & 0x7;
+			index = value[1] >> 3;
+			if (mode == 0) {
+				value = VarintUtil.DecodeVarInt32(uncompressedData, pos, rawSize);
+				if (value[0] == 0) {
+					throw new LogException("InitLogGroupsError", "decode varint32 error", GetRequestId());
+				}
+				pos = value[2];
+			} else if (mode == 1) {
+				pos += 8;
+			} else if (mode == 2) {
+				value = VarintUtil.DecodeVarInt32(uncompressedData, pos, rawSize);
+				if (value[0] == 0) {
+					throw new LogException("InitLogGroupsError", "decode varint32 error", GetRequestId());
+				}
+				if (index == 1) {
+					mLogGroups.add(new LogGroupData(uncompressedData, value[2], value[1], GetRequestId()));
+				}
+				pos = value[1] + value[2];
+			} else if (mode == 5) {
+				pos += 4;
+			} else {
+				throw new LogException("InitLogGroupsError", "mode: " + mode, GetRequestId());
+			}
+		}
+		if (pos != rawSize) {
+			throw new LogException("InitLogGroupsError", "parse LogGroupList fail", GetRequestId());
+		}
+	}
+
+	/**
+	 * default consutructor for unittest
+	 * @param headers
+	 */
+	public BatchGetLogResponse(Map<String, String> headers) {
+		super(headers);
+	}
+
+	/**
 	 * Construct the response with http headers
 	 * @param headers http headers
 	 * @param rawData the response byte array data
@@ -44,17 +95,12 @@ public class BatchGetLogResponse extends Response{
 			mRawSize = Integer.parseInt(headers.get(Consts.CONST_X_SLS_BODYRAWSIZE));
 			if (mRawSize > 0) {
 				byte[] uncompressedData = LZ4Encoder.decompressFromLhLz4Chunk(rawData, mRawSize);
-				LogGroupList logGroupList = LogGroupList.parseFrom(uncompressedData);
-				for (LogGroup logGroup:logGroupList.getLogGroupListList()) {
-					mLogGroups.add(new LogGroupData(logGroup));
-				}
+				ParseFastLogGroupList(uncompressedData);
 			}
-		} catch (InvalidProtocolBufferException e) {
-			throw new LogException("InitLogGroupsError", e.getMessage(), e, GetRequestId());
 		} catch (NumberFormatException e) {
 			throw new LogException("ParseLogGroupListRawSizeError", e.getMessage(), e, GetRequestId());
 		}
-		
+
 		if (mLogGroups.size() != GetCount()) {
 			throw new LogException("LogGroupCountNotMatch", "Loggroup count does match with the count in header message",
 					GetRequestId());

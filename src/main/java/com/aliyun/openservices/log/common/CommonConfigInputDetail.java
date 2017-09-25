@@ -15,7 +15,16 @@ public abstract class CommonConfigInputDetail {
 	protected ArrayList<String> filterKey = new ArrayList<String>();
 	protected ArrayList<String> shardHashKey = new ArrayList<String>();
 	protected boolean enableTag = false;
+	protected boolean enableRawLog = false;
 	
+	public boolean GetEnableRawLog() {
+		return enableRawLog;
+	}
+
+	public void SetEnableRawLog(boolean enableRawLog) {
+		this.enableRawLog = enableRawLog;
+	}
+
 	public boolean GetEnableTag() {
 		return enableTag;
 	}
@@ -93,6 +102,7 @@ public abstract class CommonConfigInputDetail {
 	protected void CommonConfigToJsonObject(JSONObject jsonObj) {
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOCALSTORAGE, localStorage);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ENABLETAG, enableTag);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ENABLERAWLOG, enableRawLog);
 		JSONArray filterRegexArray = new JSONArray();
 		for (String fr : filterRegex) {
 			filterRegexArray.add(fr);
@@ -122,6 +132,10 @@ public abstract class CommonConfigInputDetail {
 				this.enableTag = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ENABLETAG);
 			else
 				this.enableTag = false;
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_ENABLERAWLOG))
+				this.enableRawLog = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ENABLERAWLOG);
+			else
+				this.enableRawLog = false;
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_FILTERREGEX))
 				SetFilterRegex(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_FILTERREGEX));
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_FILTERKEY))

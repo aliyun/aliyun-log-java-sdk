@@ -105,6 +105,12 @@ public class Consts {
 	public static final String CONST_X_SLS_NEXT_TOKEN = "x-log-nexttoken";
 	public static final String CONST_X_SLS_CONTENTENCODING = "x-log-contentencoding";
 	public static final String CONST_X_ACS_SECURITY_TOKEN = "x-acs-security-token";
+
+	public static final String CONST_X_LOG_AGGQUERY = "x-log-agg-query";
+	public static final String CONST_X_LOG_WHEREQUERY = "x-log-where-query";
+	public static final String CONST_X_LOG_HASSQL = "x-log-has-sql";
+	public static final String CONST_X_LOG_PROCESSEDROWS = "x-log-processed-rows";
+	public static final String CONST_X_LOG_ELAPSEDMILLISECOND = "x-log-elapsed-millisecond";
 		
 	public static final String CONST_HOST = "Host";
 	public static final String CONST_DATE = "Date";
@@ -168,6 +174,7 @@ public class Consts {
 	public static final String CONST_CONFIG_INPUTDETAIL_AUTOEXTEND = "autoExtend";
 	public static final String CONST_CONFIG_INPUTDETAIL_DISCARDUNMATCH = "discardUnmatch";
 	public static final String CONST_CONFIG_INPUTDETAIL_ENABLETAG = "enableTag";
+	public static final String CONST_CONFIG_INPUTDETAIL_ENABLERAWLOG = "enableRawLog";
 	public static final String CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY = "shardHashKey";
 	public static final String CONST_CONFIG_INPUTDETAIL_DISCARDNONUTF8 = "discardNonUtf8";
 	public static final String CONST_CONFIG_INPUTDETAIL_TAILEXISTED = "tailExisted";
@@ -209,7 +216,7 @@ public class Consts {
 	public static final int CONST_HTTP_OK = 200;
 	public static int HTTP_CONNECT_MAX_COUNT= 200;
 	public static int HTTP_CONNECT_TIME_OUT = 5 * 1000;
-	public static int HTTP_SEND_TIME_OUT = 20 * 1000;
+	public static int HTTP_SEND_TIME_OUT = 60 * 1000;
 	
 	public static final String CONST_GZIP = "gzip";
 	public static final String CONST_LZ4 = "lz4";
@@ -251,12 +258,70 @@ public class Consts {
 	public static final String CONST_ALERT_MESSAGE = "alertMessage";
 	public static final String CONST_ALERT_ACTIONTYPE = "actionType";
 	public static final String CONST_ALERT_ACTIONTYPE_SMS = "sms";
+	public static final String CONST_ALERT_ACTIONTYPE_MNS = "mns";
+	public static final String CONST_ALERT_ACTIONTYPE_NOTIFICATION = "notification";
 	public static final String CONST_ALERT_ACTIONDETAIL = "actionDetail";
 	public static final String CONST_ALERT_ACTIONDETAIL_PHONENUMBER = "phoneNumber";
+	public static final String CONST_ALERT_ACTIONDETAIL_MNS_PARAM = "param";
+	public static final String CONST_ALERT_ACTIONDETAIL_MESSAGE = "message";
 	
 	public static final String CONST_ALERTTIME = "alertTime";
 	public static final String CONST_TRIGGERSTATUS = "triggerStatus";
 	public static final String CONST_TRIGGERMESSAGE = "triggerMessage";
 	public static final String CONST_ACTIONSTATUS = "actionStatus";
 	public static final String CONST_ACTIONMESSAGE = "actionMessage";
+	
+	// logtail profile
+	public static final String CONST_GETLOGTAILPROFILE_URI = "/logtailprofile";
+	public static final String CONST_GETLOGTAILPROFILE_SOURCE = "source";
+	
+	// index type
+	public static final String CONST_INDEX_TEXT = "text";
+	public static final String CONST_INDEX_LONG = "long";
+	public static final String CONST_INDEX_DOUBLE = "double";
+	
+	// oss shipper
+	public static final String CONST_OSSSHIPPER_STORAGEFORMAT = "format";
+
+	// ETL
+	public static final String CONST_ETLJOB_URI = "/etljobs";
+	public static final String CONST_ETLTASK_URI = "/etltasks";
+	public static final String CONST_STATUS = "status";
+	public static final String FUNCTION_PROVIDER_FC = "FunctionCompute";
+	public static final String ETL_TASK_ID = "taskId";
+	public static final String ETL_TASK_STATUS = "taskStatus";
+	public static final String ETL_TASK_CREATE_TIME = "createTime";
+	public static final String ETL_TASK_BEGIN_TIME = "beginTime";
+	public static final String ETL_TASK_FINISH_TIME = "finishTime";
+	public static final String ETL_TASK_LATEST_DATA_TIME = "latestDataTime";
+	public static final String ETL_TASK_RETRYT_TIME = "retryTime";
+	public static final String ETL_TASK_ERROR_CODE = "errorCode";
+	public static final String ETL_TASK_ERROR_MESSAGE = "errorMessage";
+	public static final String ETL_TASK_INGEST_LINES = "ingestLines";
+	public static final String ETL_TASK_INGEST_BYTES = "ingestBytes";
+	public static final String ETL_TASK_SHIP_LINES = "shipLines";
+	public static final String ETL_TASK_SHIP_BYTES = "shipBytes";
+	public static final String ETL_TASK_STATUS_READY = "Ready";
+	public static final String ETL_TASK_STATUS_RUNNING = "Running";
+	public static final String ETL_TASK_STATUS_SUCCESS = "Success";
+	public static final String ETL_TASK_STATUS_FAILED = "Failed";
+	public static final String ETL_JOB_NAME = "etlJobName";
+	public static final String ETL_JOB_SOURCE_CONFIG = "sourceConfig";
+	public static final String ETL_JOB_TRIGGER_CONFIG = "triggerConfig";
+	public static final String ETL_JOB_TRIGGER_INTERVAL = "triggerInterval";
+	public static final String ETL_JOB_TRIGGER_MAX_RETRY_TIME = "maxRetryTime";
+	public static final String ETL_JOB_TRIGGER_ROLEARN = "roleArn";
+	public static final String ETL_JOB_FUNCTION_CONFIG = "functionConfig";
+	public static final String ETL_JOB_FUNCTION_PROVIDER = "functionProvider";
+	public static final String ETL_JOB_FUNCTION_PARAMETER = "functionParameter";
+	public static final String ETL_JOB_FC_ENDPOINT = "endpoint";
+	public static final String ETL_JOB_FC_ACCOUNT_ID = "accountId";
+	public static final String ETL_JOB_FC_REGION_NAME = "regionName";
+	public static final String ETL_JOB_FC_SERVICE_NAME = "serviceName";
+	public static final String ETL_JOB_FC_FUNCTION_NAME = "functionName";
+	public static final String ETL_JOB_LOG_ENDPOINT = "endpoint";
+	public static final String ETL_JOB_LOG_PROJECT_NAME = "projectName";
+	public static final String ETL_JOB_LOG_LOGSTORE_NAME = "logstoreName";
+	public static final String ETL_JOB_LOG_CONFIG = "logConfig";
+	public static final String ETL_ENABLE = "enable";
 }

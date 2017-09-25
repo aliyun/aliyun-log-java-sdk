@@ -22,6 +22,12 @@ public class GetLogsResponse extends Response {
 
 	private boolean mIsCompleted = false;
 
+	private String mAggQuery = "";
+	private String mWhereQuery = "";
+	private boolean mHasSQL = false;
+	private long mProcessedRow = 0;
+	private long mElapsedMilliSecond = 0;
+
 	private ArrayList<QueriedLog> mLogs = new ArrayList<QueriedLog>();
 
 	/**
@@ -34,6 +40,65 @@ public class GetLogsResponse extends Response {
 		super(headers);
 		this.SetProcessStatus(headers.get(Consts.CONST_X_SLS_PROCESS));
 
+		// check x-log-agg-query
+		if (headers.containsKey(Consts.CONST_X_LOG_AGGQUERY))
+			this.setAggQuery(headers.get(Consts.CONST_X_LOG_AGGQUERY));
+		// check x-log-where-query
+		if (headers.containsKey(Consts.CONST_X_LOG_WHEREQUERY))
+			this.setWhereQuery(headers.get(Consts.CONST_X_LOG_WHEREQUERY));
+		// check x-log-has-sql
+		if (headers.containsKey(Consts.CONST_X_LOG_HASSQL))
+			this.setHasSQL(Boolean.parseBoolean(headers.get(Consts.CONST_X_LOG_HASSQL)));
+		// check x-log-processed-rows
+		if (headers.containsKey(Consts.CONST_X_LOG_PROCESSEDROWS))
+			this.setProcessedRow(Long.parseLong(headers.get(Consts.CONST_X_LOG_PROCESSEDROWS)));
+		// checck x-log-elapsed-millisecond
+		if (headers.containsKey(Consts.CONST_X_LOG_ELAPSEDMILLISECOND))
+			this.setElapsedMilliSecond(Long.parseLong(headers.get(Consts.CONST_X_LOG_ELAPSEDMILLISECOND)));
+	}
+
+	public void setAggQuery(String mAggQuery) {
+		this.mAggQuery = mAggQuery;
+	}
+
+	public String getAggQuery() {
+
+		return mAggQuery;
+	}
+
+	public long getElapsedMilliSecond() {
+		return mElapsedMilliSecond;
+	}
+
+	public void setElapsedMilliSecond(long mElapsedMilliSecond) {
+		this.mElapsedMilliSecond = mElapsedMilliSecond;
+	}
+
+	public long getProcessedRow() {
+
+		return mProcessedRow;
+	}
+
+	public void setProcessedRow(long mProcessedRow) {
+		this.mProcessedRow = mProcessedRow;
+	}
+
+	public boolean isHasSQL() {
+
+		return mHasSQL;
+	}
+
+	public void setHasSQL(boolean mHasSQL) {
+		this.mHasSQL = mHasSQL;
+	}
+
+	public String getWhereQuery() {
+
+		return mWhereQuery;
+	}
+
+	public void setWhereQuery(String mWhereQuery) {
+		this.mWhereQuery = mWhereQuery;
 	}
 
 	/**

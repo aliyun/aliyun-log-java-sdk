@@ -10,20 +10,35 @@ public class ShipperTask {
 	private int mTaskCreateTime;
 	private int mTaskLastDataReceiveTime;
 	private int mTaskFinishTime;
+	private long mTaskDataLines;
 
 	public ShipperTask(String taskId, String taskStatus, String taskMessage,
-			int taskCreateTime, int taskLastDataReceiveTime, int taskFinishTIme) {
+			int taskCreateTime, int taskLastDataReceiveTime, int taskFinishTime) {
 		mTaskId = taskId;
 		mTaskStatus = taskStatus;
 		mTaskCreateTime = taskCreateTime;
 		mTaskLastDataReceiveTime = taskLastDataReceiveTime;
-		mTaskFinishTime = taskFinishTIme;
+		mTaskFinishTime = taskFinishTime;
+	}
+	
+	public ShipperTask(String taskId, String taskStatus, String taskMessage,
+			int taskCreateTime, int taskLastDataReceiveTime, int taskFinishTime, long taskDataLines) {
+		mTaskId = taskId;
+		mTaskStatus = taskStatus;
+		mTaskCreateTime = taskCreateTime;
+		mTaskLastDataReceiveTime = taskLastDataReceiveTime;
+		mTaskFinishTime = taskFinishTime;
+		mTaskDataLines = taskDataLines;
 	}
 
-	public ShipperTask()
-	{
+	public ShipperTask() {
 		
 	}
+	
+	public Long GetTaskDataLines() {
+		return mTaskDataLines;
+	}
+	
 	public String GetTaskId() {
 		return mTaskId;
 	}
@@ -55,6 +70,7 @@ public class ShipperTask {
 		mTaskCreateTime = obj.getInt("taskCreateTime");
 		mTaskLastDataReceiveTime = obj.getInt("taskLastDataReceiveTime");
 		mTaskFinishTime = obj.getInt("taskFinishTime");
+		mTaskDataLines = obj.getLong("taskDataLines");
 	}
 	
 }
