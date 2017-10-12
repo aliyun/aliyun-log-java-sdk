@@ -209,13 +209,13 @@ public class Consts {
 	public static final String HMAC_SHA1_JAVA = "HmacSHA1";
 	
 	public static final String CONST_LOCAL_IP= "127.0.0.1";
-	public static final int CONST_MAX_PUT_SIZE = 3 * 1024 * 1024;
-	public static final int CONST_MAX_PUT_LINES = 4096;
+	public static int CONST_MAX_PUT_SIZE = 50 * 1024 * 1024;
+	public static int CONST_MAX_PUT_LINES = 40960;
 	
 	public static final int CONST_UN_AUTHORIZATION_CODE = 401;
 	public static final int CONST_HTTP_OK = 200;
-	public static int HTTP_CONNECT_MAX_COUNT= 200;
-	public static int HTTP_CONNECT_TIME_OUT = 5 * 1000;
+	public static int HTTP_CONNECT_MAX_COUNT= 1000;
+	public static int HTTP_CONNECT_TIME_OUT = 10 * 1000;
 	public static int HTTP_SEND_TIME_OUT = 60 * 1000;
 	
 	public static final String CONST_GZIP = "gzip";
