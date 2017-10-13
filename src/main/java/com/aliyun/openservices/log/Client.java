@@ -473,7 +473,7 @@ public class Client implements LogService {
 			return new URI(endPointUrl);
 		} catch (URISyntaxException e) {
 			throw new LogException("EndpointInvalid", 
-					"Failed to get real server ip when direct mode in enabled", null);
+					"Failed to get real server ip when direct mode in enabled", "");
 		}
 	}
 
