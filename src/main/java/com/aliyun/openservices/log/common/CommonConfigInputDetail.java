@@ -16,7 +16,35 @@ public abstract class CommonConfigInputDetail {
 	protected ArrayList<String> shardHashKey = new ArrayList<String>();
 	protected boolean enableTag = false;
 	protected boolean enableRawLog = false;
+	protected int maxSendRate = -1;
+	protected int sendRateExpire = 0;
+	protected ArrayList<SensitiveKey> sensitiveKeys = new ArrayList<SensitiveKey>();
+	protected String mergeType;
 	
+	public String getMergeType() {
+		return mergeType;
+	}
+
+	public void setMergeType(String mergeType) {
+		this.mergeType = mergeType;
+	}
+
+	public int getMaxSendRate() {
+		return maxSendRate;
+	}
+
+	public void setMaxSendRate(int maxSendRate) {
+		this.maxSendRate = maxSendRate;
+	}
+
+	public int getSendRateExpire() {
+		return sendRateExpire;
+	}
+
+	public void setSendRateExpire(int sendRateExpire) {
+		this.sendRateExpire = sendRateExpire;
+	}
+
 	public boolean GetEnableRawLog() {
 		return enableRawLog;
 	}
@@ -41,6 +69,14 @@ public abstract class CommonConfigInputDetail {
 	public void SetLocalStorage(boolean localStorage)
 	{
 		this.localStorage = localStorage;
+	}
+	
+	public void SetSensitiveKeys(List<SensitiveKey> sensitiveKeys) {
+		this.sensitiveKeys = new ArrayList<SensitiveKey>(sensitiveKeys);
+	}
+	
+	public ArrayList<SensitiveKey> GetSensitiveKeys() {
+		return sensitiveKeys;
 	}
 	
 	public void SetFilterKeyRegex(List<String> filterKey, List<String> filterRegex) {
@@ -103,6 +139,14 @@ public abstract class CommonConfigInputDetail {
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOCALSTORAGE, localStorage);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ENABLETAG, enableTag);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ENABLERAWLOG, enableRawLog);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_MAXSENDRATE, maxSendRate);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE, sendRateExpire);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_MERGETYPE, mergeType);
+		JSONArray sensitiveKeysArray = new JSONArray();
+		for (SensitiveKey sensitiveKey : sensitiveKeys) {
+			sensitiveKeysArray.add(sensitiveKey.ToJsonObject());
+		}
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS, sensitiveKeysArray);
 		JSONArray filterRegexArray = new JSONArray();
 		for (String fr : filterRegex) {
 			filterRegexArray.add(fr);
@@ -124,6 +168,18 @@ public abstract class CommonConfigInputDetail {
 	
 	protected void CommonConfigFromJsonObject(JSONObject inputDetail) throws LogException {
 		try {
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_MERGETYPE))
+				this.mergeType = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_MERGETYPE);
+			else
+				this.mergeType = "topic";
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE))
+				this.sendRateExpire = inputDetail.getInt(Consts.CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE);
+			else
+				this.sendRateExpire = 0;
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_MAXSENDRATE))
+				this.maxSendRate = inputDetail.getInt(Consts.CONST_CONFIG_INPUTDETAIL_MAXSENDRATE);
+			else
+				this.maxSendRate = -1;
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_LOCALSTORAGE))
 				this.localStorage = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_LOCALSTORAGE);
 			else
@@ -142,6 +198,14 @@ public abstract class CommonConfigInputDetail {
 				SetFilterKey(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_FILTERKEY));
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY))
 				SetShardHashKey(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY));
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS)) {
+				JSONArray sensitiveKeysArray = inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS);
+				SensitiveKey sensitiveKey = new SensitiveKey();
+				for (int index = 0; index < sensitiveKeysArray.size(); index++) {
+					sensitiveKey.FromJsonString(sensitiveKeysArray.getJSONObject(index).toString());
+					sensitiveKeys.add(sensitiveKey);
+				}
+			}
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateInputDetail", e.getMessage(), e, "");
 		}

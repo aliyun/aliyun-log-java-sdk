@@ -179,6 +179,16 @@ public class Consts {
 	public static final String CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY = "shardHashKey";
 	public static final String CONST_CONFIG_INPUTDETAIL_DISCARDNONUTF8 = "discardNonUtf8";
 	public static final String CONST_CONFIG_INPUTDETAIL_TAILEXISTED = "tailExisted";
+    public static final String CONST_CONFIG_INPUTDETAIL_MAXSENDRATE = "maxSendRate";
+    public static final String CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE = "sendRateExpire";
+    public static final String CONST_CONFIG_INPUTDETAIL_MERGETYPE = "mergeType";
+    public static final String CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS = "sensitive_keys";
+    public static final String CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_TYPE = "type";
+    public static final String CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_KEY = "key";
+    public static final String CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_REGEXBEGIN = "regex_begin";
+    public static final String CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_REGEXCONTENT = "regex_content";
+    public static final String CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_ALL = "all";
+    public static final String CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_CONST = "const";
 	
 	public static final String CONST_TYPE = "type";
 	public static final String CONST_TYPE_CURSOR = "cursor";
