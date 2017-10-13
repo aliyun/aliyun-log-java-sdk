@@ -18,7 +18,9 @@ public class Shard implements Serializable {
 	protected String status ;
 	protected String inclusiveBeginKey;
 	protected String exclusiveEndKey;
+	protected String serverIp = null;
 	protected int createTime;
+
 
 	/**
 	 * Return shard status
@@ -79,6 +81,22 @@ public class Shard implements Serializable {
 	 */
 	public int getCreateTime() {
 		return createTime;
+	}
+	/**
+	 * set server ip
+	 * @param serverIp the server ip for the shard
+	 */
+	public void setServerIp(String serverIp)
+	{
+		this.serverIp = serverIp;
+	}
+	/**
+	 * return server ip for the shard
+	 * @return server ip for the shard
+	 */
+	public String getServerIp()
+	{
+		return this.serverIp;
 	}
 
 	/**

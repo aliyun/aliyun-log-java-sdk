@@ -95,6 +95,7 @@ public class Consts {
 	public static final String CONST_X_SLS_BODYRAWSIZE= "x-log-bodyrawsize";
 	public static final String CONST_X_SLS_SIGNATUREMETHOD= "x-log-signaturemethod";
 	public static final String CONST_X_SLS_REQUESTID = "x-log-requestid" ; 
+	public static final String CONST_X_SLS_HOSTIP = "x-log-hostip" ; 
 	public static final String CONST_X_SLS_IP = "x-log-ip";
 	public static final String CONST_X_SLS_SSL = "x-log-ssl";
 	public static final String CONST_X_SLS_PREFIX= "x-log-";
@@ -215,7 +216,7 @@ public class Consts {
 	public static final int CONST_UN_AUTHORIZATION_CODE = 401;
 	public static final int CONST_HTTP_OK = 200;
 	public static int HTTP_CONNECT_MAX_COUNT= 1000;
-	public static int HTTP_CONNECT_TIME_OUT = 10 * 1000;
+	public static int HTTP_CONNECT_TIME_OUT = 5 * 1000;
 	public static int HTTP_SEND_TIME_OUT = 60 * 1000;
 	
 	public static final String CONST_GZIP = "gzip";

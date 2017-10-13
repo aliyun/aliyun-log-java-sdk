@@ -72,6 +72,9 @@ import com.aliyun.openservices.log.common.ShipperTask;
 import com.aliyun.openservices.log.common.ShipperTasksStatistic;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.ClientConfiguration;
+import com.aliyun.openservices.log.http.client.ClientConnectionContainer;
+import com.aliyun.openservices.log.http.client.ClientConnectionHelper;
+import com.aliyun.openservices.log.http.client.ClientConnectionStatus;
 import com.aliyun.openservices.log.http.client.ClientException;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.http.client.ServiceException;
@@ -258,7 +261,7 @@ public class Client implements LogService {
 	private String realIpForConsole;
 	private Boolean useSSLForConsole;
 	private String userAgent = Consts.CONST_USER_AGENT_VALUE;
-
+	private Boolean mUseDirectMode = false;
 	public String getUserAgent() {
 		return userAgent;
 	}
@@ -298,6 +301,15 @@ public class Client implements LogService {
 
 	public void RemoveSecurityToken() {
 		securityToken = null;
+	}
+	
+	public void EnableDirectMode()
+	{
+		mUseDirectMode = true;
+	}
+	public void DisableDirectMode()
+	{
+		mUseDirectMode = false;
 	}
 
 	/**
@@ -453,6 +465,16 @@ public class Client implements LogService {
 			throw new IllegalArgumentException("EndpointInvalid", e);
 		}
 
+	}
+	private URI GetHostURIByIp(String ip_addr) throws LogException
+	{
+		String endPointUrl = this.httpType + ip_addr;
+		try {
+			return new URI(endPointUrl);
+		} catch (URISyntaxException e) {
+			throw new LogException("EndpointInvalid", 
+					"Failed to get real server ip when direct mode in enabled", null);
+		}
 	}
 
 	private static boolean IsIpAddress(String str) {
@@ -712,14 +734,66 @@ public class Client implements LogService {
 			resourceUri += "/shards/route?key=" + shardKey;
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		urlParameter = request.GetAllParams();
+		long cmp_size = logBytes.length;
 
-		ResponseMessage response = SendData(project, HttpMethod.POST,
-				resourceUri, urlParameter, headParameter, logBytes);
+		
+		for (int i = 0; i < 2; i++) {
+			String server_ip = null;
+			ClientConnectionStatus connection_status = null;
+			if (this.mUseDirectMode) {
+				connection_status = GetGlobalConnectionStatus();
+				server_ip = connection_status.GetIpAddress();
+			}
+			try {
+				ResponseMessage response = SendData(project, HttpMethod.POST, resourceUri, urlParameter, headParameter,
+						logBytes, null, server_ip);
+				Map<String, String> resHeaders = response.getHeaders();
+				PutLogsResponse putLogsResponse = new PutLogsResponse(resHeaders);
+				if (connection_status != null) {
+					connection_status.AddSendDataSize(cmp_size);
+					connection_status.UpdateLastUsedTime(System.nanoTime());
+				}
+				return putLogsResponse;
+			} catch (LogException e) {			
+				String request_id = e.GetRequestId();
+				if (i == 1 || request_id != null && request_id.isEmpty() == false)
+				{
+					throw e;
+				}
+				if (connection_status != null)
+				{
+					connection_status.DisableConnection();
+				}
+			}
+		}
+		return null; // never happen
+	}
+	
+	private ClientConnectionStatus GetGlobalConnectionStatus() throws LogException {
+		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
+				.GetConnectionContainer(this.hostName, this.accessId, this.accessKey);
+		ClientConnectionStatus connection_status = connection_container.GetGlobalConnection();
+		if (connection_status == null || connection_status.IsValidConnection() == false) {
+			connection_container.UpdateGlobalConnection();
+			connection_status = connection_container.GetGlobalConnection();
+			if (connection_status == null || connection_status.GetIpAddress() == null
+					|| connection_status.GetIpAddress().isEmpty()) {
+				throw new LogException("EndpointInvalid", "Failed to get real server ip when direct mode is enabled",
+						"");
+			}
+		}
+		return connection_status;
+	}
 
-		Map<String, String> resHeaders = response.getHeaders();
-		PutLogsResponse putLogsResponse = new PutLogsResponse(resHeaders);
-		return putLogsResponse;
-
+	private ClientConnectionStatus GetShardConnectionStatus(String project, String logstore, int shard_id)
+			throws LogException {
+		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
+				.GetConnectionContainer(this.hostName, this.accessId, this.accessKey);
+		ClientConnectionStatus connection_status = connection_container.GetShardConnection(project, logstore, shard_id);
+		if (connection_status != null && connection_status.IsValidConnection()) {
+			return connection_status;
+		}
+		return GetGlobalConnectionStatus();
 	}
 
 	public GetLogsResponse GetLogs(String project, String logStore, int from,
@@ -1163,6 +1237,26 @@ public class Client implements LogService {
 		return ListShard(new ListShardRequest(prj, logStore));
 	}
 
+	public String GetServerIpAddress(String project)
+	{
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		StringBuilder resourceUriBuilder = new StringBuilder();
+		resourceUriBuilder.append("/");
+		String resourceUri = resourceUriBuilder.toString();
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		Map<String, String> out_header = new HashMap<String, String>();
+		try {
+			SendData(project, HttpMethod.GET, resourceUri, urlParameter,
+					headParameter, new byte[0], out_header, null);
+		} catch (LogException e) {
+			// ignore
+		}
+		if(out_header.containsKey(Consts.CONST_X_SLS_HOSTIP))
+		{
+			return out_header.get(Consts.CONST_X_SLS_HOSTIP);
+		}
+		return "";
+	}
 	public ListShardResponse ListShard(ListShardRequest request)
 			throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -1254,15 +1348,36 @@ public class Client implements LogService {
 
 		ResponseMessage response = new ResponseMessage();
 		BatchGetLogResponse batchGetLogResponse = null;
+		for (int i = 0; i < 2; i++) {
+			String server_ip = null;
+			ClientConnectionStatus connection_status = null;
+			if (this.mUseDirectMode) {
+				connection_status = GetShardConnectionStatus(project, logStore, request.GetShardId());
+				server_ip = connection_status.GetIpAddress();
+			}
+			try {
+				response = SendData(project, HttpMethod.GET, resourceUri, urlParameter, headParameter, new byte[0], null,
+						server_ip);
+				Map<String, String> resHeaders = response.getHeaders();
+				byte[] rawData = response.GetRawBody();
 
-		response = SendData(project, HttpMethod.GET, resourceUri, urlParameter,
-				headParameter);
-		Map<String, String> resHeaders = response.getHeaders();
-		byte[] rawData = response.GetRawBody();
-
-		batchGetLogResponse = new BatchGetLogResponse(resHeaders, rawData);
-
-		return batchGetLogResponse;
+				batchGetLogResponse = new BatchGetLogResponse(resHeaders, rawData);
+				if (connection_status != null)
+				{
+					connection_status.UpdateLastUsedTime(System.nanoTime());
+					connection_status.AddPullDataSize(batchGetLogResponse.GetRawSize());
+				}
+				return batchGetLogResponse;
+			} catch (LogException e) {
+				if (i == 1 || e.GetRequestId() != null && e.GetRequestId().isEmpty() == false) {
+					throw e;
+				}
+				if (connection_status != null) {
+					connection_status.DisableConnection();
+				}
+			}
+		}
+		return null; // never happen
 	}
 
 	public CreateConfigResponse CreateConfig(String project, Config config)
@@ -1272,6 +1387,8 @@ public class Client implements LogService {
 		return CreateConfig(new CreateConfigRequest(project, config));
 	}
 
+
+	
 	public CreateConfigResponse CreateConfig(CreateConfigRequest request)
 			throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -2492,11 +2609,16 @@ public class Client implements LogService {
 		}
 		return SendData(project, method, resourceUri, parameters, headers, body);
 	}
-	
-	protected ResponseMessage SendData(String project, HttpMethod method,
-			String resourceUri, Map<String, String> parameters,
-			Map<String, String> headers, byte[] body) throws LogException {
 
+	protected ResponseMessage SendData(String project, HttpMethod method, String resourceUri,
+			Map<String, String> parameters, Map<String, String> headers, byte[] body) throws LogException {
+		return SendData(project, method, resourceUri, parameters, headers, body, null, null);
+	}
+
+	protected ResponseMessage SendData(String project, HttpMethod method, String resourceUri,
+			Map<String, String> parameters, Map<String, String> headers, byte[] body, 
+			Map<String, String> output_header, String serverIp)
+			throws LogException {
 		if (body.length > 0) {
 			headers.put(Consts.CONST_CONTENT_MD5, GetMd5Value(body));
 		}
@@ -2504,8 +2626,17 @@ public class Client implements LogService {
 
 		GetSignature(this.accessId, this.accessKey, method.toString(), headers,
 				resourceUri, parameters);
-
-		RequestMessage request = BuildRequest(GetHostURI(project), method,
+		URI uri = null;
+		if (serverIp == null)
+		{
+			uri = GetHostURI(project);
+		}
+		else
+		{
+			uri = GetHostURIByIp(serverIp);
+		}
+		
+		RequestMessage request = BuildRequest(uri, method,
 				resourceUri, parameters, headers,
 				new ByteArrayInputStream(body), body.length);
 		ResponseMessage response = null;
@@ -2513,6 +2644,10 @@ public class Client implements LogService {
 			response = this.serviceClient.sendRequest(request,
 					Consts.UTF_8_ENCODING);
 			ExtractResponseBody(response);
+			if (output_header != null)
+			{
+				output_header.putAll(response.getHeaders());
+			}
 			int statusCode = response.getStatusCode();
 			if (statusCode != Consts.CONST_HTTP_OK) {
 				String requestId = GetRequestId(response.getHeaders());
@@ -2684,6 +2819,10 @@ public class Client implements LogService {
 				String end = shardDict.getString("exclusiveEndKey");
 				int createTime = shardDict.getInt("createTime");
 				Shard shard = new Shard(shardId, status, begin, end, createTime);
+				if (shardDict.containsKey("serverIp"))
+				{
+					shard.setServerIp(shardDict.getString("serverIp"));
+				}
 				shards.add(shard);
 			}
 		} catch (JSONException e) {

@@ -1,0 +1,56 @@
+package com.aliyun.openservices.log.http.client;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class ClientConnectionHelper {
+	// endpoint -> containers
+	private Map<String, ClientConnectionContainer> mAllConnections;
+
+	private ClientConnectionHelper() {
+		mAllConnections = new ConcurrentHashMap<String, ClientConnectionContainer>();
+		(new Thread(new ClientConnectionUpdateThread(this))).start();
+	}
+
+	private static class SingletonHolder {
+		private static final ClientConnectionHelper INSTANCE = new ClientConnectionHelper();
+	}
+
+	public static final ClientConnectionHelper getInstance() {
+		return SingletonHolder.INSTANCE;
+	}
+
+	public ClientConnectionContainer GetConnectionContainer(String endpoint, String accessId, String accessKey) {
+		if (mAllConnections.containsKey(endpoint) == false) {
+			ClientConnectionContainer container = new ClientConnectionContainer();
+			container.Init(endpoint, accessId, accessKey);
+			mAllConnections.put(endpoint, container);
+			return container;
+		} else {
+			return mAllConnections.get(endpoint);
+		}
+	}
+
+	class ClientConnectionUpdateThread implements Runnable {
+		ClientConnectionHelper mHelper;
+
+		ClientConnectionUpdateThread(ClientConnectionHelper helper) {
+			mHelper = helper;
+		}
+
+		@Override
+		public void run() {
+			System.out.println("create thread");
+			while (true) {
+				for (Map.Entry<String, ClientConnectionContainer> entry : mHelper.mAllConnections.entrySet()) {
+					entry.getValue().UpdateConnections();
+				}
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+
+				}
+			}
+		}
+	}
+}

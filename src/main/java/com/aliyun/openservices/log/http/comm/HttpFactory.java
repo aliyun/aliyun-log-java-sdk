@@ -74,7 +74,6 @@ class HttpFactory {
         ThreadSafeClientConnManager connMgr = new ThreadSafeClientConnManager();
         connMgr.setDefaultMaxPerRoute(clientConfig.getMaxConnections());
         connMgr.setMaxTotal(clientConfig.getMaxConnections());
-
         return connMgr;
     }
 
@@ -135,8 +134,13 @@ class HttpFactory {
         for(Entry<String, String> entry : request.getHeaders().entrySet()){
             // HttpClient fills in the Content-Length,
             // and complains if add it again, so skip it as well as the Host header.
-            if (entry.getKey().equalsIgnoreCase(HttpHeaders.CONTENT_LENGTH) ||
+            /*
+        	if (entry.getKey().equalsIgnoreCase(HttpHeaders.CONTENT_LENGTH) ||
                     entry.getKey().equalsIgnoreCase(HttpHeaders.HOST)){
+                continue;
+            }
+            */
+            if (entry.getKey().equalsIgnoreCase(HttpHeaders.CONTENT_LENGTH)){
                 continue;
             }
 
