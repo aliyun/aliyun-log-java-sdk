@@ -1240,9 +1240,7 @@ public class Client implements LogService {
 	public String GetServerIpAddress(String project)
 	{
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/");
-		String resourceUri = resourceUriBuilder.toString();
+		String resourceUri = "/direct_mode_ip";
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		Map<String, String> out_header = new HashMap<String, String>();
 		try {
