@@ -108,46 +108,4 @@ public class EtlFunctionTest {
       }
    }
 
-   @Test
-   public void testListEtlTask() {
-
-      System.out.println("status: all");
-      testListEtlTaskWithStatus("");
-      System.out.println("status: " + Consts.ETL_TASK_STATUS_READY);
-      testListEtlTaskWithStatus(Consts.ETL_TASK_STATUS_READY);
-      System.out.println("status: " + Consts.ETL_TASK_STATUS_RUNNING);
-      testListEtlTaskWithStatus(Consts.ETL_TASK_STATUS_RUNNING);
-      System.out.println("status: " + Consts.ETL_TASK_STATUS_SUCCESS);
-      testListEtlTaskWithStatus(Consts.ETL_TASK_STATUS_SUCCESS);
-      System.out.println("status: " + Consts.ETL_TASK_STATUS_FAILED);
-      testListEtlTaskWithStatus(Consts.ETL_TASK_STATUS_FAILED);
-   }
-
-   public void testListEtlTaskWithStatus(String status) {
-      ListEtlTaskRequest req = new ListEtlTaskRequest(this.project, this.etlJobName, System.currentTimeMillis()/1000 - 43200, System.currentTimeMillis()/1000, 0, 10, status);
-      ListEtlTaskResponse resp = null;
-      try {
-         resp = this.logClient.listEtlTask(req);
-         System.out.println(resp.getTotal());
-         System.out.println(resp.getCount());
-         ArrayList<String> taskIdList = new ArrayList<String>();
-         for (EtlTask task : resp.getEtlTaskList()) {
-            taskIdList.add(task.getTaskId());
-            System.out.println(task.toJsonString());
-         }
-         if (status.equals(Consts.ETL_TASK_STATUS_SUCCESS)) {
-            UpdateEtlTaskStatusRequest upReq = new UpdateEtlTaskStatusRequest(this.project, this.etlJobName, true);
-            upReq.setEtlTaskIdList(taskIdList);
-            UpdateEtlTaskStatusResponse upResp = this.logClient.updateEtlTaskStatus(upReq);
-            System.out.println("updateEtlTaskStatus true: " + upResp.GetAllHeaders());
-         } else if (status.equals(Consts.ETL_TASK_STATUS_FAILED)) {
-            UpdateEtlTaskStatusRequest upReq = new UpdateEtlTaskStatusRequest(this.project, this.etlJobName, false);
-            upReq.setEtlTaskIdList(taskIdList);
-            UpdateEtlTaskStatusResponse upResp = this.logClient.updateEtlTaskStatus(upReq);
-            System.out.println("updateEtlTaskStatus false: " + upResp.GetAllHeaders());
-         }
-      } catch (LogException e) {
-         e.printStackTrace();
-      }
-   }
 }

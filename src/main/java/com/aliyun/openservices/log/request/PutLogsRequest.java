@@ -9,6 +9,7 @@ import java.util.List;
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.Consts.CompressType;
+import com.aliyun.openservices.log.common.TagContent;
 
 /**
  * The request used to send data to sls server
@@ -23,6 +24,7 @@ public class PutLogsRequest extends Request {
 	private String mSource;
 	private String mHashKey;
 	private ArrayList<LogItem> mlogItems;
+	private ArrayList<TagContent> mTags = null;
 	private CompressType compressType = CompressType.LZ4;
 	private String mContentType = Consts.CONST_PROTO_BUF;
 	private byte[] mLogGroupBytes = null;
@@ -211,6 +213,15 @@ public class PutLogsRequest extends Request {
 	}
 
 	/**
+	 * Get all the tag
+	 *
+	 * @return tag
+	 */
+	public ArrayList<TagContent> GetTags() {
+		return mTags;
+	}
+
+	/**
 	 * Get all the logGroupBytes
 	 *
 	 * @return logGroupBytes
@@ -226,6 +237,8 @@ public class PutLogsRequest extends Request {
 	public void SetlogItems(List<LogItem> logItems) {
 		mlogItems = new ArrayList<LogItem>(logItems);
 	}
+
+	public void SetTags(List<TagContent> tags) { mTags = new ArrayList<TagContent>(tags); }
 	
 	public void SetRouteKey(String hashKey)
 	{

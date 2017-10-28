@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.zip.Deflater;
-
+import java.util.UUID;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -39,7 +39,8 @@ import net.sf.json.JsonConfig;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.validator.routines.InetAddressValidator;
-
+import com.aliyun.openservices.log.common.TagContent;
+import com.aliyun.openservices.log.common.EtlJob;
 import com.aliyun.openservices.log.common.ACL;
 import com.aliyun.openservices.log.common.Alert;
 import com.aliyun.openservices.log.common.AlertFail;
@@ -229,17 +230,11 @@ import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
 import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
 import com.aliyun.openservices.log.request.GetEtlJobRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
-import com.aliyun.openservices.log.request.ListEtlTaskRequest;
-import com.aliyun.openservices.log.request.UpdateEtlTaskStatusRequest;
 import com.aliyun.openservices.log.response.CreateEtlJobResponse;
 import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
 import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
 import com.aliyun.openservices.log.response.GetEtlJobResponse;
 import com.aliyun.openservices.log.response.ListEtlJobResponse;
-import com.aliyun.openservices.log.response.ListEtlTaskResponse;
-import com.aliyun.openservices.log.response.UpdateEtlTaskStatusResponse;
-import com.aliyun.openservices.log.common.EtlJob;
-import com.aliyun.openservices.log.common.EtlTask;
 
 /**
  * SlsClient class is the main class in the sdk, it implements the interfaces
@@ -261,6 +256,7 @@ public class Client implements LogService {
 	private String realIpForConsole;
 	private Boolean useSSLForConsole;
 	private String userAgent = Consts.CONST_USER_AGENT_VALUE;
+	private boolean mUUIDTag = false;
 	private Boolean mUseDirectMode = false;
 	public String getUserAgent() {
 		return userAgent;
@@ -291,6 +287,10 @@ public class Client implements LogService {
 		useSSLForConsole = null;
 	}
 
+	public void EnableUUIDTag() { mUUIDTag = true; }
+
+	public void DisableUUIDTag() { mUUIDTag = false; }
+
 	public String GetSecurityToken() {
 		return securityToken;
 	}
@@ -302,11 +302,12 @@ public class Client implements LogService {
 	public void RemoveSecurityToken() {
 		securityToken = null;
 	}
-	
+
 	public void EnableDirectMode()
 	{
 		mUseDirectMode = true;
 	}
+
 	public void DisableDirectMode()
 	{
 		mUseDirectMode = false;
@@ -645,6 +646,19 @@ public class Client implements LogService {
 				} else {
 					logs.setSource(source);
 				}
+				ArrayList<TagContent> tags = request.GetTags();
+				if (tags != null && tags.size() > 0) {
+					for (TagContent tag : tags) {
+						Logs.LogTag.Builder tagBuilder = logs.addLogTagsBuilder();
+						tagBuilder.setKey(tag.getKey());
+						tagBuilder.setValue(tag.getValue());
+					}
+				}
+				if (this.mUUIDTag) {
+					Logs.LogTag.Builder tagBuilder = logs.addLogTagsBuilder();
+					tagBuilder.setKey("__pack_unique_id__");
+					tagBuilder.setValue(UUID.randomUUID().toString() + "-" + String.valueOf(Math.random()));
+				}
 				for (int i = 0; i < logItems.size(); i++) {
 					LogItem item = logItems.get(i);
 					Logs.Log.Builder log = logs.addLogsBuilder();
@@ -683,6 +697,19 @@ public class Client implements LogService {
 					logsArray.add(jsonObjInner);
 				}
 				jsonObj.put("__logs__", logsArray);
+				JSONObject tagObj = new JSONObject();
+				ArrayList<TagContent> tags = request.GetTags();
+				if (tags != null && tags.size() > 0) {
+					for (TagContent tag : tags) {
+						tagObj.put(tag.getKey(), tag.getValue());
+					}
+				}
+				if (this.mUUIDTag)  {
+					tagObj.put("__pack_unique_id__", UUID.randomUUID().toString() + "-" + String.valueOf(Math.random()));
+				}
+				if (tagObj.size() > 0) {
+					jsonObj.put("__tags__", tagObj);
+				}
 				try {
 					logBytes = jsonObj.toString().getBytes("utf-8");
 				} catch (UnsupportedEncodingException e) {
@@ -3966,8 +3993,7 @@ public class Client implements LogService {
 			count = object.getInt(Consts.CONST_COUNT);
 			projects = ExtractProjects(object, requestId);
 
-			listProjectResponse = new ListProjectResponse(resHeaders, count,
-					total, projects);
+			listProjectResponse = new ListProjectResponse(resHeaders, total, count, projects);
 		} catch (JSONException e) {
 			throw new LogException("BadResponse",
 					"The response is not valid list project json string : "
@@ -4507,74 +4533,5 @@ public class Client implements LogService {
 		ListEtlJobResponse listResp = new ListEtlJobResponse(response.getHeaders(), object.getInt(Consts.CONST_TOTAL));
 		listResp.setEtlJobNameList(ExtractJsonArray("etlJobNameList", object));
 		return listResp;
-	}
-
-	private ArrayList<EtlTask> ExtractEtlTaskList(JSONObject object) throws LogException {
-		ArrayList<EtlTask> res = new ArrayList<EtlTask>();
-		JSONArray array = object.getJSONArray("etlTaskList");
-		if (array != null) {
-			for (int i = 0; i < array.size(); i++) {
-				JSONObject item = array.getJSONObject(i);
-				EtlTask task = new EtlTask();
-				task.fromJsonObject(item);
-				res.add(task);
-			}
-		}
-		return res;
-	}
-
-	@Override
-	public ListEtlTaskResponse listEtlTask(ListEtlTaskRequest request) throws LogException {
-		CodingUtils.assertParameterNotNull(request, "request");
-		CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "project");
-		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
-		String etlJobName = request.getEtlJobName();
-		CodingUtils.assertStringNotNullOrEmpty(etlJobName, "etlJobName");
-		String resourceUri = Consts.CONST_ETLJOB_URI + "/" + etlJobName + Consts.CONST_ETLTASK_URI;
-		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-		Map<String, String> urlParameter = new HashMap<String, String>();
-		urlParameter = request.GetAllParams();
-		urlParameter.put("from", String.valueOf(request.getFrom()));
-		urlParameter.put("to", String.valueOf(request.getTo()));
-		urlParameter.put("status", request.getStatus());
-		urlParameter.put("offset", String.valueOf(request.getOffset()));
-		urlParameter.put("size", String.valueOf(request.getSize()));
-		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
-		Map<String, String> resHeaders = response.getHeaders();
-		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
-		ListEtlTaskResponse letResponse = new ListEtlTaskResponse(resHeaders);
-		letResponse.setTotal(ExtractJsonInteger("total", object));
-		letResponse.setEtlTaskList(ExtractEtlTaskList(object));
-		return letResponse;
-	}
-
-	@Override
-	public UpdateEtlTaskStatusResponse updateEtlTaskStatus(UpdateEtlTaskStatusRequest request) throws LogException {
-		CodingUtils.assertParameterNotNull(request, "request");
-		String project = request.GetProject();
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		String etlJobName = request.getEtlJobName();
-		CodingUtils.assertStringNotNullOrEmpty(etlJobName, "etlJobName");
-		boolean enable = request.getEnable();
-		ArrayList<String> etlTaskIdList = request.getEtlTaskIdList();
-		CodingUtils.assertParameterNotNull(etlTaskIdList, "taskIdList");
-		Map<String, String> headParameter = GetCommonHeadPara(project);
-		byte[] body;
-		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("enable", enable);
-		jsonObj.put("taskIdList", etlTaskIdList);
-		String bodyStr = jsonObj.toString();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
-		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-		String resourceUri = Consts.CONST_ETLJOB_URI + "/" + etlJobName + Consts.CONST_ETLTASK_URI;
-		Map<String, String> urlParameter = new HashMap<String, String>();
-		ResponseMessage response = SendData(project, HttpMethod.PUT,
-				resourceUri, urlParameter, headParameter, body);
-		return new UpdateEtlTaskStatusResponse(response.getHeaders());
 	}
 };

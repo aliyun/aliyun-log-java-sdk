@@ -296,26 +296,7 @@ public class Consts {
 
 	// ETL
 	public static final String CONST_ETLJOB_URI = "/etljobs";
-	public static final String CONST_ETLTASK_URI = "/etltasks";
-	public static final String CONST_STATUS = "status";
 	public static final String FUNCTION_PROVIDER_FC = "FunctionCompute";
-	public static final String ETL_TASK_ID = "taskId";
-	public static final String ETL_TASK_STATUS = "taskStatus";
-	public static final String ETL_TASK_CREATE_TIME = "createTime";
-	public static final String ETL_TASK_BEGIN_TIME = "beginTime";
-	public static final String ETL_TASK_FINISH_TIME = "finishTime";
-	public static final String ETL_TASK_LATEST_DATA_TIME = "latestDataTime";
-	public static final String ETL_TASK_RETRYT_TIME = "retryTime";
-	public static final String ETL_TASK_ERROR_CODE = "errorCode";
-	public static final String ETL_TASK_ERROR_MESSAGE = "errorMessage";
-	public static final String ETL_TASK_INGEST_LINES = "ingestLines";
-	public static final String ETL_TASK_INGEST_BYTES = "ingestBytes";
-	public static final String ETL_TASK_SHIP_LINES = "shipLines";
-	public static final String ETL_TASK_SHIP_BYTES = "shipBytes";
-	public static final String ETL_TASK_STATUS_READY = "Ready";
-	public static final String ETL_TASK_STATUS_RUNNING = "Running";
-	public static final String ETL_TASK_STATUS_SUCCESS = "Success";
-	public static final String ETL_TASK_STATUS_FAILED = "Failed";
 	public static final String ETL_JOB_NAME = "etlJobName";
 	public static final String ETL_JOB_SOURCE_CONFIG = "sourceConfig";
 	public static final String ETL_JOB_TRIGGER_CONFIG = "triggerConfig";

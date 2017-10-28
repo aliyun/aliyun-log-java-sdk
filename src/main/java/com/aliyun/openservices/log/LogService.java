@@ -158,15 +158,11 @@ import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
 import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
 import com.aliyun.openservices.log.request.GetEtlJobRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
-import com.aliyun.openservices.log.request.ListEtlTaskRequest;
-import com.aliyun.openservices.log.request.UpdateEtlTaskStatusRequest;
 import com.aliyun.openservices.log.response.CreateEtlJobResponse;
 import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
 import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
 import com.aliyun.openservices.log.response.GetEtlJobResponse;
 import com.aliyun.openservices.log.response.ListEtlJobResponse;
-import com.aliyun.openservices.log.response.ListEtlTaskResponse;
-import com.aliyun.openservices.log.response.UpdateEtlTaskStatusResponse;
 
 public interface LogService {
 
@@ -2765,8 +2761,4 @@ public interface LogService {
 	GetEtlJobResponse getEtlJob(GetEtlJobRequest request) throws LogException;
 
 	ListEtlJobResponse listEtlJob(ListEtlJobRequest request) throws LogException;
-
-	ListEtlTaskResponse listEtlTask(ListEtlTaskRequest request) throws LogException;
-
-	UpdateEtlTaskStatusResponse updateEtlTaskStatus(UpdateEtlTaskStatusRequest request) throws LogException;
 }
