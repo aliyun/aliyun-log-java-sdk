@@ -4445,7 +4445,7 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(etlJob, "etlJob");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		byte[] body;
-		String bodyStr = etlJob.toJsonString(true);
+		String bodyStr = etlJob.toJsonString(true,true);
 		try {
 			body = bodyStr.getBytes("utf-8");
 		} catch (UnsupportedEncodingException e) {
@@ -4484,7 +4484,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(etlJob.getJobName(), "etlJobName");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		byte[] body;
-		String bodyStr = etlJob.toJsonString(false);
+		String bodyStr = etlJob.toJsonString(false,false);
 		try {
 			body = bodyStr.getBytes("utf-8");
 		} catch (UnsupportedEncodingException e) {

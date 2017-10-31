@@ -73,7 +73,8 @@ public class EtlJob implements Serializable {
         this.enable = enable;
     }
 
-    public EtlJob() {}
+    public EtlJob() {
+    }
 
     public EtlJob(String jobName, EtlTriggerConfig triggerConfig, EtlFunctionConfig functionConfig, String functionParameter, EtlLogConfig logConfig, boolean enable) {
 
@@ -97,10 +98,12 @@ public class EtlJob implements Serializable {
         this.enable = enable;
     }
 
-    public JSONObject toJsonObject(boolean withSourceConfig){
+    public JSONObject toJsonObject(boolean withJobName, boolean withSourceConfig){
         JSONObject etlJobJson = new JSONObject();
 
-        etlJobJson.put(Consts.ETL_JOB_NAME, this.jobName);
+        if (withJobName) {
+            etlJobJson.put(Consts.ETL_JOB_NAME, this.jobName);
+        }
 
         if (withSourceConfig) {
             JSONObject sourceConfigJson = new JSONObject();
@@ -126,8 +129,7 @@ public class EtlJob implements Serializable {
             functionConfigJson.put(Consts.ETL_JOB_FC_FUNCTION_NAME, fcConfig.getFunctionName());
         }
         etlJobJson.put(Consts.ETL_JOB_FUNCTION_CONFIG, functionConfigJson);
-
-        etlJobJson.put(Consts.ETL_JOB_FUNCTION_PARAMETER, this.functionParameter);
+        etlJobJson.element(Consts.ETL_JOB_FUNCTION_PARAMETER, this.functionParameter);
 
         JSONObject logConfigJson = new JSONObject();
         logConfigJson.put(Consts.ETL_JOB_LOG_ENDPOINT, this.logConfig.getEndpoint());
@@ -136,11 +138,12 @@ public class EtlJob implements Serializable {
         etlJobJson.put(Consts.ETL_JOB_LOG_CONFIG, logConfigJson);
 
         etlJobJson.put(Consts.ETL_ENABLE, this.enable);
+
         return etlJobJson;
     }
 
-    public String toJsonString(boolean withSourceConfig) {
-        return toJsonObject(withSourceConfig).toString();
+    public String toJsonString(boolean withJobName, boolean withSourceConfig) {
+        return toJsonObject(withJobName, withSourceConfig).toString();
     }
 
     public void fromJsonObject(JSONObject etljobJson) throws LogException {
