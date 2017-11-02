@@ -142,6 +142,7 @@ public class Consts {
 	// logtail config related
 	public static final String CONST_CONFIG_INPUTTYPE_FILE = "file";
 	public static final String CONST_CONFIG_INPUTTYPE_STREAMLOG = "streamlog";
+	public static final String CONST_CONFIG_INPUTTYPE_PLUGIN = "plugin";
 	public static final String CONST_CONFIG_INPUTTYPE_SYSLOG = "syslog";
 	public static final String CONST_CONFIG_LOGTYPE = "logType";
 	public static final String CONST_CONFIG_LOGTYPE_JSON = "json_log";

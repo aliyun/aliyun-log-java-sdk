@@ -44,9 +44,9 @@ public class Config implements Serializable {
 				|| inputType.equals(Consts.CONST_CONFIG_INPUTTYPE_SYSLOG))
 		{
 			inputDetail = new StreamLogConfigInputDetail();
-		}
-		else
-		{
+		} else if (inputType.equals(Consts.CONST_CONFIG_INPUTTYPE_PLUGIN)) {
+			inputDetail = new PluginLogConfigInputDetail();
+		}else {
 			inputDetail = new ConfigInputDetail();
 		}
 	}

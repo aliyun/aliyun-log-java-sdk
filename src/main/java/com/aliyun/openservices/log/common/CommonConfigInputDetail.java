@@ -221,46 +221,54 @@ public abstract class CommonConfigInputDetail {
 					e, "");
 		}
 	}
-	public static CommonConfigInputDetail FromJsonObjectS(final String inputType, JSONObject inputDetail) throws LogException 
-	{
+
+	public static CommonConfigInputDetail FromJsonObjectS(final String inputType, JSONObject inputDetail)
+			throws LogException {
 		try {
-			if (inputType.equals(Consts.CONST_CONFIG_INPUTTYPE_SYSLOG) 
+			if (inputType.equals(Consts.CONST_CONFIG_INPUTTYPE_SYSLOG)
 					|| inputType.equals(Consts.CONST_CONFIG_INPUTTYPE_STREAMLOG)) {
 				StreamLogConfigInputDetail res = new StreamLogConfigInputDetail();
 				res.FromJsonObject(inputDetail);
 				return res;
+			} else if (inputType.equals(Consts.CONST_CONFIG_INPUTTYPE_PLUGIN)) {
+				PluginLogConfigInputDetail res = new PluginLogConfigInputDetail();
+				res.FromJsonObject(inputDetail);
+				return res;
 			} else if (inputType.equals(Consts.CONST_CONFIG_INPUTTYPE_FILE)) {
 				if (inputDetail.containsKey(Consts.CONST_CONFIG_LOGTYPE)) {
-					if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE).compareTo(Consts.CONST_CONFIG_LOGTYPE_JSON) == 0) {
+					if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE)
+							.compareTo(Consts.CONST_CONFIG_LOGTYPE_JSON) == 0) {
 						JsonConfigInputDetail res = new JsonConfigInputDetail();
 						res.FromJsonObject(inputDetail);
 						return res;
-					} else if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE).compareTo(Consts.CONST_CONFIG_LOGTYPE_DELIMITER) == 0) {
+					} else if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE)
+							.compareTo(Consts.CONST_CONFIG_LOGTYPE_DELIMITER) == 0) {
 						DelimiterConfigInputDetail res = new DelimiterConfigInputDetail();
 						res.FromJsonObject(inputDetail);
 						return res;
-					} else if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE).compareTo(Consts.CONST_CONFIG_LOGTYPE_APSARA) == 0) {
+					} else if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE)
+							.compareTo(Consts.CONST_CONFIG_LOGTYPE_APSARA) == 0) {
 						ApsaraLogConfigInputDetail res = new ApsaraLogConfigInputDetail();
 						res.FromJsonObject(inputDetail);
 						return res;
-					} else if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE).compareTo(Consts.CONST_CONFIG_LOGTYPE_COMMON) == 0) {
+					} else if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE)
+							.compareTo(Consts.CONST_CONFIG_LOGTYPE_COMMON) == 0) {
 						ConfigInputDetail res = new ConfigInputDetail();
 						res.FromJsonObject(inputDetail);
 						return res;
 					} else {
-						throw new LogException("FailToGenerateInputDetail", "invlaid logType", inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE));
+						throw new LogException("FailToGenerateInputDetail", "invlaid logType",
+								inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE));
 					}
 				} else {
-					throw new LogException("FailToGenerateInputDetail", "logType field does not exist in input detail", "");
+					throw new LogException("FailToGenerateInputDetail", "logType field does not exist in input detail",
+							"");
 				}
-			}
-			else
-			{
+			} else {
 				throw new LogException("FailToGenerateInputDetail", "invalid inputType", inputType);
 			}
 		} catch (JSONException e) {
-			throw new LogException("FailToGenerateInputDetail", e.getMessage(),
-					e, "");
+			throw new LogException("FailToGenerateInputDetail", e.getMessage(), e, "");
 		}
 	}
 }
