@@ -190,6 +190,7 @@ public class Consts {
     public static final String CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_REGEXCONTENT = "regex_content";
     public static final String CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_ALL = "all";
     public static final String CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_CONST = "const";
+    public static final String CONST_CONFIG_INPUTDETAIL_DELAYALARMBYTES = "delayAlarmBytes";
 	
 	public static final String CONST_TYPE = "type";
 	public static final String CONST_TYPE_CURSOR = "cursor";

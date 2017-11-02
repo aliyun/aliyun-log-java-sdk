@@ -20,7 +20,16 @@ public abstract class CommonConfigInputDetail {
 	protected int sendRateExpire = 0;
 	protected ArrayList<SensitiveKey> sensitiveKeys = new ArrayList<SensitiveKey>();
 	protected String mergeType;
+	protected long delayAlarmBytes = 0;
 	
+	public long getDelayAlarmBytes() {
+		return delayAlarmBytes;
+	}
+
+	public void setDelayAlarmBytes(long delayAlarmBytes) {
+		this.delayAlarmBytes = delayAlarmBytes;
+	}
+
 	public String getMergeType() {
 		return mergeType;
 	}
@@ -142,6 +151,7 @@ public abstract class CommonConfigInputDetail {
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_MAXSENDRATE, maxSendRate);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE, sendRateExpire);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_MERGETYPE, mergeType);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DELAYALARMBYTES, delayAlarmBytes);
 		JSONArray sensitiveKeysArray = new JSONArray();
 		for (SensitiveKey sensitiveKey : sensitiveKeys) {
 			sensitiveKeysArray.add(sensitiveKey.ToJsonObject());
@@ -192,6 +202,10 @@ public abstract class CommonConfigInputDetail {
 				this.enableRawLog = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ENABLERAWLOG);
 			else
 				this.enableRawLog = false;
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DELAYALARMBYTES))
+				this.delayAlarmBytes = inputDetail.getLong(Consts.CONST_CONFIG_INPUTDETAIL_DELAYALARMBYTES);
+			else 
+				this.delayAlarmBytes = 0;
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_FILTERREGEX))
 				SetFilterRegex(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_FILTERREGEX));
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_FILTERKEY))
