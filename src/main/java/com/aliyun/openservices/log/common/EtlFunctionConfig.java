@@ -11,6 +11,10 @@ public class EtlFunctionConfig implements Serializable {
         return functionProvider;
     }
 
+    public void setFunctionProvider(String functionProvider) {
+        this.functionProvider = functionProvider;
+    }
+
     public EtlFunctionConfig(String functionProvider) {
 
         this.functionProvider = functionProvider;

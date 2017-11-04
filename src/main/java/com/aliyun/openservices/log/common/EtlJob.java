@@ -76,17 +76,6 @@ public class EtlJob implements Serializable {
     public EtlJob() {
     }
 
-    public EtlJob(String jobName, EtlTriggerConfig triggerConfig, EtlFunctionConfig functionConfig, String functionParameter, EtlLogConfig logConfig, boolean enable) {
-
-        this.jobName = jobName;
-        this.triggerConfig = triggerConfig;
-        this.functionConfig = functionConfig;
-        this.functionParameter = functionParameter;
-        this.logConfig = logConfig;
-        this.enable = enable;
-        this.sourceConfig = null;
-    }
-
     public EtlJob(String jobName, EtlSourceConfig sourceConfig, EtlTriggerConfig triggerConfig, EtlFunctionConfig functionConfig, String functionParameter, EtlLogConfig logConfig, boolean enable) {
 
         this.jobName = jobName;
@@ -98,7 +87,7 @@ public class EtlJob implements Serializable {
         this.enable = enable;
     }
 
-    public JSONObject toJsonObject(boolean withJobName, boolean withSourceConfig){
+    public JSONObject toJsonObject(boolean withJobName, boolean withSourceConfig) throws LogException {
         JSONObject etlJobJson = new JSONObject();
 
         if (withJobName) {
@@ -129,7 +118,13 @@ public class EtlJob implements Serializable {
             functionConfigJson.put(Consts.ETL_JOB_FC_FUNCTION_NAME, fcConfig.getFunctionName());
         }
         etlJobJson.put(Consts.ETL_JOB_FUNCTION_CONFIG, functionConfigJson);
-        etlJobJson.element(Consts.ETL_JOB_FUNCTION_PARAMETER, this.functionParameter);
+
+        try {
+            JSONObject fpJsonObj = JSONObject.fromObject(this.functionParameter);
+            etlJobJson.put(Consts.ETL_JOB_FUNCTION_PARAMETER, fpJsonObj);
+        } catch (JSONException e) {
+            throw new LogException("PostBodyInvalid",  e.getMessage(), e, "");
+        }
 
         JSONObject logConfigJson = new JSONObject();
         logConfigJson.put(Consts.ETL_JOB_LOG_ENDPOINT, this.logConfig.getEndpoint());
@@ -142,7 +137,7 @@ public class EtlJob implements Serializable {
         return etlJobJson;
     }
 
-    public String toJsonString(boolean withJobName, boolean withSourceConfig) {
+    public String toJsonString(boolean withJobName, boolean withSourceConfig) throws LogException {
         return toJsonObject(withJobName, withSourceConfig).toString();
     }
 
@@ -174,7 +169,7 @@ public class EtlJob implements Serializable {
                     logConfigJson.getString(Consts.ETL_JOB_LOG_PROJECT_NAME), logConfigJson.getString(Consts.ETL_JOB_LOG_LOGSTORE_NAME));
             setLogConfig(logConfig);
 
-            setFunctionParameter(etljobJson.getString(Consts.ETL_JOB_FUNCTION_PARAMETER));
+            setFunctionParameter(etljobJson.getJSONObject(Consts.ETL_JOB_FUNCTION_PARAMETER).toString());
             setJobName(etljobJson.getString(Consts.ETL_JOB_NAME));
             setEnable(etljobJson.getBoolean(Consts.ETL_ENABLE));
 
