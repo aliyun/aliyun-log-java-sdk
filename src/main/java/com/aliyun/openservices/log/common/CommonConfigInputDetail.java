@@ -21,7 +21,25 @@ public abstract class CommonConfigInputDetail {
 	protected ArrayList<SensitiveKey> sensitiveKeys = new ArrayList<SensitiveKey>();
 	protected String mergeType;
 	protected long delayAlarmBytes = 0;
+	protected boolean adjustTimezone = false;
+	protected String logTimezone = "";
 	
+	public boolean isAdjustTimezone() {
+		return adjustTimezone;
+	}
+
+	public void setAdjustTimezone(boolean adjustTimezone) {
+		this.adjustTimezone = adjustTimezone;
+	}
+
+	public String getLogTimezone() {
+		return logTimezone;
+	}
+
+	public void setLogTimezone(String logTimezone) {
+		this.logTimezone = logTimezone;
+	}
+
 	public long getDelayAlarmBytes() {
 		return delayAlarmBytes;
 	}
@@ -152,6 +170,8 @@ public abstract class CommonConfigInputDetail {
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE, sendRateExpire);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_MERGETYPE, mergeType);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DELAYALARMBYTES, delayAlarmBytes);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ADJUSTTIMEZONE, adjustTimezone);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOGTIMEZONE, logTimezone);
 		JSONArray sensitiveKeysArray = new JSONArray();
 		for (SensitiveKey sensitiveKey : sensitiveKeys) {
 			sensitiveKeysArray.add(sensitiveKey.ToJsonObject());
