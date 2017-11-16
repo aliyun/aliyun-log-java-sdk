@@ -20,6 +20,7 @@ public class IndexKey implements Serializable {
 	private List<String> token = new ArrayList<String>();
 	private boolean caseSensitive;
 	private boolean docValue;
+	private String alias = "";
 	private String type;
 	
 	public IndexKey() {
@@ -43,6 +44,15 @@ public class IndexKey implements Serializable {
 		this.type = type;
 		this.docValue = true;
 	}
+
+	public IndexKey(List<String> token, boolean caseSensitive, String type, String alias) {
+		SetToken(token);
+		this.caseSensitive = caseSensitive;
+		this.type = type;
+		this.docValue = true;
+		this.alias = alias;
+
+	}
 	
 	/**
 	 * create index config from another index key
@@ -53,8 +63,18 @@ public class IndexKey implements Serializable {
 		this.caseSensitive = other.GetCaseSensitive();
 		this.type = other.GetType();
 		this.docValue = other.IsDocValue();
+		this.alias = other.alias;
 	}
-	
+
+
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
 	/**
 	 * @return type
 	 */
@@ -121,6 +141,7 @@ public class IndexKey implements Serializable {
 		}
 		
 		allKeys.put("doc_value", IsDocValue());
+		allKeys.put("alias", getAlias());
 		
 		return allKeys;
 	}
@@ -140,6 +161,8 @@ public class IndexKey implements Serializable {
 	
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {
+			if (dict.containsKey("alias"))
+				setAlias(dict.getString("alias"));
 			if (!dict.containsKey("doc_value"))
 				SetDocValue(false);
 			else
