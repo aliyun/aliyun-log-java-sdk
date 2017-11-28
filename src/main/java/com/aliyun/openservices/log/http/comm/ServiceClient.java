@@ -186,7 +186,6 @@ public abstract class ServiceClient {
         }
 
         request.setUrl(uri);
-
         if (requestIsPost && requestMessage.getContent() == null && paramString != null){
             // Put the param string to the request body if POSTing and
             // no content.
