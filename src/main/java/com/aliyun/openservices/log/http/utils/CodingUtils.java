@@ -16,7 +16,7 @@ public class CodingUtils {
 		assertParameterNotNull(param, paramName);
 		assert (param != null);
 		if (param.length() == 0) {
-			throw new IllegalArgumentException(paramName + " is empyt");
+			throw new IllegalArgumentException(paramName + " is empty");
 		}
 	}
 	public static boolean isNullOrEmpty(String value) {

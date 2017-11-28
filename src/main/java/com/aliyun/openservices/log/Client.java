@@ -42,6 +42,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import com.aliyun.openservices.log.common.TagContent;
 import com.aliyun.openservices.log.common.EtlJob;
+import com.aliyun.openservices.log.common.EtlMeta;
 import com.aliyun.openservices.log.common.ACL;
 import com.aliyun.openservices.log.common.Alert;
 import com.aliyun.openservices.log.common.AlertFail;
@@ -167,6 +168,11 @@ import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
 import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
 import com.aliyun.openservices.log.response.GetEtlJobResponse;
 import com.aliyun.openservices.log.response.ListEtlJobResponse;
+import com.aliyun.openservices.log.response.ListEtlMetaResponse;
+import com.aliyun.openservices.log.response.ListEtlMetaNameResponse;
+import com.aliyun.openservices.log.response.DeleteEtlMetaResponse;
+import com.aliyun.openservices.log.response.CreateEtlMetaResponse;
+import com.aliyun.openservices.log.response.UpdateEtlMetaResponse;
 
 /**
  * SlsClient class is the main class in the sdk, it implements the interfaces
@@ -2622,7 +2628,7 @@ public class Client implements LogService {
 		{
 			uri = GetHostURIByIp(serverIp);
 		}
-		
+
 		RequestMessage request = BuildRequest(uri, method,
 				resourceUri, parameters, headers,
 				new ByteArrayInputStream(body), body.length);
@@ -4495,5 +4501,126 @@ public class Client implements LogService {
 		ListEtlJobResponse listResp = new ListEtlJobResponse(response.getHeaders(), object.getInt(Consts.CONST_TOTAL));
 		listResp.setEtlJobNameList(ExtractJsonArray("etlJobNameList", object));
 		return listResp;
+	}
+
+	@Override
+	public CreateEtlMetaResponse createEtlMeta(String project, EtlMeta etlMeta) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertParameterNotNull(etlMeta, "etlMeta");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = Consts.CONST_ETLMETA_URI;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, urlParameter, headParameter, etlMeta.toJsonObject().toString());
+		return new CreateEtlMetaResponse(response.getHeaders());
+	}
+
+	@Override
+	public DeleteEtlMetaResponse deleteEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
+		CodingUtils.assertStringNotNullOrEmpty(etlMetaKey, "etlMetaKey");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = Consts.CONST_ETLMETA_URI;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		urlParameter.put(Consts.ETL_META_NAME, etlMetaName);
+		urlParameter.put(Consts.ETL_META_KEY, etlMetaKey);
+		ResponseMessage response = SendData(project, HttpMethod.DELETE,
+				resourceUri, urlParameter, headParameter);
+		return new DeleteEtlMetaResponse(response.getHeaders());
+	}
+
+	@Override
+	public UpdateEtlMetaResponse updateEtlMeta(String project, EtlMeta etlMeta) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertParameterNotNull(etlMeta, "etlMeta");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = Consts.CONST_ETLMETA_URI;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.PUT,
+				resourceUri, urlParameter, headParameter, etlMeta.toJsonObject().toString());
+		return new UpdateEtlMetaResponse(response.getHeaders());
+	}
+
+	@Override
+	public ListEtlMetaNameResponse listEtlMetaName(String project, int offset, int size) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertParameterNotNull(offset, "offset");
+		CodingUtils.assertParameterNotNull(size, "size");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = Consts.CONST_ETLMETANAME_URI;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		urlParameter.put(Consts.CONST_OFFSET, String.valueOf(offset));
+		urlParameter.put(Consts.CONST_SIZE, String.valueOf(size));
+		ResponseMessage response = SendData(project, HttpMethod.GET,
+				resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		String requestId = GetRequestId(resHeaders);
+		JSONObject object = ParserResponseMessage(response, requestId);
+		ListEtlMetaNameResponse listResp = new ListEtlMetaNameResponse(response.getHeaders(), object.getInt(Consts.CONST_TOTAL));
+		listResp.setEtlMetaNameList(ExtractJsonArray("etlMetaNameList", object));
+		return listResp;
+	}
+
+	private ListEtlMetaResponse listEtlMeta(ListEtlMetaRequest request) throws LogException {
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		Map<String, String> urlParameter = request.GetAllParams();
+		String resourceUri = Consts.CONST_ETLMETA_URI;
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = ParserResponseMessage(response, requestId);
+		ListEtlMetaResponse listResp = new ListEtlMetaResponse(response.getHeaders(), object.getInt(Consts.CONST_TOTAL));
+		try {
+			JSONArray items = object.getJSONArray("etlMetaList");
+			for (int i = 0; i < items.size(); i++) {
+				EtlMeta meta = new EtlMeta();
+				meta.fromJsonObject(items.getJSONObject(i));
+				listResp.addEtlMeta(meta);
+			}
+		} catch (JSONException e) {
+			throw new LogException("BadResponse", e.getMessage(), listResp.GetRequestId());
+		}
+		return listResp;
+	}
+
+	@Override
+	public ListEtlMetaResponse listEtlMeta(String project, String etlMetaName, int offset, int size) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
+		CodingUtils.assertParameterNotNull(offset, "offset");
+		CodingUtils.assertParameterNotNull(size, "size");
+		ListEtlMetaRequest request = new ListEtlMetaRequest(project, offset, size);
+		request.setEtlMetaName(etlMetaName);
+		request.setEtlMetaKey("");
+		request.setEtlMetaTag(Consts.CONST_ETLMETA_ALL_TAG_MATCH);
+		return listEtlMeta(request);
+	}
+
+	@Override
+	public ListEtlMetaResponse listEtlMeta(String project, String etlMetaName, String etlMetaTag, int offset, int size) throws LogException {
+        CodingUtils.assertStringNotNullOrEmpty(project, "project");
+        CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
+        CodingUtils.assertParameterNotNull(etlMetaTag, "etlMetaTag");
+		CodingUtils.assertParameterNotNull(offset, "offset");
+		CodingUtils.assertParameterNotNull(size, "size");
+		ListEtlMetaRequest request = new ListEtlMetaRequest(project, offset, size);
+		request.setEtlMetaName(etlMetaName);
+		request.setEtlMetaKey("");
+        request.setEtlMetaTag(etlMetaTag);
+		return listEtlMeta(request);
+	}
+
+	@Override
+	public ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException {
+        CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
+		CodingUtils.assertStringNotNullOrEmpty(etlMetaKey, "etlMetaKey");
+		ListEtlMetaRequest request = new ListEtlMetaRequest(project, 0, 1);
+		request.setEtlMetaName(etlMetaName);
+		request.setEtlMetaKey(etlMetaKey);
+		request.setEtlMetaTag(Consts.CONST_ETLMETA_ALL_TAG_MATCH);
+		return listEtlMeta(request);
 	}
 };
