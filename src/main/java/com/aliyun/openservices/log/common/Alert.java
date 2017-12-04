@@ -24,7 +24,10 @@ public class Alert implements Serializable {
 	protected String roleArn;
 	protected String mnsParam;
 	protected String message;
-	
+	protected String webhook;
+
+	public String getWebhook() { return webhook;}
+	public void setWebhook(String webhook) { this.webhook = webhook; }
 	public String getMessage() {
 		return message;
 	}
@@ -146,6 +149,10 @@ public class Alert implements Serializable {
 			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_PHONENUMBER, getPhoneNumber());
 		else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_MNS))
 			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_MNS_PARAM, getMnsParam());
+		else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_DINGTALK) || getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_DINGTALK)) {
+			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE, getMessage());
+			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_WEBHOOK, getWebhook());
+		}
 		else
 			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE, getMessage());
 		alertJson.put(Consts.CONST_ALERT_ACTIONDETAIL, actionDetail);
@@ -173,6 +180,10 @@ public class Alert implements Serializable {
 				setPhoneNumber(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_PHONENUMBER));
 			else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_MNS))
 				setMnsParam(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_MNS_PARAM));
+			else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_WEBHOOK) || getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_DINGTALK)) {
+				setMessage(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE));
+				setWebhook(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_WEBHOOK));
+			}
 			else
 				setMessage(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE));
 			
