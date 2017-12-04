@@ -274,11 +274,14 @@ public class Consts {
 	public static final String CONST_ALERT_ACTIONTYPE = "actionType";
 	public static final String CONST_ALERT_ACTIONTYPE_SMS = "sms";
 	public static final String CONST_ALERT_ACTIONTYPE_MNS = "mns";
+	public static final String CONST_ALERT_ACTIONTYPE_WEBHOOK = "webhook";
+	public static final String CONST_ALERT_ACTIONTYPE_DINGTALK = "dingtalk";
 	public static final String CONST_ALERT_ACTIONTYPE_NOTIFICATION = "notification";
 	public static final String CONST_ALERT_ACTIONDETAIL = "actionDetail";
 	public static final String CONST_ALERT_ACTIONDETAIL_PHONENUMBER = "phoneNumber";
 	public static final String CONST_ALERT_ACTIONDETAIL_MNS_PARAM = "param";
 	public static final String CONST_ALERT_ACTIONDETAIL_MESSAGE = "message";
+	public static final String CONST_ALERT_ACTIONDETAIL_WEBHOOK = "webhook";
 	
 	public static final String CONST_ALERTTIME = "alertTime";
 	public static final String CONST_TRIGGERSTATUS = "triggerStatus";
