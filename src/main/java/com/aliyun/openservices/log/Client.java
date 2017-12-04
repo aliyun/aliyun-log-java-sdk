@@ -32,6 +32,7 @@ import java.util.UUID;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.aliyun.openservices.log.request.*;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -85,70 +86,6 @@ import com.aliyun.openservices.log.http.comm.ResponseMessage;
 import com.aliyun.openservices.log.http.comm.ServiceClient;
 import com.aliyun.openservices.log.http.utils.CodingUtils;
 import com.aliyun.openservices.log.http.utils.DateUtil;
-import com.aliyun.openservices.log.request.ApplyConfigToMachineGroupRequest;
-import com.aliyun.openservices.log.request.ApproveMachineGroupRequest;
-import com.aliyun.openservices.log.request.BatchGetLogRequest;
-import com.aliyun.openservices.log.request.ConsumerGroupGetCheckPointRequest;
-import com.aliyun.openservices.log.request.ConsumerGroupHeartBeatRequest;
-import com.aliyun.openservices.log.request.ConsumerGroupUpdateCheckPointRequest;
-import com.aliyun.openservices.log.request.CreateAlertRequest;
-import com.aliyun.openservices.log.request.CreateChartRequest;
-import com.aliyun.openservices.log.request.CreateConfigRequest;
-import com.aliyun.openservices.log.request.CreateConsumerGroupRequest;
-import com.aliyun.openservices.log.request.CreateDashboardRequest;
-import com.aliyun.openservices.log.request.CreateIndexRequest;
-import com.aliyun.openservices.log.request.CreateLogStoreRequest;
-import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
-import com.aliyun.openservices.log.request.CreateSavedSearchRequest;
-import com.aliyun.openservices.log.request.DeleteAlertRequest;
-import com.aliyun.openservices.log.request.DeleteChartRequest;
-import com.aliyun.openservices.log.request.DeleteConfigRequest;
-import com.aliyun.openservices.log.request.DeleteDashboardRequest;
-import com.aliyun.openservices.log.request.DeleteIndexRequest;
-import com.aliyun.openservices.log.request.DeleteLogStoreRequest;
-import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
-import com.aliyun.openservices.log.request.DeleteSavedSearchRequest;
-import com.aliyun.openservices.log.request.DeleteShardRequest;
-import com.aliyun.openservices.log.request.GetAlertRequest;
-import com.aliyun.openservices.log.request.GetAppliedConfigsRequest;
-import com.aliyun.openservices.log.request.GetAppliedMachineGroupRequest;
-import com.aliyun.openservices.log.request.GetChartRequest;
-import com.aliyun.openservices.log.request.GetConfigRequest;
-import com.aliyun.openservices.log.request.GetCursorRequest;
-import com.aliyun.openservices.log.request.GetCursorTimeRequest;
-import com.aliyun.openservices.log.request.GetDashboardRequest;
-import com.aliyun.openservices.log.request.GetHistogramsRequest;
-import com.aliyun.openservices.log.request.GetIndexRequest;
-import com.aliyun.openservices.log.request.GetLogStoreRequest;
-import com.aliyun.openservices.log.request.GetLogsRequest;
-import com.aliyun.openservices.log.request.GetLogtailProfileRequest;
-import com.aliyun.openservices.log.request.GetMachineGroupRequest;
-import com.aliyun.openservices.log.request.GetSavedSearchRequest;
-import com.aliyun.openservices.log.request.ListACLRequest;
-import com.aliyun.openservices.log.request.ListAlertFailRequest;
-import com.aliyun.openservices.log.request.ListAlertRequest;
-import com.aliyun.openservices.log.request.ListConfigRequest;
-import com.aliyun.openservices.log.request.ListDashboardRequest;
-import com.aliyun.openservices.log.request.ListLogStoresRequest;
-import com.aliyun.openservices.log.request.ListMachineGroupRequest;
-import com.aliyun.openservices.log.request.ListProjectRequest;
-import com.aliyun.openservices.log.request.ListSavedSearchRequest;
-import com.aliyun.openservices.log.request.ListShardRequest;
-import com.aliyun.openservices.log.request.ListTopicsRequest;
-import com.aliyun.openservices.log.request.MergeShardsRequest;
-import com.aliyun.openservices.log.request.PutLogsRequest;
-import com.aliyun.openservices.log.request.RemoveConfigFromMachineGroupRequest;
-import com.aliyun.openservices.log.request.SplitShardRequest;
-import com.aliyun.openservices.log.request.UpdateACLRequest;
-import com.aliyun.openservices.log.request.UpdateAlertRequest;
-import com.aliyun.openservices.log.request.UpdateChartRequest;
-import com.aliyun.openservices.log.request.UpdateConfigRequest;
-import com.aliyun.openservices.log.request.UpdateDashboardRequest;
-import com.aliyun.openservices.log.request.UpdateIndexRequest;
-import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
-import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
-import com.aliyun.openservices.log.request.UpdateMachineGroupRequest;
-import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
 import com.aliyun.openservices.log.response.ApplyConfigToMachineGroupResponse;
 import com.aliyun.openservices.log.response.ApproveMachineGroupResponse;
 import com.aliyun.openservices.log.response.BatchGetLogResponse;
@@ -225,11 +162,6 @@ import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
 import com.aliyun.openservices.log.response.UpdateSavedSearchResponse;
 import com.aliyun.openservices.log.response.UpdateShipperResponse;
-import com.aliyun.openservices.log.request.CreateEtlJobRequest;
-import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
-import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
-import com.aliyun.openservices.log.request.GetEtlJobRequest;
-import com.aliyun.openservices.log.request.ListEtlJobRequest;
 import com.aliyun.openservices.log.response.CreateEtlJobResponse;
 import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
 import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
@@ -846,6 +778,36 @@ public class Client implements LogService {
 		return GetLogs(request);
 	}
 
+	public GetLogsResponse GetProjectLogs(String project,String query) throws  LogException
+	{
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertParameterNotNull(query, "query");
+		GetProjectLogsRequest request = new GetProjectLogsRequest(project, query);
+		return GetProjectLogs(request);
+	}
+
+	public GetLogsResponse GetProjectLogs(GetProjectLogsRequest request) throws  LogException
+	{
+		CodingUtils.assertParameterNotNull(request, "request");
+		Map<String, String> urlParameter = request.GetAllParams();
+
+		String project = request.GetProject();
+
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+
+		String resourceUri = "/logs";
+
+		ResponseMessage response = SendData(project, HttpMethod.GET,
+				resourceUri, urlParameter, headParameter);
+
+		Map<String, String> resHeaders = response.getHeaders();
+		String requestId = GetRequestId(resHeaders);
+
+		com.alibaba.fastjson.JSONArray object = ParseResponseMessageToArrayWithFastJson(response, requestId);
+		GetLogsResponse getLogsResponse = new GetLogsResponse(resHeaders);
+		ExtractLogsWithFastJson(getLogsResponse, object);
+		return getLogsResponse;
+	}
 	private com.alibaba.fastjson.JSONArray ParseResponseMessageToArrayWithFastJson(ResponseMessage response,
 			String requestId) throws LogException {
 		byte[] body = response.GetRawBody();
