@@ -18,66 +18,7 @@ import com.aliyun.openservices.log.common.MachineGroup;
 import com.aliyun.openservices.log.common.MachineList;
 import com.aliyun.openservices.log.common.ShipperConfig;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.request.ApplyConfigToMachineGroupRequest;
-import com.aliyun.openservices.log.request.ApproveMachineGroupRequest;
-import com.aliyun.openservices.log.request.BatchGetLogRequest;
-import com.aliyun.openservices.log.request.CreateAlertRequest;
-import com.aliyun.openservices.log.request.CreateChartRequest;
-import com.aliyun.openservices.log.request.CreateConfigRequest;
-import com.aliyun.openservices.log.request.CreateConsumerGroupRequest;
-import com.aliyun.openservices.log.request.CreateDashboardRequest;
-import com.aliyun.openservices.log.request.CreateIndexRequest;
-import com.aliyun.openservices.log.request.CreateLogStoreRequest;
-import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
-import com.aliyun.openservices.log.request.CreateSavedSearchRequest;
-import com.aliyun.openservices.log.request.DeleteAlertRequest;
-import com.aliyun.openservices.log.request.DeleteChartRequest;
-import com.aliyun.openservices.log.request.DeleteConfigRequest;
-import com.aliyun.openservices.log.request.DeleteDashboardRequest;
-import com.aliyun.openservices.log.request.DeleteIndexRequest;
-import com.aliyun.openservices.log.request.DeleteLogStoreRequest;
-import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
-import com.aliyun.openservices.log.request.DeleteSavedSearchRequest;
-import com.aliyun.openservices.log.request.DeleteShardRequest;
-import com.aliyun.openservices.log.request.GetAlertRequest;
-import com.aliyun.openservices.log.request.GetAppliedConfigsRequest;
-import com.aliyun.openservices.log.request.GetAppliedMachineGroupRequest;
-import com.aliyun.openservices.log.request.GetChartRequest;
-import com.aliyun.openservices.log.request.GetConfigRequest;
-import com.aliyun.openservices.log.request.GetCursorRequest;
-import com.aliyun.openservices.log.request.GetCursorTimeRequest;
-import com.aliyun.openservices.log.request.GetDashboardRequest;
-import com.aliyun.openservices.log.request.GetHistogramsRequest;
-import com.aliyun.openservices.log.request.GetIndexRequest;
-import com.aliyun.openservices.log.request.GetLogStoreRequest;
-import com.aliyun.openservices.log.request.GetLogsRequest;
-import com.aliyun.openservices.log.request.GetMachineGroupRequest;
-import com.aliyun.openservices.log.request.GetSavedSearchRequest;
-import com.aliyun.openservices.log.request.ListACLRequest;
-import com.aliyun.openservices.log.request.ListAlertFailRequest;
-import com.aliyun.openservices.log.request.ListAlertRequest;
-import com.aliyun.openservices.log.request.ListConfigRequest;
-import com.aliyun.openservices.log.request.ListDashboardRequest;
-import com.aliyun.openservices.log.request.ListLogStoresRequest;
-import com.aliyun.openservices.log.request.ListMachineGroupRequest;
-import com.aliyun.openservices.log.request.ListProjectRequest;
-import com.aliyun.openservices.log.request.ListSavedSearchRequest;
-import com.aliyun.openservices.log.request.ListShardRequest;
-import com.aliyun.openservices.log.request.ListTopicsRequest;
-import com.aliyun.openservices.log.request.MergeShardsRequest;
-import com.aliyun.openservices.log.request.PutLogsRequest;
-import com.aliyun.openservices.log.request.RemoveConfigFromMachineGroupRequest;
-import com.aliyun.openservices.log.request.SplitShardRequest;
-import com.aliyun.openservices.log.request.UpdateACLRequest;
-import com.aliyun.openservices.log.request.UpdateAlertRequest;
-import com.aliyun.openservices.log.request.UpdateChartRequest;
-import com.aliyun.openservices.log.request.UpdateConfigRequest;
-import com.aliyun.openservices.log.request.UpdateDashboardRequest;
-import com.aliyun.openservices.log.request.UpdateIndexRequest;
-import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
-import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
-import com.aliyun.openservices.log.request.UpdateMachineGroupRequest;
-import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
+import com.aliyun.openservices.log.request.*;
 import com.aliyun.openservices.log.response.ApplyConfigToMachineGroupResponse;
 import com.aliyun.openservices.log.response.ApproveMachineGroupResponse;
 import com.aliyun.openservices.log.response.BatchGetLogResponse;
@@ -153,11 +94,6 @@ import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
 import com.aliyun.openservices.log.response.UpdateSavedSearchResponse;
 import com.aliyun.openservices.log.response.UpdateShipperResponse;
-import com.aliyun.openservices.log.request.CreateEtlJobRequest;
-import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
-import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
-import com.aliyun.openservices.log.request.GetEtlJobRequest;
-import com.aliyun.openservices.log.request.ListEtlJobRequest;
 import com.aliyun.openservices.log.response.CreateEtlJobResponse;
 import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
 import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
@@ -301,6 +237,40 @@ public interface LogService {
 	 *             if any error happen when get the data from log service server
 	 */
 	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException;
+
+
+	/**
+	 * compute logs with a sql query from the whole project
+	 *
+	 * @param project
+	 *            the project name
+	 * @param query
+	 *            stardard sql query, compute from the whole project
+	 * @return a response contains a sub set of the logs matched the input
+	 *         parameters
+	 * @throws LogException
+	 *             if any error happen when get the data from log service server
+	 * @throws NullPointerException
+	 *             if any parameter is null
+	 * @throws IllegalArgumentException
+	 *             if project or logstore is empty
+	 */
+	public GetLogsResponse GetProjectLogs(String project,String query) throws  LogException;
+
+
+	/**
+	 * compute logs with a sql query from the whole project
+	 *
+	 * @param request
+	 *            the get project logs request
+	 * @return a response contains a sub set of the logs matched the input
+	 *         parameters
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws LogException
+	 *             if any error happen when get the data from log service server
+	 */
+	public GetLogsResponse GetProjectLogs(GetProjectLogsRequest request) throws  LogException;
 
 	/**
 	 * Get all the logstore for the user
