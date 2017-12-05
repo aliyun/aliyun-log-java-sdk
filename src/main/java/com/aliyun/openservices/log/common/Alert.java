@@ -150,7 +150,7 @@ public class Alert implements Serializable {
 			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE, getMessage());
 		} else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_MNS))
 			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_MNS_PARAM, getMnsParam());
-		else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_DINGTALK) || getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_DINGTALK)) {
+		else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_WEBHOOK) || getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_DINGTALK)) {
 			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE, getMessage());
 			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_WEBHOOK, getWebhook());
 		}
@@ -181,6 +181,8 @@ public class Alert implements Serializable {
 				setPhoneNumber(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_PHONENUMBER));
 				if (actionDetail.has(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE))
 					setMessage(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE));
+				else
+					setMessage("");
 			} else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_MNS))
 				setMnsParam(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_MNS_PARAM));
 			else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_WEBHOOK) || getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_DINGTALK)) {
