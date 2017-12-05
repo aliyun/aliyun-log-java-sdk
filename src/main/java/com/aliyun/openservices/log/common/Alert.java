@@ -145,9 +145,10 @@ public class Alert implements Serializable {
 		alertJson.put(Consts.CONST_ALERT_DETAIL, alertDetail);
 		alertJson.put(Consts.CONST_ALERT_ACTIONTYPE, getActionType());
 		JSONObject actionDetail = new JSONObject();
-		if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_SMS))
+		if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_SMS)) {
 			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_PHONENUMBER, getPhoneNumber());
-		else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_MNS))
+			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE, getMessage());
+		} else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_MNS))
 			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_MNS_PARAM, getMnsParam());
 		else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_DINGTALK) || getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_DINGTALK)) {
 			actionDetail.put(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE, getMessage());
@@ -176,9 +177,11 @@ public class Alert implements Serializable {
 			setComparator(alertDetail.getString(Consts.CONST_ALERT_COMPARATOR));
 			setActionType(dict.getString(Consts.CONST_ALERT_ACTIONTYPE));
 			JSONObject actionDetail = dict.getJSONObject(Consts.CONST_ALERT_ACTIONDETAIL);
-			if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_SMS))
+			if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_SMS)) {
 				setPhoneNumber(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_PHONENUMBER));
-			else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_MNS))
+				if (actionDetail.has(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE))
+					setMessage(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE));
+			} else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_MNS))
 				setMnsParam(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_MNS_PARAM));
 			else if (getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_WEBHOOK) || getActionType().equals(Consts.CONST_ALERT_ACTIONTYPE_DINGTALK)) {
 				setMessage(actionDetail.getString(Consts.CONST_ALERT_ACTIONDETAIL_MESSAGE));
