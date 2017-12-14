@@ -304,6 +304,7 @@ public class Consts {
 	// ETL
 	public static final String CONST_ETLJOB_URI = "/etljobs";
 	public static final String FUNCTION_PROVIDER_FC = "FunctionCompute";
+	public static final String FUNCTION_PROVIDER_LOG_DISPATCH = "CloudProdLogDispatch";
 	public static final String ETL_JOB_NAME = "etlJobName";
 	public static final String ETL_JOB_SOURCE_CONFIG = "sourceConfig";
 	public static final String ETL_JOB_TRIGGER_CONFIG = "triggerConfig";
@@ -323,4 +324,12 @@ public class Consts {
 	public static final String ETL_JOB_LOG_LOGSTORE_NAME = "logstoreName";
 	public static final String ETL_JOB_LOG_CONFIG = "logConfig";
 	public static final String ETL_ENABLE = "enable";
+
+	public static final String CONST_ETLMETA_URI = "/etlmetas";
+	public static final String CONST_ETLMETANAME_URI = "/etlmetanames";
+	public static final String CONST_ETLMETA_ALL_TAG_MATCH = "__all_etl_meta_tag_match__";
+	public static final String ETL_META_NAME = "etlMetaName";
+	public static final String ETL_META_KEY = "etlMetaKey";
+	public static final String ETL_META_TAG = "etlMetaTag";
+	public static final String ETL_META_VALUE = "etlMetaValue";
 }
