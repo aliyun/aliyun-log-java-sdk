@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.functiontest;
 
 import com.aliyun.openservices.log.Client;
+import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.EtlMeta;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.*;
@@ -65,13 +66,6 @@ public class EtlMetaFunctionTest {
                 System.err.println(e.GetErrorCode() + ", " + e.GetErrorMessage() + ", " + e.GetRequestId());
                 Assert.assertTrue(false);
             }
-            if (i % 10 == 0) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         for (int i = 0; i < etlMetaCount_2; ++i) {
             String metaKey = etlMetaKeyPrefxi_2 + "_" + String.valueOf(i);
@@ -92,7 +86,7 @@ public class EtlMetaFunctionTest {
             }
             if (i % 10 == 0) {
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -118,12 +112,11 @@ public class EtlMetaFunctionTest {
             Assert.assertTrue(false);
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertTrue(true);
             Assert.assertEquals(e.GetErrorCode(), "EtlMetaAlreadyExist");
         }
 
         metaKey = etlMetaKeyPrefxi_1 + "_" + String.valueOf(500);
-        meta = new EtlMeta(etlMetaName_1, metaKey, "__all_etl_meta_tag_match__");
+        meta = new EtlMeta(etlMetaName_1, metaKey, Consts.CONST_ETLMETA_ALL_TAG_MATCH);
         metaValueObj = new JSONObject();
         metaValueObj.put("aliuid", String.valueOf(0));
         metaValueObj.put("region", "cn-hangzhou");
@@ -136,11 +129,10 @@ public class EtlMetaFunctionTest {
             Assert.assertTrue(false);
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertTrue(true);
             Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
         }
 
-        meta = new EtlMeta(etlMetaName_2, "no", etlMetaKeyPrefxi_2);
+        meta = new EtlMeta(etlMetaName_2, "n", etlMetaKeyPrefxi_2);
         metaValueObj = new JSONObject();
         metaValueObj.put("aliuid", String.valueOf(0));
         metaValueObj.put("region", "cn-hangzhou");
@@ -153,7 +145,6 @@ public class EtlMetaFunctionTest {
             Assert.assertTrue(false);
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertTrue(true);
             Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
         }
 
@@ -170,7 +161,6 @@ public class EtlMetaFunctionTest {
             Assert.assertTrue(false);
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertTrue(true);
             Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
         }
     }
@@ -192,6 +182,7 @@ public class EtlMetaFunctionTest {
             Assert.assertEquals(0, etlNameSet.size());
         } catch (LogException e) {
             e.printStackTrace();
+            Assert.assertTrue(false);
         }
     }
 
@@ -228,7 +219,7 @@ public class EtlMetaFunctionTest {
             Assert.assertTrue(false);
         }
 
-        meta = new EtlMeta(etlMetaName_2, "noexistkey", etlMetaKeyPrefxi_2);
+        meta = new EtlMeta(etlMetaName_2, "notexitkey", etlMetaKeyPrefxi_2);
         metaValueObj = new JSONObject();
         metaValueObj.put("aliuid", String.valueOf(0));
         metaValueObj.put("region", "cn-hangzhou");
@@ -241,7 +232,6 @@ public class EtlMetaFunctionTest {
             Assert.assertTrue(false);
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertTrue(true);
             Assert.assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
         }
     }
@@ -279,17 +269,67 @@ public class EtlMetaFunctionTest {
             for (EtlMeta meta : resp.getEtlMetaList()) {
                 toDeleted.add(meta);
             }
+            Assert.assertEquals(toDeleted.size(), etlMetaCount_1);
+            for (int i = 0; i < 10; ++i) {
+                EtlMeta meta = toDeleted.get(i);
+                try {
+                    DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey(), etlMetaKeyPrefxi_2);
+                    Assert.assertTrue(false);
+                } catch (LogException e) {
+                    Assert.assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
+                }
+            }
+            for (int i = 10; i < 20; ++i) {
+                EtlMeta meta = toDeleted.get(i);
+                try {
+                    DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey(), "");
+                    Assert.assertTrue(false);
+                } catch (LogException e) {
+                    Assert.assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
+                }
+            }
+            int i = 0;
+            for (EtlMeta meta : toDeleted) {
+                if (i < (etlMetaCount_1 / 3)) {
+                    DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey());
+                    Assert.assertTrue(true);
+                } else if (i < (etlMetaCount_1 * 2 / 3)) {
+                    DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey(), etlMetaKeyPrefxi_1);
+                    Assert.assertTrue(true);
+                } else {
+                    DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey(), Consts.CONST_ETLMETA_ALL_TAG_MATCH);
+                    Assert.assertTrue(true);
+                }
+                ++i;
+            }
+
+            toDeleted.clear();
             resp = logClient.listEtlMeta(project, etlMetaName_2, 0, 200);
             for (EtlMeta meta : resp.getEtlMetaList()) {
                 toDeleted.add(meta);
             }
 
             for (EtlMeta meta : toDeleted) {
-                DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey());
-                System.out.println("delete etlMeta: " + meta.toJsonObject().toString());
+                try {
+                    DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey(), etlMetaKeyPrefxi_1);
+                    Assert.assertTrue(false);
+                } catch (LogException e) {
+                    Assert.assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
+                }
+            }
+            i = 0;
+            for (EtlMeta meta : toDeleted) {
+                if (i < etlMetaCount_2 / 2) {
+                    DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey());
+                    Assert.assertTrue(true);
+                } else {
+                    DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey(), "");
+                    Assert.assertTrue(true);
+                }
+                ++i;
             }
             try {
-                Thread.sleep(50);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -298,6 +338,7 @@ public class EtlMetaFunctionTest {
             Assert.assertEquals(lsNameResp.getTotal(), 0);
         } catch (LogException e) {
             e.printStackTrace();
+            Assert.assertTrue(false);
         }
     }
 

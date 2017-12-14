@@ -2811,6 +2811,26 @@ public interface LogService {
 	/**
 	 * @param project
 	 * 			project name
+	 * @param etlMetaName
+	 * 			etl meta name
+	 * @param etlMetaKey
+	 * 			etl meta key
+	 * @param etlMetaTag
+	 * 			etl meta key
+	 * @return
+	 * 			DeleteEtlMetaResponse
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	DeleteEtlMetaResponse deleteEtlMeta(String project, String etlMetaName, String etlMetaKey, String etlMetaTag) throws LogException;
+
+	/**
+	 * @param project
+	 * 			project name
 	 * @param etlMeta
 	 * 			etlMeta which contains the metaName/metaKey/metaTag/metaValue
 	 * @return

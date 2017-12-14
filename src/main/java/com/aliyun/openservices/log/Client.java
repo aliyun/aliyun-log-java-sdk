@@ -4526,6 +4526,24 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		urlParameter.put(Consts.ETL_META_NAME, etlMetaName);
 		urlParameter.put(Consts.ETL_META_KEY, etlMetaKey);
+		urlParameter.put(Consts.ETL_META_TAG, Consts.CONST_ETLMETA_ALL_TAG_MATCH);
+		ResponseMessage response = SendData(project, HttpMethod.DELETE,
+				resourceUri, urlParameter, headParameter);
+		return new DeleteEtlMetaResponse(response.getHeaders());
+	}
+
+	@Override
+	public DeleteEtlMetaResponse deleteEtlMeta(String project, String etlMetaName, String etlMetaKey, String etlMetaTag) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
+		CodingUtils.assertStringNotNullOrEmpty(etlMetaKey, "etlMetaKey");
+		CodingUtils.assertParameterNotNull(etlMetaTag, "etlMetaTag");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = Consts.CONST_ETLMETA_URI;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		urlParameter.put(Consts.ETL_META_NAME, etlMetaName);
+		urlParameter.put(Consts.ETL_META_KEY, etlMetaKey);
+		urlParameter.put(Consts.ETL_META_TAG, etlMetaTag);
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				resourceUri, urlParameter, headParameter);
 		return new DeleteEtlMetaResponse(response.getHeaders());

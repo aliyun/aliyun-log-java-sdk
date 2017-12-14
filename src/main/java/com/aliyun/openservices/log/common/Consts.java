@@ -301,6 +301,7 @@ public class Consts {
 	// ETL
 	public static final String CONST_ETLJOB_URI = "/etljobs";
 	public static final String FUNCTION_PROVIDER_FC = "FunctionCompute";
+	public static final String FUNCTION_PROVIDER_LOG_DISPATCH = "CloudProdLogDispatch";
 	public static final String ETL_JOB_NAME = "etlJobName";
 	public static final String ETL_JOB_SOURCE_CONFIG = "sourceConfig";
 	public static final String ETL_JOB_TRIGGER_CONFIG = "triggerConfig";
