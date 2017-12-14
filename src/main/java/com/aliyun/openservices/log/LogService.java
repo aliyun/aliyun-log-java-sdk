@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.aliyun.openservices.log.common.ACL;
 import com.aliyun.openservices.log.common.Config;
+import com.aliyun.openservices.log.common.EtlMeta;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
 import com.aliyun.openservices.log.common.ConsumerGroup;
 import com.aliyun.openservices.log.common.Index;
@@ -99,6 +100,12 @@ import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
 import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
 import com.aliyun.openservices.log.response.GetEtlJobResponse;
 import com.aliyun.openservices.log.response.ListEtlJobResponse;
+import com.aliyun.openservices.log.response.ListEtlMetaResponse;
+import com.aliyun.openservices.log.response.ListEtlMetaNameResponse;
+import com.aliyun.openservices.log.response.DeleteEtlMetaResponse;
+import com.aliyun.openservices.log.response.CreateEtlMetaResponse;
+import com.aliyun.openservices.log.response.UpdateEtlMetaResponse;
+
 
 public interface LogService {
 
@@ -2722,13 +2729,198 @@ public interface LogService {
 	DeleteChartResponse deleteChart(DeleteChartRequest request) throws LogException;
 	GetChartResponse getChart(GetChartRequest request) throws LogException;
 
+	/**
+	 * @param request
+     *			CreateEtlJobRequest
+	 * @return
+	 * 			CreateEtlJobResponse
+	 * @throws LogException
+	 */
 	CreateEtlJobResponse createEtlJob(CreateEtlJobRequest request) throws LogException;
 
+	/**
+	 * @param request
+	 * 			DeleteEtlJobRequest
+	 * @return
+	 * 			DeleteEtlJobResponse
+	 * @throws LogException
+	 */
 	DeleteEtlJobResponse deleteEtlJob(DeleteEtlJobRequest request) throws LogException;
 
+	/**
+	 * @param request
+	 * 			UpdateEtlJobRequest
+	 * @return
+	 * 			UpdateEtlJobResponse
+	 * @throws LogException
+	 */
 	UpdateEtlJobResponse updateEtlJob(UpdateEtlJobRequest request) throws LogException;
 
+	/**
+	 * @param request
+	 * 			GetEtlJobRequest
+	 * @return
+	 * 			GetEtlJobResponse
+	 * @throws LogException
+	 */
 	GetEtlJobResponse getEtlJob(GetEtlJobRequest request) throws LogException;
 
+	/**
+	 * @param request
+	 * 			ListEtlJobRequest
+	 * @return
+	 * 			ListEtlJobResponse
+	 * @throws LogException
+	 */
 	ListEtlJobResponse listEtlJob(ListEtlJobRequest request) throws LogException;
+
+	/**
+	 * @param project
+     * 			project name
+	 * @param etlMeta
+	 * 			etlMeta which contains the metaName/metaKey/metaTag/metaValue
+	 * @return
+     * 			CreateEtlMetaResponse
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	CreateEtlMetaResponse createEtlMeta(String project, EtlMeta etlMeta) throws LogException;
+
+	/**
+	 * @param project
+	 * 			project name
+	 * @param etlMetaName
+     * 			etl meta name
+	 * @param etlMetaKey
+	 * 			etl meta key
+	 * @return
+	 * 			DeleteEtlMetaResponse
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	DeleteEtlMetaResponse deleteEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException;
+
+	/**
+	 * @param project
+	 * 			project name
+	 * @param etlMetaName
+	 * 			etl meta name
+	 * @param etlMetaKey
+	 * 			etl meta key
+	 * @param etlMetaTag
+	 * 			etl meta key
+	 * @return
+	 * 			DeleteEtlMetaResponse
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	DeleteEtlMetaResponse deleteEtlMeta(String project, String etlMetaName, String etlMetaKey, String etlMetaTag) throws LogException;
+
+	/**
+	 * @param project
+	 * 			project name
+	 * @param etlMeta
+	 * 			etlMeta which contains the metaName/metaKey/metaTag/metaValue
+	 * @return
+	 * 			UpdateEtlMetaResponse
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	UpdateEtlMetaResponse updateEtlMeta(String project, EtlMeta etlMeta) throws LogException;
+
+	/**
+	 * @param project
+	 * 			project name
+	 * @param offset
+	 * 			should > 0
+	 * @param size
+	 * 			[1, 200]
+	 * @return
+	 * 			every request will return the subset [offset, offset + size) of complete etl meta name list
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	ListEtlMetaNameResponse listEtlMetaName(String project, int offset, int size) throws LogException;
+
+	/**
+	 * @param project
+     * 			project name
+	 * @param etlMetaName
+	 * 			etl meta name
+	 * @param offset
+	 * 			should > 0
+	 * @param size
+	 * 			[1, 200]
+	 * @return
+	 * 			every request will return the subset [offset, offset + size) of complete etl meta list
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	ListEtlMetaResponse listEtlMeta(String project, String etlMetaName, int offset, int size) throws LogException;
+
+	/**
+	 * @param project
+	 * 			project name
+	 * @param etlMetaName
+	 * 			etl meta name
+	 * @param etlMetaTag
+	 * 			etl meta tag, useful to filter lots of meta keys
+	 * @param offset
+	 * 			should > 0
+	 * @param size
+	 * 			[1, 200]
+	 * @return
+	 * 			every request will return the subset [offset, offset + size) of complete etl meta list
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	ListEtlMetaResponse listEtlMeta(String project, String etlMetaName, String etlMetaTag, int offset, int size) throws LogException;
+
+	/**
+	 * @param project
+	 * 			project name
+	 * @param etlMetaName
+	 * 			etl meta name
+	 * @param etlMetaKey
+	 * 			etl meta key
+	 * @return
+	 * 			every request will return the only one EtlMeta
+	 * 			use ListEtlMetaResponse.GetHeadEtlMeta to get the value, null if no etl meta matched
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException;
+
 }
