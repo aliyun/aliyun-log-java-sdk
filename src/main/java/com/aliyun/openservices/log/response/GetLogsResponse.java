@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
+import com.alibaba.fastjson.JSONArray;
 import com.aliyun.openservices.log.common.QueriedLog;
 import com.aliyun.openservices.log.common.Consts;
+
 
 /**
  * The response of the GetLog API from sls server
@@ -27,6 +30,8 @@ public class GetLogsResponse extends Response {
 	private boolean mHasSQL = false;
 	private long mProcessedRow = 0;
 	private long mElapsedMilliSecond = 0;
+	private ArrayList<String> mKeys;
+	private ArrayList<ArrayList<String>> mTerms;
 
 	private ArrayList<QueriedLog> mLogs = new ArrayList<QueriedLog>();
 
@@ -55,6 +60,26 @@ public class GetLogsResponse extends Response {
 		// checck x-log-elapsed-millisecond
 		if (headers.containsKey(Consts.CONST_X_LOG_ELAPSEDMILLISECOND))
 			this.setElapsedMilliSecond(Long.parseLong(headers.get(Consts.CONST_X_LOG_ELAPSEDMILLISECOND)));
+		if(headers.containsKey(Consts.CONST_X_LOG_QUERY_INFO))
+		{
+			com.alibaba.fastjson.JSONObject object = com.alibaba.fastjson.JSONObject.parseObject(headers.get(Consts.CONST_X_LOG_QUERY_INFO));
+			JSONArray keys = object.getJSONArray("keys");
+			mKeys = new ArrayList<String>();
+			for(int i = 0;i < keys.size();++i){
+				mKeys.add(keys.getString(i));
+			}
+			JSONArray terms = object.getJSONArray("terms");
+			mTerms = new ArrayList<ArrayList<String>>();
+			for(int i = 0;i <terms.size();++i){
+				ArrayList<String> list = new ArrayList();
+				JSONArray term = terms.getJSONArray(i);
+				if(term.size()==2){
+					list.add(term.getString(0));
+					list.add(term.getString(1));
+				}
+				mTerms.add(list);
+			}
+		}
 	}
 
 	public void setAggQuery(String mAggQuery) {
@@ -161,6 +186,13 @@ public class GetLogsResponse extends Response {
 	 */
 	public int GetCount() {
 		return mLogs.size();
+	}
+
+	public ArrayList<String> getKeys(){
+		return mKeys;
+	}
+	public ArrayList<ArrayList<String>> getTerms(){
+		return mTerms;
 	}
 
 }

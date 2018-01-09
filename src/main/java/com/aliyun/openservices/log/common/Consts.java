@@ -112,6 +112,7 @@ public class Consts {
 	public static final String CONST_X_LOG_HASSQL = "x-log-has-sql";
 	public static final String CONST_X_LOG_PROCESSEDROWS = "x-log-processed-rows";
 	public static final String CONST_X_LOG_ELAPSEDMILLISECOND = "x-log-elapsed-millisecond";
+	public static final String CONST_X_LOG_QUERY_INFO = "x-log-query-info";
 		
 	public static final String CONST_HOST = "Host";
 	public static final String CONST_DATE = "Date";
