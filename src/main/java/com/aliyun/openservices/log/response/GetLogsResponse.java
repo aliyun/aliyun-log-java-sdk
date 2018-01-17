@@ -65,9 +65,12 @@ public class GetLogsResponse extends Response {
 			com.alibaba.fastjson.JSONObject object = com.alibaba.fastjson.JSONObject.parseObject(headers.get(Consts.CONST_X_LOG_QUERY_INFO));
 			JSONArray keys = object.getJSONArray("keys");
 			mKeys = new ArrayList<String>();
-			for(int i = 0;i < keys.size();++i){
-				mKeys.add(keys.getString(i));
+			if (keys != null) {
+				for(int i = 0;i < keys.size();++i){
+					mKeys.add(keys.getString(i));
+				}
 			}
+
 			JSONArray terms = object.getJSONArray("terms");
 			mTerms = new ArrayList<ArrayList<String>>();
 			for(int i = 0;i <terms.size();++i){
@@ -188,9 +191,20 @@ public class GetLogsResponse extends Response {
 		return mLogs.size();
 	}
 
+	/**
+	 * Get log query key's sort
+	 *
+	 * @return log keys
+	 */
 	public ArrayList<String> getKeys(){
 		return mKeys;
 	}
+
+	/**
+	 * Get log query term
+	 *
+	 * @return log terms
+	 */
 	public ArrayList<ArrayList<String>> getTerms(){
 		return mTerms;
 	}
