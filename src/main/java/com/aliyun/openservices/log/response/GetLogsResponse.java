@@ -73,14 +73,16 @@ public class GetLogsResponse extends Response {
 
 			JSONArray terms = object.getJSONArray("terms");
 			mTerms = new ArrayList<ArrayList<String>>();
-			for(int i = 0;i <terms.size();++i){
-				ArrayList<String> list = new ArrayList();
-				JSONArray term = terms.getJSONArray(i);
-				if(term.size()==2){
-					list.add(term.getString(0));
-					list.add(term.getString(1));
+			if (terms != null) {
+				for(int i = 0;i <terms.size();++i){
+					ArrayList<String> list = new ArrayList();
+					JSONArray term = terms.getJSONArray(i);
+					if(term.size()==2){
+						list.add(term.getString(0));
+						list.add(term.getString(1));
+					}
+					mTerms.add(list);
 				}
-				mTerms.add(list);
 			}
 		}
 	}
