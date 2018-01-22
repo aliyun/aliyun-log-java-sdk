@@ -25,6 +25,7 @@ public class Chart implements Serializable {
 	private long yPosition = 0;
 	private long width = 0;
 	private long height = 0;
+	private String displayName = "";
 	public String getTitle() {
 		return title;
 	}
@@ -109,11 +110,17 @@ public class Chart implements Serializable {
 	public void setHeight(long height) {
 		this.height = height;
 	}
+	public String getDisplayName() {
+		return this.displayName;
+	}
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 	
 	public Chart() {}
 	public Chart(String title, String type, String logstore, String topic, String query, String start, String end,
 			ArrayList<String> xAisKeys, ArrayList<String> yAxisKeys, long xPosition, long yPosition, long width,
-			long height) {
+			long height, String displayName) {
 		super();
 		this.title = title;
 		this.type = type;
@@ -128,6 +135,7 @@ public class Chart implements Serializable {
 		this.yPosition = yPosition;
 		this.width = width;
 		this.height = height;
+		this.displayName = displayName;
 	}
 	
 	public JSONObject ToJsonObject() {
@@ -148,6 +156,7 @@ public class Chart implements Serializable {
 		displayJson.put("yPos", getyPosition());
 		displayJson.put("width", getWidth());
 		displayJson.put("height", getHeight());
+		displayJson.put("displayName", getDisplayName());
 		JSONArray xAxisArray = new JSONArray();
 		for (String keyName : getxAxisKeys()) {
 			xAxisArray.add(keyName);
@@ -185,6 +194,7 @@ public class Chart implements Serializable {
 			setyPosition(displayJson.getLong("yPos"));
 			setWidth(displayJson.getLong("width"));
 			setHeight(displayJson.getLong("height"));
+			setDisplayName(displayJson.getString("displayName"));
 			JSONArray xAxisArray = displayJson.getJSONArray("xAxis");
 			ArrayList<String> xAxisArrayList = new ArrayList<String>();
 			for (int index = 0; index != xAxisArray.size(); index++) {
