@@ -1,6 +1,10 @@
 package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.aliyun.openservices.log.exception.LogException;
 
@@ -22,7 +26,34 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 	protected Integer maxDepth = Consts.CONST_CONFIG_INPUTDETAUL_DEFAULTMAXDEPTH;
 	protected boolean tailExisted = false; // false means ignore history log content
 	protected boolean discardNonUtf8 = false; // false means discard non utf8 content
+	protected boolean isDockerFile = false;
+	protected Map<String, String> dockerIncludeLabel = new HashMap<String, String>();
+	protected Map<String, String> dockerExcludeLabel = new HashMap<String, String>();
 	
+	public Map<String, String> getDockerIncludeLabel() {
+		return dockerIncludeLabel;
+	}
+
+	public void setDockerIncludeLabel(Map<String, String> dockerIncludeLabel) {
+		this.dockerIncludeLabel = dockerIncludeLabel;
+	}
+
+	public Map<String, String> getDockerExcludeLabel() {
+		return dockerExcludeLabel;
+	}
+
+	public void setDockerExcludeLabel(Map<String, String> dockerExcludeLabel) {
+		this.dockerExcludeLabel = dockerExcludeLabel;
+	}
+	
+	public boolean isDockerFile() {
+		return isDockerFile;
+	}
+
+	public void setDockerFile(boolean isDockerFile) {
+		this.isDockerFile = isDockerFile;
+	}
+
 	public boolean GetTailExisted() {
 		return tailExisted;
 	}
@@ -132,6 +163,19 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_MAXDEPTH, maxDepth);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DISCARDNONUTF8, discardNonUtf8);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_TAILEXISTED, tailExisted);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE, isDockerFile);
+		
+		JSONObject dockerIncludeLabelJson = new JSONObject();
+		for (Map.Entry<String, String> entry : dockerIncludeLabel.entrySet()) {
+			dockerIncludeLabelJson.put(entry.getKey(), entry.getValue());
+		}
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL, dockerIncludeLabelJson);
+		
+		JSONObject dockerExcludeLabelJson = new JSONObject();
+		for (Map.Entry<String, String> entry : dockerExcludeLabel.entrySet()) {
+			dockerExcludeLabelJson.put(entry.getKey(), entry.getValue());
+		}
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL, dockerExcludeLabelJson);
 	}
 	
 	protected void LocalFileConfigFromJsonObject(JSONObject inputDetail) throws LogException {
@@ -176,6 +220,26 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 				this.tailExisted = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_TAILEXISTED);
 			else
 				this.tailExisted = false;
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE))
+				this.isDockerFile = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE);
+			else 
+				this.isDockerFile = false;
+			
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL)) {
+				JSONObject dockerIncludeLabelJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL);
+				Iterator<String> sIterator = dockerIncludeLabelJson.keys();  
+				while (sIterator.hasNext()) {
+					dockerIncludeLabel.put(sIterator.next(), dockerIncludeLabelJson.getString(sIterator.next()));
+				}
+			}
+			
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL)) {
+				JSONObject dockerExcludeLabelJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL);
+				Iterator<String> sIterator = dockerExcludeLabelJson.keys();  
+				while (sIterator.hasNext()) {
+					dockerExcludeLabel.put(sIterator.next(), dockerExcludeLabelJson.getString(sIterator.next()));
+				}
+			}
 
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateInputDetail", e.getMessage(), e, "");
