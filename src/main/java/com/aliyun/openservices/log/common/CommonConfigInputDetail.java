@@ -23,7 +23,16 @@ public abstract class CommonConfigInputDetail {
 	protected long delayAlarmBytes = 0;
 	protected boolean adjustTimezone = false;
 	protected String logTimezone = "";
+	protected int  priority = 0;
 	
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
 	public boolean isAdjustTimezone() {
 		return adjustTimezone;
 	}
@@ -172,6 +181,7 @@ public abstract class CommonConfigInputDetail {
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DELAYALARMBYTES, delayAlarmBytes);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ADJUSTTIMEZONE, adjustTimezone);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOGTIMEZONE, logTimezone);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_PRIORITY, priority);
 		JSONArray sensitiveKeysArray = new JSONArray();
 		for (SensitiveKey sensitiveKey : sensitiveKeys) {
 			sensitiveKeysArray.add(sensitiveKey.ToJsonObject());
@@ -198,6 +208,10 @@ public abstract class CommonConfigInputDetail {
 	
 	protected void CommonConfigFromJsonObject(JSONObject inputDetail) throws LogException {
 		try {
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_PRIORITY))
+				this.priority = inputDetail.getInt(Consts.CONST_CONFIG_INPUTDETAIL_PRIORITY);
+			else
+				this.priority = 0;
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_MERGETYPE))
 				this.mergeType = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_MERGETYPE);
 			else

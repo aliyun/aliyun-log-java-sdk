@@ -181,6 +181,9 @@ public class Consts {
 	public static final String CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY = "shardHashKey";
 	public static final String CONST_CONFIG_INPUTDETAIL_DISCARDNONUTF8 = "discardNonUtf8";
 	public static final String CONST_CONFIG_INPUTDETAIL_TAILEXISTED = "tailExisted";
+	public static final String CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE = "dockerFile";
+	public static final String CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL = "dockerIncludeLabel";
+	public static final String CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL = "dockerExcludeLabel";
     public static final String CONST_CONFIG_INPUTDETAIL_MAXSENDRATE = "maxSendRate";
     public static final String CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE = "sendRateExpire";
     public static final String CONST_CONFIG_INPUTDETAIL_MERGETYPE = "mergeType";
@@ -194,6 +197,7 @@ public class Consts {
     public static final String CONST_CONFIG_INPUTDETAIL_DELAYALARMBYTES = "delayAlarmBytes";
     public static final String CONST_CONFIG_INPUTDETAIL_ADJUSTTIMEZONE = "adjustTimezone";
     public static final String CONST_CONFIG_INPUTDETAIL_LOGTIMEZONE = "logTimezone";
+    public static final String CONST_CONFIG_INPUTDETAIL_PRIORITY = "priority";
 	
 	public static final String CONST_TYPE = "type";
 	public static final String CONST_TYPE_CURSOR = "cursor";
