@@ -3003,6 +3003,40 @@ public class Client implements LogService {
 
 	@Override
 	public CreateIndexResponse CreateIndex(String project, String logStore,
+										   String indexJsonString) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+		CodingUtils.assertParameterNotNull(indexJsonString, "indexJsonString");
+
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+
+		byte[] body;
+
+		try {
+			body = indexJsonString.getBytes("utf-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new LogException("EncodingException", e.getMessage(), "");
+		}
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+
+		StringBuilder resourceUriBuilder = new StringBuilder();
+		resourceUriBuilder.append("/logstores/").append(logStore)
+				.append("/index");
+
+		String resourceUri = resourceUriBuilder.toString();
+
+		Map<String, String> urlParameter = new HashMap<String, String>();
+
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, urlParameter, headParameter, body);
+
+		Map<String, String> resHeaders = response.getHeaders();
+
+		return new CreateIndexResponse(resHeaders);
+	}
+
+	@Override
+	public CreateIndexResponse CreateIndex(String project, String logStore,
 			Index index) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
@@ -3048,6 +3082,40 @@ public class Client implements LogService {
 
 		return new CreateIndexResponse(resHeaders);
 
+	}
+
+	@Override
+	public UpdateIndexResponse UpdateIndex(String project, String logStore,
+										   String indexJsonString) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+		CodingUtils.assertParameterNotNull(indexJsonString, "indexJsonString");
+
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+
+		byte[] body;
+		try {
+			body = indexJsonString.getBytes("utf-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new LogException("EncodingException", e.getMessage(), "");
+		}
+
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+
+		StringBuilder resourceUriBuilder = new StringBuilder();
+		resourceUriBuilder.append("/logstores/").append(logStore)
+				.append("/index");
+
+		String resourceUri = resourceUriBuilder.toString();
+
+		Map<String, String> urlParameter = new HashMap<String, String>();
+
+		ResponseMessage response = SendData(project, HttpMethod.PUT,
+				resourceUri, urlParameter, headParameter, body);
+
+		Map<String, String> resHeaders = response.getHeaders();
+
+		return new UpdateIndexResponse(resHeaders);
 	}
 
 	@Override
