@@ -1865,6 +1865,28 @@ public interface LogService {
 
 	/**
 	 * create logstore index
+	 *
+	 * @param project
+	 *            the project name
+	 * @param logStore
+	 *            the logstore name
+	 * @param indexJsonString
+	 *            logstore indexJsonString
+	 * @return create index response
+	 * @throws LogException
+	 *             if any error happen when creating index
+	 *
+	 * @throws NullPointerException
+	 *             if the request is null
+	 *
+	 * @throws IllegalArgumentException
+	 *             if any string paramter is empty
+	 */
+	public CreateIndexResponse CreateIndex(String project, String logStore,
+										   String indexJsonString) throws LogException;
+
+	/**
+	 * create logstore index
 	 * 
 	 * @param project
 	 *            the project name
@@ -1901,6 +1923,28 @@ public interface LogService {
 	 */
 	public CreateIndexResponse CreateIndex(CreateIndexRequest request)
 			throws LogException;
+
+	/**
+	 * Update logstore index config
+	 *
+	 * @param project
+	 *            project name
+	 * @param logStore
+	 *            logstore name
+	 * @param indexJsonString
+	 *            logstore indexJsonString
+	 * @return update logstore index response
+	 * @throws LogException
+	 *             if any error happen when updating logstore index config
+	 *
+	 * @throws NullPointerException
+	 *             if any parameter is null
+	 *
+	 * @throws IllegalArgumentException
+	 *             if any string parameter is empty
+	 */
+	public UpdateIndexResponse UpdateIndex(String project, String logStore,
+										   String indexJsonString) throws LogException;
 
 	/**
 	 * Update logstore index config
