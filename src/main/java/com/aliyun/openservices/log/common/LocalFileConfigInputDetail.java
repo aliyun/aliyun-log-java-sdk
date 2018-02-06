@@ -227,17 +227,19 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 			
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL)) {
 				JSONObject dockerIncludeLabelJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL);
-				Iterator<String> sIterator = dockerIncludeLabelJson.keys();  
+				Iterator sIterator = dockerIncludeLabelJson.keys();
 				while (sIterator.hasNext()) {
-					dockerIncludeLabel.put(sIterator.next(), dockerIncludeLabelJson.getString(sIterator.next()));
+					String key = sIterator.next().toString();
+					dockerIncludeLabel.put(key, dockerIncludeLabelJson.getString(key));
 				}
 			}
 			
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL)) {
 				JSONObject dockerExcludeLabelJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL);
-				Iterator<String> sIterator = dockerExcludeLabelJson.keys();  
+				Iterator sIterator = dockerExcludeLabelJson.keys();  
 				while (sIterator.hasNext()) {
-					dockerExcludeLabel.put(sIterator.next(), dockerExcludeLabelJson.getString(sIterator.next()));
+					String key = sIterator.next().toString();
+					dockerExcludeLabel.put(key, dockerExcludeLabelJson.getString(key));
 				}
 			}
 
