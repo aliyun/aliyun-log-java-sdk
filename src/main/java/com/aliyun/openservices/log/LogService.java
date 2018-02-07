@@ -2953,6 +2953,30 @@ public interface LogService {
 	 * 			project name
 	 * @param etlMetaName
 	 * 			etl meta name
+	 * @param dispatchProject
+	 * 		    project name in meta value, only used by sls.console.aliyun.com
+	 * @param dispatchLogstore
+	 * 		    logstore name in meta value, only used by sls.console.aliyun.com
+	 * @param offset
+	 * 			should > 0
+	 * @param size
+	 * 			[1, 200]
+	 * @return
+	 * 			every request will return the subset [offset, offset + size) of complete etl meta list
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	ListEtlMetaResponse listEtlMeta(String project, String etlMetaName, String dispatchProject, String dispatchLogstore, int offset, int size) throws LogException;
+
+	/**
+	 * @param project
+	 * 			project name
+	 * @param etlMetaName
+	 * 			etl meta name
 	 * @param etlMetaKey
 	 * 			etl meta key
 	 * @return

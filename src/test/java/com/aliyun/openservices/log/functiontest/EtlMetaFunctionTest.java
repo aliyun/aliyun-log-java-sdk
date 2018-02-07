@@ -95,6 +95,56 @@ public class EtlMetaFunctionTest {
     }
 
     @Test
+    public void testListEtlMetaReverse() {
+        int offset = 0;
+        ArrayList<EtlMeta> slbMetas = new ArrayList<EtlMeta>();
+        try {
+            while (true) {
+                ListEtlMetaResponse metas = logClient.listEtlMeta(project, etlMetaName_1,"ali-log-test", "slb-log", offset, 100);
+                offset += 100;
+                Assert.assertEquals(metas.getTotal(), etlMetaCount_1);
+                for (EtlMeta m : metas.getEtlMetaList()) {
+                    slbMetas.add(m);
+                }
+                if (metas.getCount() < 100) {
+                    break;
+                }
+            }
+        } catch (LogException e) {
+            e.printStackTrace();
+        }
+        Assert.assertEquals(slbMetas.size(), etlMetaCount_1);
+        int i = 0;
+        for (EtlMeta m : slbMetas) {
+            Assert.assertEquals(m.getMetaKey(), etlMetaKeyPrefxi_1 + "_" + String.valueOf(i++));
+        }
+
+        try {
+            ListEtlMetaResponse metas = logClient.listEtlMeta(project, etlMetaName_2,"ali-log-test", "apigateway-log", 0, 100);
+            Assert.assertEquals(metas.getTotal(), etlMetaCount_2);
+            Assert.assertEquals(metas.getCount(), etlMetaCount_2);
+        } catch (LogException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            ListEtlMetaResponse metas = logClient.listEtlMeta(project, etlMetaName_1,"ali-log-test", "apigateway-log", 0, 100);
+            Assert.assertEquals(metas.getTotal(), 0);
+            Assert.assertEquals(metas.getCount(), 0);
+        } catch (LogException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            ListEtlMetaResponse metas = logClient.listEtlMeta(project, etlMetaName_2 + "xxx","ali-log-test", "apigateway-log", 0, 100);
+            Assert.assertEquals(metas.getTotal(), 0);
+            Assert.assertEquals(metas.getCount(), 0);
+        } catch (LogException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void testCreateEtlMetaFail() {
 
         System.out.println("testCreateEtlMetaFail");

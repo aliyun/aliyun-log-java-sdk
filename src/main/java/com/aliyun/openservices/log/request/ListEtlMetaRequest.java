@@ -12,6 +12,8 @@ public class ListEtlMetaRequest extends Request {
     private String etlMetaName = "";
     private String etlMetaKey = "";
     private String etlMetaTag = Consts.CONST_ETLMETA_ALL_TAG_MATCH;
+    private String dispatchProject = "";
+    private String dispatchLogstore = "";
 
     public ListEtlMetaRequest(String project, int offset, int size) {
         super(project);
@@ -20,10 +22,8 @@ public class ListEtlMetaRequest extends Request {
         SetParam(Consts.ETL_META_NAME, this.etlMetaName);
         SetParam(Consts.ETL_META_KEY, this.etlMetaKey);
         SetParam(Consts.ETL_META_TAG, this.etlMetaTag);
-    }
-
-    public String getEtlMetaName() {
-        return etlMetaName;
+        SetParam("dispatch_project", this.dispatchProject);
+        SetParam("dispatch_logstore", this.dispatchLogstore);
     }
 
     public void setEtlMetaName(String etlMetaName) {
@@ -31,21 +31,23 @@ public class ListEtlMetaRequest extends Request {
         SetParam(Consts.ETL_META_NAME, this.etlMetaName);
     }
 
-    public String getEtlMetaKey() {
-        return etlMetaKey;
-    }
-
     public void setEtlMetaKey(String etlMetaKey) {
         this.etlMetaKey = etlMetaKey;
         SetParam(Consts.ETL_META_KEY, this.etlMetaKey);
     }
 
-    public String getEtlMetaTag() {
-        return etlMetaTag;
-    }
-
     public void setEtlMetaTag(String etlMetaTag) {
         this.etlMetaTag = etlMetaTag;
         SetParam(Consts.ETL_META_TAG, this.etlMetaTag);
+    }
+
+    public void setDispatchProject(String dispatchProject) {
+        this.dispatchProject = dispatchProject;
+        SetParam("dispatch_project", this.dispatchProject);
+    }
+
+    public void setDispatchLogstore(String dispatchLogstore) {
+        this.dispatchLogstore = dispatchLogstore;
+        SetParam("dispatch_logstore", this.dispatchLogstore);
     }
 }
