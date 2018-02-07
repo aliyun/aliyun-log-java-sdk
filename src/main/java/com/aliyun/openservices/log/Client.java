@@ -4699,6 +4699,23 @@ public class Client implements LogService {
 	}
 
 	@Override
+    public ListEtlMetaResponse listEtlMeta(String project, String etlMetaName, String dispatchProject, String dispatchLogstore, int offset, int size) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
+		CodingUtils.assertParameterNotNull(dispatchProject, "dispatchProject");
+		CodingUtils.assertParameterNotNull(dispatchLogstore, "dispatchLogstore");
+		CodingUtils.assertParameterNotNull(offset, "offset");
+		CodingUtils.assertParameterNotNull(size, "size");
+		ListEtlMetaRequest request = new ListEtlMetaRequest(project, offset, size);
+		request.setEtlMetaName(etlMetaName);
+		request.setEtlMetaKey("");
+		request.setEtlMetaTag(Consts.CONST_ETLMETA_ALL_TAG_MATCH);
+		request.setDispatchProject(dispatchProject);
+		request.setDispatchLogstore(dispatchLogstore);
+		return listEtlMeta(request);
+	}
+
+	@Override
 	public ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException {
         CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
