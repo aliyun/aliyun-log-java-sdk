@@ -95,8 +95,25 @@ while(true) {
 ## Maven配置
 ```
 <dependency>
-  <groupId>com.aliyun.openservices</groupId>
-  <artifactId>aliyun-log</artifactId>
-  <version>0.6.8</version>
+    <groupId>com.aliyun.openservices</groupId>
+    <artifactId>aliyun-log</artifactId>
+    <version>0.6.12</version>
+</dependency>
+```
+
+## protobuf 冲突
+可以使用 Aliyun LOG java SDK 提供的一个特殊版本
+```
+<dependency>
+    <groupId>com.aliyun.openservices</groupId>
+    <artifactId>aliyun-log</artifactId>
+    <version>0.6.12</version>
+    <classifier>jar-with-dependencies</classifier>
+    <exclusions>
+        <exclusion>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+        </exclusion>
+    </exclusions>
 </dependency>
 ```
