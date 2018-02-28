@@ -26,6 +26,14 @@ public class Chart implements Serializable {
 	private long width = 0;
 	private long height = 0;
 	private String displayName = "";
+	private String rawDisplayAttr = "";
+	
+	public String getRawDisplayAttr() {
+		return rawDisplayAttr;
+	}
+	public void setRawDisplayAttr(String rawDisplayAttr) {
+		this.rawDisplayAttr = rawDisplayAttr;
+	}
 	public String getTitle() {
 		return title;
 	}
@@ -138,20 +146,9 @@ public class Chart implements Serializable {
 		this.displayName = displayName;
 	}
 	
-	public JSONObject ToJsonObject() {
-		JSONObject chartJson = new JSONObject();
-		chartJson.put("title", getTitle());
-		chartJson.put("type", getType());
-		
-		JSONObject searchJson = new JSONObject();
-		searchJson.put("logstore", getLogstore());
-		searchJson.put("topic", getTopic());
-		searchJson.put("query", getQuery());
-		searchJson.put("start", getStart());
-		searchJson.put("end", getEnd());
-		chartJson.put("search", searchJson);
-		
+	public JSONObject RawDisplayToJsonObject() {
 		JSONObject displayJson = new JSONObject();
+		
 		displayJson.put("xPos", getxPosition());
 		displayJson.put("yPos", getyPosition());
 		displayJson.put("width", getWidth());
@@ -168,11 +165,32 @@ public class Chart implements Serializable {
 		}
 		// yAxis may be empty
 		// insert empty item into it
-		if (yAxisArray.size() == 0) {
+		if (yAxisArray.size() == 0 && xAxisArray.size() > 0) {
 			yAxisArray.add(xAxisArray);
 		}
 		displayJson.put("yAxis", yAxisArray);
-		chartJson.put("display", displayJson);
+
+		if (getRawDisplayAttr().length() > 0) {
+			displayJson = JSONObject.fromObject(getRawDisplayAttr());
+		}
+		
+		return displayJson;
+	}
+	
+	public JSONObject ToJsonObject() {
+		JSONObject chartJson = new JSONObject();
+		chartJson.put("title", getTitle());
+		chartJson.put("type", getType());
+		
+		JSONObject searchJson = new JSONObject();
+		searchJson.put("logstore", getLogstore());
+		searchJson.put("topic", getTopic());
+		searchJson.put("query", getQuery());
+		searchJson.put("start", getStart());
+		searchJson.put("end", getEnd());
+		chartJson.put("search", searchJson);
+		
+		chartJson.put("display", RawDisplayToJsonObject());
 
 		return chartJson;
 	}
@@ -189,26 +207,37 @@ public class Chart implements Serializable {
 			setQuery(searchJson.getString("query"));
 			setStart(searchJson.getString("start"));
 			setEnd(searchJson.getString("end"));
+			
+			// display attribute
 			JSONObject displayJson = dict.getJSONObject("display");
+			setRawDisplayAttr(displayJson.toString()); // set raw display attribute
 			setxPosition(displayJson.getLong("xPos"));
 			setyPosition(displayJson.getLong("yPos"));
 			setWidth(displayJson.getLong("width"));
 			setHeight(displayJson.getLong("height"));
 			setDisplayName(displayJson.getString("displayName"));
-			JSONArray xAxisArray = displayJson.getJSONArray("xAxis");
-			ArrayList<String> xAxisArrayList = new ArrayList<String>();
-			for (int index = 0; index != xAxisArray.size(); index++) {
-				xAxisArrayList.add(xAxisArray.getString(index));
+			
+			// xAxis is optional 
+			if (displayJson.containsKey("xAxis")) {
+				JSONArray xAxisArray = displayJson.getJSONArray("xAxis");
+				ArrayList<String> xAxisArrayList = new ArrayList<String>();
+				for (int index = 0; index != xAxisArray.size(); index++) {
+					xAxisArrayList.add(xAxisArray.getString(index));
+				}
+				setxAxisKeys(xAxisArrayList);
 			}
-			setxAxisKeys(xAxisArrayList);
-			ArrayList<String> yAxisArrayList = new ArrayList<String>();
-			JSONArray yAxisArray = displayJson.getJSONArray("yAxis");
-			for (int index = 0; index != yAxisArray.size(); index++) {
-				yAxisArrayList.add(yAxisArray.getString(index));
+			
+			// yAxis is optional
+			if (displayJson.containsKey("yAxis")) {
+				ArrayList<String> yAxisArrayList = new ArrayList<String>();
+				JSONArray yAxisArray = displayJson.getJSONArray("yAxis");
+				for (int index = 0; index != yAxisArray.size(); index++) {
+					yAxisArrayList.add(yAxisArray.getString(index));
+				}
+				setyAxisKeys(yAxisArrayList);
 			}
-			setyAxisKeys(yAxisArrayList);
 		} catch (JSONException e) {
-			throw new LogException("FailToGenerateSavedSearch",  e.getMessage(), e, "");
+			throw new LogException("FailedToGenerateChart",  e.getMessage(), e, "");
 		}
 	}
 	public void FromJsonString(String chartString) throws LogException {
