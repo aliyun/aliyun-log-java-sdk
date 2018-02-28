@@ -59,6 +59,7 @@ import com.aliyun.openservices.log.response.GetCursorTimeResponse;
 import com.aliyun.openservices.log.response.GetDashboardResponse;
 import com.aliyun.openservices.log.response.GetHistogramsResponse;
 import com.aliyun.openservices.log.response.GetIndexResponse;
+import com.aliyun.openservices.log.response.GetIndexStringResponse;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
 import com.aliyun.openservices.log.response.GetMachineGroupResponse;
@@ -2020,7 +2021,7 @@ public interface LogService {
 	 */
 	public DeleteIndexResponse DeleteIndex(DeleteIndexRequest request)
 			throws LogException;
-
+	
 	/**
 	 * Get logstore index config
 	 * 
@@ -2040,6 +2041,9 @@ public interface LogService {
 	public GetIndexResponse GetIndex(String project, String logStore)
 			throws LogException;
 
+    public GetIndexStringResponse GetIndexString(String project, String logStore)
+            throws LogException;
+	
 	/**
 	 * Get logstore index config
 	 * 
@@ -2056,6 +2060,9 @@ public interface LogService {
 	 */
 	public GetIndexResponse GetIndex(GetIndexRequest request)
 			throws LogException;
+	
+    public GetIndexStringResponse GetIndexString(GetIndexRequest request)
+            throws LogException;
 
 	/**
 	 * create logstore consumer group
@@ -2990,5 +2997,4 @@ public interface LogService {
 	 *             if any required string parameter is empty
 	 */
 	ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException;
-
 }

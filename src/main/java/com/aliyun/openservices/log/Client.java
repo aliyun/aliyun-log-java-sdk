@@ -126,6 +126,7 @@ import com.aliyun.openservices.log.response.GetCursorTimeResponse;
 import com.aliyun.openservices.log.response.GetDashboardResponse;
 import com.aliyun.openservices.log.response.GetHistogramsResponse;
 import com.aliyun.openservices.log.response.GetIndexResponse;
+import com.aliyun.openservices.log.response.GetIndexStringResponse;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
 import com.aliyun.openservices.log.response.GetLogtailProfileResponse;
@@ -3209,6 +3210,14 @@ public class Client implements LogService {
 		return GetIndex(new GetIndexRequest(project, logStore));
 	}
 	
+    @Override
+    public GetIndexStringResponse GetIndexString(String project, String logStore)
+                    throws LogException {
+            CodingUtils.assertStringNotNullOrEmpty(project, "project");
+            CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+            return GetIndexString(new GetIndexRequest(project, logStore));
+    }
+	
 	private Index ExtractIndexFromResponseWithFastJson(com.alibaba.fastjson.JSONObject dict, String requestId)
 			throws LogException {
 		Index index = new Index();
@@ -3255,6 +3264,35 @@ public class Client implements LogService {
 
 	}
 
+    @Override
+    public GetIndexStringResponse GetIndexString(GetIndexRequest request)
+                    throws LogException {
+            CodingUtils.assertParameterNotNull(request, "request");
+            String project = request.GetProject();
+            CodingUtils.assertStringNotNullOrEmpty(project, "project");
+            String logStore = request.GetLogStore();
+            CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+
+            Map<String, String> headParameter = GetCommonHeadPara(project);
+
+            StringBuilder resourceUriBuilder = new StringBuilder();
+            resourceUriBuilder.append("/logstores/").append(logStore)
+                            .append("/index");
+
+            String resourceUri = resourceUriBuilder.toString();
+
+            Map<String, String> urlParameter = request.GetAllParams();
+
+            ResponseMessage response = SendData(project, HttpMethod.GET,
+                            resourceUri, urlParameter, headParameter);
+
+            Map<String, String> resHeaders = response.getHeaders();
+            String requestId = GetRequestId(resHeaders);
+
+            return new GetIndexStringResponse(resHeaders, response.GetStringBody());
+
+    }
+	
 	@Override
 	public CreateShipperResponse CreateShipper(String project, String logStore,
 			String shipperName, ShipperConfig shipConfig) throws LogException {
