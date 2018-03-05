@@ -29,7 +29,16 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 	protected boolean isDockerFile = false;
 	protected Map<String, String> dockerIncludeLabel = new HashMap<String, String>();
 	protected Map<String, String> dockerExcludeLabel = new HashMap<String, String>();
+	protected long delaySkipBytes = 0;
 	
+	public long getDelaySkipBytes() {
+		return delaySkipBytes;
+	}
+
+	public void setDelaySkipBytes(long delaySkipBytes) {
+		this.delaySkipBytes = delaySkipBytes;
+	}
+
 	public Map<String, String> getDockerIncludeLabel() {
 		return dockerIncludeLabel;
 	}
@@ -164,6 +173,7 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DISCARDNONUTF8, discardNonUtf8);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_TAILEXISTED, tailExisted);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE, isDockerFile);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES, delaySkipBytes);
 		
 		JSONObject dockerIncludeLabelJson = new JSONObject();
 		for (Map.Entry<String, String> entry : dockerIncludeLabel.entrySet()) {
@@ -224,6 +234,11 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 				this.isDockerFile = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE);
 			else 
 				this.isDockerFile = false;
+			
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES))
+				this.delaySkipBytes = inputDetail.getLong(Consts.CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES);
+			else 
+				this.delaySkipBytes = 0;
 			
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL)) {
 				JSONObject dockerIncludeLabelJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL);
