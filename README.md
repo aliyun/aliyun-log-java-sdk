@@ -120,6 +120,7 @@ while(true) {
 
 ## FAQ
 **Q**: `aliyun-log-java-sdk` 和 `aliyun-sls-xxx-inner` 版本冲突的问题及解决方案。
+
 **A**: 这两个 jar 包不能共存于一个项目中，如果您发现您依赖的某个 jar 包引入了 `aliyun-sls-xxx-inner`，请手动排除。
 ```
 <dependency>
