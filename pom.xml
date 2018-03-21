@@ -212,6 +212,10 @@
                             <pattern>org.apache.http</pattern>
                             <shadedPattern>com.aliyun.log.thirdparty.org.apache.http</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>org.apache.commons.beanutils</pattern>
+                            <shadedPattern>com.aliyun.log.thirdparty.org.apache.commons.beanutils</shadedPattern>
+                        </relocation>
                     </relocations>
                     <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
