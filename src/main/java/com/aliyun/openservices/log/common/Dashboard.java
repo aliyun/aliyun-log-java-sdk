@@ -14,8 +14,11 @@ public class Dashboard implements Serializable {
 	private static final long serialVersionUID = 3152635375534266524L;
 	private String dashboardName = "";
     private String description = "";
-    private ArrayList<Chart> chartList = new ArrayList<Chart>();
-	
+    private String displayName = "";
+	private ArrayList<Chart> chartList = new ArrayList<Chart>();
+
+	public String getDisplayName() { return displayName; }
+	public void setDisplayName(String displayName) { this.displayName = displayName; }
 	public String getDashboardName() {
 		return dashboardName;
 	}
@@ -45,11 +48,20 @@ public class Dashboard implements Serializable {
 		this.description = description;
 		this.chartList = chartList;
 	}
+
+	public Dashboard(String dashboardName, String displayName, String description, ArrayList<Chart> chartList) {
+		super();
+		this.dashboardName = dashboardName;
+		this.description = description;
+		this.chartList = chartList;
+		this.displayName = displayName;
+	}
 	
 	public JSONObject ToJsonObject() {
 		JSONObject dashboardJson = new JSONObject();
 		dashboardJson.put("dashboardName", getDashboardName());
 		dashboardJson.put("description", getDescription());
+		dashboardJson.put("displayName", getDisplayName());
 		JSONArray chartArray = new JSONArray();
 		for (Chart chart : getChartList()) {
 			chartArray.add(chart.ToJsonObject());
@@ -64,6 +76,7 @@ public class Dashboard implements Serializable {
 		try {
 			setDashboardName(dict.getString("dashboardName"));
 			setDescription(dict.getString("description"));
+			setDisplayName(dict.getString("displayName"));
 			ArrayList<Chart> chartList = new ArrayList<Chart>();
 			try {
 				JSONArray chartJsonArray = dict.getJSONArray("charts");

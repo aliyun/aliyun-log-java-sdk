@@ -29,6 +29,8 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 	protected boolean isDockerFile = false;
 	protected Map<String, String> dockerIncludeLabel = new HashMap<String, String>();
 	protected Map<String, String> dockerExcludeLabel = new HashMap<String, String>();
+	protected Map<String, String> dockerIncludeEnv = new HashMap<String, String>();
+	protected Map<String, String> dockerExcludeEnv = new HashMap<String, String>();
 	protected long delaySkipBytes = 0;
 	
 	public long getDelaySkipBytes() {
@@ -37,6 +39,18 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 
 	public void setDelaySkipBytes(long delaySkipBytes) {
 		this.delaySkipBytes = delaySkipBytes;
+	}
+
+	public Map<String, String> getDockerIncludeEnv() { return dockerIncludeEnv; }
+
+	public void setDockerIncludeEnv(Map<String, String> dockerIncludeEnv) {
+		this.dockerIncludeEnv = dockerIncludeEnv;
+	}
+
+	public Map<String, String> getDockerExcludeEnv() { return dockerExcludeEnv; }
+
+	public void setDockerExcludeEnv(Map<String, String> dockerExcludeEnv) {
+		this.dockerExcludeEnv = dockerExcludeEnv;
 	}
 
 	public Map<String, String> getDockerIncludeLabel() {
@@ -174,7 +188,19 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_TAILEXISTED, tailExisted);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE, isDockerFile);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES, delaySkipBytes);
-		
+
+		JSONObject dockerIncludeEnvJson = new JSONObject();
+		for (Map.Entry<String, String> entry : dockerIncludeEnv.entrySet()) {
+			dockerIncludeEnvJson.put(entry.getKey(), entry.getValue());
+		}
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV, dockerIncludeEnvJson);
+
+		JSONObject dockerExcludeEnvJson = new JSONObject();
+		for (Map.Entry<String, String> entry : dockerExcludeEnv.entrySet()) {
+			dockerExcludeEnvJson.put(entry.getKey(), entry.getValue());
+		}
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_ENV, dockerExcludeEnvJson);
+
 		JSONObject dockerIncludeLabelJson = new JSONObject();
 		for (Map.Entry<String, String> entry : dockerIncludeLabel.entrySet()) {
 			dockerIncludeLabelJson.put(entry.getKey(), entry.getValue());
@@ -239,7 +265,25 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 				this.delaySkipBytes = inputDetail.getLong(Consts.CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES);
 			else 
 				this.delaySkipBytes = 0;
-			
+
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV)) {
+				JSONObject dockerIncludeEnvJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV);
+				Iterator sIterator = dockerIncludeEnvJson.keys();
+				while (sIterator.hasNext()) {
+					String key = sIterator.next().toString();
+					dockerIncludeEnv.put(key, dockerIncludeEnvJson.getString(key));
+				}
+			}
+
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_ENV)) {
+				JSONObject dockerExcludeEnvJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_ENV);
+				Iterator sIterator = dockerExcludeEnvJson.keys();
+				while (sIterator.hasNext()) {
+					String key = sIterator.next().toString();
+					dockerExcludeEnv.put(key, dockerExcludeEnvJson.getString(key));
+				}
+			}
+
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL)) {
 				JSONObject dockerIncludeLabelJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL);
 				Iterator sIterator = dockerIncludeLabelJson.keys();

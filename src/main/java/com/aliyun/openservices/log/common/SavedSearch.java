@@ -14,7 +14,10 @@ public class SavedSearch implements Serializable {
 	protected String searchQuery = "";
 	protected String logstore = "";
 	protected String topic = "";
-	
+	protected String displayName = "";
+
+	public String getDisplayName() { return displayName; }
+	public void setDisplayName(String displayName) { this.displayName = displayName; }
 	public String getSavedSearchName() {
 		return savedSearchName;
 	}
@@ -46,6 +49,7 @@ public class SavedSearch implements Serializable {
 		this.searchQuery = savedSearch.searchQuery;
 		this.logstore = savedSearch.logstore;
 		this.topic = savedSearch.topic;
+		this.displayName = savedSearch.displayName;
 	}
 	public JSONObject ToJsonObject() {
 		JSONObject savedSearchJson = new JSONObject();
@@ -53,6 +57,7 @@ public class SavedSearch implements Serializable {
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_QUERY, getSearchQuery());
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_LOGSTORE, getLogstore());
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_TOPIC, getTopic());
+		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_DISPLAYNAME, getDisplayName());
 		return savedSearchJson;
 	}
 	public String ToJsonString() {
@@ -64,6 +69,7 @@ public class SavedSearch implements Serializable {
 			setSearchQuery(dict.getString(Consts.CONST_SAVEDSEARCH_QUERY));
 			setLogstore(dict.getString(Consts.CONST_SAVEDSEARCH_LOGSTORE));
 			setTopic(dict.getString(Consts.CONST_SAVEDSEARCH_TOPIC));
+			setDisplayName(dict.getString(Consts.CONST_SAVEDSEARCH_DISPLAYNAME));
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateSavedSearch",  e.getMessage(), e, "");
 		}
