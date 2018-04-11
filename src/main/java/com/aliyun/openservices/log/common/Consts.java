@@ -184,6 +184,8 @@ public class Consts {
 	public static final String CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE = "dockerFile";
 	public static final String CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL = "dockerIncludeLabel";
 	public static final String CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL = "dockerExcludeLabel";
+	public static final String CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV = "dockerIncludeEnv";
+	public static final String CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_ENV = "dockerExcludeEnv";
     public static final String CONST_CONFIG_INPUTDETAIL_MAXSENDRATE = "maxSendRate";
     public static final String CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE = "sendRateExpire";
     public static final String CONST_CONFIG_INPUTDETAIL_MERGETYPE = "mergeType";
@@ -259,6 +261,7 @@ public class Consts {
 	// savedsearch api
 	public static final String CONST_SAVEDSEARCH_URI = "/savedsearches";
 	public static final String CONST_SAVEDSEARCH_NAME = "savedsearchName";
+	public static final String CONST_SAVEDSEARCH_DISPLAYNAME = "displayName";
 	public static final String CONST_SAVEDSEARCH_QUERY = "searchQuery";
 	public static final String CONST_SAVEDSEARCH_LOGSTORE = "logstore";
 	public static final String CONST_SAVEDSEARCH_TOPIC = "topic";
@@ -266,6 +269,7 @@ public class Consts {
 	// alert api
 	public static final String CONST_ALERT_URI = "/alerts";
 	public static final String CONST_ALERT_NAME = "alertName";
+	public static final String CONST_ALERT_DISPLAYNAME = "displayName";
 	public static final String CONST_ALERT_SAVEDSEARCHNAME = "savedsearchName";
 	public static final String CONST_ALERT_ROLEARN = "roleArn";
 	public static final String CONST_ALERT_FROM = "from";

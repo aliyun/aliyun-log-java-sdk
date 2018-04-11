@@ -25,7 +25,10 @@ public class Alert implements Serializable {
 	protected String mnsParam;
 	protected String message;
 	protected String webhook;
+	protected String displayName;
 
+	public String getDisplayName() { return displayName; }
+	public void setDisplayName(String displayName) { this.displayName = displayName; }
 	public String getWebhook() { return webhook;}
 	public void setWebhook(String webhook) { this.webhook = webhook; }
 	public String getMessage() {
@@ -128,9 +131,11 @@ public class Alert implements Serializable {
 		this.comparator = alert.comparator;
 		this.actionType = alert.actionType;
 		this.phoneNumber = alert.phoneNumber;
+		this.displayName = alert.displayName;
 	}
 	public JSONObject ToJsonObject() {
 		JSONObject alertJson = new JSONObject();
+		alertJson.put(Consts.CONST_ALERT_DISPLAYNAME, getDisplayName());
 		alertJson.put(Consts.CONST_ALERT_NAME, getAlertName());
 		alertJson.put(Consts.CONST_ALERT_ROLEARN, getRoleArn());
 		alertJson.put(Consts.CONST_ALERT_SAVEDSEARCHNAME, getSavedSearchName());
@@ -165,6 +170,7 @@ public class Alert implements Serializable {
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {		
 			setAlertName(dict.getString(Consts.CONST_ALERT_NAME));
+			setDisplayName(dict.getString(Consts.CONST_ALERT_DISPLAYNAME));
 			setRoleArn(dict.getString(Consts.CONST_ALERT_ROLEARN));
 			setSavedSearchName(dict.getString(Consts.CONST_ALERT_SAVEDSEARCHNAME));
 			setFrom(dict.getString(Consts.CONST_ALERT_FROM));
