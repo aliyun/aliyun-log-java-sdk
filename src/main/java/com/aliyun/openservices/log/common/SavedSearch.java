@@ -69,7 +69,8 @@ public class SavedSearch implements Serializable {
 			setSearchQuery(dict.getString(Consts.CONST_SAVEDSEARCH_QUERY));
 			setLogstore(dict.getString(Consts.CONST_SAVEDSEARCH_LOGSTORE));
 			setTopic(dict.getString(Consts.CONST_SAVEDSEARCH_TOPIC));
-			setDisplayName(dict.getString(Consts.CONST_SAVEDSEARCH_DISPLAYNAME));
+			if (dict.has(Consts.CONST_SAVEDSEARCH_DISPLAYNAME))
+				setDisplayName(dict.getString(Consts.CONST_SAVEDSEARCH_DISPLAYNAME));
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateSavedSearch",  e.getMessage(), e, "");
 		}

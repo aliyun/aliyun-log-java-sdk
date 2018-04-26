@@ -76,7 +76,8 @@ public class Dashboard implements Serializable {
 		try {
 			setDashboardName(dict.getString("dashboardName"));
 			setDescription(dict.getString("description"));
-			setDisplayName(dict.getString("displayName"));
+			if (dict.has("displayName"))
+				setDisplayName(dict.getString("displayName"));
 			ArrayList<Chart> chartList = new ArrayList<Chart>();
 			try {
 				JSONArray chartJsonArray = dict.getJSONArray("charts");

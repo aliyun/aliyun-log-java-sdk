@@ -170,7 +170,8 @@ public class Alert implements Serializable {
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {		
 			setAlertName(dict.getString(Consts.CONST_ALERT_NAME));
-			setDisplayName(dict.getString(Consts.CONST_ALERT_DISPLAYNAME));
+			if (dict.has(Consts.CONST_ALERT_DISPLAYNAME))
+				setDisplayName(dict.getString(Consts.CONST_ALERT_DISPLAYNAME));
 			setRoleArn(dict.getString(Consts.CONST_ALERT_ROLEARN));
 			setSavedSearchName(dict.getString(Consts.CONST_ALERT_SAVEDSEARCHNAME));
 			setFrom(dict.getString(Consts.CONST_ALERT_FROM));
