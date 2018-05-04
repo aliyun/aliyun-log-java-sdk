@@ -3614,17 +3614,15 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(consumerGroup, "consumerGroup");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		byte[] body;
-		String bodyStr;
-		if (inOrder != null && timeoutInSec != null) {
-			bodyStr = "{\"order\":" + inOrder + ",\"timeout\":" + timeoutInSec
-					+ "}";
-		} else if (inOrder != null) {
-			bodyStr = "{\"order\":" + inOrder + "}";
-		} else {
-			bodyStr = "{\"timeout\":" + timeoutInSec + "}";
-		}
+		final JSONObject asJson = new JSONObject();
+        if (inOrder != null) {
+            asJson.put("order", inOrder);
+        }
+        if (timeoutInSec != null) {
+            asJson.put("timeout", timeoutInSec);
+        }
 		try {
-			body = bodyStr.getBytes("utf-8");
+			body = asJson.toString().getBytes("utf-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new LogException("EncodingException", e.getMessage(), "");
 		}
