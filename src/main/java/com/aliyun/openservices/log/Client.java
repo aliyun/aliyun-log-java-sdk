@@ -189,7 +189,6 @@ public class Client implements LogService {
 	private String accessId;
 	private String accessKey;
 	private String sourceIp;
-	// private boolean compressFlag;
 	private ServiceClient serviceClient;
 	private String securityToken;
 	private String realIpForConsole;
@@ -273,31 +272,6 @@ public class Client implements LogService {
 	}
 
 	/**
-	 * Construct the sls client with accessId, accessKey , server address and
-	 * client ip address, all other parameters will be set to default value
-	 * 
-	 * 
-	 * @throws NullPointerException
-	 *             if the input parameter is null
-	 * @throws IllegalArgumentException
-	 *             if the input parameter is empty
-	 * 
-	 * @param endpoint
-	 *            the log service server address
-	 * @param accessId
-	 *            aliyun accessId
-	 * @param accessKey
-	 *            aliyun accessKey
-	 * @param SourceIp
-	 *            client ip address
-	 */
-	public Client(String endpoint, String accessId, String accessKey,
-			String SourceIp) {
-		this(endpoint, accessId, accessKey, SourceIp,
-				Consts.DEFAULT_SLS_COMPRESS_FLAG);
-	}
-
-	/**
 	 * Construct sls client with full parameters
 	 *
 	 * @throws NullPointerException
@@ -313,9 +287,6 @@ public class Client implements LogService {
 	 *            aliyun accessKey
 	 * @param sourceIp
 	 *            client ip address
-	 * @param compressFlag
-	 *            a flag to determine if the send data will compressed , default
-	 *            is true ( data compressed)
 	 * @param connectMaxCount
 	 * 			  a flag to determine max count connection
 	 * @param connectTimeout
@@ -324,7 +295,7 @@ public class Client implements LogService {
 	 * 			  a flag to determine max request timeout
 	 */
 	public Client(String endpoint, String accessId, String accessKey,
-				  String sourceIp, boolean compressFlag,
+				  String sourceIp,
 				  int connectMaxCount,
 				  int connectTimeout,
 				  int sendTimeout) {
@@ -356,7 +327,6 @@ public class Client implements LogService {
 		if (sourceIp == null || sourceIp.isEmpty()) {
 			this.sourceIp = GetLocalMachineIp();
 		}
-		// this.compressFlag = compressFlag;
 		ClientConfiguration clientConfig = new ClientConfiguration();
 
 		clientConfig.setMaxConnections(connectMaxCount);
@@ -382,13 +352,10 @@ public class Client implements LogService {
 	 *            aliyun accessKey
 	 * @param sourceIp
 	 *            client ip address
-	 * @param compressFlag
-	 *            a flag to determine if the send data will compressed , default
-	 *            is true ( data compressed)
 	 */
 	public Client(String endpoint, String accessId, String accessKey,
-			String sourceIp, boolean compressFlag) {
-		this(endpoint, accessId, accessKey, sourceIp, compressFlag,
+				  String sourceIp) {
+		this(endpoint, accessId, accessKey, sourceIp,
 				Consts.HTTP_CONNECT_MAX_COUNT,
 				Consts.HTTP_CONNECT_TIME_OUT,
 				Consts.HTTP_SEND_TIME_OUT);
@@ -2570,7 +2537,7 @@ public class Client implements LogService {
 		}
 
 		headParameter.put(Consts.CONST_X_SLS_APIVERSION,
-				Consts.DEFAULT_API_VESION);
+				Consts.DEFAULT_API_VERSION);
 		headParameter.put(Consts.CONST_X_SLS_SIGNATUREMETHOD, Consts.HMAC_SHA1);
 		if (securityToken != null && !securityToken.isEmpty()) {
 			headParameter.put(Consts.CONST_X_ACS_SECURITY_TOKEN, securityToken);

@@ -58,15 +58,12 @@ public class Consts {
 			return strValue;
 		}
 	}
-	
 
-	public static final boolean DEFAULT_SLS_COMPRESS_FLAG = true;
-	
 	public static final boolean DEFAULT_SLS_REVERSE = false;
 	public static final int DEFAULT_SLS_LINES = 20;
 	public static final int DEFAULT_SLS_OFFSET = 0;
 	public static final String DEFAULT_SLS_QUERY = "";
-	public static final String DEFAULT_API_VESION = "0.6.0";
+	public static final String DEFAULT_API_VERSION = "0.6.0";
 	
 	public static final String DEFAULT_REQUEST_PARAM_GROUPNAME = "";
 	public static final String DEFAULT_REQUEST_PARAM_CONFIGNAME = "";
