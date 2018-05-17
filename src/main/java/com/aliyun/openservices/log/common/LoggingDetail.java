@@ -1,5 +1,6 @@
 package com.aliyun.openservices.log.common;
 
+import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
@@ -35,5 +36,13 @@ public class LoggingDetail implements Serializable {
         object.put("type", type);
         object.put("logstore", logstore);
         return object;
+    }
+
+    public static LoggingDetail unmarshal(JSONObject object) {
+        final String type = object.getString("type");
+        Args.notNullOrEmpty(type, "logstore");
+        final String logstore = object.getString("logstore");
+        Args.notNullOrEmpty(logstore, "logstore");
+        return new LoggingDetail(type, logstore);
     }
 }

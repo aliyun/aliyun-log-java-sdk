@@ -4,8 +4,11 @@ import java.util.Map;
 
 public class UpdateLoggingResponse extends Response {
 
-    private static final long serialVersionUID = -9186335454585929528L;
-
+    /**
+     * Construct a new {@link UpdateLoggingResponse} instance.
+     *
+     * @param headers The response headers.
+     */
     public UpdateLoggingResponse(Map<String, String> headers) {
         super(headers);
     }

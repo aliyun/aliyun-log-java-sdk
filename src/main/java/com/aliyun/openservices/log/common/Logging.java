@@ -52,4 +52,16 @@ public class Logging implements Serializable {
         object.put("loggingDetails", details);
         return object;
     }
+
+    public static Logging unmarshal(JSONObject object) {
+        final String project = object.getString("loggingProject");
+        Args.notNullOrEmpty(project, "loggingProject");
+        final JSONArray details = object.getJSONArray("loggingDetails");
+        Args.notNullOrEmpty(details, "loggingDetails");
+        List<LoggingDetail> loggingDetails = new ArrayList<LoggingDetail>(details.size());
+        for (int i = 0; i < details.size(); i++) {
+            loggingDetails.add(LoggingDetail.unmarshal(details.getJSONObject(i)));
+        }
+        return new Logging(project, loggingDetails);
+    }
 }

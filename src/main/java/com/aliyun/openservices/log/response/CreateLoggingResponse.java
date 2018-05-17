@@ -4,8 +4,12 @@ import java.util.Map;
 
 public class CreateLoggingResponse extends Response {
 
-    private static final long serialVersionUID = -9186335454585929528L;
 
+    /**
+     * Construct a new {@link CreateLoggingResponse} instance.
+     *
+     * @param headers The response headers.
+     */
     public CreateLoggingResponse(Map<String, String> headers) {
         super(headers);
     }
