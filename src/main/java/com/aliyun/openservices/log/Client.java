@@ -4774,10 +4774,9 @@ public class Client implements LogService {
 		Args.notNull(request, "request");
 		final String project = request.GetProject();
 		Map<String, String> headers = GetCommonHeadPara(project);
-		final String resourceUri = "/logging";
 		final Logging logging = request.getLogging();
 		ResponseMessage response = SendData(project, HttpMethod.POST,
-				resourceUri, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
+                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
 		return new CreateLoggingResponse(response.getHeaders());
 	}
 
@@ -4786,10 +4785,9 @@ public class Client implements LogService {
         Args.notNull(request, "request");
         final String project = request.GetProject();
         Map<String, String> headers = GetCommonHeadPara(project);
-        final String resourceUri = "/logging";
         final Logging logging = request.getLogging();
         ResponseMessage response = SendData(project, HttpMethod.PUT,
-                resourceUri, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
+                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
         return new UpdateLoggingResponse(response.getHeaders());
 	}
 
@@ -4798,21 +4796,19 @@ public class Client implements LogService {
         Args.notNull(request, "request");
         final String project = request.GetProject();
         Map<String, String> headers = GetCommonHeadPara(project);
-        final String resourceUri = "/logging";
         ResponseMessage response = SendData(project, HttpMethod.GET,
-                resourceUri, Collections.<String, String>emptyMap(), headers);
+                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers);
         JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
         return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
     }
 
     @Override
-    public DeleteLoggingResponse deleteLogging(DeleteLoggingRequest request) throws LogException {
+    public DeleteLoggingResponse deleteLogging(final DeleteLoggingRequest request) throws LogException {
         Args.notNull(request, "request");
         final String project = request.GetProject();
         Map<String, String> headers = GetCommonHeadPara(project);
-        final String resourceUri = "/logging";
         ResponseMessage response = SendData(project, HttpMethod.DELETE,
-                resourceUri, Collections.<String, String>emptyMap(), headers);
+                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers);
         return new DeleteLoggingResponse(response.getHeaders());
     }
 }
