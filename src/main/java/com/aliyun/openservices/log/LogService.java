@@ -15,6 +15,8 @@ import com.aliyun.openservices.log.common.ConsumerGroup;
 import com.aliyun.openservices.log.common.Index;
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.Logging;
+import com.aliyun.openservices.log.common.Logs;
 import com.aliyun.openservices.log.common.MachineGroup;
 import com.aliyun.openservices.log.common.MachineList;
 import com.aliyun.openservices.log.common.ShipperConfig;
@@ -33,6 +35,7 @@ import com.aliyun.openservices.log.response.CreateConsumerGroupResponse;
 import com.aliyun.openservices.log.response.CreateDashboardResponse;
 import com.aliyun.openservices.log.response.CreateIndexResponse;
 import com.aliyun.openservices.log.response.CreateLogStoreResponse;
+import com.aliyun.openservices.log.response.CreateLoggingResponse;
 import com.aliyun.openservices.log.response.CreateMachineGroupResponse;
 import com.aliyun.openservices.log.response.CreateProjectResponse;
 import com.aliyun.openservices.log.response.CreateSavedSearchResponse;
@@ -92,6 +95,7 @@ import com.aliyun.openservices.log.response.UpdateConsumerGroupResponse;
 import com.aliyun.openservices.log.response.UpdateDashboardResponse;
 import com.aliyun.openservices.log.response.UpdateIndexResponse;
 import com.aliyun.openservices.log.response.UpdateLogStoreResponse;
+import com.aliyun.openservices.log.response.UpdateLoggingResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
 import com.aliyun.openservices.log.response.UpdateSavedSearchResponse;
@@ -114,7 +118,7 @@ public interface LogService {
 	 * Get The log status(histogram info) from log service server which match
 	 * input parameters. All the logs with logstore and topic in [from, to)
 	 * which contain the keys in query are the matched data.
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logstore
@@ -125,7 +129,7 @@ public interface LogService {
 	 *            the end time of the result data to get
 	 * @param topic
 	 *            the result data topic
-	 * 
+	 *
 	 * @param query
 	 *            If the query is not empty, it will return the logs contain the
 	 *            keys in query, if "all_hit" is contained in the query, only
@@ -146,7 +150,7 @@ public interface LogService {
 	 * Get The log status(histogram info) from log service server which match
 	 * input parameters. All the logs with logstore and topic in [from, to)
 	 * which contain the keys in query are the matched data.
-	 * 
+	 *
 	 * @param request
 	 *            the get histogram request
 	 * @return the histogram response of the matched logs
@@ -161,7 +165,7 @@ public interface LogService {
 	/**
 	 * Get The sub set of logs data from log service server which match input
 	 * parameters. By default, it will return at most 20 lines
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -193,7 +197,7 @@ public interface LogService {
 	 * Get The sub set of logs data from log service server which match input
 	 * parameters. All the data with logstore and topic in [from, to) which
 	 * contain the keys in query are the matched data.
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -234,7 +238,7 @@ public interface LogService {
 	/**
 	 * Get The sub set of logs data from log service server which match input
 	 * parameters.
-	 * 
+	 *
 	 * @param request
 	 *            the get logs request
 	 * @return a response contains a sub set of the logs matched the input
@@ -282,20 +286,20 @@ public interface LogService {
 
 	/**
 	 * Get all the logstore for the user
-	 * 
+	 *
 	 * @param project
 	 *            the project name
-	 * 
+	 *
 	 * @param offset
 	 *            the begin offset
-	 * 
+	 *
 	 * @param size
 	 *            the query logstore name count
-	 * 
+	 *
 	 * @param logstoreName
 	 *            part name of the logstore, only return the logstores which
 	 *            contains the input name
-	 * 
+	 *
 	 * @return the user's logstore response
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
@@ -309,7 +313,7 @@ public interface LogService {
 
 	/**
 	 * Get all the logstore of a project
-	 * 
+	 *
 	 * @param request
 	 *            the list log store request
 	 * @return the user's logstore response
@@ -323,7 +327,7 @@ public interface LogService {
 
 	/**
 	 * Get the topics in the logtstore
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -346,7 +350,7 @@ public interface LogService {
 
 	/**
 	 * Get the topics in the logtstore
-	 * 
+	 *
 	 * @param request
 	 *            the list topics request
 	 * @return the log store's topics response
@@ -360,7 +364,7 @@ public interface LogService {
 
 	/**
 	 * Send Data to log service server
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -369,13 +373,13 @@ public interface LogService {
 	 *            source data topic
 	 * @param logItems
 	 *            the log data to send
-	 * 
+	 *
 	 * @param source
 	 *            the source of the data, if the source is empty, it will be
 	 *            reset to the host ip
-	 * 
+	 *
 	 * @return The put logs response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when send data to the server
 	 * @throws NullPointerException
@@ -390,7 +394,7 @@ public interface LogService {
 
 	/**
 	 * Send Data to log service server
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -419,12 +423,12 @@ public interface LogService {
 			String shardHash) throws LogException;
 	/**
 	 * Send Data to log service server
-	 * 
+	 *
 	 * @param request
 	 *            the put log request
-	 * 
+	 *
 	 * @return The put logs response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when send data to the server
 	 * @throws NullPointerException
@@ -437,7 +441,7 @@ public interface LogService {
 
 	/**
 	 * Get cursor from log service server
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -446,9 +450,9 @@ public interface LogService {
 	 *            the shard where the cursor should be get
 	 * @param fromTime
 	 *            the from time of log data in unix time stamp sec
-	 * 
+	 *
 	 * @return The get cursor response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get cursor from the server
 	 * @throws NullPointerException
@@ -461,7 +465,7 @@ public interface LogService {
 
 	/**
 	 * Get cursor from log service server
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -470,9 +474,9 @@ public interface LogService {
 	 *            the shard where the cursor should be get
 	 * @param fromTime
 	 *            the from time of log data in java Date
-	 * 
+	 *
 	 * @return The get cursor response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get cursor from the server
 	 * @throws NullPointerException
@@ -485,7 +489,7 @@ public interface LogService {
 
 	/**
 	 * Get cursor from log service server
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -494,9 +498,9 @@ public interface LogService {
 	 *            the shard where the cursor should be get
 	 * @param mode
 	 *            the mode to get cursor, include BEGIN and END
-	 * 
+	 *
 	 * @return The get cursor response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get cursor from the server
 	 * @throws NullPointerException
@@ -509,12 +513,12 @@ public interface LogService {
 
 	/**
 	 * Get cursor from log service server
-	 * 
+	 *
 	 * @param request
 	 *            the get cursor request
-	 * 
+	 *
 	 * @return The get cursor response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get cursor from the server
 	 * @throws NullPointerException
@@ -527,7 +531,7 @@ public interface LogService {
 
 	/**
 	 * Get the receive time of the package according to the cursor
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -546,10 +550,10 @@ public interface LogService {
 	 */
 	public GetCursorTimeResponse GetCursorTime(String project, String logStore,
 			int shardId, String cursor) throws LogException;
-	
+
 	/**
 	 * Get the receive time of the package according to the cursor
-	 * 
+	 *
 	 * @param request
 	 *            the request
 	 * @return cursor time response * @throws LogException if any error happen
@@ -563,14 +567,14 @@ public interface LogService {
 			throws LogException;
 	/**
 	 * Get the shards in the logtstore
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
 	 *            where the shard belongs to
-	 * 
+	 *
 	 * @return the log store's shards response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 * @throws NullPointerException
@@ -583,12 +587,12 @@ public interface LogService {
 
 	/**
 	 * Get the shards in the logtstore
-	 * 
+	 *
 	 * @param request
 	 *            the get cursor request
-	 * 
+	 *
 	 * @return the log store's shards response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 * @throws NullPointerException
@@ -601,7 +605,7 @@ public interface LogService {
 
 	/**
 	 * split a readwrite shard in the logtstore
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -610,9 +614,9 @@ public interface LogService {
 	 *            the shard id to split
 	 * @param midHash
 	 *            the middle md5 hash string to split the shard
-	 * 
+	 *
 	 * @return the splited shard and two new generated readwrite shard
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 * @throws NullPointerException
@@ -625,12 +629,12 @@ public interface LogService {
 
 	/**
 	 * split a readwrite shard in the logtstore
-	 * 
+	 *
 	 * @param request
 	 *            split shard request
-	 * 
+	 *
 	 * @return the splited shard and two new generated readwrite shard
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 * @throws NullPointerException
@@ -643,16 +647,16 @@ public interface LogService {
 
 	/**
 	 * merge two readwrite shards in the logtstore
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
 	 *            where the shard belongs to
 	 * @param shardId
 	 *            the shard id to merge with right adjacent shard
-	 * 
+	 *
 	 * @return the merges shards and new generated readwrite shard
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 * @throws NullPointerException
@@ -665,12 +669,12 @@ public interface LogService {
 
 	/**
 	 * merge two readwrite shards in the logtstore
-	 * 
+	 *
 	 * @param request
 	 *            the project name
-	 * 
+	 *
 	 * @return the merges shards and new generated readwrite shard
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 * @throws NullPointerException
@@ -683,16 +687,16 @@ public interface LogService {
 
 	/**
 	 * delete a readonly shard in the logtstore
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
 	 *            where the shard belongs to
 	 * @param shardId
 	 *            the shard id to delete
-	 * 
+	 *
 	 * @return the merges shards and new generated readwrite shard
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 * @throws NullPointerException
@@ -705,12 +709,12 @@ public interface LogService {
 
 	/**
 	 * delete a readonly shard in the logtstore
-	 * 
+	 *
 	 * @param request
 	 *            delete shard request
-	 * 
+	 *
 	 * @return the merges shards and new generated readwrite shard
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 * @throws NullPointerException
@@ -723,7 +727,7 @@ public interface LogService {
 
 	/**
 	 * Batch get log
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -734,9 +738,9 @@ public interface LogService {
 	 *            the logrgroup num
 	 * @param cursor
 	 *            the cursor to batch get log
-	 * 
+	 *
 	 * @return batch get log response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 * @throws NullPointerException
@@ -746,10 +750,10 @@ public interface LogService {
 	 */
 	public BatchGetLogResponse BatchGetLog(String project, String logStore,
 			int shardId, int count, String cursor) throws LogException;
-	
+
 	/**
 	 * Batch get log
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -760,12 +764,12 @@ public interface LogService {
 	 *            the logrgroup num
 	 * @param cursor
 	 *            the cursor to batch get log
-	 *            
+	 *
 	 * @param end_cursor
 	 * 			  the end cursor to batch get log
-	 * 
+	 *
 	 * @return batch get log response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 * @throws NullPointerException
@@ -778,12 +782,12 @@ public interface LogService {
 
 	/**
 	 * Batch get log
-	 * 
+	 *
 	 * @param request
 	 *            the batch get log request
-	 * 
+	 *
 	 * @return batch get log response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 * @throws NullPointerException
@@ -796,14 +800,14 @@ public interface LogService {
 
 	/**
 	 * Create logtail config
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param config
 	 *            the full config resource
-	 * 
+	 *
 	 * @return the create config response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when creating logtail config
 	 * @throws NullPointerException
@@ -816,12 +820,12 @@ public interface LogService {
 
 	/**
 	 * Create logtail config
-	 * 
+	 *
 	 * @param request
 	 *            the create config request
-	 * 
+	 *
 	 * @return the create config response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when creating logtail config
 	 * @throws NullPointerException
@@ -834,14 +838,14 @@ public interface LogService {
 
 	/**
 	 * Update logtail config
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param config
 	 *            the full config resource
-	 * 
+	 *
 	 * @return the update config response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when updating logtail config
 	 * @throws NullPointerException
@@ -854,12 +858,12 @@ public interface LogService {
 
 	/**
 	 * Update logtail config
-	 * 
+	 *
 	 * @param request
 	 *            the update config request
-	 * 
+	 *
 	 * @return the update config response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when updating logtail config
 	 * @throws NullPointerException
@@ -872,33 +876,33 @@ public interface LogService {
 
 	/**
 	 * Get logtail config
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param configName
 	 *            the config name
-	 * 
+	 *
 	 * @return the get config response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when getting logtail config
 	 * @throws NullPointerException
 	 *             if any parameter is null
 	 * @throws IllegalArgumentException
 	 *             if configName is empty
-	 * 
+	 *
 	 */
 	public GetConfigResponse GetConfig(String project, String configName)
 			throws LogException;
 
 	/**
 	 * Get logtail config
-	 * 
+	 *
 	 * @param request
 	 *            the get config request
-	 * 
+	 *
 	 * @return the get config response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when getting logtail config
 	 * @throws NullPointerException
@@ -911,15 +915,15 @@ public interface LogService {
 
 	/**
 	 * Delete logtail config
-	 * 
+	 *
 	 * @param project
 	 *            the project name
-	 * 
+	 *
 	 * @param configName
 	 *            the config name
-	 * 
+	 *
 	 * @return the delete config response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when deleting logtail config
 	 * @throws NullPointerException
@@ -932,12 +936,12 @@ public interface LogService {
 
 	/**
 	 * Delete logtail config
-	 * 
+	 *
 	 * @param request
 	 *            the delete config request
-	 * 
+	 *
 	 * @return the delete config response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when deleting logtail config
 	 * @throws NullPointerException
@@ -950,11 +954,11 @@ public interface LogService {
 
 	/**
 	 * List logtail configs
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @return the list configs response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing logtail configs
 	 * @throws NullPointerException
@@ -966,16 +970,16 @@ public interface LogService {
 
 	/**
 	 * List logtail configs
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param offSet
 	 *            the list offset
 	 * @param size
 	 *            the query size
-	 * 
+	 *
 	 * @return the list configs response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing logtail configs
 	 * @throws NullPointerException
@@ -988,7 +992,7 @@ public interface LogService {
 
 	/**
 	 * List logtail configs
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param configName
@@ -997,9 +1001,9 @@ public interface LogService {
 	 *            the list offset
 	 * @param size
 	 *            the query size
-	 * 
+	 *
 	 * @return the list configs response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing logtail configs
 	 * @throws NullPointerException
@@ -1012,12 +1016,12 @@ public interface LogService {
 
 	/**
 	 * List logtail configs
-	 * 
+	 *
 	 * @param request
 	 *            the list configs request
-	 * 
+	 *
 	 * @return the list configs response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing logtail configs
 	 * @throws NullPointerException
@@ -1030,15 +1034,15 @@ public interface LogService {
 
 	/**
 	 * get applied config on a certain machine group
-	 * 
+	 *
 	 * @param project
 	 *            the project name
-	 * 
+	 *
 	 * @param groupName
 	 *            the machine group name
-	 * 
+	 *
 	 * @return get applied config response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get applied config configs
 	 * @throws NullPointerException
@@ -1051,12 +1055,12 @@ public interface LogService {
 
 	/**
 	 * get applied config on a certain machine group
-	 * 
+	 *
 	 * @param request
 	 *            get applied config request
-	 * 
+	 *
 	 * @return get applied config response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get applied config configs
 	 * @throws NullPointerException
@@ -1069,15 +1073,15 @@ public interface LogService {
 
 	/**
 	 * get applied machine group for a certain logtail config
-	 * 
+	 *
 	 * @param project
 	 *            the project name
-	 * 
+	 *
 	 * @param configName
 	 *            the config name
-	 * 
+	 *
 	 * @return get applied machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get applied config configs
 	 * @throws NullPointerException
@@ -1090,12 +1094,12 @@ public interface LogService {
 
 	/**
 	 * get applied machine group for a certain logtail config
-	 * 
+	 *
 	 * @param request
 	 *            get applied machine group request
-	 * 
+	 *
 	 * @return get applied machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when get applied config configs
 	 * @throws NullPointerException
@@ -1108,14 +1112,14 @@ public interface LogService {
 
 	/**
 	 * Create machine group
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param group
 	 *            the full machine group resource
-	 * 
+	 *
 	 * @return the create machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when creating machine group
 	 * @throws NullPointerException
@@ -1128,12 +1132,12 @@ public interface LogService {
 
 	/**
 	 * Create machine group
-	 * 
+	 *
 	 * @param request
 	 *            the create machine group request
-	 * 
+	 *
 	 * @return the create machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when creating machine group
 	 * @throws NullPointerException
@@ -1146,14 +1150,14 @@ public interface LogService {
 
 	/**
 	 * Update machine group
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param group
 	 *            the full machine group resource
-	 * 
+	 *
 	 * @return the update machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when updating machine group
 	 * @throws NullPointerException
@@ -1166,12 +1170,12 @@ public interface LogService {
 
 	/**
 	 * Update machine group
-	 * 
+	 *
 	 * @param request
 	 *            the update machine group request
-	 * 
+	 *
 	 * @return the update machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when updating machine group
 	 * @throws NullPointerException
@@ -1184,96 +1188,96 @@ public interface LogService {
 
 	/**
 	 * add machine into machine group
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param groupName
 	 *            the machine group name
 	 * @param machineList
 	 * 			  machine id list
-	 * 
+	 *
 	 * @return add machine into machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 * 			   if any error happen when adding machine into machine group
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
-	 *             if any required string parameter is empty		
+	 *             if any required string parameter is empty
 	 */
 	public UpdateMachineGroupMachineResponse AddMachineIntoMahineGroup(String project,
 			String groupName,
 			MachineList machineList) throws LogException;
-	
+
 	/**
 	 * add machine into machine group
-	 * 
+	 *
 	 * @param request
 	 *            update machine group resource
-	 * 
+	 *
 	 * @return add machine into machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 * 			   if any error happen when adding machine into machine group
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
-	 *             if any required string parameter is empty		
+	 *             if any required string parameter is empty
 	 */
 	public UpdateMachineGroupMachineResponse AddMachineIntoMachineGroup(
 			UpdateMachineGroupMachineRequest request) throws LogException;
-	
+
 	/**
 	 * delete machine into machine group
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param groupName
 	 *            the machine group name
 	 * @param machineList
 	 * 			  machine id list
-	 * 
+	 *
 	 * @return delete machine from machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 * 			   if any error happen when adding machine into machine group
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
-	 *             if any required string parameter is empty		
+	 *             if any required string parameter is empty
 	 */
 	public UpdateMachineGroupMachineResponse DeleteMachineFromMachineGroup(String project,
 			String groupName,
 			MachineList machineList) throws LogException;
-	
+
 	/**
 	 * delete machine into machine group
-	 * 
+	 *
 	 * @param request
 	 *            update machine group machine resource
-	 * 
+	 *
 	 * @return delete machine from machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 * 			   if any error happen when adding machine into machine group
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
-	 *             if any required string parameter is empty		
+	 *             if any required string parameter is empty
 	 */
 	public UpdateMachineGroupMachineResponse DeleteMachineFromMachineGroup(
 			UpdateMachineGroupMachineRequest request) throws LogException;
-	
+
 	/**
 	 * Get machine group
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param groupName
 	 *            the machine group name
-	 * 
+	 *
 	 * @return the get machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when getting machine group
 	 * @throws NullPointerException
@@ -1286,12 +1290,12 @@ public interface LogService {
 
 	/**
 	 * Get machine group
-	 * 
+	 *
 	 * @param request
 	 *            the get machine group request
-	 * 
+	 *
 	 * @return the get machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when getting machine group
 	 * @throws NullPointerException
@@ -1304,14 +1308,14 @@ public interface LogService {
 
 	/**
 	 * approve machine group
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param groupName
 	 *            the machine group name
-	 * 
+	 *
 	 * @return approve machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when deleting machine group
 	 * @throws NullPointerException
@@ -1321,35 +1325,35 @@ public interface LogService {
 	 */
 	public ApproveMachineGroupResponse ApproveMachineGroup(String project,
 			String groupName) throws LogException;
-	
+
 	/**
 	 * approve machine group
-	 * 
+	 *
 	 * @param request
 	 *            the approve machine group request
-	 * 
+	 *
 	 * @return the approve machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when deleting machine group
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
-	 */	
+	 */
 	public ApproveMachineGroupResponse ApproveMachineGroup(
 			ApproveMachineGroupRequest request) throws LogException;
-	
+
 	/**
 	 * Delete machine group
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param groupName
 	 *            the machine group name
-	 * 
+	 *
 	 * @return the delete machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when deleting machine group
 	 * @throws NullPointerException
@@ -1362,12 +1366,12 @@ public interface LogService {
 
 	/**
 	 * Delete machine group
-	 * 
+	 *
 	 * @param request
 	 *            the delete machine group request
-	 * 
+	 *
 	 * @return the delete machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when deleting machine group
 	 * @throws NullPointerException
@@ -1380,11 +1384,11 @@ public interface LogService {
 
 	/**
 	 * List machine groups
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @return the list machine groups response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing machine groups
 	 * @throws NullPointerException
@@ -1397,12 +1401,12 @@ public interface LogService {
 
 	/**
 	 * List the real machines in the machine group
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param machineGroup
 	 *            the machine group name
-	 * 
+	 *
 	 * @param offset
 	 *            the offset in the machine group
 	 * @param size
@@ -1420,16 +1424,16 @@ public interface LogService {
 
 	/**
 	 * List machine groups
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param offSet
 	 *            the list offset
 	 * @param size
 	 *            the query size
-	 * 
+	 *
 	 * @return the list machine groups response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing machine groups
 	 * @throws NullPointerException
@@ -1442,7 +1446,7 @@ public interface LogService {
 
 	/**
 	 * List machine groups
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param groupName
@@ -1451,9 +1455,9 @@ public interface LogService {
 	 *            the list offset
 	 * @param size
 	 *            the query size
-	 * 
+	 *
 	 * @return the list machine groups response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing machine groups
 	 * @throws NullPointerException
@@ -1466,12 +1470,12 @@ public interface LogService {
 
 	/**
 	 * List machine groups
-	 * 
+	 *
 	 * @param request
 	 *            the list machine groups request
-	 * 
+	 *
 	 * @return the list machine groups response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing machine group
 	 * @throws NullPointerException
@@ -1484,16 +1488,16 @@ public interface LogService {
 
 	/**
 	 * Apply config to machine group
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param groupName
 	 *            the machine group name
 	 * @param configName
 	 *            the logtail config name
-	 * 
+	 *
 	 * @return the apply config to machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when applying config to machine group
 	 * @throws NullPointerException
@@ -1507,12 +1511,12 @@ public interface LogService {
 
 	/**
 	 * Apply config to machine group
-	 * 
+	 *
 	 * @param request
 	 *            apply config to machine group request
-	 * 
+	 *
 	 * @return the apply config to machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when applying config to machine group
 	 * @throws NullPointerException
@@ -1525,16 +1529,16 @@ public interface LogService {
 
 	/**
 	 * Remove config from machine group
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param groupName
 	 *            the machine group name
 	 * @param configName
 	 *            the logtail config name
-	 * 
+	 *
 	 * @return the remove config from machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when removing config from machine group
 	 * @throws NullPointerException
@@ -1548,12 +1552,12 @@ public interface LogService {
 
 	/**
 	 * Remove config from machine group
-	 * 
+	 *
 	 * @param request
 	 *            remove config from machine group request
-	 * 
+	 *
 	 * @return the remove config from machine group response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when removing config from machine group
 	 * @throws NullPointerException
@@ -1566,14 +1570,14 @@ public interface LogService {
 
 	/**
 	 * Update project ACL
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param acl
 	 *            the full acl resource with aclId
-	 * 
+	 *
 	 * @return the update acl response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when updating acl
 	 * @throws NullPointerException
@@ -1586,7 +1590,7 @@ public interface LogService {
 
 	/**
 	 * update log sotre acl
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -1606,12 +1610,12 @@ public interface LogService {
 
 	/**
 	 * Update ACL
-	 * 
+	 *
 	 * @param request
 	 *            the update acl request
-	 * 
+	 *
 	 * @return the update acl response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when updating acl
 	 * @throws NullPointerException
@@ -1624,11 +1628,11 @@ public interface LogService {
 
 	/**
 	 * List ACL
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @return the list acl response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing acl
 	 * @throws NullPointerException
@@ -1640,14 +1644,14 @@ public interface LogService {
 
 	/**
 	 * List ACL
-	 * 
+	 *
 	 * @param project
 	 *            the project name
-	 * 
+	 *
 	 * @param logStore
 	 *            the logstore name
 	 * @return the list acl response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing acl
 	 * @throws NullPointerException
@@ -1660,16 +1664,16 @@ public interface LogService {
 
 	/**
 	 * List ACL
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param offSet
 	 *            the list offset
 	 * @param size
 	 *            the query size
-	 * 
+	 *
 	 * @return the list acl response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing acl
 	 * @throws NullPointerException
@@ -1682,7 +1686,7 @@ public interface LogService {
 
 	/**
 	 * List ACL
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -1691,9 +1695,9 @@ public interface LogService {
 	 *            the list offset
 	 * @param size
 	 *            the query size
-	 * 
+	 *
 	 * @return the list acl response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing acl
 	 * @throws NullPointerException
@@ -1706,12 +1710,12 @@ public interface LogService {
 
 	/**
 	 * List ACL
-	 * 
+	 *
 	 * @param request
 	 *            the list acl request
-	 * 
+	 *
 	 * @return the list acl response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when listing acl
 	 * @throws NullPointerException
@@ -1723,7 +1727,7 @@ public interface LogService {
 
 	/**
 	 * create a logstore in a project
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -1731,7 +1735,7 @@ public interface LogService {
 	 * @return the create log store response
 	 * @throws LogException
 	 *             if any error happen when creasting logstore
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if any parameter is null
 	 * @throws IllegalArgumentException
@@ -1742,13 +1746,13 @@ public interface LogService {
 
 	/**
 	 * create logstore
-	 * 
+	 *
 	 * @param request
 	 *            logstore create request
 	 * @return the create log store response
 	 * @throws LogException
 	 *             if any error happen when creasting logstore
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
@@ -1759,7 +1763,7 @@ public interface LogService {
 
 	/**
 	 * Update log store config
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -1767,7 +1771,7 @@ public interface LogService {
 	 * @return update logstore response
 	 * @throws LogException
 	 *             if any error happen when updating logstore
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if any parameter is null
 	 * @throws IllegalArgumentException
@@ -1778,11 +1782,11 @@ public interface LogService {
 
 	/**
 	 * Update logstore config
-	 * 
+	 *
 	 * @param request
 	 *            update logstore requst
 	 * @return Update logstore response
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happen when updating logstore
 	 * @throws NullPointerException
@@ -1795,7 +1799,7 @@ public interface LogService {
 
 	/**
 	 * Delete the logstore
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStoreName
@@ -1803,7 +1807,7 @@ public interface LogService {
 	 * @return delete logstore response
 	 * @throws LogException
 	 *             if any error happen when deleting logstore
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if any parameter is null
 	 * @throws IllegalArgumentException
@@ -1814,7 +1818,7 @@ public interface LogService {
 
 	/**
 	 * Delete logstore
-	 * 
+	 *
 	 * @param request
 	 *            delete logstore request
 	 * @return the delete logstore response
@@ -1830,7 +1834,7 @@ public interface LogService {
 
 	/**
 	 * Get the logstore config
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStoreName
@@ -1838,7 +1842,7 @@ public interface LogService {
 	 * @return the get logstore response
 	 * @throws LogException
 	 *             if any error happen when getting logstore config
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if any parameter is null
 	 * @throws IllegalArgumentException
@@ -1849,13 +1853,13 @@ public interface LogService {
 
 	/**
 	 * get the logstore config
-	 * 
+	 *
 	 * @param request
 	 *            the get logstore config request
 	 * @return the get logstore response
 	 * @throws LogException
 	 *             if any error happen when getting logstore config
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
@@ -1888,7 +1892,7 @@ public interface LogService {
 
 	/**
 	 * create logstore index
-	 * 
+	 *
 	 * @param project
 	 *            the project name
 	 * @param logStore
@@ -1898,10 +1902,10 @@ public interface LogService {
 	 * @return create index response
 	 * @throws LogException
 	 *             if any error happen when creating index
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if the request is null
-	 * 
+	 *
 	 * @throws IllegalArgumentException
 	 *             if any string paramter is empty
 	 */
@@ -1910,13 +1914,13 @@ public interface LogService {
 
 	/**
 	 * create logstore index
-	 * 
+	 *
 	 * @param request
 	 *            the create logstore index request
 	 * @return create index response
 	 * @throws LogException
 	 *             if any error happen when creating index
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
@@ -1949,7 +1953,7 @@ public interface LogService {
 
 	/**
 	 * Update logstore index config
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -1959,10 +1963,10 @@ public interface LogService {
 	 * @return update logstore index response
 	 * @throws LogException
 	 *             if any error happen when updating logstore index config
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if any parameter is null
-	 * 
+	 *
 	 * @throws IllegalArgumentException
 	 *             if any string parameter is empty
 	 */
@@ -1971,13 +1975,13 @@ public interface LogService {
 
 	/**
 	 * update logstore index config
-	 * 
+	 *
 	 * @param request
 	 *            update logstore index request
 	 * @return update logstore index response
 	 * @throws LogException
 	 *             if any error happen when update logstore index config
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
@@ -1988,7 +1992,7 @@ public interface LogService {
 
 	/**
 	 * delete logstore index
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -1996,7 +2000,7 @@ public interface LogService {
 	 * @return delete logstore index response
 	 * @throws LogException
 	 *             if any error happen when deleting logstore index config
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if any parameter is null
 	 * @throws IllegalArgumentException
@@ -2007,13 +2011,13 @@ public interface LogService {
 
 	/**
 	 * delete logstore index
-	 * 
+	 *
 	 * @param request
 	 *            delete logstore index config
 	 * @return deleing index response
 	 * @throws LogException
 	 *             if any error happen when deleting logstore index config
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
@@ -2021,10 +2025,10 @@ public interface LogService {
 	 */
 	public DeleteIndexResponse DeleteIndex(DeleteIndexRequest request)
 			throws LogException;
-	
+
 	/**
 	 * Get logstore index config
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2032,7 +2036,7 @@ public interface LogService {
 	 * @return get index config response
 	 * @throws LogException
 	 *             if any error happen when get index config
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if any parameter is null
 	 * @throws IllegalArgumentException
@@ -2043,11 +2047,11 @@ public interface LogService {
 
     public GetIndexStringResponse GetIndexString(String project, String logStore)
             throws LogException;
-	
+
 	/**
 	 * Get logstore index config
-	 * 
-	 * 
+	 *
+	 *
 	 * @param request
 	 *            get logstore index request
 	 * @return get index config response
@@ -2060,14 +2064,14 @@ public interface LogService {
 	 */
 	public GetIndexResponse GetIndex(GetIndexRequest request)
 			throws LogException;
-	
+
     public GetIndexStringResponse GetIndexString(GetIndexRequest request)
             throws LogException;
 
 	/**
 	 * create logstore consumer group
-	 * 
-	 * 
+	 *
+	 *
 	 * @param request
 	 *            contains all of the parameters needed
 	 * @return create logstore consumer group response
@@ -2083,8 +2087,8 @@ public interface LogService {
 
 	/**
 	 * create logstore consumer group
-	 * 
-	 * 
+	 *
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2104,8 +2108,8 @@ public interface LogService {
 
 	/**
 	 * delete logstore consumer group
-	 * 
-	 * 
+	 *
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2125,8 +2129,8 @@ public interface LogService {
 
 	/**
 	 * list logstore consumer groups
-	 * 
-	 * 
+	 *
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2144,8 +2148,8 @@ public interface LogService {
 
 	/**
 	 * update consumer group
-	 * 
-	 * 
+	 *
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2172,8 +2176,8 @@ public interface LogService {
 	public UpdateConsumerGroupResponse
 	/**
 	 * update consumer group
-	 * 
-	 * 
+	 *
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2195,8 +2199,8 @@ public interface LogService {
 
 	/**
 	 * update consumer group
-	 * 
-	 * 
+	 *
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2220,8 +2224,8 @@ public interface LogService {
 
 	/**
 	 * update consume checkpoint
-	 * 
-	 * 
+	 *
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2248,8 +2252,8 @@ public interface LogService {
 
 	/**
 	 * update consume checkpoint
-	 * 
-	 * 
+	 *
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2274,8 +2278,8 @@ public interface LogService {
 
 	/**
 	 * notify the server periodically to show that the consumer is still alive.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2300,8 +2304,8 @@ public interface LogService {
 
 	/**
 	 * get shard checkpoint in the consumer group
-	 * 
-	 * 
+	 *
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2324,8 +2328,8 @@ public interface LogService {
 
 	/**
 	 * get all of the shard checkpoints in the consumer group
-	 * 
-	 * 
+	 *
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2345,7 +2349,7 @@ public interface LogService {
 
 	/**
 	 * create a shipper
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2357,7 +2361,7 @@ public interface LogService {
 	 * @return CreateShipperResponse
 	 * @throws LogException
 	 *             if any error happened
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
@@ -2368,7 +2372,7 @@ public interface LogService {
 
 	/**
 	 * update a shipper
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2378,10 +2382,10 @@ public interface LogService {
 	 * @param shipConfig
 	 *            the OssShipperConfig or OdpsShipperConfig
 	 * @return UpdateShipperResponse
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happened
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
@@ -2392,7 +2396,7 @@ public interface LogService {
 
 	/**
 	 * Delete a shipper
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2400,10 +2404,10 @@ public interface LogService {
 	 * @param ShipperName
 	 *            shipper name
 	 * @return DeleteShipperResponse
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happened
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
@@ -2414,7 +2418,7 @@ public interface LogService {
 
 	/**
 	 * Get a shipper config
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2434,7 +2438,7 @@ public interface LogService {
 
 	/**
 	 * List shipper of a logstore
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2452,7 +2456,7 @@ public interface LogService {
 
 	/**
 	 * Get the tasks of a logstore shipper
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2484,7 +2488,7 @@ public interface LogService {
 
 	/**
 	 * retry the failed tasks, for every time it can only retry 10 task
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param logStore
@@ -2494,7 +2498,7 @@ public interface LogService {
 	 * @param taskList
 	 *            failed task id list
 	 * @return RetryShipperTasksResponse
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happened
 	 * @throws NullPointerException
@@ -2508,13 +2512,13 @@ public interface LogService {
 
 	/**
 	 * create a project
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @param projectDescription
 	 *            project description
 	 * @return CreateProjectResponse
-	 * 
+	 *
 	 * @throws LogException
 	 *             if any error happened
 	 * @throws NullPointerException
@@ -2527,7 +2531,7 @@ public interface LogService {
 
 	/**
 	 * get a project
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @return GetProjectResponse
@@ -2539,10 +2543,10 @@ public interface LogService {
 	 *             if any required string parameter is empty
 	 */
 	public GetProjectResponse GetProject(String project) throws LogException;
-	
+
 	/**
 	 * list project
-	 * 
+	 *
 	 * @param ProjectName
 	 * 			project name
 	 * @param offset
@@ -2558,10 +2562,10 @@ public interface LogService {
 	 *             if any required string parameter is empty
 	 */
 	public ListProjectResponse ListProject(String ProjectName, int offset, int size) throws LogException;
-	
+
 	/**
 	 * list all project
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return ListProjectResponse
@@ -2576,7 +2580,7 @@ public interface LogService {
 
 	/**
 	 * delete a project
-	 * 
+	 *
 	 * @param project
 	 *            project name
 	 * @return DeleteProjectResponse
@@ -2592,7 +2596,7 @@ public interface LogService {
 
 	/**
 	 * list project
-	 * 
+	 *
 	 * @return ListProjectResponse
 	 * @throws LogException
 	 *             if any error happened
@@ -2605,7 +2609,7 @@ public interface LogService {
 
 	/**
 	 * create saved search
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return createSavedSearchResponse
@@ -2620,7 +2624,7 @@ public interface LogService {
 
 	/**
 	 * update saved search
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return updateSavedSearchResponse
@@ -2635,7 +2639,7 @@ public interface LogService {
 
 	/**
 	 * delete saved search
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return deleteSavedSearchResponse
@@ -2650,7 +2654,7 @@ public interface LogService {
 
 	/**
 	 * get saved search
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return GetSavedSearchResponse
@@ -2665,7 +2669,7 @@ public interface LogService {
 
 	/**
 	 * list saved search
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return ListSavedSearchResponse
@@ -2677,10 +2681,10 @@ public interface LogService {
 	 *             if any required string parameter is empty
 	 */
 	ListSavedSearchResponse listSavedSearch(ListSavedSearchRequest request) throws LogException;
-	
+
 	/**
 	 * create alert
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return CreateAlertResponse
@@ -2695,7 +2699,7 @@ public interface LogService {
 
 	/**
 	 * update alert
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return UpdateAlertResponse
@@ -2710,7 +2714,7 @@ public interface LogService {
 
 	/**
 	 * delete alert
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return DeleteAlertResponse
@@ -2725,7 +2729,7 @@ public interface LogService {
 
 	/**
 	 * get alert
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return GetAlertResponse
@@ -2740,7 +2744,7 @@ public interface LogService {
 
 	/**
 	 * list alert
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return GetAlertResponse
@@ -2755,7 +2759,7 @@ public interface LogService {
 
 	/**
 	 * list alert fail
-	 * 
+	 *
 	 * @param request
 	 * 				request class
 	 * @return GetAlertResponse
@@ -2774,7 +2778,7 @@ public interface LogService {
 	GetDashboardResponse getDashboard(GetDashboardRequest request) throws LogException;
 	ListDashboardResponse listDashboard(ListDashboardRequest request) throws LogException;
 
-	
+
 	CreateChartResponse createChart(CreateChartRequest request) throws LogException;
 	UpdateChartResponse updateChart(UpdateChartRequest request) throws LogException;
 	DeleteChartResponse deleteChart(DeleteChartRequest request) throws LogException;
@@ -2997,4 +3001,38 @@ public interface LogService {
 	 *             if any required string parameter is empty
 	 */
 	ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException;
+
+
+    /**
+     * @param project
+     * @param logging
+     * @return
+     * @throws LogException
+     */
+	CreateLoggingResponse createLogging(String project, Logging logging) throws LogException;
+
+
+    /**
+     *
+     * @param request
+     * @return
+     * @throws LogException
+     */
+	CreateLoggingResponse createLogging(CreateLoggingRequest request) throws LogException;
+
+    /**
+     * @param project
+     * @param logging
+     * @return
+     * @throws LogException
+     */
+    UpdateLoggingResponse updateLogging(String project, Logging logging) throws LogException;
+
+    /**
+     *
+     * @param request
+     * @return
+     * @throws LogException
+     */
+    UpdateLoggingResponse updateLogging(UpdateLoggingRequest request) throws LogException;
 }

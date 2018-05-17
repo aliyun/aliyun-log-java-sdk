@@ -18,6 +18,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -32,7 +33,11 @@ import java.util.UUID;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.aliyun.openservices.log.common.Logging;
 import com.aliyun.openservices.log.request.*;
+import com.aliyun.openservices.log.response.CreateLoggingResponse;
+import com.aliyun.openservices.log.response.UpdateLoggingResponse;
+import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -4495,17 +4500,15 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		String resourceUri = Consts.CONST_ALERT_URI + "/" + request.getAlertName() + "/fail";
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-		Map<String, String> urlParameter = new HashMap<String, String>();
-		urlParameter = request.GetAllParams();
+		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
 		int total = 0;
 		int count = 0;
-		List<AlertFail> alertFails = new ArrayList<AlertFail>();
 		total = object.getInt(Consts.CONST_TOTAL);
 		count = object.getInt(Consts.CONST_COUNT);
-		alertFails = ExtractAlertFails(object, requestId);
+		List<AlertFail> alertFails = ExtractAlertFails(object, requestId);
 		ListAlertFailResponse listAlertFailsResponse = new ListAlertFailResponse(response.getHeaders(), count, total, alertFails);	
 		return listAlertFailsResponse;
 	}
@@ -4599,8 +4602,7 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		String resourceUri = Consts.CONST_ETLJOB_URI;
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-		Map<String, String> urlParameter = new HashMap<String, String>();
-		urlParameter = request.GetAllParams();
+		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
@@ -4764,4 +4766,40 @@ public class Client implements LogService {
 		request.setEtlMetaTag(Consts.CONST_ETLMETA_ALL_TAG_MATCH);
 		return listEtlMeta(request);
 	}
-};
+
+	@Override
+	public CreateLoggingResponse createLogging(String project, Logging logging) throws LogException {
+		final CreateLoggingRequest request = new CreateLoggingRequest(project, logging);
+		return createLogging(request);
+	}
+
+	@Override
+	public CreateLoggingResponse createLogging(CreateLoggingRequest request) throws LogException {
+		Args.notNull(request, "request");
+		final String project = request.GetProject();
+		Map<String, String> headers = GetCommonHeadPara(project);
+		final String resourceUri = "/logging";
+		final Logging logging = request.getLogging();
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
+		return new CreateLoggingResponse(response.getHeaders());
+	}
+
+	@Override
+	public UpdateLoggingResponse updateLogging(String project, Logging logging) throws LogException {
+		final UpdateLoggingRequest request = new UpdateLoggingRequest(project, logging);
+		return updateLogging(request);
+	}
+
+	@Override
+	public UpdateLoggingResponse updateLogging(UpdateLoggingRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        final String resourceUri = "/logging";
+        final Logging logging = request.getLogging();
+        ResponseMessage response = SendData(project, HttpMethod.POST,
+                resourceUri, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
+        return new UpdateLoggingResponse(response.getHeaders());
+	}
+}
