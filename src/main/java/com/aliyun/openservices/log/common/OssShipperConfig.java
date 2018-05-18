@@ -137,16 +137,7 @@ public class OssShipperConfig implements ShipperConfig {
 	}
 
 	public JSONObject GetJsonObj() {
-		JSONObject obj = new JSONObject();
-
-		if (storageDetail.getmStorageFormat().equals("parquet")) {
-			obj = ((OssShipperParquetStorageDetail)storageDetail).ToJsonObject();
-		} else if (storageDetail.getmStorageFormat().equals("csv")) {
-			obj = ((OssShipperCsvStorageDetail)storageDetail).ToJsonObject();
-		} else {
-			obj = ((OssShipperJsonStorageDetail)storageDetail).ToJsonObject();
-		}
-		
+		JSONObject obj = storageDetail.ToJsonObject();
 		obj.put("ossBucket", this.mOssBucket);
 		obj.put("ossPrefix", this.mOssPrefix);
 		obj.put("roleArn", this.mRoleArn);
