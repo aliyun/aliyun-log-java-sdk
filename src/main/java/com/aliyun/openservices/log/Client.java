@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -2381,33 +2380,6 @@ public class Client implements LogService {
 		} catch (JSONException e) {
 			// ignore
 		}
-	}
-
-	private void ExtractLogs(GetLogsResponse response, JSONArray logs) {
-		try {
-			for (int i = 0; i < logs.size(); i++) {
-				JSONObject log = logs.getJSONObject(i);
-				String source = new String();
-				LogItem logItem = new LogItem();
-				@SuppressWarnings("unchecked")
-				Iterator<String> it = (Iterator<String>) (log.keys());
-				while (it.hasNext()) {
-					String key = it.next();
-					String value = log.getString(key);
-					if (key.equals(Consts.CONST_RESULT_SOURCE)) {
-						source = value;
-					} else if (key.equals(Consts.CONST_RESULT_TIME)) {
-						logItem.mLogTime = Integer.parseInt(value);
-					} else {
-						logItem.PushBack(key, value);
-					}
-				}
-				response.AddLog(new QueriedLog(source, logItem));
-			}
-		} catch (JSONException e) {
-			// ignore;
-		}
-
 	}
 
 	protected void ErrorCheck(JSONObject object, String requestId)
