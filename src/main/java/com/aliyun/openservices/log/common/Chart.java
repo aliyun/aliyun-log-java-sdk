@@ -127,7 +127,7 @@ public class Chart implements Serializable {
 	
 	public Chart() {}
 	public Chart(String title, String type, String logstore, String topic, String query, String start, String end,
-			ArrayList<String> xAisKeys, ArrayList<String> yAxisKeys, long xPosition, long yPosition, long width,
+			ArrayList<String> xAxisKeys, ArrayList<String> yAxisKeys, long xPosition, long yPosition, long width,
 			long height, String displayName) {
 		super();
 		this.title = title;
