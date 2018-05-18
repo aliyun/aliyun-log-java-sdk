@@ -66,8 +66,6 @@ public abstract class ServiceClient {
 
     private static final int DEFAULT_MARK_LIMIT = 1024 * 4;
 
-   // private static ResourceManager rm = ResourceManager.getDefaultInstance();
-
     protected ClientConfiguration config;
 
     protected ServiceClient(ClientConfiguration config){
