@@ -4798,9 +4798,13 @@ public class Client implements LogService {
         Map<String, String> headers = GetCommonHeadPara(project);
         ResponseMessage response = SendData(project, HttpMethod.GET,
                 Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers);
-        JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
-        return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
-    }
+		JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
+		try {
+			return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
+		} catch (JSONException ex) {
+			throw new LogException("BadResponse", ex.getMessage(), response.getRequestId());
+		}
+	}
 
     @Override
     public DeleteLoggingResponse deleteLogging(final DeleteLoggingRequest request) throws LogException {
