@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.response;
 
 import com.aliyun.openservices.log.common.Logging;
+import com.aliyun.openservices.log.util.Args;
 
 import java.util.Map;
 
@@ -15,7 +16,7 @@ public class GetLoggingResponse extends Response {
      */
     public GetLoggingResponse(Map<String, String> headers, Logging logging) {
         super(headers);
-        this.logging = logging;
+        setLogging(logging);
     }
 
     public Logging getLogging() {
@@ -23,6 +24,7 @@ public class GetLoggingResponse extends Response {
     }
 
     public void setLogging(Logging logging) {
+        Args.notNull(logging, "logging");
         this.logging = logging;
     }
 }

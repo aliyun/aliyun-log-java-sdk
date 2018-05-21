@@ -1,15 +1,21 @@
 package com.aliyun.openservices.log.request;
 
 import com.aliyun.openservices.log.common.Logging;
+import com.aliyun.openservices.log.util.Args;
 
 public class UpdateLoggingRequest extends Request {
 
-    private static final long serialVersionUID = -8733254344842470177L;
     private Logging logging;
 
+    /**
+     * Construct a new {@link UpdateLoggingRequest} instance.
+     *
+     * @param project project name
+     * @param logging logging options
+     */
     public UpdateLoggingRequest(String project, Logging logging) {
         super(project);
-        this.logging = logging;
+        setLogging(logging);
     }
 
     public Logging getLogging() {
@@ -17,6 +23,7 @@ public class UpdateLoggingRequest extends Request {
     }
 
     public void setLogging(Logging logging) {
+        Args.notNull(logging, "logging");
         this.logging = logging;
     }
 }

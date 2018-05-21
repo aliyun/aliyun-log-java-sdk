@@ -11,7 +11,6 @@ import java.util.List;
 public class Logging implements Serializable {
 
     private String loggingProject;
-
     private List<LoggingDetail> loggingDetails;
 
     public Logging(String loggingProject, List<LoggingDetail> loggingDetails) {
@@ -53,7 +52,8 @@ public class Logging implements Serializable {
         return object;
     }
 
-    public static Logging unmarshal(JSONObject object) {
+    public static Logging unmarshal(final JSONObject object) {
+        Args.notNull(object, "object");
         final String project = object.getString("loggingProject");
         Args.notNullOrEmpty(project, "loggingProject");
         final JSONArray details = object.getJSONArray("loggingDetails");

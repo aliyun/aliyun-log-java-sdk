@@ -11,8 +11,8 @@ public class LoggingDetail implements Serializable {
     private String logstore;
 
     public LoggingDetail(String type, String logstore) {
-        this.type = type;
-        this.logstore = logstore;
+        setLogstore(logstore);
+        setType(type);
     }
 
     public String getType() {
@@ -20,6 +20,7 @@ public class LoggingDetail implements Serializable {
     }
 
     public void setType(String type) {
+        Args.notNullOrEmpty(type, "type");
         this.type = type;
     }
 
@@ -28,6 +29,7 @@ public class LoggingDetail implements Serializable {
     }
 
     public void setLogstore(String logstore) {
+        Args.notNullOrEmpty(logstore, "logstore");
         this.logstore = logstore;
     }
 
@@ -38,7 +40,8 @@ public class LoggingDetail implements Serializable {
         return object;
     }
 
-    public static LoggingDetail unmarshal(JSONObject object) {
+    public static LoggingDetail unmarshal(final JSONObject object) {
+        Args.notNull(object, "object");
         final String type = object.getString("type");
         Args.notNullOrEmpty(type, "logstore");
         final String logstore = object.getString("logstore");
