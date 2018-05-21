@@ -3074,34 +3074,38 @@ public interface LogService {
 	ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException;
 
     /**
+     * Create logging for project.
      *
-     * @param request
-     * @return
-     * @throws LogException
+     * @param request An instance of {@link CreateLoggingRequest}
+     * @return An instance of {@link CreateLoggingResponse}
+     * @throws LogException if any error occurs
      */
 	CreateLoggingResponse createLogging(CreateLoggingRequest request) throws LogException;
 
     /**
+     * Update an existing logging for project.
      *
-     * @param request
-     * @return
-     * @throws LogException
+     * @param request An instance of {@link UpdateLoggingRequest}
+     * @return An instance of {@link UpdateLoggingResponse}
+     * @throws LogException if any error occurs
      */
     UpdateLoggingResponse updateLogging(UpdateLoggingRequest request) throws LogException;
 
     /**
+     * Get an existing logging for project.
      *
-     * @param request
-     * @return
-     * @throws LogException
+     * @param request An instance of {@link GetLoggingRequest}
+     * @return An instance of {@link GetLoggingResponse}
+     * @throws LogException if any error occurs
      */
 	GetLoggingResponse getLogging(GetLoggingRequest request) throws LogException;
 
     /**
+     * Delete an existing logging for project.
      *
-     * @param request
-     * @return
-     * @throws LogException
+     * @param request An instance of {@link DeleteLoggingRequest}
+     * @return An instance of {@link DeleteLoggingResponse}
+     * @throws LogException if any error occurs
      */
 	DeleteLoggingResponse deleteLogging(DeleteLoggingRequest request) throws LogException;
 }
