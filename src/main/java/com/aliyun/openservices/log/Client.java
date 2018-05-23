@@ -3457,17 +3457,14 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logstore");
 		CodingUtils.assertStringNotNullOrEmpty(consumerGroup, "consumerGroup");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		String bodyStr;
-		if (inOrder != null && timeoutInSec != null) {
-			bodyStr = "{\"order\":" + inOrder + ",\"timeout\":" + timeoutInSec
-					+ "}";
-		} else if (inOrder != null) {
-			bodyStr = "{\"order\":" + inOrder + "}";
-		} else {
-			bodyStr = "{\"timeout\":" + timeoutInSec + "}";
-		}
-		byte[] body = encodeToUtf8(bodyStr);
-
+		final JSONObject asJson = new JSONObject();
+        if (inOrder != null) {
+            asJson.put("order", inOrder);
+        }
+        if (timeoutInSec != null) {
+            asJson.put("timeout", timeoutInSec);
+        }
+		byte[] body = encodeToUtf8(asJson.toString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		String resourceUri = "/logstores/" + logStore + "/consumergroups/"
