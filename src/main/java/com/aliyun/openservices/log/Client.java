@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -422,6 +421,27 @@ public class Client implements LogService {
 		return pattern.matcher(str).matches();
 	}
 
+	private static byte[] encodeToUtf8(String source) throws LogException {
+		try {
+			return source.getBytes(Consts.UTF_8_ENCODING);
+		} catch (UnsupportedEncodingException e) {
+			throw new LogException("EncodingException", e.getMessage(), "");
+		}
+	}
+
+	private static String encodeResponseBodyToUtf8String(ResponseMessage response, String requestId) throws LogException {
+		byte[] body = response.GetRawBody();
+		if (body == null) {
+			throw new LogException("BadResponse", "The response body is null", null, requestId);
+		}
+		try {
+			return new String(body, Consts.UTF_8_ENCODING);
+		} catch (UnsupportedEncodingException e) {
+			throw new LogException("BadResponse",
+					"The response is not valid utf-8 string: ", e, requestId);
+		}
+	}
+
 	public GetLogtailProfileResponse ExtractLogtailProfile(Map<String, String> resHeaders, JSONObject object) throws LogException {
 		try {
 			int count = object.getInt("count");
@@ -575,11 +595,9 @@ public class Client implements LogService {
 			String topic = request.GetTopic();
 			CodingUtils.assertParameterNotNull(topic, "topic");
 			String source = request.GetSource();
-			if (request.getContentType() != Consts.CONST_SLS_JSON) {
+			if (!Consts.CONST_SLS_JSON.equals(request.getContentType())) {
 				Logs.LogGroup.Builder logs = Logs.LogGroup.newBuilder();
-				if (topic != null) {
-					logs.setTopic(topic);
-				}
+				logs.setTopic(topic);
 				if (source == null || source.isEmpty()) {
 					logs.setSource(this.sourceIp);
 				} else {
@@ -617,9 +635,7 @@ public class Client implements LogService {
 				logBytes = logs.build().toByteArray();
 			} else {
 				JSONObject jsonObj = new JSONObject();
-				if (topic != null) {
-					jsonObj.put("__topic__", topic);
-				}
+				jsonObj.put("__topic__", topic);
 				if (source == null || source.isEmpty()) {
 					jsonObj.put("__source__", this.sourceIp);
 				} else {
@@ -649,11 +665,7 @@ public class Client implements LogService {
 				if (tagObj.size() > 0) {
 					jsonObj.put("__tags__", tagObj);
 				}
-				try {
-					logBytes = jsonObj.toString().getBytes("utf-8");
-				} catch (UnsupportedEncodingException e) {
-					throw new LogException("UnsupportedEncoding", e.getMessage(), "");
-				}
+				logBytes = encodeToUtf8(jsonObj.toString());
 			}
 		}
 		if (logBytes.length > Consts.CONST_MAX_PUT_SIZE) {
@@ -698,11 +710,10 @@ public class Client implements LogService {
 			resourceUri += "/shards/lb";
 		} else
 			resourceUri += "/shards/route?key=" + shardKey;
-		Map<String, String> urlParameter = new HashMap<String, String>();
-		urlParameter = request.GetAllParams();
+		Map<String, String> urlParameter = request.GetAllParams();
 		long cmp_size = logBytes.length;
 
-		
+
 		for (int i = 0; i < 2; i++) {
 			String server_ip = null;
 			ClientConnectionStatus connection_status = null;
@@ -817,18 +828,7 @@ public class Client implements LogService {
 	}
 	private com.alibaba.fastjson.JSONArray ParseResponseMessageToArrayWithFastJson(ResponseMessage response,
 			String requestId) throws LogException {
-		byte[] body = response.GetRawBody();
-		if (body == null) {
-			throw new LogException("BadResponse", "The response body is null",
-					null, requestId);
-		}
-		String returnStr;
-		try {
-			returnStr = new String(body, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("BadResponse",
-					"The response is not valid utf-8 string : ", e, requestId);
-		}
+		String returnStr = encodeResponseBodyToUtf8String(response, requestId);
 
 		try {
 			com.alibaba.fastjson.JSONArray array = com.alibaba.fastjson.JSONArray.parseArray(returnStr);
@@ -952,13 +952,13 @@ public class Client implements LogService {
 
 		JSONArray json_array = this.ParseResponseMessageToArray(response,
 				requestId);
-		ListTopicsResponse listTopicRespone = new ListTopicsResponse(resHeaders);
+		ListTopicsResponse listTopicResponse = new ListTopicsResponse(resHeaders);
 		List<String> string_array = new ArrayList<String>();
 		for (int index = 0; index < json_array.size(); index++) {
 			string_array.add(json_array.getString(index));
 		}
-		listTopicRespone.SetTopics(string_array);
-		return listTopicRespone;
+		listTopicResponse.SetTopics(string_array);
+		return listTopicResponse;
 
 	}
 
@@ -1393,14 +1393,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-		String bodyStr = config.ToRequestString();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
-
+		byte[] body = encodeToUtf8(config.ToRequestString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		String resourceUri = "/configs";
@@ -1439,13 +1432,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-		String bodyStr = config.ToRequestString();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(config.ToRequestString());
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
@@ -1662,13 +1649,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-		String bodyStr = group.ToRequestString();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(group.ToRequestString());
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
@@ -1703,13 +1684,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-		String bodyStr = group.ToRequestString();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(group.ToRequestString());
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
@@ -1902,11 +1877,11 @@ public class Client implements LogService {
 
 		JSONObject object = ParserResponseMessage(response, requestId);
 
-		return ExtructMachinesFromResponse(resHeaders, object);
+		return ExtractMachinesFromResponse(resHeaders, object);
 
 	}
 
-	private ListMachinesResponse ExtructMachinesFromResponse(
+	private ListMachinesResponse ExtractMachinesFromResponse(
 			Map<String, String> resHeaders, JSONObject dict)
 			throws LogException {
 
@@ -2188,14 +2163,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-		String bodyStr = acl.ToRequestString();
-
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(acl.ToRequestString());
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
@@ -2383,33 +2351,6 @@ public class Client implements LogService {
 		}
 	}
 
-	private void ExtractLogs(GetLogsResponse response, JSONArray logs) {
-		try {
-			for (int i = 0; i < logs.size(); i++) {
-				JSONObject log = logs.getJSONObject(i);
-				String source = new String();
-				LogItem logItem = new LogItem();
-				@SuppressWarnings("unchecked")
-				Iterator<String> it = (Iterator<String>) (log.keys());
-				while (it.hasNext()) {
-					String key = it.next();
-					String value = log.getString(key);
-					if (key.equals(Consts.CONST_RESULT_SOURCE)) {
-						source = value;
-					} else if (key.equals(Consts.CONST_RESULT_TIME)) {
-						logItem.mLogTime = Integer.parseInt(value);
-					} else {
-						logItem.PushBack(key, value);
-					}
-				}
-				response.AddLog(new QueriedLog(source, logItem));
-			}
-		} catch (JSONException e) {
-			// ignore;
-		}
-
-	}
-
 	protected void ErrorCheck(JSONObject object, String requestId)
 			throws LogException {
 		if (object.containsKey(Consts.CONST_ERROR_CODE)) {
@@ -2458,19 +2399,7 @@ public class Client implements LogService {
 
 	protected JSONObject ParserResponseMessage(ResponseMessage response,
 			String requestId) throws LogException {
-		byte[] body = response.GetRawBody();
-
-		if (body == null) {
-			throw new LogException("BadResponse", "The response body is null",
-					null, requestId);
-		}
-		String res;
-		try {
-			res = new String(body, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("BadResponse",
-					"The response is not valid utf-8 string : ", e, requestId);
-		}
+		String res = encodeResponseBodyToUtf8String(response, requestId);
 		try {
 			JSONObject object = JSONObject.fromObject(res);
 
@@ -2484,19 +2413,8 @@ public class Client implements LogService {
 	
 	protected com.alibaba.fastjson.JSONObject ParserResponseMessageWithFastJson(ResponseMessage response,
 			String requestId) throws LogException {
-		byte[] body = response.GetRawBody();
+		String res = encodeResponseBodyToUtf8String(response, requestId);
 
-		if (body == null) {
-			throw new LogException("BadResponse", "The response body is null",
-					null, requestId);
-		}
-		String res;
-		try {
-			res = new String(body, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("BadResponse",
-					"The response is not valid utf-8 string : ", e, requestId);
-		}
 		try {
 			com.alibaba.fastjson.JSONObject object = com.alibaba.fastjson.JSONObject.parseObject(res);
 
@@ -2510,19 +2428,7 @@ public class Client implements LogService {
 
 	private JSONArray ParseResponseMessageToArray(ResponseMessage response,
 			String requestId) throws LogException {
-		byte[] body = response.GetRawBody();
-		if (body == null) {
-			throw new LogException("BadResponse", "The response body is null",
-					null, requestId);
-		}
-		String returnStr;
-		try {
-			returnStr = new String(body, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("BadResponse",
-					"The response is not valid utf-8 string : ", e, requestId);
-		}
-
+		String returnStr = encodeResponseBodyToUtf8String(response, requestId);
 		try {
 			JsonConfig jsonConfig = new JsonConfig();
 			jsonConfig.setIgnoreDefaultExcludes(true);
@@ -2595,12 +2501,7 @@ public class Client implements LogService {
 	protected ResponseMessage SendData(String project, HttpMethod method,
 			String resourceUri, Map<String, String> parameters,
 			Map<String, String> headers, String requestBody) throws LogException {
-		byte[] body;
-		try {
-			body = requestBody.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(requestBody);
 		return SendData(project, method, resourceUri, parameters, headers, body);
 	}
 
@@ -2847,13 +2748,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-		String bodyStr = logStore.ToRequestString();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(logStore.ToRequestString());
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
@@ -2926,13 +2821,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-		String bodyStr = logStore.ToRequestString();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(logStore.ToRequestString());
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
@@ -3011,13 +2900,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-
-		try {
-			body = indexJsonString.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(indexJsonString);
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		StringBuilder resourceUriBuilder = new StringBuilder();
@@ -3058,14 +2941,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-		String bodyStr = index.ToRequestString();
-
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(index.ToRequestString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		StringBuilder resourceUriBuilder = new StringBuilder();
@@ -3094,12 +2970,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-		try {
-			body = indexJsonString.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(indexJsonString);
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
@@ -3141,14 +3012,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-		String bodyStr = index.ToRequestString();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
-
+		byte[] body = encodeToUtf8(index.ToRequestString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		StringBuilder resourceUriBuilder = new StringBuilder();
@@ -3314,12 +3178,7 @@ public class Client implements LogService {
 		json_body.put("targetType", shipConfig.GetShipperType());
 		json_body.put("targetConfiguration", shipConfig.GetJsonObj());
 
-		byte[] body = null;
-		try {
-			body = json_body.toString().getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(json_body.toString());
 		
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
@@ -3355,12 +3214,7 @@ public class Client implements LogService {
 		json_body.put("targetType", shipConfig.GetShipperType());
 		json_body.put("targetConfiguration", shipConfig.GetJsonObj());
 
-		byte[] body;
-		try {
-			body = json_body.toString().getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(json_body.toString());
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
@@ -3526,12 +3380,7 @@ public class Client implements LogService {
 		for (String task : taskList) {
 			array.add(task);
 		}
-		byte[] body;
-		try {
-			body = array.toString().getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(array.toString());
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
@@ -3585,13 +3434,8 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(consumerGroup, "consumerGroup");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		byte[] body;
-		String bodyStr = consumerGroup.ToRequestString();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(consumerGroup.ToRequestString());
+
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		String resourceUri = "/logstores/" + request.GetLogStore()
@@ -3613,7 +3457,6 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logstore");
 		CodingUtils.assertStringNotNullOrEmpty(consumerGroup, "consumerGroup");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		byte[] body;
 		final JSONObject asJson = new JSONObject();
         if (inOrder != null) {
             asJson.put("order", inOrder);
@@ -3621,11 +3464,7 @@ public class Client implements LogService {
         if (timeoutInSec != null) {
             asJson.put("timeout", timeoutInSec);
         }
-		try {
-			body = asJson.toString().getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(asJson.toString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		String resourceUri = "/logstores/" + logStore + "/consumergroups/"
@@ -3759,13 +3598,7 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		Map<String, String> urlParameter = request.GetAllParams();
 
-		byte[] body;
-		String bodyStr = request.GetRequestBody();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(request.GetRequestBody());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		ResponseMessage response = SendData(project, HttpMethod.POST,
@@ -3791,13 +3624,7 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		Map<String, String> urlParameter = request.GetAllParams();
 
-		byte[] body;
-		String bodyStr = request.GetRequestBody();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(request.GetRequestBody());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		ArrayList<Integer> responseShards = new ArrayList<Integer>();
@@ -3876,12 +3703,7 @@ public class Client implements LogService {
 		json_body.put("projectName", project);
 		json_body.put("description", projectDescription);
 
-		byte[] body = null;
-		try {
-			body = json_body.toString().getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(json_body.toString());
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
@@ -3974,14 +3796,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		byte[] body;
-		String bodyStr = machineList.ToRequestString();
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
-
+		byte[] body = encodeToUtf8(machineList.ToRequestString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		StringBuilder resourceUriBuilder = new StringBuilder();
@@ -4516,13 +4331,8 @@ public class Client implements LogService {
 		EtlJob etlJob = request.getEtlJob();
 		CodingUtils.assertParameterNotNull(etlJob, "etlJob");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		byte[] body;
-		String bodyStr = etlJob.toJsonString(true,true);
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(etlJob.toJsonString(true, true));
+
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 		String resourceUri = Consts.CONST_ETLJOB_URI;
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -4555,13 +4365,8 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(etlJob, "etlJob");
 		CodingUtils.assertStringNotNullOrEmpty(etlJob.getJobName(), "etlJobName");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		byte[] body;
-		String bodyStr = etlJob.toJsonString(false,false);
-		try {
-			body = bodyStr.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
-		}
+		byte[] body = encodeToUtf8(etlJob.toJsonString(false, false));
+
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 		String resourceUri = Consts.CONST_ETLJOB_URI+ "/" + etlJob.getJobName();
 		Map<String, String> urlParameter = new HashMap<String, String>();

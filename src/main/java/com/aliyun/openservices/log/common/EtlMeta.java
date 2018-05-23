@@ -23,6 +23,18 @@ public class EtlMeta implements Serializable {
         this.metaTag = metaTag;
     }
 
+    public void setMetaName(String metaName) {
+        this.metaName = metaName;
+    }
+
+    public void setMetaKey(String metaKey) {
+        this.metaKey = metaKey;
+    }
+
+    public void setMetaTag(String metaTag) {
+        this.metaTag = metaTag;
+    }
+
     public String getMetaName() {
         return metaName;
     }
