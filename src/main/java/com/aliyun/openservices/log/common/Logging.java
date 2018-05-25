@@ -43,7 +43,7 @@ public class Logging implements Serializable {
 
     public JSONObject marshal() {
         JSONObject object = new JSONObject();
-        object.put("loggingProject", loggingDetails);
+        object.put("loggingProject", loggingProject);
         JSONArray details = new JSONArray();
         for (LoggingDetail detail : loggingDetails) {
             details.add(detail.marshal());
