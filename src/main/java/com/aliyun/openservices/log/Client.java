@@ -21,6 +21,7 @@ import com.aliyun.openservices.log.common.LZ4Encoder;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.Logging;
 import com.aliyun.openservices.log.common.Logs;
 import com.aliyun.openservices.log.common.LogtailProfile;
 import com.aliyun.openservices.log.common.Machine;
@@ -64,6 +65,7 @@ import com.aliyun.openservices.log.request.CreateDashboardRequest;
 import com.aliyun.openservices.log.request.CreateEtlJobRequest;
 import com.aliyun.openservices.log.request.CreateIndexRequest;
 import com.aliyun.openservices.log.request.CreateLogStoreRequest;
+import com.aliyun.openservices.log.request.CreateLoggingRequest;
 import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
 import com.aliyun.openservices.log.request.CreateSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteAlertRequest;
@@ -73,6 +75,7 @@ import com.aliyun.openservices.log.request.DeleteDashboardRequest;
 import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
 import com.aliyun.openservices.log.request.DeleteIndexRequest;
 import com.aliyun.openservices.log.request.DeleteLogStoreRequest;
+import com.aliyun.openservices.log.request.DeleteLoggingRequest;
 import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
 import com.aliyun.openservices.log.request.DeleteSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteShardRequest;
@@ -88,6 +91,7 @@ import com.aliyun.openservices.log.request.GetEtlJobRequest;
 import com.aliyun.openservices.log.request.GetHistogramsRequest;
 import com.aliyun.openservices.log.request.GetIndexRequest;
 import com.aliyun.openservices.log.request.GetLogStoreRequest;
+import com.aliyun.openservices.log.request.GetLoggingRequest;
 import com.aliyun.openservices.log.request.GetLogsRequest;
 import com.aliyun.openservices.log.request.GetLogtailProfileRequest;
 import com.aliyun.openservices.log.request.GetMachineGroupRequest;
@@ -118,6 +122,7 @@ import com.aliyun.openservices.log.request.UpdateDashboardRequest;
 import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
 import com.aliyun.openservices.log.request.UpdateIndexRequest;
 import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
+import com.aliyun.openservices.log.request.UpdateLoggingRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupRequest;
 import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
@@ -136,6 +141,7 @@ import com.aliyun.openservices.log.response.CreateEtlJobResponse;
 import com.aliyun.openservices.log.response.CreateEtlMetaResponse;
 import com.aliyun.openservices.log.response.CreateIndexResponse;
 import com.aliyun.openservices.log.response.CreateLogStoreResponse;
+import com.aliyun.openservices.log.response.CreateLoggingResponse;
 import com.aliyun.openservices.log.response.CreateMachineGroupResponse;
 import com.aliyun.openservices.log.response.CreateProjectResponse;
 import com.aliyun.openservices.log.response.CreateSavedSearchResponse;
@@ -149,6 +155,7 @@ import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
 import com.aliyun.openservices.log.response.DeleteEtlMetaResponse;
 import com.aliyun.openservices.log.response.DeleteIndexResponse;
 import com.aliyun.openservices.log.response.DeleteLogStoreResponse;
+import com.aliyun.openservices.log.response.DeleteLoggingResponse;
 import com.aliyun.openservices.log.response.DeleteMachineGroupResponse;
 import com.aliyun.openservices.log.response.DeleteProjectResponse;
 import com.aliyun.openservices.log.response.DeleteSavedSearchResponse;
@@ -167,6 +174,7 @@ import com.aliyun.openservices.log.response.GetHistogramsResponse;
 import com.aliyun.openservices.log.response.GetIndexResponse;
 import com.aliyun.openservices.log.response.GetIndexStringResponse;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
+import com.aliyun.openservices.log.response.GetLoggingResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
 import com.aliyun.openservices.log.response.GetLogtailProfileResponse;
 import com.aliyun.openservices.log.response.GetMachineGroupResponse;
@@ -204,10 +212,12 @@ import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
 import com.aliyun.openservices.log.response.UpdateEtlMetaResponse;
 import com.aliyun.openservices.log.response.UpdateIndexResponse;
 import com.aliyun.openservices.log.response.UpdateLogStoreResponse;
+import com.aliyun.openservices.log.response.UpdateLoggingResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
 import com.aliyun.openservices.log.response.UpdateSavedSearchResponse;
 import com.aliyun.openservices.log.response.UpdateShipperResponse;
+import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.NetworkUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -229,6 +239,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -559,7 +570,6 @@ public class Client implements LogService {
 				logStore, topic, query, from, to);
 
 		return GetHistograms(request);
-
 	}
 
 	public GetHistogramsResponse GetHistograms(GetHistogramsRequest request)
@@ -581,7 +591,6 @@ public class Client implements LogService {
 				resHeaders);
 		ExtractHistograms(histogramResponse, object);
 		return histogramResponse;
-
 	}
 
 	public PutLogsResponse PutLogs(String project, String logStore, byte[] logGroupBytes, String compressType, String shardHash) throws LogException {
@@ -902,7 +911,7 @@ public class Client implements LogService {
 		try {
 			for (int i = 0; i < logs.size(); i++) {
 				com.alibaba.fastjson.JSONObject log = logs.getJSONObject(i);
-				String source = new String();
+				String source = "";
 				LogItem logItem = new LogItem();
 				Set<String> keySet = log.keySet();
 				for (String key:keySet) {
@@ -3628,7 +3637,6 @@ public class Client implements LogService {
 		ConsumerGroupCheckPointResponse consumerGroupCheckPointResponse = new ConsumerGroupCheckPointResponse(
 				resHeaders, array);
 		return consumerGroupCheckPointResponse;
-
 	}
 
 	@Override
@@ -4488,4 +4496,51 @@ public class Client implements LogService {
 		request.setEtlMetaTag(Consts.CONST_ETLMETA_ALL_TAG_MATCH);
 		return listEtlMeta(request);
 	}
+
+	@Override
+	public CreateLoggingResponse createLogging(final CreateLoggingRequest request) throws LogException {
+		Args.notNull(request, "request");
+		final String project = request.GetProject();
+		Map<String, String> headers = GetCommonHeadPara(project);
+		final Logging logging = request.getLogging();
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
+		return new CreateLoggingResponse(response.getHeaders());
+	}
+
+	@Override
+	public UpdateLoggingResponse updateLogging(final UpdateLoggingRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        final Logging logging = request.getLogging();
+        ResponseMessage response = SendData(project, HttpMethod.PUT,
+                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
+        return new UpdateLoggingResponse(response.getHeaders());
+	}
+
+    @Override
+    public GetLoggingResponse getLogging(final GetLoggingRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        ResponseMessage response = SendData(project, HttpMethod.GET,
+                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers);
+		JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
+		try {
+			return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
+		} catch (JSONException ex) {
+			throw new LogException("BadResponse", ex.getMessage(), response.getRequestId());
+		}
+	}
+
+    @Override
+    public DeleteLoggingResponse deleteLogging(final DeleteLoggingRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        ResponseMessage response = SendData(project, HttpMethod.DELETE,
+                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers);
+        return new DeleteLoggingResponse(response.getHeaders());
+    }
 }

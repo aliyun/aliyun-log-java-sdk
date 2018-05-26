@@ -1,10 +1,12 @@
 package com.aliyun.openservices.log.http.comm;
 
+import com.aliyun.openservices.log.common.Consts;
+
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 /**
  * 表示返回结果的信息。
- *
  */
 public class ResponseMessage extends HttpMesssage {
     private String uri;
@@ -15,7 +17,7 @@ public class ResponseMessage extends HttpMesssage {
     /**
      * 构造函数。
      */
-    public ResponseMessage(){
+    public ResponseMessage() {
     }
 
     public String getUri() {
@@ -33,26 +35,33 @@ public class ResponseMessage extends HttpMesssage {
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
     }
-    
-    public boolean isSuccessful(){
+
+    public boolean isSuccessful() {
         return statusCode / 100 == HTTP_SUCCESS_STATUS_CODE / 100;
     }
-    
-    public void SetBody(byte[] body)
-    {
-    	this.body = body;
-    }
-    
-    public byte[] GetRawBody()
-    {
-    	return this.body;
+
+    public void SetBody(byte[] body) {
+        this.body = body;
     }
 
-	public String GetStringBody() {
-		try {
-			return new String(this.body, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
-	}
+    public byte[] GetRawBody() {
+        return this.body;
+    }
+
+    public String GetStringBody() {
+        try {
+            return new String(this.body, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+    }
+
+    /**
+     * @return The request id returned in headers.
+     */
+    public String getRequestId() {
+        final Map<String, String> headers = getHeaders();
+        final String requestId = headers.get(Consts.CONST_X_SLS_REQUESTID);
+        return requestId == null ? "" : requestId;
+    }
 }
