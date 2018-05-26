@@ -96,8 +96,6 @@ public abstract class ServiceClient {
 
     private ResponseMessage sendRequestImpl(RequestMessage request,
             String charset) throws ClientException, ServiceException {
-        ResponseMessage response = null;
-
         InputStream content = request.getContent();
 
         if (content != null && content.markSupported()) {
@@ -106,28 +104,13 @@ public abstract class ServiceClient {
 
         try {
             Request httpRequest = buildRequest(request, charset);
-            // post process request
-            response = sendRequestCore(httpRequest, charset);
-            return response;
+            return sendRequestCore(httpRequest, charset);
         } catch (ServiceException ex) {
-            // Notice that the response should not be closed in the
-            // finally block because if the request is successful,
-            // the response should be returned to the callers.
-            closeResponseSilently(response);
             throw ex;
-        } catch (ClientException ex) { 
-            // Notice that the response should not be closed in the
-            // finally block because if the request is successful,
-            // the response should be returned to the callers.
-            closeResponseSilently(response);
+        } catch (ClientException ex) {
             throw ex;
-        } catch (Exception ex) { 
-            // Notice that the response should not be closed in the
-            // finally block because if the request is successful,
-            // the response should be returned to the callers.
-            closeResponseSilently(response);
+        } catch (Exception ex) {
 			throw new ClientException(ex.getMessage(), ex);
-        } finally {
         }
     }
 
@@ -201,14 +184,6 @@ public abstract class ServiceClient {
         }
 
         return request;
-    }
-
-    private void closeResponseSilently(ResponseMessage response){
-        if (response != null){
-            try {
-                response.close();
-            } catch (IOException ioe) { /* silently close the response.*/ }
-        }
     }
     
 }
