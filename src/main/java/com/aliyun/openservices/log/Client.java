@@ -3,52 +3,6 @@
  */
 package com.aliyun.openservices.log;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.regex.Pattern;
-import java.util.zip.Deflater;
-import java.util.UUID;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import com.aliyun.openservices.log.common.Logging;
-import com.aliyun.openservices.log.request.*;
-import com.aliyun.openservices.log.response.CreateLoggingResponse;
-import com.aliyun.openservices.log.response.DeleteLoggingResponse;
-import com.aliyun.openservices.log.response.GetLoggingResponse;
-import com.aliyun.openservices.log.response.UpdateLoggingResponse;
-import com.aliyun.openservices.log.util.Args;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.validator.routines.InetAddressValidator;
-import com.aliyun.openservices.log.common.TagContent;
-import com.aliyun.openservices.log.common.EtlJob;
-import com.aliyun.openservices.log.common.EtlMeta;
 import com.aliyun.openservices.log.common.ACL;
 import com.aliyun.openservices.log.common.Alert;
 import com.aliyun.openservices.log.common.AlertFail;
@@ -59,12 +13,15 @@ import com.aliyun.openservices.log.common.Consts.CompressType;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
 import com.aliyun.openservices.log.common.ConsumerGroup;
 import com.aliyun.openservices.log.common.Dashboard;
+import com.aliyun.openservices.log.common.EtlJob;
+import com.aliyun.openservices.log.common.EtlMeta;
 import com.aliyun.openservices.log.common.Histogram;
 import com.aliyun.openservices.log.common.Index;
 import com.aliyun.openservices.log.common.LZ4Encoder;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.Logging;
 import com.aliyun.openservices.log.common.Logs;
 import com.aliyun.openservices.log.common.LogtailProfile;
 import com.aliyun.openservices.log.common.Machine;
@@ -79,6 +36,7 @@ import com.aliyun.openservices.log.common.Shard;
 import com.aliyun.openservices.log.common.ShipperConfig;
 import com.aliyun.openservices.log.common.ShipperTask;
 import com.aliyun.openservices.log.common.ShipperTasksStatistic;
+import com.aliyun.openservices.log.common.TagContent;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.ClientConfiguration;
 import com.aliyun.openservices.log.http.client.ClientConnectionContainer;
@@ -93,6 +51,81 @@ import com.aliyun.openservices.log.http.comm.ResponseMessage;
 import com.aliyun.openservices.log.http.comm.ServiceClient;
 import com.aliyun.openservices.log.http.utils.CodingUtils;
 import com.aliyun.openservices.log.http.utils.DateUtil;
+import com.aliyun.openservices.log.request.ApplyConfigToMachineGroupRequest;
+import com.aliyun.openservices.log.request.ApproveMachineGroupRequest;
+import com.aliyun.openservices.log.request.BatchGetLogRequest;
+import com.aliyun.openservices.log.request.ConsumerGroupGetCheckPointRequest;
+import com.aliyun.openservices.log.request.ConsumerGroupHeartBeatRequest;
+import com.aliyun.openservices.log.request.ConsumerGroupUpdateCheckPointRequest;
+import com.aliyun.openservices.log.request.CreateAlertRequest;
+import com.aliyun.openservices.log.request.CreateChartRequest;
+import com.aliyun.openservices.log.request.CreateConfigRequest;
+import com.aliyun.openservices.log.request.CreateConsumerGroupRequest;
+import com.aliyun.openservices.log.request.CreateDashboardRequest;
+import com.aliyun.openservices.log.request.CreateEtlJobRequest;
+import com.aliyun.openservices.log.request.CreateIndexRequest;
+import com.aliyun.openservices.log.request.CreateLogStoreRequest;
+import com.aliyun.openservices.log.request.CreateLoggingRequest;
+import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
+import com.aliyun.openservices.log.request.CreateSavedSearchRequest;
+import com.aliyun.openservices.log.request.DeleteAlertRequest;
+import com.aliyun.openservices.log.request.DeleteChartRequest;
+import com.aliyun.openservices.log.request.DeleteConfigRequest;
+import com.aliyun.openservices.log.request.DeleteDashboardRequest;
+import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
+import com.aliyun.openservices.log.request.DeleteIndexRequest;
+import com.aliyun.openservices.log.request.DeleteLogStoreRequest;
+import com.aliyun.openservices.log.request.DeleteLoggingRequest;
+import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
+import com.aliyun.openservices.log.request.DeleteSavedSearchRequest;
+import com.aliyun.openservices.log.request.DeleteShardRequest;
+import com.aliyun.openservices.log.request.GetAlertRequest;
+import com.aliyun.openservices.log.request.GetAppliedConfigsRequest;
+import com.aliyun.openservices.log.request.GetAppliedMachineGroupRequest;
+import com.aliyun.openservices.log.request.GetChartRequest;
+import com.aliyun.openservices.log.request.GetConfigRequest;
+import com.aliyun.openservices.log.request.GetCursorRequest;
+import com.aliyun.openservices.log.request.GetCursorTimeRequest;
+import com.aliyun.openservices.log.request.GetDashboardRequest;
+import com.aliyun.openservices.log.request.GetEtlJobRequest;
+import com.aliyun.openservices.log.request.GetHistogramsRequest;
+import com.aliyun.openservices.log.request.GetIndexRequest;
+import com.aliyun.openservices.log.request.GetLogStoreRequest;
+import com.aliyun.openservices.log.request.GetLoggingRequest;
+import com.aliyun.openservices.log.request.GetLogsRequest;
+import com.aliyun.openservices.log.request.GetLogtailProfileRequest;
+import com.aliyun.openservices.log.request.GetMachineGroupRequest;
+import com.aliyun.openservices.log.request.GetProjectLogsRequest;
+import com.aliyun.openservices.log.request.GetSavedSearchRequest;
+import com.aliyun.openservices.log.request.ListACLRequest;
+import com.aliyun.openservices.log.request.ListAlertFailRequest;
+import com.aliyun.openservices.log.request.ListAlertRequest;
+import com.aliyun.openservices.log.request.ListConfigRequest;
+import com.aliyun.openservices.log.request.ListDashboardRequest;
+import com.aliyun.openservices.log.request.ListEtlJobRequest;
+import com.aliyun.openservices.log.request.ListEtlMetaRequest;
+import com.aliyun.openservices.log.request.ListLogStoresRequest;
+import com.aliyun.openservices.log.request.ListMachineGroupRequest;
+import com.aliyun.openservices.log.request.ListProjectRequest;
+import com.aliyun.openservices.log.request.ListSavedSearchRequest;
+import com.aliyun.openservices.log.request.ListShardRequest;
+import com.aliyun.openservices.log.request.ListTopicsRequest;
+import com.aliyun.openservices.log.request.MergeShardsRequest;
+import com.aliyun.openservices.log.request.PutLogsRequest;
+import com.aliyun.openservices.log.request.RemoveConfigFromMachineGroupRequest;
+import com.aliyun.openservices.log.request.SplitShardRequest;
+import com.aliyun.openservices.log.request.UpdateACLRequest;
+import com.aliyun.openservices.log.request.UpdateAlertRequest;
+import com.aliyun.openservices.log.request.UpdateChartRequest;
+import com.aliyun.openservices.log.request.UpdateConfigRequest;
+import com.aliyun.openservices.log.request.UpdateDashboardRequest;
+import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
+import com.aliyun.openservices.log.request.UpdateIndexRequest;
+import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
+import com.aliyun.openservices.log.request.UpdateLoggingRequest;
+import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
+import com.aliyun.openservices.log.request.UpdateMachineGroupRequest;
+import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
 import com.aliyun.openservices.log.response.ApplyConfigToMachineGroupResponse;
 import com.aliyun.openservices.log.response.ApproveMachineGroupResponse;
 import com.aliyun.openservices.log.response.BatchGetLogResponse;
@@ -104,8 +137,11 @@ import com.aliyun.openservices.log.response.CreateChartResponse;
 import com.aliyun.openservices.log.response.CreateConfigResponse;
 import com.aliyun.openservices.log.response.CreateConsumerGroupResponse;
 import com.aliyun.openservices.log.response.CreateDashboardResponse;
+import com.aliyun.openservices.log.response.CreateEtlJobResponse;
+import com.aliyun.openservices.log.response.CreateEtlMetaResponse;
 import com.aliyun.openservices.log.response.CreateIndexResponse;
 import com.aliyun.openservices.log.response.CreateLogStoreResponse;
+import com.aliyun.openservices.log.response.CreateLoggingResponse;
 import com.aliyun.openservices.log.response.CreateMachineGroupResponse;
 import com.aliyun.openservices.log.response.CreateProjectResponse;
 import com.aliyun.openservices.log.response.CreateSavedSearchResponse;
@@ -115,8 +151,11 @@ import com.aliyun.openservices.log.response.DeleteChartResponse;
 import com.aliyun.openservices.log.response.DeleteConfigResponse;
 import com.aliyun.openservices.log.response.DeleteConsumerGroupResponse;
 import com.aliyun.openservices.log.response.DeleteDashboardResponse;
+import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
+import com.aliyun.openservices.log.response.DeleteEtlMetaResponse;
 import com.aliyun.openservices.log.response.DeleteIndexResponse;
 import com.aliyun.openservices.log.response.DeleteLogStoreResponse;
+import com.aliyun.openservices.log.response.DeleteLoggingResponse;
 import com.aliyun.openservices.log.response.DeleteMachineGroupResponse;
 import com.aliyun.openservices.log.response.DeleteProjectResponse;
 import com.aliyun.openservices.log.response.DeleteSavedSearchResponse;
@@ -130,10 +169,12 @@ import com.aliyun.openservices.log.response.GetConfigResponse;
 import com.aliyun.openservices.log.response.GetCursorResponse;
 import com.aliyun.openservices.log.response.GetCursorTimeResponse;
 import com.aliyun.openservices.log.response.GetDashboardResponse;
+import com.aliyun.openservices.log.response.GetEtlJobResponse;
 import com.aliyun.openservices.log.response.GetHistogramsResponse;
 import com.aliyun.openservices.log.response.GetIndexResponse;
 import com.aliyun.openservices.log.response.GetIndexStringResponse;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
+import com.aliyun.openservices.log.response.GetLoggingResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
 import com.aliyun.openservices.log.response.GetLogtailProfileResponse;
 import com.aliyun.openservices.log.response.GetMachineGroupResponse;
@@ -147,6 +188,9 @@ import com.aliyun.openservices.log.response.ListAlertResponse;
 import com.aliyun.openservices.log.response.ListConfigResponse;
 import com.aliyun.openservices.log.response.ListConsumerGroupResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
+import com.aliyun.openservices.log.response.ListEtlJobResponse;
+import com.aliyun.openservices.log.response.ListEtlMetaNameResponse;
+import com.aliyun.openservices.log.response.ListEtlMetaResponse;
 import com.aliyun.openservices.log.response.ListLogStoresResponse;
 import com.aliyun.openservices.log.response.ListMachineGroupResponse;
 import com.aliyun.openservices.log.response.ListMachinesResponse;
@@ -164,22 +208,46 @@ import com.aliyun.openservices.log.response.UpdateChartResponse;
 import com.aliyun.openservices.log.response.UpdateConfigResponse;
 import com.aliyun.openservices.log.response.UpdateConsumerGroupResponse;
 import com.aliyun.openservices.log.response.UpdateDashboardResponse;
+import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
+import com.aliyun.openservices.log.response.UpdateEtlMetaResponse;
 import com.aliyun.openservices.log.response.UpdateIndexResponse;
 import com.aliyun.openservices.log.response.UpdateLogStoreResponse;
+import com.aliyun.openservices.log.response.UpdateLoggingResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
 import com.aliyun.openservices.log.response.UpdateSavedSearchResponse;
 import com.aliyun.openservices.log.response.UpdateShipperResponse;
-import com.aliyun.openservices.log.response.CreateEtlJobResponse;
-import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
-import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
-import com.aliyun.openservices.log.response.GetEtlJobResponse;
-import com.aliyun.openservices.log.response.ListEtlJobResponse;
-import com.aliyun.openservices.log.response.ListEtlMetaResponse;
-import com.aliyun.openservices.log.response.ListEtlMetaNameResponse;
-import com.aliyun.openservices.log.response.DeleteEtlMetaResponse;
-import com.aliyun.openservices.log.response.CreateEtlMetaResponse;
-import com.aliyun.openservices.log.response.UpdateEtlMetaResponse;
+import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.util.NetworkUtils;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+import org.apache.commons.codec.binary.Base64;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.zip.Deflater;
 
 /**
  * SlsClient class is the main class in the sdk, it implements the interfaces
@@ -275,7 +343,7 @@ public class Client implements LogService {
 	 *            aliyun accessKey
 	 */
 	public Client(String endpoint, String accessId, String accessKey) {
-		this(endpoint, accessId, accessKey, GetLocalMachineIp());
+		this(endpoint, accessId, accessKey, NetworkUtils.getLocalMachineIP());
 	}
 
 	/**
@@ -352,15 +420,15 @@ public class Client implements LogService {
 			this.hostName = this.hostName.substring(0,
 					this.hostName.length() - 1);
 		}
-		if (IsIpAddress(this.hostName)) {
-			throw new IllegalArgumentException("EndpontInvalid", new Exception(
+		if (NetworkUtils.isIPAddr(this.hostName)) {
+			throw new IllegalArgumentException("EndpointInvalid", new Exception(
 					"The ip address is not supported"));
 		}
 		this.accessId = accessId;
 		this.accessKey = accessKey;
 		this.sourceIp = sourceIp;
 		if (sourceIp == null || sourceIp.isEmpty()) {
-			this.sourceIp = GetLocalMachineIp();
+			this.sourceIp = NetworkUtils.getLocalMachineIP();
 		}
 		// this.compressFlag = compressFlag;
 		ClientConfiguration clientConfig = new ClientConfiguration();
@@ -421,11 +489,6 @@ public class Client implements LogService {
 			throw new LogException("EndpointInvalid", 
 					"Failed to get real server ip when direct mode in enabled", "");
 		}
-	}
-
-	private static boolean IsIpAddress(String str) {
-		Pattern pattern = Pattern.compile("^(\\d{1,3}\\.){3}\\d{1,3}");
-		return pattern.matcher(str).matches();
 	}
 
 	private static byte[] encodeToUtf8(String source) throws LogException {
@@ -507,7 +570,6 @@ public class Client implements LogService {
 				logStore, topic, query, from, to);
 
 		return GetHistograms(request);
-
 	}
 
 	public GetHistogramsResponse GetHistograms(GetHistogramsRequest request)
@@ -525,11 +587,10 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 		JSONArray object = ParseResponseMessageToArray(response, requestId);
-		GetHistogramsResponse hisTogramResponse = new GetHistogramsResponse(
+		GetHistogramsResponse histogramResponse = new GetHistogramsResponse(
 				resHeaders);
-		ExtractHistograms(hisTogramResponse, object);
-		return hisTogramResponse;
-
+		ExtractHistograms(histogramResponse, object);
+		return histogramResponse;
 	}
 
 	public PutLogsResponse PutLogs(String project, String logStore, byte[] logGroupBytes, String compressType, String shardHash) throws LogException {
@@ -569,7 +630,6 @@ public class Client implements LogService {
 	public PutLogsResponse PutLogs(String project, String logStore,
 			String topic, List<LogItem> logItems, String source)
 			throws LogException {
-		// TODO Auto-generated method stub
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
@@ -851,7 +911,7 @@ public class Client implements LogService {
 		try {
 			for (int i = 0; i < logs.size(); i++) {
 				com.alibaba.fastjson.JSONObject log = logs.getJSONObject(i);
-				String source = new String();
+				String source = "";
 				LogItem logItem = new LogItem();
 				Set<String> keySet = log.keySet();
 				for (String key:keySet) {
@@ -1108,7 +1168,6 @@ public class Client implements LogService {
 
 	public ListShardResponse SplitShard(SplitShardRequest request)
 			throws LogException {
-		// TODO Auto-generated method stub
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -1128,22 +1187,15 @@ public class Client implements LogService {
 
 		Map<String, String> urlParameter = request.GetAllParams();
 
-		String requestId = "";
-		JSONArray array = null;
-		ResponseMessage response = new ResponseMessage();
-		ListShardResponse listShardResponse = null;
-
-		response = SendData(project, HttpMethod.POST, resourceUri,
+		ResponseMessage response = SendData(project, HttpMethod.POST, resourceUri,
 				urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
-		requestId = GetRequestId(resHeaders);
+		String requestId = GetRequestId(resHeaders);
 
-		ArrayList<Shard> shards = new ArrayList<Shard>();
+		JSONArray array = ParseResponseMessageToArray(response, requestId);
+		ArrayList<Shard> shards = ExtractShards(array, requestId);
 
-		array = ParseResponseMessageToArray(response, requestId);
-		shards = ExtractShards(array, requestId);
-
-		listShardResponse = new ListShardResponse(resHeaders, shards);
+        ListShardResponse listShardResponse = new ListShardResponse(resHeaders, shards);
 
 		return listShardResponse;
 	}
@@ -1158,7 +1210,6 @@ public class Client implements LogService {
 
 	public ListShardResponse MergeShards(MergeShardsRequest request)
 			throws LogException {
-		// TODO Auto-generated method stub
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -1175,37 +1226,29 @@ public class Client implements LogService {
 
 		Map<String, String> urlParameter = request.GetAllParams();
 
-		String requestId = "";
-		JSONArray array = null;
-		ResponseMessage response = new ResponseMessage();
-		ListShardResponse listShardResponse = null;
-
-		response = SendData(project, HttpMethod.POST, resourceUri,
+        ResponseMessage response = SendData(project, HttpMethod.POST, resourceUri,
 				urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
-		requestId = GetRequestId(resHeaders);
+        String requestId = GetRequestId(resHeaders);
 
-		ArrayList<Shard> shards = new ArrayList<Shard>();
+        JSONArray array = ParseResponseMessageToArray(response, requestId);
+        ArrayList<Shard> shards = ExtractShards(array, requestId);
 
-		array = ParseResponseMessageToArray(response, requestId);
-		shards = ExtractShards(array, requestId);
-
-		listShardResponse = new ListShardResponse(resHeaders, shards);
+        ListShardResponse listShardResponse = new ListShardResponse(resHeaders, shards);
 
 		return listShardResponse;
 	}
 
-	public DeleteShardResponse DeleteShard(String prj, String logStore,
+	public DeleteShardResponse DeleteShard(String project, String logStore,
 			int shardId) throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(prj, "project");
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "shardId");
-		return DeleteShard(new DeleteShardRequest(prj, logStore, shardId));
+		return DeleteShard(new DeleteShardRequest(project, logStore, shardId));
 	}
 
 	public DeleteShardResponse DeleteShard(DeleteShardRequest request)
 			throws LogException {
-		// TODO Auto-generated method stub
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -1222,9 +1265,7 @@ public class Client implements LogService {
 
 		Map<String, String> urlParameter = request.GetAllParams();
 
-		ResponseMessage response = new ResponseMessage();
-
-		response = SendData(project, HttpMethod.DELETE, resourceUri,
+        ResponseMessage response = SendData(project, HttpMethod.DELETE, resourceUri,
 				urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 
@@ -1276,24 +1317,15 @@ public class Client implements LogService {
 
 		Map<String, String> urlParameter = request.GetAllParams();
 
-		String requestId = "";
-		JSONArray array = null;
-		ResponseMessage response = new ResponseMessage();
-		ListShardResponse listShardResponse = null;
-
-		response = SendData(project, HttpMethod.GET, resourceUri, urlParameter,
+		ResponseMessage response = SendData(project, HttpMethod.GET, resourceUri, urlParameter,
 				headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
-		requestId = GetRequestId(resHeaders);
+        String requestId = GetRequestId(resHeaders);
 
-		ArrayList<Shard> shards = new ArrayList<Shard>();
+        JSONArray array = ParseResponseMessageToArray(response, requestId);
+        ArrayList<Shard> shards = ExtractShards(array, requestId);
 
-		array = ParseResponseMessageToArray(response, requestId);
-		shards = ExtractShards(array, requestId);
-
-		listShardResponse = new ListShardResponse(resHeaders, shards);
-
-		return listShardResponse;
+        return new ListShardResponse(resHeaders, shards);
 	}
 
 	protected String GetRequestId(Map<String, String> headers) {
@@ -1347,8 +1379,8 @@ public class Client implements LogService {
 
 		Map<String, String> urlParameter = request.GetAllParams();
 
-		ResponseMessage response = new ResponseMessage();
-		BatchGetLogResponse batchGetLogResponse = null;
+		ResponseMessage response;
+		BatchGetLogResponse batchGetLogResponse;
 		for (int i = 0; i < 2; i++) {
 			String server_ip = null;
 			ClientConnectionStatus connection_status = null;
@@ -1407,17 +1439,11 @@ public class Client implements LogService {
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
-		ResponseMessage response = new ResponseMessage();
-		CreateConfigResponse createConfigResponse = null;
-
-		response = SendData(project, HttpMethod.POST, resourceUri,
+        ResponseMessage response = SendData(project, HttpMethod.POST, resourceUri,
 				urlParameter, headParameter, body);
 
 		Map<String, String> resHeaders = response.getHeaders();
-
-		createConfigResponse = new CreateConfigResponse(resHeaders);
-
-		return createConfigResponse;
+        return new CreateConfigResponse(resHeaders);
 	}
 
 	public UpdateConfigResponse UpdateConfig(String project, Config config)
@@ -1450,16 +1476,11 @@ public class Client implements LogService {
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
-		ResponseMessage response = new ResponseMessage();
-		UpdateConfigResponse updateConfigResponse = null;
-
-		response = SendData(project, HttpMethod.PUT, resourceUri, urlParameter,
+        ResponseMessage response = SendData(project, HttpMethod.PUT, resourceUri, urlParameter,
 				headParameter, body);
 		Map<String, String> resHeaders = response.getHeaders();
 
-		updateConfigResponse = new UpdateConfigResponse(resHeaders);
-
-		return updateConfigResponse;
+        return new UpdateConfigResponse(resHeaders);
 	}
 
 	protected Config ExtractConfigFromResponse(JSONObject dict, String requestId)
@@ -1498,22 +1519,14 @@ public class Client implements LogService {
 
 		Map<String, String> urlParameter = request.GetAllParams();
 
-		ResponseMessage response = new ResponseMessage();
-		GetConfigResponse getConfigResponse = null;
-
-		response = SendData(project, HttpMethod.GET, resourceUri, urlParameter,
+        ResponseMessage response = SendData(project, HttpMethod.GET, resourceUri, urlParameter,
 				headParameter);
 
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = ParserResponseMessage(response, requestId);
-		Config config = null;
-
-		config = ExtractConfigFromResponse(object, requestId);
-
-		getConfigResponse = new GetConfigResponse(resHeaders, config);
-
-		return getConfigResponse;
+        Config config = ExtractConfigFromResponse(object, requestId);
+        return new GetConfigResponse(resHeaders, config);
 	}
 
 	public DeleteConfigResponse DeleteConfig(String project, String configName)
@@ -1609,7 +1622,7 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = new ResponseMessage();
-		ListConfigResponse listConfigResponse = null;
+		ListConfigResponse listConfigResponse;
 		JSONObject object = null;
 		try {
 			response = SendData(project, HttpMethod.GET, resourceUri,
@@ -1620,13 +1633,9 @@ public class Client implements LogService {
 
 			object = ParserResponseMessage(response, requestId);
 
-			int total = 0;
-			int count = 0;
-			List<String> configs = new ArrayList<String>();
-
-			total = object.getInt("total");
-			count = object.getInt("count");
-			configs = ExtractConfigs(object, requestId);
+			int total = object.getInt("total");
+			int count = object.getInt("count");
+            List<String> configs = ExtractConfigs(object, requestId);
 
 			listConfigResponse = new ListConfigResponse(resHeaders, count,
 					total, configs);
@@ -1721,8 +1730,7 @@ public class Client implements LogService {
 		return group;
 	}
 
-	protected ArrayList<String> ExtractConfigsFromResponse(JSONObject object,
-			String requestId) throws LogException {
+	protected ArrayList<String> ExtractConfigsFromResponse(JSONObject object) {
 		ArrayList<String> configs = new ArrayList<String>();
 		JSONArray configobj = object.getJSONArray("configs");
 		for (int i = 0; i < configobj.size(); ++i) {
@@ -1731,8 +1739,7 @@ public class Client implements LogService {
 		return configs;
 	}
 
-	protected ArrayList<String> ExtractConfigMachineGroupFromResponse(
-			JSONObject object, String requestId) throws LogException {
+	protected ArrayList<String> ExtractConfigMachineGroupFromResponse(JSONObject object) {
 		ArrayList<String> configs = new ArrayList<String>();
 		JSONArray configobj = object.getJSONArray("machinegroups");
 		for (int i = 0; i < configobj.size(); ++i) {
@@ -1771,8 +1778,7 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = ParserResponseMessage(response, requestId);
-		ArrayList<String> group = null;
-		group = ExtractConfigsFromResponse(object, requestId);
+		ArrayList<String> group = ExtractConfigsFromResponse(object);
 		return new GetAppliedConfigResponse(resHeaders, group);
 	}
 
@@ -1807,9 +1813,7 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = ParserResponseMessage(response, requestId);
-		ArrayList<String> group = null;
-
-		group = this.ExtractConfigMachineGroupFromResponse(object, requestId);
+		ArrayList<String> group = this.ExtractConfigMachineGroupFromResponse(object);
 
 		return new GetAppliedMachineGroupsResponse(resHeaders, group);
 
@@ -1838,9 +1842,6 @@ public class Client implements LogService {
 		String resourceUri = resourceUriBuilder.toString();
 
 		Map<String, String> urlParameter = request.GetAllParams();
-
-		GetMachineGroupResponse getMachineGroupResponse = null;
-
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
 
@@ -1849,10 +1850,7 @@ public class Client implements LogService {
 		JSONObject object = ParserResponseMessage(response, requestId);
 
 		MachineGroup group = ExtractMachineGroupFromResponse(object, requestId);
-
-		getMachineGroupResponse = new GetMachineGroupResponse(resHeaders, group);
-
-		return getMachineGroupResponse;
+        return new GetMachineGroupResponse(resHeaders, group);
 	}
 
 	@Override
@@ -2044,14 +2042,9 @@ public class Client implements LogService {
 
 			object = ParserResponseMessage(response, requestId);
 
-			int total = 0;
-			int count = 0;
-			List<String> groups = new ArrayList<String>();
-
-			total = object.getInt("total");
-			count = object.getInt("count");
-
-			groups = ExtractMachineGroups(object, requestId);
+			int total = object.getInt("total");
+			int count = object.getInt("count");
+            List<String>  groups = ExtractMachineGroups(object, requestId);
 
 			listMachineGroupResponse = new ListMachineGroupResponse(resHeaders,
 					count, total, groups);
@@ -2264,27 +2257,21 @@ public class Client implements LogService {
 
 		Map<String, String> urlParameter = request.GetAllParams();
 
-		String requestId = "";
 		JSONObject object = null;
 		ResponseMessage response = new ResponseMessage();
-		ListACLResponse listACLResponse = null;
+		ListACLResponse listACLResponse;
 
 		try {
 			response = SendData(project, HttpMethod.GET, resourceUri,
 					urlParameter, headParameter);
 
 			Map<String, String> resHeaders = response.getHeaders();
-			requestId = GetRequestId(resHeaders);
+            String requestId = GetRequestId(resHeaders);
 			object = ParserResponseMessage(response, requestId);
 
-			int total = 0;
-			int count = 0;
-			List<ACL> acls = new ArrayList<ACL>();
-
-			total = object.getInt("total");
-			count = object.getInt("count");
-
-			acls = ExtractACLs(object, requestId);
+			int total = object.getInt("total");
+			int count = object.getInt("count");
+            List<ACL> acls = ExtractACLs(object, requestId);
 
 			listACLResponse = new ListACLResponse(resHeaders, count, total,
 					acls);
@@ -2476,7 +2463,7 @@ public class Client implements LogService {
 		headParameter.put(Consts.CONST_DATE,
 				DateUtil.formatRfc822Date(new Date()));
 
-		if (!project.isEmpty() && project != "") {
+		if (!project.isEmpty()) {
 			headParameter.put(Consts.CONST_HOST, project + "." + this.hostName);
 		} else {
 			headParameter.put(Consts.CONST_HOST, this.hostName);
@@ -2671,42 +2658,6 @@ public class Client implements LogService {
 		} catch (InvalidKeyException e) {
 			throw new RuntimeException("Failed to calcuate the signature", e);
 		}
-	}
-
-	private static String GetLocalMachineIp() {
-		InetAddressValidator validator = new InetAddressValidator();
-		String candidate = new String();
-		try {
-			for (Enumeration<NetworkInterface> ifaces = NetworkInterface
-					.getNetworkInterfaces(); ifaces.hasMoreElements();) {
-				NetworkInterface iface = ifaces.nextElement();
-
-				if (iface.isUp()) {
-					for (Enumeration<InetAddress> addresses = iface
-							.getInetAddresses(); addresses.hasMoreElements();) {
-
-						InetAddress address = addresses.nextElement();
-
-						if (address.isLinkLocalAddress() == false
-								&& address.getHostAddress() != null) {
-							String ipAddress = address.getHostAddress();
-							if (ipAddress.equals(Consts.CONST_LOCAL_IP)) {
-								continue;
-							}
-							if (validator.isValidInet4Address(ipAddress)) {
-								return ipAddress;
-							}
-							if (validator.isValid(ipAddress)) {
-								candidate = ipAddress;
-							}
-						}
-					}
-				}
-			}
-		} catch (SocketException e) {
-
-		}
-		return candidate;
 	}
 
 	protected ArrayList<Shard> ExtractShards(JSONArray array, String requestId)
@@ -3127,12 +3078,9 @@ public class Client implements LogService {
 		String requestId = GetRequestId(resHeaders);
 
 		com.alibaba.fastjson.JSONObject object = ParserResponseMessageWithFastJson(response, requestId);
-		Index
-
-		index = ExtractIndexFromResponseWithFastJson(object, requestId);
+		Index index = ExtractIndexFromResponseWithFastJson(object, requestId);
 
 		return new GetIndexResponse(resHeaders, index);
-
 	}
 
     @Override
@@ -3158,9 +3106,8 @@ public class Client implements LogService {
                             resourceUri, urlParameter, headParameter);
 
             Map<String, String> resHeaders = response.getHeaders();
-            String requestId = GetRequestId(resHeaders);
 
-            return new GetIndexStringResponse(resHeaders, response.GetStringBody());
+        return new GetIndexStringResponse(resHeaders, response.GetStringBody());
 
     }
 	
@@ -3284,7 +3231,7 @@ public class Client implements LogService {
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = ParserResponseMessage(response, requestId);
 
-		ShipperConfig config = null;
+		ShipperConfig config;
 		if (object.containsKey("targetType")
 				&& object.getString("targetType").equals("odps")) {
 			config = new OdpsShipperConfig();
@@ -3293,7 +3240,6 @@ public class Client implements LogService {
 				&& object.getString("targetType").equals("oss")) {
 			config = new OssShipperConfig();
 			config.FromJsonObj(object.getJSONObject("targetConfiguration"));
-			;
 		} else {
 			throw new LogException("InvalidShipperType",
 					"The return shipper config is:" + object.toString(), null,
@@ -3691,7 +3637,6 @@ public class Client implements LogService {
 		ConsumerGroupCheckPointResponse consumerGroupCheckPointResponse = new ConsumerGroupCheckPointResponse(
 				resHeaders, array);
 		return consumerGroupCheckPointResponse;
-
 	}
 
 	@Override
@@ -3879,13 +3824,9 @@ public class Client implements LogService {
 
 			object = ParserResponseMessage(response, requestId);
 
-			int total = 0;
-			int count = 0;
-			List<Project> projects = new ArrayList<Project>();
-
-			total = object.getInt(Consts.CONST_TOTAL);
-			count = object.getInt(Consts.CONST_COUNT);
-			projects = ExtractProjects(object, requestId);
+			int total = object.getInt(Consts.CONST_TOTAL);
+			int count = object.getInt(Consts.CONST_COUNT);
+            List<Project> projects = ExtractProjects(object, requestId);
 
 			listProjectResponse = new ListProjectResponse(resHeaders, total, count, projects);
 		} catch (JSONException e) {
@@ -4052,17 +3993,13 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		String resourceUri = "/dashboards";
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-		Map<String, String> urlParameter = new HashMap<String, String>();
-		urlParameter = request.GetAllParams();
+		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
-		int total = 0;
-		int count = 0;
-		List<String> dashboards = new ArrayList<String>();
-		total = object.getInt(Consts.CONST_TOTAL);
-		count = object.getInt(Consts.CONST_COUNT);
-		dashboards = ExtractDashboards(object, requestId);
+		int total = object.getInt(Consts.CONST_TOTAL);
+		int count = object.getInt(Consts.CONST_COUNT);
+        List<String> dashboards = ExtractDashboards(object, requestId);
 		ListDashboardResponse listDashboardResponse = new ListDashboardResponse(response.getHeaders(), count, total, dashboards);
 		return listDashboardResponse;
 	}
@@ -4157,17 +4094,13 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		String resourceUri = Consts.CONST_SAVEDSEARCH_URI;
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-		Map<String, String> urlParameter = new HashMap<String, String>();
-		urlParameter = request.GetAllParams();
+		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
-		int total = 0;
-		int count = 0;
-		List<String> savedSearches = new ArrayList<String>();
-		total = object.getInt(Consts.CONST_TOTAL);
-		count = object.getInt(Consts.CONST_COUNT);
-		savedSearches = ExtractSavedSearches(object, requestId);
+		int total = object.getInt(Consts.CONST_TOTAL);
+		int count = object.getInt(Consts.CONST_COUNT);
+        List<String> savedSearches = ExtractSavedSearches(object, requestId);
 		ListSavedSearchResponse listSavedSearchResponse = new ListSavedSearchResponse(response.getHeaders(), count, total, savedSearches);
 		return listSavedSearchResponse;
 	}
@@ -4273,19 +4206,14 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		String resourceUri = Consts.CONST_ALERT_URI;
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-		Map<String, String> urlParameter = new HashMap<String, String>();
-		urlParameter = request.GetAllParams();
+		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
-		int total = 0;
-		int count = 0;
-		List<String> alerts = new ArrayList<String>();
-		total = object.getInt(Consts.CONST_TOTAL);
-		count = object.getInt(Consts.CONST_COUNT);
-		alerts = ExtractAlerts(object, requestId);
-		ListAlertResponse listAlertResponse = new ListAlertResponse(response.getHeaders(), count, total, alerts);
-		return listAlertResponse;
+		int total = object.getInt(Consts.CONST_TOTAL);
+		int count = object.getInt(Consts.CONST_COUNT);
+        List<String> alerts = ExtractAlerts(object, requestId);
+        return new ListAlertResponse(response.getHeaders(), count, total, alerts);
 	}
 	
 	protected List<AlertFail> ExtractAlertFails(JSONObject object, String requestId)
@@ -4319,13 +4247,10 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
-		int total = 0;
-		int count = 0;
-		total = object.getInt(Consts.CONST_TOTAL);
-		count = object.getInt(Consts.CONST_COUNT);
-		List<AlertFail> alertFails = ExtractAlertFails(object, requestId);
-		ListAlertFailResponse listAlertFailsResponse = new ListAlertFailResponse(response.getHeaders(), count, total, alertFails);	
-		return listAlertFailsResponse;
+        int total = object.getInt(Consts.CONST_TOTAL);
+        int count = object.getInt(Consts.CONST_COUNT);
+        List<AlertFail> alertFails = ExtractAlertFails(object, requestId);
+        return new ListAlertFailResponse(response.getHeaders(), count, total, alertFails);
 	}
 
 	@Override
