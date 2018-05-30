@@ -17,8 +17,8 @@ public class OssShipperConfig implements ShipperConfig {
 	private OssShipperStorageDetail storageDetail;
 
 	public OssShipperConfig(String ossBucket, String ossPrefix, String roleArn,
-			int bufferInteval, int bufferMb) {
-		this(ossBucket, ossPrefix, roleArn, bufferInteval, bufferMb, "snappy");
+			int bufferInterval, int bufferMb) {
+		this(ossBucket, ossPrefix, roleArn, bufferInterval, bufferMb, "snappy");
 	}
 
 	/**
@@ -130,7 +130,39 @@ public class OssShipperConfig implements ShipperConfig {
 	public String GetCompressType() {
 		return mCompressType;
 	}
-	
+
+	public void setOssBucket(String ossBucket) {
+		this.mOssBucket = ossBucket;
+	}
+
+	public void setOssPrefix(String ossPrefix) {
+		this.mOssPrefix = ossPrefix;
+	}
+
+	public void setRoleArn(String roleArn) {
+		this.mRoleArn = roleArn;
+	}
+
+	public void setBufferInterval(int bufferInterval) {
+		this.mBufferInterval = bufferInterval;
+	}
+
+	public void setBufferMb(int bufferMb) {
+		this.mBufferMb = bufferMb;
+	}
+
+	public void setCompressType(String compressType) {
+		this.mCompressType = compressType;
+	}
+
+	public void setPathFormat(String pathFormat) {
+		this.mPathFormat = pathFormat;
+	}
+
+	public void setStorageDetail(OssShipperStorageDetail storageDetail) {
+		this.storageDetail = storageDetail;
+	}
+
 	@Override
 	public String GetShipperType() {
 		return "oss";

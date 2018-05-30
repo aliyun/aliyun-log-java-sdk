@@ -79,6 +79,34 @@ public class OdpsShipperConfig implements ShipperConfig {
 		return "odps";
 	}
 
+	public void setOdpsEndPoint(String odpsEndPoint) {
+		this.mOdpsEndPoint = odpsEndPoint;
+	}
+
+	public void setOdpsProject(String odpsProject) {
+		this.mOdpsProject = odpsProject;
+	}
+
+	public void setOdpsTable(String odpsTable) {
+		this.mOdpsTable = odpsTable;
+	}
+
+	public void setLogFieldsList(List<String> logFieldsList) {
+		this.mLogFieldsList = logFieldsList;
+	}
+
+	public void setPartitionColumn(List<String> partitionColumn) {
+		this.mPartitionColumn = partitionColumn;
+	}
+
+	public void setPartitionTimeFormat(String partitionTimeFormat) {
+		this.mPartitionTimeFormat = partitionTimeFormat;
+	}
+
+	public void setBufferInterval(int mBufferInterval) {
+		this.mBufferInterval = mBufferInterval;
+	}
+
 	public JSONObject GetJsonObj() {
 		JSONObject obj = new JSONObject();
 		obj.put("odpsEndpoint", this.mOdpsEndPoint);

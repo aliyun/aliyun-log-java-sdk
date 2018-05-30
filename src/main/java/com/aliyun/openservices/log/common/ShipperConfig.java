@@ -6,10 +6,10 @@ import com.aliyun.openservices.log.exception.LogException;
 
 public interface ShipperConfig {
 
-	public String GetShipperType();
+	String GetShipperType();
 	
-	public JSONObject GetJsonObj();
+	JSONObject GetJsonObj();
 	
-	public void FromJsonObj(JSONObject obj) throws LogException;
+	void FromJsonObj(JSONObject obj) throws LogException;
 
 }
