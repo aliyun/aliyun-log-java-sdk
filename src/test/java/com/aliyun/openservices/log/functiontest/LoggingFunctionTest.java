@@ -93,12 +93,21 @@ public class LoggingFunctionTest {
     public void setUp() throws Exception {
         final Config config = readConfig();
         client = new Client(config.endpoint, config.accessKeyID, config.accessKey);
+
         ListProjectResponse response = client.ListProject();
         List<Project> projects = response.getProjects();
-        final Project project = randomFrom(projects);
-        projectName = project.getProjectName();
-        ListLogStoresResponse logStoresResponse = client.ListLogStores(projectName, 0, 100, "");
-        logStores = logStoresResponse.GetLogStores();
+
+        for (Project project : projects) {
+            projectName = project.getProjectName();
+            ListLogStoresResponse logStoresResponse = client.ListLogStores(projectName, 0, 100, "");
+            logStores = logStoresResponse.GetLogStores();
+            if (!logStores.isEmpty()) {
+                break;
+            }
+        }
+        if (logStores.isEmpty()) {
+            fail("No logstores are found");
+        }
     }
 
     @Test
