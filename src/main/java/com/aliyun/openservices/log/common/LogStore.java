@@ -17,6 +17,8 @@ public class LogStore implements Serializable {
 	private int ttl = -1;
 	private int shardCount = -1;
 	private boolean enableWebTracking = false;
+	private boolean mAutoSplit = false;
+	private int mMaxSplitShard = -1;
 	private int createTime = -1;
 	private int lastModifyTime = -1;
 	
@@ -37,6 +39,7 @@ public class LogStore implements Serializable {
 		this.shardCount = shardCount;
 		this.enableWebTracking = enableWebTracking;
 	}
+
 	public LogStore(LogStore logStore) {
 		super();
 		this.logStoreName = logStore.GetLogStoreName();
@@ -45,6 +48,24 @@ public class LogStore implements Serializable {
 		this.createTime = logStore.GetCreateTime();
 		this.lastModifyTime = logStore.GetLastModifyTime();
 		this.enableWebTracking = logStore.enableWebTracking;
+		this.mAutoSplit = logStore.mAutoSplit;
+		this.mMaxSplitShard = logStore.mMaxSplitShard;
+	}
+
+	public int getmMaxSplitShard() {
+		return mMaxSplitShard;
+	}
+
+	public void setmMaxSplitShard(int mMaxSplitShard) {
+		this.mMaxSplitShard = mMaxSplitShard;
+	}
+
+	public boolean ismAutoSplit() {
+		return mAutoSplit;
+	}
+
+	public void setmAutoSplit(boolean mAutoSplit) {
+		this.mAutoSplit = mAutoSplit;
 	}
 	
 	public boolean isEnableWebTracking() {
@@ -117,6 +138,8 @@ public class LogStore implements Serializable {
 		logStoreDict.put("ttl", GetTtl());
 		logStoreDict.put("shardCount", GetShardCount());
 		logStoreDict.put("enable_tracking", isEnableWebTracking());
+		logStoreDict.put("autoSplit", ismAutoSplit());
+		logStoreDict.put("maxSplitShard", getmMaxSplitShard());
 		return logStoreDict;
 	}
 	
@@ -151,6 +174,13 @@ public class LogStore implements Serializable {
 			
 			if (dict.containsKey("lastModifyTime")) {
 				lastModifyTime = dict.getInt("lastModifyTime");
+			}
+
+			if (dict.containsKey("autoSplit")) {
+				mAutoSplit = dict.getBoolean("autoSplit");
+			}
+			if (dict.containsKey("maxSplitShard")) {
+				mMaxSplitShard = dict.getInt("maxSplitShard");
 			}
 			
 		} catch (JSONException e) {
