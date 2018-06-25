@@ -5,9 +5,7 @@ import java.util.Map;
 import com.aliyun.openservices.log.common.ACL;
 
 public class GetACLResponse extends Response {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 3805949202678526920L;
 	ACL acl = new ACL();
 

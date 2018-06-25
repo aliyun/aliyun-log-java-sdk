@@ -3,13 +3,12 @@ package com.aliyun.openservices.log.response;
 import java.util.Map;
 
 public class GetCursorTimeResponse  extends Response {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 83320847206807600L;
 
 	
-	private int mCursorTime = 0;
+	private int mCursorTime;
+
 	/**
 	 * Construct the response with http headers
 	 * @param headers http headers

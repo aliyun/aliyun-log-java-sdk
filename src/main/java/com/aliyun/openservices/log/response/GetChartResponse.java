@@ -7,7 +7,8 @@ import com.aliyun.openservices.log.common.Chart;
 public class GetChartResponse extends Response {
 
 	private static final long serialVersionUID = -5285312896064493977L;
-	Chart chart = new Chart();
+
+	private Chart chart;
 
 	public GetChartResponse(Map<String, String> headers, Chart chart) {
 		super(headers);

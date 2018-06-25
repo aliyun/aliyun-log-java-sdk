@@ -5,11 +5,10 @@ import java.util.Map;
 import com.aliyun.openservices.log.common.Config;
 
 public class GetConfigResponse extends Response {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 3751875183016178970L;
-	Config config = new Config();
+
+	private Config config;
 
 	public GetConfigResponse(Map<String, String> headers, Config config) {
 		super(headers);
