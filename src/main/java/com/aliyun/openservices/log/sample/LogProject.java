@@ -1,13 +1,12 @@
 package com.aliyun.openservices.log.sample;
 
 import com.aliyun.openservices.log.Client;
-import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.GetProjectResponse;
 
-public class log_project {
-	public static void main(String args[]) throws LogException,
-			InterruptedException {
+public class LogProject {
+
+	public static void main(String args[]) throws LogException {
  
 		//String accessId = "";
 		//String accessKey = "=";

@@ -12,7 +12,7 @@ import com.aliyun.openservices.log.response.GetAlertResponse;
 import com.aliyun.openservices.log.response.ListAlertResponse;
 
 public class AlertSample {
-	public static void main(String args[]) throws LogException {
+	public static void main(String args[]) {
 		String accessId = "";
 		String accessKey = "";
 

@@ -1,22 +1,18 @@
 package com.aliyun.openservices.log.sample;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.aliyun.openservices.log.Client;
-import com.aliyun.openservices.log.common.OdpsShipperConfig;
 import com.aliyun.openservices.log.common.OssShipperConfig;
 import com.aliyun.openservices.log.common.OssShipperCsvStorageDetail;
-import com.aliyun.openservices.log.common.OssShipperParquetStorageDetail;
-import com.aliyun.openservices.log.common.OssShipperStorageColumn;
-import com.aliyun.openservices.log.common.OssShipperStorageDetail;
 import com.aliyun.openservices.log.common.ShipperConfig;
 import com.aliyun.openservices.log.common.ShipperTask;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.GetShipperResponse;
 import com.aliyun.openservices.log.response.GetShipperTasksResponse;
 
-public class shipper_sample {
+import java.util.ArrayList;
+
+public class ShipperSample {
+
 	public static void main(String args[]) throws LogException {
 		String accessId = "";
 		String accessKey = "";
