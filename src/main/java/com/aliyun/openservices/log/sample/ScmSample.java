@@ -1,10 +1,4 @@
 package com.aliyun.openservices.log.sample;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.ACL;
@@ -12,6 +6,8 @@ import com.aliyun.openservices.log.common.ACLPrivileges;
 import com.aliyun.openservices.log.common.Config;
 import com.aliyun.openservices.log.common.ConfigInputDetail;
 import com.aliyun.openservices.log.common.ConfigOutputDetail;
+import com.aliyun.openservices.log.common.Consts.ACLAction;
+import com.aliyun.openservices.log.common.Consts.ACLPrivilege;
 import com.aliyun.openservices.log.common.GroupAttribute;
 import com.aliyun.openservices.log.common.Index;
 import com.aliyun.openservices.log.common.IndexKey;
@@ -21,8 +17,6 @@ import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.Machine;
 import com.aliyun.openservices.log.common.MachineGroup;
 import com.aliyun.openservices.log.common.MachineList;
-import com.aliyun.openservices.log.common.Consts.ACLAction;
-import com.aliyun.openservices.log.common.Consts.ACLPrivilege;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.ApplyConfigToMachineGroupResponse;
 import com.aliyun.openservices.log.response.CreateConfigResponse;
@@ -45,12 +39,18 @@ import com.aliyun.openservices.log.response.UpdateACLResponse;
 import com.aliyun.openservices.log.response.UpdateConfigResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 class ScmSampleClient {
 	private String endPoint;
 	private String akId;
 	private String ak;
-	private Client client = null;
+	private Client client;
 	
 	private String testConfigName;
 	private String testMachineGroupName;
@@ -147,8 +147,6 @@ class ScmSampleClient {
 	public void UpdateConfig() {
 		Config config = new Config(testConfigName);
 		JSONObject inputDetail = new JSONObject();
-		
-		inputDetail = new JSONObject();
 		inputDetail.put("logType", "apsara_log");
 		inputDetail.put("logPath", "/var/log/httpd1/");
 		inputDetail.put("filePattern", "access1.log");
@@ -205,10 +203,10 @@ class ScmSampleClient {
 			//Optional get inputDetail by json object
 			//JSONObject inputDetail = ((ConfigInputDetail)(res.GetConfig().GetInputDetail())).ToJson();
 			
-			System.out.println("logType:" + ((ConfigInputDetail)(((ConfigInputDetail)(res.GetConfig().GetInputDetail())))).GetLogType());
+			System.out.println("logType:" + ((ConfigInputDetail) res.GetConfig().GetInputDetail()).GetLogType());
 			System.out.println("logPath:" + ((ConfigInputDetail)(res.GetConfig().GetInputDetail())).GetLogPath());
 			System.out.println("filePattern:" + ((ConfigInputDetail)(res.GetConfig().GetInputDetail())).GetFilePattern());
-			System.out.println("localStorage:" + ((ConfigInputDetail)(res.GetConfig().GetInputDetail())).GetLocalStorage());
+			System.out.println("localStorage:" + res.GetConfig().GetInputDetail().GetLocalStorage());
 			System.out.println("timeFormat:" + ((ConfigInputDetail)(res.GetConfig().GetInputDetail())).GetTimeFormat());
 			System.out.println("logBeginRegex:" + ((ConfigInputDetail)(res.GetConfig().GetInputDetail())).GetLogBeginRegex());
 			System.out.println("regex:" + ((ConfigInputDetail)(res.GetConfig().GetInputDetail())).GetRegex());
@@ -220,13 +218,13 @@ class ScmSampleClient {
 				System.out.println(key);
 			}
 			
-			List<String> filterKeyRes = ((ConfigInputDetail)(res.GetConfig().GetInputDetail())).GetFilterKey();
+			List<String> filterKeyRes = res.GetConfig().GetInputDetail().GetFilterKey();
 			System.out.println("filterKey");
 			for (String filterKey:filterKeyRes) {
 				System.out.println(filterKey);
 			}
 			
-			List<String> filterRegexRes = ((ConfigInputDetail)(res.GetConfig().GetInputDetail())).GetFilterRegex();
+			List<String> filterRegexRes = res.GetConfig().GetInputDetail().GetFilterRegex();
 			System.out.println("filterRegex");
 			for (String filterRegex:filterRegexRes) {
 				System.out.println(filterRegex);
@@ -400,9 +398,7 @@ class ScmSampleClient {
 		
 		GroupAttribute groupAttribute = new GroupAttribute(externalName, groupTopic);
 		
-		MachineGroup group = new MachineGroup();
-
-		group = new MachineGroup(testMachineGroupName, "userdefined", machineList);
+		MachineGroup group = new MachineGroup(testMachineGroupName, "userdefined", machineList);
 
 		group.SetGroupType(groupType);
 		group.SetGroupAttribute(groupAttribute);
