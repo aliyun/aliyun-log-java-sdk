@@ -71,8 +71,8 @@ public abstract class FunctionTest {
     protected void safeDeleteProject(String project) {
         try {
             client.DeleteProject(project);
-            // avoid create logstore too fast
-            waitForSeconds(2);
+            // Wait cache refresh completed
+            waitForSeconds(60);
         } catch (LogException ex) {
             if (!ex.GetErrorCode().equals("ProjectNotExist")) {
                 fail("Delete project failed: " + ex.GetErrorMessage());
