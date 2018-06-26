@@ -3,7 +3,6 @@ package com.aliyun.openservices.log.functiontest;
 
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.UpdateProjectRequest;
-import com.aliyun.openservices.log.response.CreateProjectResponse;
 import com.aliyun.openservices.log.response.GetProjectResponse;
 import org.junit.After;
 import org.junit.Before;
@@ -14,13 +13,15 @@ import static org.junit.Assert.fail;
 
 public class ProjectFunctionTest extends FunctionTest {
 
+    // For testing environment, please make sure the endpoint
+    // project1.<endpoint> is accessible.
     private static final String TEST_PROJECT = "project1";
 
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        client.DeleteProject(TEST_PROJECT);
+        safeDeleteProject(TEST_PROJECT);
     }
 
     private void verifyUpdate(final String description,
@@ -47,8 +48,7 @@ public class ProjectFunctionTest extends FunctionTest {
 
     @Test
     public void testUpdateProject() throws Exception {
-        CreateProjectResponse cpr = client.CreateProject(TEST_PROJECT, "xxx");
-        System.out.println(cpr.GetAllHeaders());
+        client.CreateProject(TEST_PROJECT, "xxx");
 
         GetProjectResponse response = client.GetProject(TEST_PROJECT);
         assertEquals("xxx", response.GetProjectDescription());

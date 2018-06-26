@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.functiontest;
 
 import com.aliyun.openservices.log.Client;
+import com.aliyun.openservices.log.exception.LogException;
 import net.sf.json.JSONObject;
 import org.junit.Before;
 
@@ -8,6 +9,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+
+import static org.junit.Assert.fail;
 
 public abstract class FunctionTest {
 
@@ -62,5 +65,15 @@ public abstract class FunctionTest {
 
     static <T> T randomFrom(final List<T> list) {
         return list.get(RANDOM.nextInt(list.size()));
+    }
+
+    protected void safeDeleteProject(String project) {
+        try {
+            client.DeleteProject(project);
+        } catch (LogException ex) {
+            if (!ex.GetErrorCode().equals("ProjectNotExist")) {
+                fail("Delete project failed: " + ex.GetErrorMessage());
+            }
+        }
     }
 }
