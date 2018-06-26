@@ -3,18 +3,13 @@ package com.aliyun.openservices.log.response;
 import java.util.ArrayList;
 import java.util.Map;
 
-import com.aliyun.openservices.log.common.Config;
-import com.aliyun.openservices.log.exception.LogException;
-
 public class GetAppliedConfigResponse extends Response {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -9132526915584919104L;
-	ArrayList<String> configs = new ArrayList<String>();
 
-	public GetAppliedConfigResponse(Map<String, String> headers,
-			ArrayList<String> group) throws LogException {
+	private static final long serialVersionUID = -9132526915584919104L;
+
+	private ArrayList<String> configs;
+
+	public GetAppliedConfigResponse(Map<String, String> headers, ArrayList<String> group) {
 		super(headers);
 		SetConfigs(group);
 	}
@@ -23,7 +18,7 @@ public class GetAppliedConfigResponse extends Response {
 		return configs;
 	}
 
-	public void SetConfigs(ArrayList<String> configs) throws LogException {
+	public void SetConfigs(ArrayList<String> configs) {
 		this.configs = new ArrayList<String>(configs);
 	}
 
