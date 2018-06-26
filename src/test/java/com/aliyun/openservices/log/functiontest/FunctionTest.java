@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.fail;
 
@@ -70,10 +71,20 @@ public abstract class FunctionTest {
     protected void safeDeleteProject(String project) {
         try {
             client.DeleteProject(project);
+            // avoid create logstore too fast
+            waitForSeconds(2);
         } catch (LogException ex) {
             if (!ex.GetErrorCode().equals("ProjectNotExist")) {
                 fail("Delete project failed: " + ex.GetErrorMessage());
             }
+        }
+    }
+
+    protected void waitForSeconds(int seconds) {
+        try {
+            TimeUnit.SECONDS.sleep(seconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }
