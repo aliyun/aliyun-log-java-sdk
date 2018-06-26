@@ -5,10 +5,9 @@ import com.aliyun.openservices.log.common.LogtailProfile;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.GetLogtailProfileResponse;
 
-public class logtailprofile_sample {
+public class LogtailProfileSample {
 
 	public static void main(String[] args) throws LogException {
-		// TODO Auto-generated method stub
 		String akId = "";
 		String ak = "=";
 		String project = "";
