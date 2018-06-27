@@ -76,6 +76,13 @@ public class ProjectFunctionTest extends FunctionTest {
                 "@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@" +
                 "@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxx@@@@@@";
         shouldFails(tooLongDesc, "Invalid project description", "ParameterInvalid");
+
+        StringBuilder chineseBuilder = new StringBuilder();
+        for (int i = 0; i < 15; i++) {
+            chineseBuilder.append("中文中文中文中文中文");
+        }
+        final String chinese = chineseBuilder.toString();
+        verifyUpdate(chinese, chinese);
     }
 
     @Test
