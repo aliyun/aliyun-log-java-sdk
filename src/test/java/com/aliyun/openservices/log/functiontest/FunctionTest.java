@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.functiontest;
 
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONObject;
 import org.junit.Before;
 
@@ -66,6 +67,14 @@ public abstract class FunctionTest {
 
     static <T> T randomFrom(final List<T> list) {
         return list.get(RANDOM.nextInt(list.size()));
+    }
+
+    protected static int randomBetween(int low, int high) {
+        Args.check(low <= high, "low > high!");
+        if (low == high) {
+            return low;
+        }
+        return low + RANDOM.nextInt(high - low);
     }
 
     protected void safeDeleteProject(String project) {
