@@ -12,6 +12,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -147,12 +148,10 @@ class HttpFactory {
             httpRequest.addHeader(entry.getKey(), entry.getValue());
         }
 
-        // Set content type and encoding
-        if (httpRequest.getHeaders(HttpHeaders.CONTENT_TYPE) == null ||
-                httpRequest.getHeaders(HttpHeaders.CONTENT_TYPE).length == 0){
-            httpRequest.addHeader(HttpHeaders.CONTENT_TYPE,
-                    "application/x-www-form-urlencoded; " +
-                            "charset=" + charset.toLowerCase());
+        final Header[] contentTypes = httpRequest.getHeaders(HttpHeaders.CONTENT_TYPE);
+        if (contentTypes == null || contentTypes.length == 0){
+            final String defaultContentType = "application/x-www-form-urlencoded; charset=" + charset.toLowerCase();
+            httpRequest.addHeader(HttpHeaders.CONTENT_TYPE, defaultContentType);
         }
     }
 

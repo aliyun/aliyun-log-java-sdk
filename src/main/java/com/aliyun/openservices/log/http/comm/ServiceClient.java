@@ -6,18 +6,17 @@
  */
 package com.aliyun.openservices.log.http.comm;
 
-import static com.aliyun.openservices.log.http.utils.CodingUtils.assertParameterNotNull;
+import com.aliyun.openservices.log.http.client.ClientConfiguration;
+import com.aliyun.openservices.log.http.client.ClientException;
+import com.aliyun.openservices.log.http.client.HttpMethod;
+import com.aliyun.openservices.log.http.client.ServiceException;
+import com.aliyun.openservices.log.http.utils.HttpUtil;
+import com.aliyun.openservices.log.util.Args;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-
-import com.aliyun.openservices.log.http.utils.HttpUtil;
-import com.aliyun.openservices.log.http.client.ClientConfiguration;
-import com.aliyun.openservices.log.http.client.ClientException;
-import com.aliyun.openservices.log.http.client.HttpMethod;
-import com.aliyun.openservices.log.http.client.ServiceException;
 
 /**
  * The client that accesses Aliyun services.
@@ -81,8 +80,8 @@ public abstract class ServiceClient {
      */
     public ResponseMessage sendRequest(RequestMessage request, String charset)
             throws ServiceException, ClientException{
-        assertParameterNotNull(request, "request");
-        assertParameterNotNull(charset, "charset");
+        Args.notNull(request, "request");
+        Args.notNullOrEmpty(charset, "charset");
 
         try{
             return sendRequestImpl(request, charset);

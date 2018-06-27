@@ -68,10 +68,8 @@ public class DefaultServiceClient extends ServiceClient {
             result.setContent(response.getEntity().getContent());
         }
         // fill in headers
-        Header[] headers = response.getAllHeaders();
         Map<String, String> resultHeaders = new HashMap<String, String>();
-        for(int i = 0; i < headers.length; i++){
-            Header h = headers[i];
+        for (Header h : response.getAllHeaders()) {
             resultHeaders.put(h.getName(), h.getValue());
         }
         HttpUtil.convertHeaderCharsetFromIso88591(resultHeaders);
