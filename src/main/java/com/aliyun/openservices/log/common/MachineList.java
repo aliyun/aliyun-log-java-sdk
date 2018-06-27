@@ -1,62 +1,50 @@
 package com.aliyun.openservices.log.common;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import com.aliyun.openservices.log.exception.LogException;
-
+import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 public class MachineList implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -1098681309764178588L;
-	protected ArrayList<String> machineList = new ArrayList<String>();
-	
-	public MachineList()
-	{
-		
+	private ArrayList<String> machineList;
+
+	public MachineList() {
+		this.machineList = new ArrayList<String>();
 	}
 	
-	public MachineList(ArrayList<String> machineList)
-	{
-		super();
+	public MachineList(ArrayList<String> machineList) {
 		SetMachineList(machineList);
 	}
-	
-	public MachineList(MachineList machineList) throws LogException {
-		super();
+
+	public MachineList(MachineList machineList) {
+		Args.notNull(machineList, "machineList");
 		SetMachineList(machineList.GetMachineList());
 	}
-	
+
 	public ArrayList<String> GetMachineList(){
 		return machineList;
 	}
-	
+
 	public void SetMachineList(ArrayList<String> machineList) {
-		this.machineList = new ArrayList<String>();
-		for(String machine:machineList) {
-			this.machineList.add(machine);
-		}
+		this.machineList = new ArrayList<String>(machineList);
 	}
-	
-	public void SetMachineList(JSONArray machineListJSONArray) throws LogException {
+
+	public void SetMachineList(JSONArray machineListJSONArray) {
 		machineList = new ArrayList<String>();
 		for(int i = 0;i < machineListJSONArray.size();i++) {
 			String machine = machineListJSONArray.getString(i);
 			machineList.add(machine);
 		}
 	}
-	
+
 	private JSONArray ToRequestJson() {
 		JSONArray machineList = new JSONArray();
-		for (String machine : GetMachineList()) {
-			machineList.add(machine);
-		}
-		
+		machineList.addAll(GetMachineList());
 		return machineList;
 	}
 	

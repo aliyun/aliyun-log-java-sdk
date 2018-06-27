@@ -1,13 +1,13 @@
 package com.aliyun.openservices.log.common;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import com.aliyun.openservices.log.exception.LogException;
-
+import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * The config of a machine group
@@ -15,21 +15,21 @@ import net.sf.json.JSONObject;
  *
  */
 public class MachineGroup implements Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -4402651900796187066L;
+
 	protected String groupName = "";
 	protected String groupType = "";
 	protected String machineIdentifyType = "";
 	protected GroupAttribute groupAttribute = new GroupAttribute();
-	protected ArrayList<String> machineList = new ArrayList<String>();
+	protected ArrayList<String> machineList;
 	protected int createTime = 0;
 	protected int lastModifyTime = 0;
 
 	public MachineGroup() {
+		this.machineList = new ArrayList<String>();
 	}
-	
+
 	/**
 	 * Create machine group 
 	 * @param groupName machine group name
@@ -37,19 +37,18 @@ public class MachineGroup implements Serializable {
 	 * @param machineList the machine ip list or userdefined id list
 	 */
 	public MachineGroup(String groupName, String machineIdentifyType, ArrayList<String> machineList) {
-		super();
+		Args.notNull(machineList, "machineList");
 		this.groupName = groupName;
 		this.machineIdentifyType = machineIdentifyType;
 		SetMachineList(machineList);
 	}
-	
+
 	/**
 	 * construct a machine group  
 	 * @param machineGroup the exist machine group
-	 * @throws LogException if any error happend
 	 */
-	public MachineGroup(MachineGroup machineGroup) throws LogException {
-		super();
+	public MachineGroup(MachineGroup machineGroup) {
+        Args.notNull(machineGroup, "machineGroup");
 		this.groupName = machineGroup.GetGroupName();
 		this.groupType = machineGroup.GetGroupType();
 		this.machineIdentifyType = machineGroup.GetMachineIdentifyType();
@@ -120,13 +119,10 @@ public class MachineGroup implements Serializable {
 	}
 	
 	public void SetMachineList(ArrayList<String> machineList) {
-		this.machineList = new ArrayList<String>();
-		for(String machine:machineList) {
-			this.machineList.add(machine);
-		}
+		this.machineList = new ArrayList<String>(machineList);
 	}
 	
-	public void SetMachineList(JSONArray machineListJSONArray) throws LogException {
+	public void SetMachineList(JSONArray machineListJSONArray) {
 		machineList = new ArrayList<String>();
 		for(int i = 0;i < machineListJSONArray.size();i++) {
 			String machine = machineListJSONArray.getString(i);
@@ -170,16 +166,11 @@ public class MachineGroup implements Serializable {
 		groupDict.put("groupName", GetGroupName());
 		groupDict.put("groupType", GetGroupType());
 		groupDict.put("machineIdentifyType", GetMachineIdentifyType());
-		
 		groupDict.put("groupAttribute", GetGroupAttribute().ToJsonString());
-		
+
 		JSONArray machineList = new JSONArray();
-		for (String machine : GetMachineList()) {
-			machineList.add(machine);
-		}
-		
+        machineList.addAll(GetMachineList());
 		groupDict.put("machineList", machineList);
-		
 		return groupDict;
 	}
 	
@@ -189,14 +180,9 @@ public class MachineGroup implements Serializable {
 	
 	public JSONObject ToJsonObject() {
 		JSONObject groupDict = ToRequestJson();
-		
 		JSONArray machineList = new JSONArray();
-		for (String machine : GetMachineList()) {
-			machineList.add(machine);
-		}
-		
+        machineList.addAll(GetMachineList());
 		groupDict.put("machineList", machineList);
-		
 		groupDict.put("createTime", GetCreateTime());
 		groupDict.put("lastModifyTime", GetLastModifyTime());
 		return groupDict;
