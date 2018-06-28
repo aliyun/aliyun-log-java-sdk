@@ -86,6 +86,7 @@ import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
 import com.aliyun.openservices.log.request.UpdateLoggingRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupRequest;
+import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
 import com.aliyun.openservices.log.response.ApplyConfigToMachineGroupResponse;
 import com.aliyun.openservices.log.response.ApproveMachineGroupResponse;
@@ -175,6 +176,7 @@ import com.aliyun.openservices.log.response.UpdateLogStoreResponse;
 import com.aliyun.openservices.log.response.UpdateLoggingResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
+import com.aliyun.openservices.log.response.UpdateProjectResponse;
 import com.aliyun.openservices.log.response.UpdateSavedSearchResponse;
 import com.aliyun.openservices.log.response.UpdateShipperResponse;
 
@@ -2664,6 +2666,14 @@ public interface LogService {
 	 */
 	public DeleteProjectResponse DeleteProject(String project)
 			throws LogException;
+
+	/**
+	 * Updates project.
+	 *
+	 * @param request The parameters used to update project.
+	 * @return A instance of {@link UpdateProjectResponse}
+	 */
+	UpdateProjectResponse updateProject(UpdateProjectRequest request) throws LogException;
 
 	/**
 	 * list project

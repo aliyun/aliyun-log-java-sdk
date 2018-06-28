@@ -1,7 +1,6 @@
 package com.aliyun.openservices.log.functiontest;
 
 
-import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.Logging;
 import com.aliyun.openservices.log.common.LoggingDetail;
 import com.aliyun.openservices.log.common.Project;
@@ -13,17 +12,13 @@ import com.aliyun.openservices.log.request.UpdateLoggingRequest;
 import com.aliyun.openservices.log.response.GetLoggingResponse;
 import com.aliyun.openservices.log.response.ListLogStoresResponse;
 import com.aliyun.openservices.log.response.ListProjectResponse;
-import net.sf.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -31,12 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
-public class LoggingFunctionTest {
-
-    private static final String CONFIG_FILE = "credentials.json";
-    private static final String ACCESS_KEY_ID = "accessKeyID";
-    private static final String ACCESS_KEY = "accessKey";
-    private static final String ENDPOINT = "endpoint";
+public class LoggingFunctionTest extends FunctionTest {
 
     private static final String[] TYPES_ALLOWED = new String[]{
             "operation_log",
@@ -47,53 +37,13 @@ public class LoggingFunctionTest {
             "metering"
     };
 
-    private Client client;
     private String projectName;
     private ArrayList<String> logStores;
-    private final static Random RANDOM = new Random();
 
-    private static <T> T randomFrom(final T[] array) {
-        return array[RANDOM.nextInt(array.length)];
-    }
-
-    private static <T> T randomFrom(final List<T> list) {
-        return list.get(RANDOM.nextInt(list.size()));
-    }
-
-    private static class Config {
-        private final String accessKeyID;
-        private final String accessKey;
-        private final String endpoint;
-
-        Config(String accessKey, String accessKeyID, String endpoint) {
-            this.accessKeyID = accessKeyID;
-            this.accessKey = accessKey;
-            this.endpoint = endpoint;
-        }
-    }
-
-    private static Config readConfig() {
-        final File file = new File(System.getProperty("user.home"), CONFIG_FILE);
-        if (!file.exists()) {
-            throw new IllegalStateException(String.format("[%s] doest not exist!", file.getAbsolutePath()));
-        }
-        try {
-            final String text = new Scanner(file).useDelimiter("\\A").next();
-            JSONObject object = JSONObject.fromObject(text);
-            String endpoint = object.getString(ENDPOINT);
-            String accessKeyID = object.getString(ACCESS_KEY_ID);
-            String accessKey = object.getString(ACCESS_KEY);
-            return new Config(accessKey, accessKeyID, endpoint);
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
 
     @Before
     public void setUp() throws Exception {
-        final Config config = readConfig();
-        client = new Client(config.endpoint, config.accessKeyID, config.accessKey);
-
+        super.setUp();
         ListProjectResponse response = client.ListProject();
         List<Project> projects = response.getProjects();
 
