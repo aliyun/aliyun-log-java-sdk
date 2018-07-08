@@ -125,6 +125,7 @@ import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
 import com.aliyun.openservices.log.request.UpdateLoggingRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupRequest;
+import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
 import com.aliyun.openservices.log.response.ApplyConfigToMachineGroupResponse;
 import com.aliyun.openservices.log.response.ApproveMachineGroupResponse;
@@ -215,6 +216,7 @@ import com.aliyun.openservices.log.response.UpdateLogStoreResponse;
 import com.aliyun.openservices.log.response.UpdateLoggingResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
+import com.aliyun.openservices.log.response.UpdateProjectResponse;
 import com.aliyun.openservices.log.response.UpdateSavedSearchResponse;
 import com.aliyun.openservices.log.response.UpdateShipperResponse;
 import com.aliyun.openservices.log.util.Args;
@@ -3466,7 +3468,7 @@ public class Client implements LogService {
 	@Override
 	public DeleteProjectResponse DeleteProject(String project)
 			throws LogException {
-		CodingUtils.assertParameterNotNull(project, "project");
+		Args.notNullOrEmpty(project, "project");
 
 		String resourceUri = "/";
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -3476,6 +3478,17 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		return new DeleteProjectResponse(resHeaders);
+	}
+
+	@Override
+	public UpdateProjectResponse updateProject(UpdateProjectRequest request) throws LogException {
+		Args.notNull(request, "request");
+		final String resourceUri = "/";
+		final String project = request.GetProject();
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		ResponseMessage response = SendData(project, HttpMethod.PUT, resourceUri,
+				Collections.<String, String>emptyMap(), headParameter, request.marshal().toString());
+		return new UpdateProjectResponse(response.getHeaders());
 	}
 
 	@Override

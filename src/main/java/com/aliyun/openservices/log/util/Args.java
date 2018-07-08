@@ -23,4 +23,10 @@ public final class Args {
             throw new IllegalArgumentException("[" + name + "] must not be null or empty!");
         }
     }
+
+    public static void check(final boolean expression, final String message) {
+        if (!expression) {
+            throw new IllegalArgumentException(message);
+        }
+    }
 }
