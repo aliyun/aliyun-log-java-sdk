@@ -1070,10 +1070,7 @@ public class Client implements LogService {
 		String shardId = String.valueOf(request.GetShardId());
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shards/").append(shardId);
-		String resourceUri = resourceUriBuilder.toString();
+        String resourceUri = "/logstores/" + logStore + "/shards/" + shardId;
 
 		headParameter.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(0));
 
@@ -1109,17 +1106,14 @@ public class Client implements LogService {
 		String shardId = String.valueOf(request.GetShardId());
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shards/").append(shardId);
-		String resourceUri = resourceUriBuilder.toString();
+        String resourceUri = "/logstores/" + logStore + "/shards/" + shardId;
 
 		headParameter.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(0));
 
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = new ResponseMessage();
-		GetCursorTimeResponse getCursorTimeResponse = null;
+		GetCursorTimeResponse getCursorTimeResponse;
 		try {
 			response = SendData(project, HttpMethod.GET, resourceUri,
 					urlParameter, headParameter);
@@ -1180,13 +1174,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(midHash, "midHashKey");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shards/").append(shardId);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/shards/" + shardId;
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.POST, resourceUri,
@@ -1220,12 +1208,7 @@ public class Client implements LogService {
 		int shardId = request.GetShardId();
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shards/").append(shardId);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/shards/" + shardId;
 		Map<String, String> urlParameter = request.GetAllParams();
 
         ResponseMessage response = SendData(project, HttpMethod.POST, resourceUri,
@@ -1259,21 +1242,13 @@ public class Client implements LogService {
 		int shardId = request.GetShardId();
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shards/").append(shardId);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/shards/" + shardId;
 		Map<String, String> urlParameter = request.GetAllParams();
 
         ResponseMessage response = SendData(project, HttpMethod.DELETE, resourceUri,
 				urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
-
-		DeleteShardResponse res = new DeleteShardResponse(resHeaders);
-
-		return res;
+        return new DeleteShardResponse(resHeaders);
 	}
 
 	public ListShardResponse ListShard(String prj, String logStore)
@@ -1310,13 +1285,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shards");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/shards";
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.GET, resourceUri, urlParameter,
@@ -1369,14 +1338,8 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(shardId, "shardId");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shards/").append(shardId);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/shards/" + shardId;
 		headParameter.put(Consts.CONST_ACCEPT_ENCODING, Consts.CONST_LZ4);
-
 		headParameter.put(Consts.CONST_HTTP_ACCEPT, Consts.CONST_PROTO_BUF);
 
 		Map<String, String> urlParameter = request.GetAllParams();
@@ -1470,12 +1433,7 @@ public class Client implements LogService {
 		byte[] body = encodeToUtf8(config.ToRequestString());
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/configs/").append(configName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/configs/" + configName;
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
         ResponseMessage response = SendData(project, HttpMethod.PUT, resourceUri, urlParameter,
@@ -1513,12 +1471,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(configName, "configName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/configs/").append(configName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/configs/" + configName;
 		Map<String, String> urlParameter = request.GetAllParams();
 
         ResponseMessage response = SendData(project, HttpMethod.GET, resourceUri, urlParameter,
@@ -1547,12 +1500,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(configName, "configName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/configs/").append(configName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/configs/" + configName;
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
@@ -1666,13 +1614,10 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(group, "group");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
+        headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 		byte[] body = encodeToUtf8(group.ToRequestString());
 
-		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
 		String resourceUri = "/machinegroups";
-
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
 		ResponseMessage response = SendData(project, HttpMethod.POST,
@@ -1703,14 +1648,8 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
 		byte[] body = encodeToUtf8(group.ToRequestString());
-
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/machinegroups/").append(groupName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/machinegroups/" + groupName;
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
@@ -1765,13 +1704,7 @@ public class Client implements LogService {
 		String groupName = request.GetGroupName();
 		CodingUtils.assertStringNotNullOrEmpty(groupName, "groupName");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/machinegroups/").append(groupName)
-				.append("/configs");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/machinegroups/" + groupName + "/configs";
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.GET,
@@ -1800,13 +1733,7 @@ public class Client implements LogService {
 		String configName = request.GetConfigName();
 		CodingUtils.assertStringNotNullOrEmpty(configName, "groupName");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/configs/").append(configName)
-				.append("/machinegroups");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/configs/" + configName + "/machinegroups";
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.GET,
@@ -1837,12 +1764,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(groupName, "groupName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/machinegroups/").append(groupName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/machinegroups/" + groupName;
 		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
@@ -1863,13 +1785,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(machineGroup, "groupName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/machinegroups/").append(machineGroup)
-				.append("/machines");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/machinegroups/" + machineGroup + "/machines";
 		headParameter.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(0));
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -1928,12 +1844,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(groupName, "groupName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/machinegroups/").append(groupName).append("/approve");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/machinegroups/" + groupName + "/approve";
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
@@ -1962,12 +1873,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(groupName, "groupName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/machinegroups/").append(groupName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/machinegroups/" + groupName;
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
@@ -2082,12 +1988,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(configName, "configName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/machinegroups/").append(groupName)
-				.append("/configs/").append(configName);
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/machinegroups/" + groupName + "/configs/" + configName;
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
@@ -2120,13 +2021,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(configName, "configName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/machinegroups/").append(groupName)
-				.append("/configs/").append(configName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/machinegroups/" + groupName + "/configs/" + configName;
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
@@ -2289,16 +2184,6 @@ public class Client implements LogService {
 		return listACLResponse;
 	}
 
-	@SuppressWarnings("unused")
-	private String ExtractJsonString(String nodeKey, JSONObject object) {
-		try {
-			return object.getString(nodeKey);
-		} catch (JSONException e) {
-			// ignore
-		}
-		return "";
-	}
-
 	private int ExtractJsonInteger(String nodeKey, JSONObject object) {
 		try {
 			return object.getInt(nodeKey);
@@ -2428,8 +2313,7 @@ public class Client implements LogService {
 		try {
 			JsonConfig jsonConfig = new JsonConfig();
 			jsonConfig.setIgnoreDefaultExcludes(true);
-			JSONArray array = JSONArray.fromObject(returnStr, jsonConfig);
-			return array;
+            return JSONArray.fromObject(returnStr, jsonConfig);
 		} catch (JSONException e) {
 			throw new LogException("BadResponse",
 					"The response is not valid json string : " + returnStr, e,
@@ -2743,12 +2627,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStoreName, "logStoreName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStoreName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStoreName;
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
@@ -2784,12 +2663,7 @@ public class Client implements LogService {
 		byte[] body = encodeToUtf8(logStore.ToRequestString());
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStoreName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStoreName;
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
@@ -2830,12 +2704,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStoreName, "logStoreName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStoreName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStoreName;
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.GET,
@@ -2862,13 +2731,7 @@ public class Client implements LogService {
 
 		byte[] body = encodeToUtf8(indexJsonString);
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/index");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/index";
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
 		ResponseMessage response = SendData(project, HttpMethod.POST,
@@ -2904,11 +2767,7 @@ public class Client implements LogService {
 		byte[] body = encodeToUtf8(index.ToRequestString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/index");
-
-		String resourceUri = resourceUriBuilder.toString();
+        String resourceUri = "/logstores/" + logStore + "/index";
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
@@ -2933,13 +2792,7 @@ public class Client implements LogService {
 		byte[] body = encodeToUtf8(indexJsonString);
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/index");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/index";
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
@@ -2974,13 +2827,7 @@ public class Client implements LogService {
 
 		byte[] body = encodeToUtf8(index.ToRequestString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/index");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/index";
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
@@ -3009,13 +2856,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/index");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/index";
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
@@ -3064,13 +2905,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/index");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/index";
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = SendData(project, HttpMethod.GET,
@@ -3088,29 +2923,24 @@ public class Client implements LogService {
     @Override
     public GetIndexStringResponse GetIndexString(GetIndexRequest request)
                     throws LogException {
-            CodingUtils.assertParameterNotNull(request, "request");
-            String project = request.GetProject();
-            CodingUtils.assertStringNotNullOrEmpty(project, "project");
-            String logStore = request.GetLogStore();
-            CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+	    CodingUtils.assertParameterNotNull(request, "request");
+	    String project = request.GetProject();
+	    CodingUtils.assertStringNotNullOrEmpty(project, "project");
+	    String logStore = request.GetLogStore();
+	    CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 
-            Map<String, String> headParameter = GetCommonHeadPara(project);
+	    Map<String, String> headParameter = GetCommonHeadPara(project);
 
-            StringBuilder resourceUriBuilder = new StringBuilder();
-            resourceUriBuilder.append("/logstores/").append(logStore)
-                            .append("/index");
+        String resourceUri = "/logstores/" + logStore + "/index";
 
-            String resourceUri = resourceUriBuilder.toString();
+        Map<String, String> urlParameter = request.GetAllParams();
 
-            Map<String, String> urlParameter = request.GetAllParams();
+        ResponseMessage response = SendData(project, HttpMethod.GET,
+                resourceUri, urlParameter, headParameter);
 
-            ResponseMessage response = SendData(project, HttpMethod.GET,
-                            resourceUri, urlParameter, headParameter);
-
-            Map<String, String> resHeaders = response.getHeaders();
+        Map<String, String> resHeaders = response.getHeaders();
 
         return new GetIndexStringResponse(resHeaders, response.GetStringBody());
-
     }
 	
 	@Override
@@ -3122,31 +2952,22 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(shipConfig, "shipConfig");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
+        headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shipper");
+        String resourceUri = "/logstores/" + logStore + "/shipper";
+		JSONObject jsonBody = new JSONObject();
+        jsonBody.put("shipperName", shipperName);
+        jsonBody.put("targetType", shipConfig.GetShipperType());
+        jsonBody.put("targetConfiguration", shipConfig.GetJsonObj());
 
-		String resourceUri = resourceUriBuilder.toString();
-
-		JSONObject json_body = new JSONObject();
-		json_body.put("shipperName", shipperName);
-		json_body.put("targetType", shipConfig.GetShipperType());
-		json_body.put("targetConfiguration", shipConfig.GetJsonObj());
-
-		byte[] body = encodeToUtf8(json_body.toString());
-		
-		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		byte[] body = encodeToUtf8(jsonBody.toString());
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
 
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new CreateShipperResponse(resHeaders);
-
 	}
 
 	@Override
@@ -3159,19 +2980,13 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shipper/").append(shipperName);
+        String resourceUri = "/logstores/" + logStore + "/shipper/" + shipperName;
+		JSONObject jsonBody = new JSONObject();
+        jsonBody.put("shipperName", shipperName);
+        jsonBody.put("targetType", shipConfig.GetShipperType());
+        jsonBody.put("targetConfiguration", shipConfig.GetJsonObj());
 
-		String resourceUri = resourceUriBuilder.toString();
-
-		JSONObject json_body = new JSONObject();
-		json_body.put("shipperName", shipperName);
-		json_body.put("targetType", shipConfig.GetShipperType());
-		json_body.put("targetConfiguration", shipConfig.GetJsonObj());
-
-		byte[] body = encodeToUtf8(json_body.toString());
-
+		byte[] body = encodeToUtf8(jsonBody.toString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -3180,7 +2995,6 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter, body);
 
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new UpdateShipperResponse(resHeaders);
 	}
 
@@ -3192,20 +3006,13 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(shipperName, "shipperName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shipper/").append(shipperName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/shipper/" + shipperName;
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				resourceUri, urlParameter, headParameter);
 
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new DeleteShipperResponse(resHeaders);
 	}
 
@@ -3218,14 +3025,8 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shipper/").append(shipperName);
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/shipper/" + shipperName;
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
 
@@ -3258,14 +3059,8 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shipper");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/shipper";
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
 
@@ -3290,12 +3085,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shipper/").append(shipperName).append("/tasks");
-
-		String resourceUri = resourceUriBuilder.toString();
-
+        String resourceUri = "/logstores/" + logStore + "/shipper/" + shipperName + "/tasks";
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		urlParameter.put("from", String.valueOf(startTime));
 		urlParameter.put("to", String.valueOf(endTime));
@@ -3325,11 +3115,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/shipper/").append(shipperName).append("/tasks");
-
-		String resourceUri = resourceUriBuilder.toString();
+        String resourceUri = "/logstores/" + logStore + "/shipper/" + shipperName + "/tasks";
 
 		JSONArray array = new JSONArray();
 		for (String task : taskList) {
@@ -3402,7 +3188,6 @@ public class Client implements LogService {
 
 		Map<String, String> resHeaders = response.getHeaders();
 		return new CreateConsumerGroupResponse(resHeaders);
-
 	}
 
 	protected UpdateConsumerGroupResponse UpdateConsumerGroup(String project,
@@ -3431,7 +3216,6 @@ public class Client implements LogService {
 
 		Map<String, String> resHeaders = response.getHeaders();
 		return new UpdateConsumerGroupResponse(resHeaders);
-
 	}
 
 	public UpdateConsumerGroupResponse UpdateConsumerGroup(String project,
@@ -3462,10 +3246,7 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(logStore, "logStore");
 		CodingUtils.assertStringNotNullOrEmpty(consumerGroup, "consumerGroup");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/logstores/").append(logStore)
-				.append("/consumergroups/").append(consumerGroup);
-		String resourceUri = resourceUriBuilder.toString();
+        String resourceUri = "/logstores/" + logStore + "/consumergroups/" + consumerGroup;
 		headParameter.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(0));
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -3474,9 +3255,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new DeleteConsumerGroupResponse(resHeaders);
-
 	}
 
 	public ListConsumerGroupResponse ListConsumerGroup(String project,
@@ -3594,7 +3373,6 @@ public class Client implements LogService {
 		ExtractShards(array, requestId, responseShards);
 
 		return new ConsumerGroupHeartBeatResponse(resHeaders, responseShards);
-
 	}
 
 	protected void ExtractShards(JSONArray array, String requestId,
@@ -3636,9 +3414,7 @@ public class Client implements LogService {
 		String requestId = GetRequestId(resHeaders);
 
 		JSONArray array = ParseResponseMessageToArray(response, requestId);
-		ConsumerGroupCheckPointResponse consumerGroupCheckPointResponse = new ConsumerGroupCheckPointResponse(
-				resHeaders, array);
-		return consumerGroupCheckPointResponse;
+        return new ConsumerGroupCheckPointResponse(resHeaders, array);
 	}
 
 	@Override
@@ -3653,12 +3429,11 @@ public class Client implements LogService {
 
 		String resourceUri = "/";
 
-		JSONObject json_body = new JSONObject();
-		json_body.put("projectName", project);
-		json_body.put("description", projectDescription);
+		JSONObject jsonBody = new JSONObject();
+        jsonBody.put("projectName", project);
+        jsonBody.put("description", projectDescription);
 
-		byte[] body = encodeToUtf8(json_body.toString());
-
+		byte[] body = encodeToUtf8(jsonBody.toString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -3667,7 +3442,6 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter, body);
 
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new CreateProjectResponse(resHeaders);
 	}
 
@@ -3677,16 +3451,13 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		String resourceUri = "/";
-
 		Map<String, String> urlParameter = new HashMap<String, String>();
 
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
 
 		Map<String, String> resHeaders = response.getHeaders();
-
 		GetProjectResponse getProjectResponse = new GetProjectResponse(resHeaders);
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = ParserResponseMessage(response, requestId);
@@ -3701,14 +3472,11 @@ public class Client implements LogService {
 
 		String resourceUri = "/";
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new DeleteProjectResponse(resHeaders);
 	}
 
@@ -3762,11 +3530,7 @@ public class Client implements LogService {
 		byte[] body = encodeToUtf8(machineList.ToRequestString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
-		StringBuilder resourceUriBuilder = new StringBuilder();
-		resourceUriBuilder.append("/machinegroups/").append(groupName)
-				.append("/machines");
-
-		String resourceUri = resourceUriBuilder.toString();
+        String resourceUri = "/machinegroups/" + groupName + "/machines";
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		if (isDelete) // delete machine from machine group
@@ -3820,7 +3584,6 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
 		String resourceUri = "/";
-
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = new ResponseMessage();
