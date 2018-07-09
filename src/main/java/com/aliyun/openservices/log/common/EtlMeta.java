@@ -57,7 +57,6 @@ public class EtlMeta implements Serializable {
 
 
     public JSONObject toJsonObject() {
-
         JSONObject etlMetaJson = new JSONObject();
         etlMetaJson.put(Consts.ETL_META_NAME, this.metaName);
         etlMetaJson.put(Consts.ETL_META_KEY, this.metaKey);
@@ -71,7 +70,9 @@ public class EtlMeta implements Serializable {
             this.metaName = etlMetaJson.getString(Consts.ETL_META_NAME);
             this.metaKey = etlMetaJson.getString(Consts.ETL_META_KEY);
             this.metaTag = etlMetaJson.getString(Consts.ETL_META_TAG);
-            this.metaValue = etlMetaJson.getJSONObject(Consts.ETL_META_VALUE);
+            // For etl metas created by logging, EtlMetaValue may ends with new line.
+            final String value = etlMetaJson.getString(Consts.ETL_META_VALUE);
+            this.metaValue = JSONObject.fromObject(value.trim());
         } catch (JSONException e) {
             throw new LogException("BadResponse", e.getMessage(), e, "");
         }
