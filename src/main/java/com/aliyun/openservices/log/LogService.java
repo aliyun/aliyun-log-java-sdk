@@ -11,8 +11,6 @@ import com.aliyun.openservices.log.common.EtlMeta;
 import com.aliyun.openservices.log.common.Index;
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.common.LogStore;
-import com.aliyun.openservices.log.common.Logging;
-import com.aliyun.openservices.log.common.Logs;
 import com.aliyun.openservices.log.common.MachineGroup;
 import com.aliyun.openservices.log.common.MachineList;
 import com.aliyun.openservices.log.common.ShipperConfig;
@@ -216,8 +214,12 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore is empty
 	 */
-	public GetHistogramsResponse GetHistograms(String project, String logstore,
-			int from, int to, String topic, String query) throws LogException;
+    GetHistogramsResponse GetHistograms(String project,
+                                        String logstore,
+                                        int from,
+                                        int to,
+                                        String topic,
+                                        String query) throws LogException;
 
 	/**
 	 * Get The log status(histogram info) from log service server which match
@@ -232,8 +234,7 @@ public interface LogService {
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 */
-	public GetHistogramsResponse GetHistograms(GetHistogramsRequest request)
-			throws LogException;
+    GetHistogramsResponse GetHistograms(GetHistogramsRequest request) throws LogException;
 
 	/**
 	 * Get The sub set of logs data from log service server which match input
@@ -263,8 +264,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore is empty
 	 */
-	public GetLogsResponse GetLogs(String project, String logStore, int from,
-			int to, String topic, String query) throws LogException;
+	GetLogsResponse GetLogs(String project, String logStore, int from,
+							int to, String topic, String query) throws LogException;
 
 	/**
 	 * Get The sub set of logs data from log service server which match input
@@ -304,9 +305,9 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore is empty
 	 */
-	public GetLogsResponse GetLogs(String project, String logStore, int from,
-			int to, String topic, String query, int line, int offset,
-			boolean reverse) throws LogException;
+	GetLogsResponse GetLogs(String project, String logStore, int from,
+							int to, String topic, String query, int line, int offset,
+							boolean reverse) throws LogException;
 
 	/**
 	 * Get The sub set of logs data from log service server which match input
@@ -321,7 +322,7 @@ public interface LogService {
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 */
-	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException;
+	GetLogsResponse GetLogs(GetLogsRequest request) throws LogException;
 
 
 	/**
@@ -340,7 +341,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore is empty
 	 */
-	public GetLogsResponse GetProjectLogs(String project,String query) throws  LogException;
+	GetLogsResponse GetProjectLogs(String project, String query) throws  LogException;
 
 
 	/**
@@ -355,7 +356,7 @@ public interface LogService {
 	 * @throws LogException
 	 *             if any error happen when get the data from log service server
 	 */
-	public GetLogsResponse GetProjectLogs(GetProjectLogsRequest request) throws  LogException;
+	GetLogsResponse GetProjectLogs(GetProjectLogsRequest request) throws  LogException;
 
 	/**
 	 * Get all the logstore for the user
@@ -381,8 +382,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore is empty
 	 */
-	public ListLogStoresResponse ListLogStores(String project, int offset,
-			int size, String logstoreName) throws LogException;
+	ListLogStoresResponse ListLogStores(String project, int offset,
+										int size, String logstoreName) throws LogException;
 
 	/**
 	 * Get all the logstore of a project
@@ -395,8 +396,7 @@ public interface LogService {
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 */
-	public ListLogStoresResponse ListLogStores(ListLogStoresRequest request)
-			throws LogException;
+	ListLogStoresResponse ListLogStores(ListLogStoresRequest request) throws LogException;
 
 	/**
 	 * Get the topics in the logtstore
@@ -418,8 +418,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore is empty
 	 */
-	public ListTopicsResponse ListTopics(String project, String logStore,
-			String token, int line) throws LogException;
+	ListTopicsResponse ListTopics(String project, String logStore,
+								  String token, int line) throws LogException;
 
 	/**
 	 * Get the topics in the logtstore
@@ -432,8 +432,7 @@ public interface LogService {
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 */
-	public ListTopicsResponse ListTopics(ListTopicsRequest request)
-			throws LogException;
+	ListTopicsResponse ListTopics(ListTopicsRequest request) throws LogException;
 
 	/**
 	 * Send Data to log service server
@@ -461,8 +460,8 @@ public interface LogService {
 	 *             if project or logstore is empty, or the logGroup log count
 	 *             exceed 4096, or the total data size exceed 5MB
 	 */
-	public PutLogsResponse PutLogs(String project, String logStore,
-			String topic, List<LogItem> logItems, String source)
+	PutLogsResponse PutLogs(String project, String logStore,
+							String topic, List<LogItem> logItems, String source)
 			throws LogException;
 
 	/**
@@ -491,9 +490,9 @@ public interface LogService {
 	 *             if project or logstore is empty, or the logGroup log count
 	 *             exceed 4096, or the total data size exceed 5MB
 	 */
-	public PutLogsResponse PutLogs(String project, String logStore,
-			String topic, List<LogItem> logItems, String source,
-			String shardHash) throws LogException;
+	PutLogsResponse PutLogs(String project, String logStore,
+							String topic, List<LogItem> logItems, String source,
+							String shardHash) throws LogException;
 	/**
 	 * Send Data to log service server
 	 *
@@ -510,7 +509,7 @@ public interface LogService {
 	 *             if project or logstore is empty, or the logGroup log count
 	 *             exceed 4096, or the total data size exceed 5MB
 	 */
-	public PutLogsResponse PutLogs(PutLogsRequest request) throws LogException;
+	PutLogsResponse PutLogs(PutLogsRequest request) throws LogException;
 
 	/**
 	 * Get cursor from log service server
@@ -533,8 +532,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logStore is empty
 	 */
-	public GetCursorResponse GetCursor(String project, String logStore,
-			int shardId, long fromTime) throws LogException;
+	GetCursorResponse GetCursor(String project, String logStore,
+								int shardId, long fromTime) throws LogException;
 
 	/**
 	 * Get cursor from log service server
@@ -557,8 +556,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any string argument in request is empty
 	 */
-	public GetCursorResponse GetCursor(String project, String logStore,
-			int shardId, Date fromTime) throws LogException;
+	GetCursorResponse GetCursor(String project, String logStore,
+								int shardId, Date fromTime) throws LogException;
 
 	/**
 	 * Get cursor from log service server
@@ -581,8 +580,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any string argument in request is empty
 	 */
-	public GetCursorResponse GetCursor(String project, String logStore,
-			int shardId, CursorMode mode) throws LogException;
+	GetCursorResponse GetCursor(String project, String logStore,
+								int shardId, CursorMode mode) throws LogException;
 
 	/**
 	 * Get cursor from log service server
@@ -599,8 +598,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any string argument in request is empty
 	 */
-	public GetCursorResponse GetCursor(GetCursorRequest request)
-			throws LogException;
+	GetCursorResponse GetCursor(GetCursorRequest request) throws LogException;
 
 	/**
 	 * Get the receive time of the package according to the cursor
@@ -621,8 +619,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any string argument in request is empty
 	 */
-	public GetCursorTimeResponse GetCursorTime(String project, String logStore,
-			int shardId, String cursor) throws LogException;
+	GetCursorTimeResponse GetCursorTime(String project, String logStore,
+										int shardId, String cursor) throws LogException;
 
 	/**
 	 * Get the receive time of the package according to the cursor
@@ -636,8 +634,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any string argument in request is empty
 	 */
-	public GetCursorTimeResponse GetCursorTime(GetCursorTimeRequest request)
-			throws LogException;
+	GetCursorTimeResponse GetCursorTime(GetCursorTimeRequest request) throws LogException;
 	/**
 	 * Get the shards in the logtstore
 	 *
@@ -655,8 +652,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore is empty
 	 */
-	public ListShardResponse ListShard(String project, String logStore)
-			throws LogException;
+	ListShardResponse ListShard(String project, String logStore) throws LogException;
 
 	/**
 	 * Get the shards in the logtstore
@@ -673,8 +669,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore in request is empty
 	 */
-	public ListShardResponse ListShard(ListShardRequest request)
-			throws LogException;
+	ListShardResponse ListShard(ListShardRequest request) throws LogException;
 
 	/**
 	 * split a readwrite shard in the logtstore
@@ -697,8 +692,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore in request is empty
 	 */
-	public ListShardResponse SplitShard(String project, String logStore,
-			int shardId, String midHash) throws LogException;
+	ListShardResponse SplitShard(String project, String logStore,
+								 int shardId, String midHash) throws LogException;
 
 	/**
 	 * split a readwrite shard in the logtstore
@@ -715,8 +710,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore in request is empty
 	 */
-	public ListShardResponse SplitShard(SplitShardRequest request)
-			throws LogException;
+	ListShardResponse SplitShard(SplitShardRequest request) throws LogException;
 
 	/**
 	 * merge two readwrite shards in the logtstore
@@ -737,8 +731,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore in request is empty
 	 */
-	public ListShardResponse MergeShards(String project, String logStore,
-			int shardId) throws LogException;
+	ListShardResponse MergeShards(String project, String logStore, int shardId) throws LogException;
 
 	/**
 	 * merge two readwrite shards in the logtstore
@@ -755,8 +748,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore in request is empty
 	 */
-	public ListShardResponse MergeShards(MergeShardsRequest request)
-			throws LogException;
+	ListShardResponse MergeShards(MergeShardsRequest request) throws LogException;
 
 	/**
 	 * delete a readonly shard in the logtstore
@@ -777,8 +769,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore in request is empty
 	 */
-	public DeleteShardResponse DeleteShard(String project, String logStore,
-			int shardId) throws LogException;
+	DeleteShardResponse DeleteShard(String project, String logStore,
+									int shardId) throws LogException;
 
 	/**
 	 * delete a readonly shard in the logtstore
@@ -795,8 +787,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore in request is empty
 	 */
-	public DeleteShardResponse DeleteShard(DeleteShardRequest request)
-			throws LogException;
+	DeleteShardResponse DeleteShard(DeleteShardRequest request) throws LogException;
 
 	/**
 	 * Batch get log
@@ -821,8 +812,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore or cursor is empty
 	 */
-	public BatchGetLogResponse BatchGetLog(String project, String logStore,
-			int shardId, int count, String cursor) throws LogException;
+	BatchGetLogResponse BatchGetLog(String project, String logStore,
+									int shardId, int count, String cursor) throws LogException;
 
 	/**
 	 * Batch get log
@@ -838,7 +829,7 @@ public interface LogService {
 	 * @param cursor
 	 *            the cursor to batch get log
 	 *
-	 * @param end_cursor
+	 * @param endCursor
 	 * 			  the end cursor to batch get log
 	 *
 	 * @return batch get log response
@@ -850,8 +841,9 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore or cursor is empty
 	 */
-	public BatchGetLogResponse BatchGetLog(String project, String logStore,
-			int shardId, int count, String cursor, String end_cursor) throws LogException;
+	BatchGetLogResponse BatchGetLog(String project, String logStore,
+									int shardId, int count, String cursor, String endCursor)
+			throws LogException;
 
 	/**
 	 * Batch get log
@@ -868,8 +860,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project or logstore or cursor in request is empty
 	 */
-	public BatchGetLogResponse BatchGetLog(BatchGetLogRequest request)
-			throws LogException;
+	BatchGetLogResponse BatchGetLog(BatchGetLogRequest request) throws LogException;
 
 	/**
 	 * Create logtail config
@@ -888,8 +879,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public CreateConfigResponse CreateConfig(String project, Config config)
-			throws LogException;
+	CreateConfigResponse CreateConfig(String project, Config config) throws LogException;
 
 	/**
 	 * Create logtail config
@@ -906,8 +896,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public CreateConfigResponse CreateConfig(CreateConfigRequest request)
-			throws LogException;
+	CreateConfigResponse CreateConfig(CreateConfigRequest request) throws LogException;
 
 	/**
 	 * Update logtail config
@@ -926,8 +915,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateConfigResponse UpdateConfig(String project, Config config)
-			throws LogException;
+	UpdateConfigResponse UpdateConfig(String project, Config config) throws LogException;
 
 	/**
 	 * Update logtail config
@@ -944,8 +932,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateConfigResponse UpdateConfig(UpdateConfigRequest request)
-			throws LogException;
+	UpdateConfigResponse UpdateConfig(UpdateConfigRequest request) throws LogException;
 
 	/**
 	 * Get logtail config
@@ -965,8 +952,7 @@ public interface LogService {
 	 *             if configName is empty
 	 *
 	 */
-	public GetConfigResponse GetConfig(String project, String configName)
-			throws LogException;
+	GetConfigResponse GetConfig(String project, String configName) throws LogException;
 
 	/**
 	 * Get logtail config
@@ -983,8 +969,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetConfigResponse GetConfig(GetConfigRequest request)
-			throws LogException;
+	GetConfigResponse GetConfig(GetConfigRequest request) throws LogException;
 
 	/**
 	 * Delete logtail config
@@ -1004,8 +989,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public DeleteConfigResponse DeleteConfig(String project, String configName)
-			throws LogException;
+	DeleteConfigResponse DeleteConfig(String project, String configName) throws LogException;
 
 	/**
 	 * Delete logtail config
@@ -1022,8 +1006,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public DeleteConfigResponse DeleteConfig(DeleteConfigRequest request)
-			throws LogException;
+	DeleteConfigResponse DeleteConfig(DeleteConfigRequest request) throws LogException;
 
 	/**
 	 * List logtail configs
@@ -1039,7 +1022,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListConfigResponse ListConfig(String project) throws LogException;
+	ListConfigResponse ListConfig(String project) throws LogException;
 
 	/**
 	 * List logtail configs
@@ -1060,8 +1043,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListConfigResponse ListConfig(String project, int offSet, int size)
-			throws LogException;
+	ListConfigResponse ListConfig(String project, int offSet, int size) throws LogException;
 
 	/**
 	 * List logtail configs
@@ -1084,8 +1066,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListConfigResponse ListConfig(String project, String configName,
-			int offSet, int size) throws LogException;
+	ListConfigResponse ListConfig(String project, String configName,
+								  int offSet, int size) throws LogException;
 
 	/**
 	 * List logtail configs
@@ -1102,8 +1084,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListConfigResponse ListConfig(ListConfigRequest request)
-			throws LogException;
+	ListConfigResponse ListConfig(ListConfigRequest request) throws LogException;
 
 	/**
 	 * get applied config on a certain machine group
@@ -1123,8 +1104,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetAppliedConfigResponse GetAppliedConfig(String project,
-			String groupName) throws LogException;
+	GetAppliedConfigResponse GetAppliedConfig(String project, String groupName) throws LogException;
 
 	/**
 	 * get applied config on a certain machine group
@@ -1141,8 +1121,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetAppliedConfigResponse GetAppliedConfig(
-			GetAppliedConfigsRequest request) throws LogException;
+	GetAppliedConfigResponse GetAppliedConfig(GetAppliedConfigsRequest request) throws LogException;
 
 	/**
 	 * get applied machine group for a certain logtail config
@@ -1162,8 +1141,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetAppliedMachineGroupsResponse GetAppliedMachineGroups(
-			String project, String configName) throws LogException;
+	GetAppliedMachineGroupsResponse GetAppliedMachineGroups(String project, String configName)
+			throws LogException;
 
 	/**
 	 * get applied machine group for a certain logtail config
@@ -1180,8 +1159,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetAppliedMachineGroupsResponse GetAppliedMachineGroups(
-			GetAppliedMachineGroupRequest request) throws LogException;
+	GetAppliedMachineGroupsResponse GetAppliedMachineGroups(GetAppliedMachineGroupRequest request)
+			throws LogException;
 
 	/**
 	 * Create machine group
@@ -1200,8 +1179,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public CreateMachineGroupResponse CreateMachineGroup(String project,
-			MachineGroup group) throws LogException;
+	CreateMachineGroupResponse CreateMachineGroup(String project, MachineGroup group)
+			throws LogException;
 
 	/**
 	 * Create machine group
@@ -1218,8 +1197,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public CreateMachineGroupResponse CreateMachineGroup(
-			CreateMachineGroupRequest request) throws LogException;
+	CreateMachineGroupResponse CreateMachineGroup(CreateMachineGroupRequest request)
+			throws LogException;
 
 	/**
 	 * Update machine group
@@ -1238,8 +1217,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateMachineGroupResponse UpdateMachineGroup(String project,
-			MachineGroup group) throws LogException;
+	UpdateMachineGroupResponse UpdateMachineGroup(String project, MachineGroup group)
+			throws LogException;
 
 	/**
 	 * Update machine group
@@ -1256,8 +1235,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateMachineGroupResponse UpdateMachineGroup(
-			UpdateMachineGroupRequest request) throws LogException;
+	UpdateMachineGroupResponse UpdateMachineGroup(UpdateMachineGroupRequest request)
+			throws LogException;
 
 	/**
 	 * add machine into machine group
@@ -1278,9 +1257,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateMachineGroupMachineResponse AddMachineIntoMahineGroup(String project,
-			String groupName,
-			MachineList machineList) throws LogException;
+	UpdateMachineGroupMachineResponse AddMachineIntoMahineGroup(String project,
+																String groupName,
+																MachineList machineList)
+			throws LogException;
 
 	/**
 	 * add machine into machine group
@@ -1297,7 +1277,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateMachineGroupMachineResponse AddMachineIntoMachineGroup(
+	UpdateMachineGroupMachineResponse AddMachineIntoMachineGroup(
 			UpdateMachineGroupMachineRequest request) throws LogException;
 
 	/**
@@ -1319,9 +1299,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateMachineGroupMachineResponse DeleteMachineFromMachineGroup(String project,
-			String groupName,
-			MachineList machineList) throws LogException;
+	UpdateMachineGroupMachineResponse DeleteMachineFromMachineGroup(String project,
+																	String groupName,
+																	MachineList machineList)
+			throws LogException;
 
 	/**
 	 * delete machine into machine group
@@ -1338,7 +1319,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateMachineGroupMachineResponse DeleteMachineFromMachineGroup(
+	UpdateMachineGroupMachineResponse DeleteMachineFromMachineGroup(
 			UpdateMachineGroupMachineRequest request) throws LogException;
 
 	/**
@@ -1358,8 +1339,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetMachineGroupResponse GetMachineGroup(String project,
-			String groupName) throws LogException;
+	GetMachineGroupResponse GetMachineGroup(String project, String groupName) throws LogException;
 
 	/**
 	 * Get machine group
@@ -1376,8 +1356,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetMachineGroupResponse GetMachineGroup(
-			GetMachineGroupRequest request) throws LogException;
+	GetMachineGroupResponse GetMachineGroup(GetMachineGroupRequest request) throws LogException;
 
 	/**
 	 * approve machine group
@@ -1396,8 +1375,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ApproveMachineGroupResponse ApproveMachineGroup(String project,
-			String groupName) throws LogException;
+	ApproveMachineGroupResponse ApproveMachineGroup(String project, String groupName)
+			throws LogException;
 
 	/**
 	 * approve machine group
@@ -1414,8 +1393,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ApproveMachineGroupResponse ApproveMachineGroup(
-			ApproveMachineGroupRequest request) throws LogException;
+    ApproveMachineGroupResponse ApproveMachineGroup(ApproveMachineGroupRequest request)
+            throws LogException;
 
 	/**
 	 * Delete machine group
@@ -1434,8 +1413,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public DeleteMachineGroupResponse DeleteMachineGroup(String project,
-			String groupName) throws LogException;
+    DeleteMachineGroupResponse DeleteMachineGroup(String project, String groupName)
+            throws LogException;
 
 	/**
 	 * Delete machine group
@@ -1452,8 +1431,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public DeleteMachineGroupResponse DeleteMachineGroup(
-			DeleteMachineGroupRequest request) throws LogException;
+    DeleteMachineGroupResponse DeleteMachineGroup(DeleteMachineGroupRequest request)
+            throws LogException;
 
 	/**
 	 * List machine groups
@@ -1469,8 +1448,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListMachineGroupResponse ListMachineGroup(String project)
-			throws LogException;
+    ListMachineGroupResponse ListMachineGroup(String project) throws LogException;
 
 	/**
 	 * List the real machines in the machine group
@@ -1492,8 +1470,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListMachinesResponse ListMachines(String project,
-			String machineGroup, int offset, int size) throws LogException;
+    ListMachinesResponse ListMachines(String project, String machineGroup, int offset, int size)
+            throws LogException;
 
 	/**
 	 * List machine groups
@@ -1514,8 +1492,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListMachineGroupResponse ListMachineGroup(String project,
-			int offSet, int size) throws LogException;
+    ListMachineGroupResponse ListMachineGroup(String project, int offSet, int size)
+            throws LogException;
 
 	/**
 	 * List machine groups
@@ -1538,8 +1516,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListMachineGroupResponse ListMachineGroup(String project,
-			String groupName, int offSet, int size) throws LogException;
+    ListMachineGroupResponse ListMachineGroup(String project, String groupName,
+                                              int offSet, int size) throws LogException;
 
 	/**
 	 * List machine groups
@@ -1556,8 +1534,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListMachineGroupResponse ListMachineGroup(
-			ListMachineGroupRequest request) throws LogException;
+    ListMachineGroupResponse ListMachineGroup(ListMachineGroupRequest request) throws LogException;
 
 	/**
 	 * Apply config to machine group
@@ -1578,8 +1555,9 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ApplyConfigToMachineGroupResponse ApplyConfigToMachineGroup(
-			String project, String groupName, String configName)
+    ApplyConfigToMachineGroupResponse ApplyConfigToMachineGroup(String project,
+                                                                String groupName,
+                                                                String configName)
 			throws LogException;
 
 	/**
@@ -1597,8 +1575,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ApplyConfigToMachineGroupResponse ApplyConfigToMachineGroup(
-			ApplyConfigToMachineGroupRequest request) throws LogException;
+    ApplyConfigToMachineGroupResponse ApplyConfigToMachineGroup(
+            ApplyConfigToMachineGroupRequest request) throws LogException;
 
 	/**
 	 * Remove config from machine group
@@ -1619,8 +1597,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public RemoveConfigFromMachineGroupResponse RemoveConfigFromMachineGroup(
-			String project, String groupName, String configName)
+    RemoveConfigFromMachineGroupResponse RemoveConfigFromMachineGroup(
+            String project, String groupName, String configName)
 			throws LogException;
 
 	/**
@@ -1638,8 +1616,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public RemoveConfigFromMachineGroupResponse RemoveConfigFromMachineGroup(
-			RemoveConfigFromMachineGroupRequest request) throws LogException;
+    RemoveConfigFromMachineGroupResponse RemoveConfigFromMachineGroup(
+            RemoveConfigFromMachineGroupRequest request) throws LogException;
 
 	/**
 	 * Update project ACL
@@ -1658,8 +1636,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateACLResponse UpdateACL(String project, ACL acl)
-			throws LogException;
+    UpdateACLResponse UpdateACL(String project, ACL acl) throws LogException;
 
 	/**
 	 * update log sotre acl
@@ -1678,8 +1655,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateACLResponse UpdateACL(String project, String logStore, ACL acl)
-			throws LogException;
+    UpdateACLResponse UpdateACL(String project, String logStore, ACL acl) throws LogException;
 
 	/**
 	 * Update ACL
@@ -1696,8 +1672,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateACLResponse UpdateACL(UpdateACLRequest request)
-			throws LogException;
+    UpdateACLResponse UpdateACL(UpdateACLRequest request) throws LogException;
 
 	/**
 	 * List ACL
@@ -1713,7 +1688,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListACLResponse ListACL(String project) throws LogException;
+    ListACLResponse ListACL(String project) throws LogException;
 
 	/**
 	 * List ACL
@@ -1732,8 +1707,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListACLResponse ListACL(String project, String logStore)
-			throws LogException;
+    ListACLResponse ListACL(String project, String logStore) throws LogException;
 
 	/**
 	 * List ACL
@@ -1754,8 +1728,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListACLResponse ListACL(String project, int offSet, int size)
-			throws LogException;
+    ListACLResponse ListACL(String project, int offSet, int size) throws LogException;
 
 	/**
 	 * List ACL
@@ -1778,8 +1751,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListACLResponse ListACL(String project, String logStore, int offSet,
-			int size) throws LogException;
+    ListACLResponse ListACL(String project, String logStore, int offSet, int size)
+            throws LogException;
 
 	/**
 	 * List ACL
@@ -1796,7 +1769,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListACLResponse ListACL(ListACLRequest request) throws LogException;
+    ListACLResponse ListACL(ListACLRequest request) throws LogException;
 
 	/**
 	 * create a logstore in a project
@@ -1807,15 +1780,14 @@ public interface LogService {
 	 *            the config
 	 * @return the create log store response
 	 * @throws LogException
-	 *             if any error happen when creasting logstore
+	 *             if any error happen when creating logstore
 	 *
 	 * @throws NullPointerException
 	 *             if any parameter is null
 	 * @throws IllegalArgumentException
 	 *             if project is empty
 	 */
-	public CreateLogStoreResponse CreateLogStore(String project,
-			LogStore logStore) throws LogException;
+    CreateLogStoreResponse CreateLogStore(String project, LogStore logStore) throws LogException;
 
 	/**
 	 * create logstore
@@ -1824,15 +1796,14 @@ public interface LogService {
 	 *            logstore create request
 	 * @return the create log store response
 	 * @throws LogException
-	 *             if any error happen when creasting logstore
+	 *             if any error happen when creating logstore
 	 *
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public CreateLogStoreResponse CreateLogStore(CreateLogStoreRequest request)
-			throws LogException;
+    CreateLogStoreResponse CreateLogStore(CreateLogStoreRequest request) throws LogException;
 
 	/**
 	 * Update log store config
@@ -1850,8 +1821,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if project is empty
 	 */
-	public UpdateLogStoreResponse UpdateLogStore(String project,
-			LogStore logStore) throws LogException;
+    UpdateLogStoreResponse UpdateLogStore(String project, LogStore logStore) throws LogException;
 
 	/**
 	 * Update logstore config
@@ -1867,8 +1837,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateLogStoreResponse UpdateLogStore(UpdateLogStoreRequest request)
-			throws LogException;
+    UpdateLogStoreResponse UpdateLogStore(UpdateLogStoreRequest request) throws LogException;
 
 	/**
 	 * Delete the logstore
@@ -1886,8 +1855,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if an param is empty
 	 */
-	public DeleteLogStoreResponse DeleteLogStore(String project,
-			String logStoreName) throws LogException;
+    DeleteLogStoreResponse DeleteLogStore(String project, String logStoreName) throws LogException;
 
 	/**
 	 * Delete logstore
@@ -1902,8 +1870,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public DeleteLogStoreResponse DeleteLogStore(DeleteLogStoreRequest request)
-			throws LogException;
+    DeleteLogStoreResponse DeleteLogStore(DeleteLogStoreRequest request) throws LogException;
 
 	/**
 	 * Get the logstore config
@@ -1921,8 +1888,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any parameter is empty
 	 */
-	public GetLogStoreResponse GetLogStore(String project, String logStoreName)
-			throws LogException;
+    GetLogStoreResponse GetLogStore(String project, String logStoreName) throws LogException;
 
 	/**
 	 * get the logstore config
@@ -1938,8 +1904,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetLogStoreResponse GetLogStore(GetLogStoreRequest request)
-			throws LogException;
+    GetLogStoreResponse GetLogStore(GetLogStoreRequest request) throws LogException;
 
 	/**
 	 * create logstore index
@@ -1960,8 +1925,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any string paramter is empty
 	 */
-	public CreateIndexResponse CreateIndex(String project, String logStore,
-										   String indexJsonString) throws LogException;
+    CreateIndexResponse CreateIndex(String project, String logStore,
+                                    String indexJsonString) throws LogException;
 
 	/**
 	 * create logstore index
@@ -1980,10 +1945,10 @@ public interface LogService {
 	 *             if the request is null
 	 *
 	 * @throws IllegalArgumentException
-	 *             if any string paramter is empty
+	 *             if any string parameter is empty
 	 */
-	public CreateIndexResponse CreateIndex(String project, String logStore,
-			Index index) throws LogException;
+    CreateIndexResponse CreateIndex(String project, String logStore, Index index)
+            throws LogException;
 
 	/**
 	 * create logstore index
@@ -1999,8 +1964,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public CreateIndexResponse CreateIndex(CreateIndexRequest request)
-			throws LogException;
+    CreateIndexResponse CreateIndex(CreateIndexRequest request) throws LogException;
 
 	/**
 	 * Update logstore index config
@@ -2021,8 +1985,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any string parameter is empty
 	 */
-	public UpdateIndexResponse UpdateIndex(String project, String logStore,
-										   String indexJsonString) throws LogException;
+    UpdateIndexResponse UpdateIndex(String project, String logStore,
+                                    String indexJsonString) throws LogException;
 
 	/**
 	 * Update logstore index config
@@ -2043,8 +2007,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any string parameter is empty
 	 */
-	public UpdateIndexResponse UpdateIndex(String project, String logStore,
-			Index index) throws LogException;
+    UpdateIndexResponse UpdateIndex(String project, String logStore, Index index)
+            throws LogException;
 
 	/**
 	 * update logstore index config
@@ -2060,8 +2024,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateIndexResponse UpdateIndex(UpdateIndexRequest request)
-			throws LogException;
+    UpdateIndexResponse UpdateIndex(UpdateIndexRequest request) throws LogException;
 
 	/**
 	 * delete logstore index
@@ -2079,8 +2042,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any string parameter is empty
 	 */
-	public DeleteIndexResponse DeleteIndex(String project, String logStore)
-			throws LogException;
+    DeleteIndexResponse DeleteIndex(String project, String logStore) throws LogException;
 
 	/**
 	 * delete logstore index
@@ -2096,8 +2058,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public DeleteIndexResponse DeleteIndex(DeleteIndexRequest request)
-			throws LogException;
+    DeleteIndexResponse DeleteIndex(DeleteIndexRequest request) throws LogException;
 
 	/**
 	 * Get logstore index config
@@ -2115,10 +2076,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any string parameter is empty
 	 */
-	public GetIndexResponse GetIndex(String project, String logStore)
+    GetIndexResponse GetIndex(String project, String logStore)
 			throws LogException;
 
-    public GetIndexStringResponse GetIndexString(String project, String logStore)
+    GetIndexStringResponse GetIndexString(String project, String logStore)
             throws LogException;
 
 	/**
@@ -2135,11 +2096,9 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetIndexResponse GetIndex(GetIndexRequest request)
-			throws LogException;
+    GetIndexResponse GetIndex(GetIndexRequest request) throws LogException;
 
-    public GetIndexStringResponse GetIndexString(GetIndexRequest request)
-            throws LogException;
+    GetIndexStringResponse GetIndexString(GetIndexRequest request) throws LogException;
 
 	/**
 	 * create logstore consumer group
@@ -2155,8 +2114,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public CreateConsumerGroupResponse CreateConsumerGroup(
-			CreateConsumerGroupRequest request) throws LogException;
+    CreateConsumerGroupResponse CreateConsumerGroup(CreateConsumerGroupRequest request)
+            throws LogException;
 
 	/**
 	 * create logstore consumer group
@@ -2176,8 +2135,9 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public CreateConsumerGroupResponse CreateConsumerGroup(String project,
-			String logStore, ConsumerGroup consumerGroup) throws LogException;
+    CreateConsumerGroupResponse CreateConsumerGroup(String project,
+                                                    String logStore,
+                                                    ConsumerGroup consumerGroup) throws LogException;
 
 	/**
 	 * delete logstore consumer group
@@ -2197,8 +2157,9 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public DeleteConsumerGroupResponse DeleteConsumerGroup(String project,
-			String logStore, String consumerGroup) throws LogException;
+    DeleteConsumerGroupResponse DeleteConsumerGroup(String project,
+                                                    String logStore,
+                                                    String consumerGroup) throws LogException;
 
 	/**
 	 * list logstore consumer groups
@@ -2216,8 +2177,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListConsumerGroupResponse ListConsumerGroup(String project,
-			String logStore) throws LogException;
+    ListConsumerGroupResponse ListConsumerGroup(String project,
+                                                String logStore) throws LogException;
 
 	/**
 	 * update consumer group
@@ -2242,11 +2203,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateConsumerGroupResponse UpdateConsumerGroup(String project,
-			String logStore, String consumerGroup, boolean inOrder,
-			int timeoutInSec) throws LogException;
+    UpdateConsumerGroupResponse UpdateConsumerGroup(String project,
+                                                    String logStore, String consumerGroup, boolean inOrder,
+                                                    int timeoutInSec) throws LogException;
 
-	public UpdateConsumerGroupResponse
 	/**
 	 * update consumer group
 	 *
@@ -2267,8 +2227,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	UpdateConsumerGroup(String project, String logStore, String consumerGroup,
-			boolean inOrder) throws LogException;
+    UpdateConsumerGroupResponse UpdateConsumerGroup(String project,
+                                                    String logStore,
+                                                    String consumerGroup,
+                                                    boolean inOrder) throws LogException;
 
 	/**
 	 * update consumer group
@@ -2291,8 +2253,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateConsumerGroupResponse UpdateConsumerGroup(String project,
-			String logStore, String consumerGroup, int timeoutInSec)
+    UpdateConsumerGroupResponse UpdateConsumerGroup(String project,
+                                                    String logStore,
+                                                    String consumerGroup,
+                                                    int timeoutInSec)
 			throws LogException;
 
 	/**
@@ -2319,9 +2283,12 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ConsumerGroupUpdateCheckPointResponse UpdateCheckPoint(
-			String project, String logStore, String consumerGroup,
-			String consumer, int shard, String checkpoint) throws LogException;
+    ConsumerGroupUpdateCheckPointResponse UpdateCheckPoint(String project,
+                                                           String logStore,
+                                                           String consumerGroup,
+                                                           String consumer,
+                                                           int shard,
+                                                           String checkpoint) throws LogException;
 
 	/**
 	 * update consume checkpoint
@@ -2345,9 +2312,11 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ConsumerGroupUpdateCheckPointResponse UpdateCheckPoint(
-			String project, String logStore, String consumerGroup, int shard,
-			String checkpoint) throws LogException;
+    ConsumerGroupUpdateCheckPointResponse UpdateCheckPoint(String project,
+                                                           String logStore,
+                                                           String consumerGroup,
+                                                           int shard,
+                                                           String checkpoint) throws LogException;
 
 	/**
 	 * notify the server periodically to show that the consumer is still alive.
@@ -2371,9 +2340,11 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ConsumerGroupHeartBeatResponse HeartBeat(String project,
-			String logStore, String consumerGroup, String consumer,
-			ArrayList<Integer> shards) throws LogException;
+    ConsumerGroupHeartBeatResponse HeartBeat(String project,
+                                             String logStore,
+                                             String consumerGroup,
+                                             String consumer,
+                                             ArrayList<Integer> shards) throws LogException;
 
 	/**
 	 * get shard checkpoint in the consumer group
@@ -2395,8 +2366,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ConsumerGroupCheckPointResponse GetCheckPoint(String project,
-			String logStore, String consumerGroup, int shard)
+    ConsumerGroupCheckPointResponse GetCheckPoint(String project,
+                                                  String logStore,
+                                                  String consumerGroup,
+                                                  int shard)
 			throws LogException;
 
 	/**
@@ -2417,8 +2390,9 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ConsumerGroupCheckPointResponse GetCheckPoint(String project,
-			String logStore, String consumerGroup) throws LogException;
+    ConsumerGroupCheckPointResponse GetCheckPoint(String project,
+                                                  String logStore,
+                                                  String consumerGroup) throws LogException;
 
 	/**
 	 * create a shipper
@@ -2440,8 +2414,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public CreateShipperResponse CreateShipper(String project, String logStore,
-			String shipperName, ShipperConfig shipConfig) throws LogException;
+    CreateShipperResponse CreateShipper(String project,
+                                        String logStore,
+                                        String shipperName,
+                                        ShipperConfig shipConfig) throws LogException;
 
 	/**
 	 * update a shipper
@@ -2464,8 +2440,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public UpdateShipperResponse UpdateShipper(String project, String logStore,
-			String shipperName, ShipperConfig shipConfig) throws LogException;
+    UpdateShipperResponse UpdateShipper(String project,
+                                        String logStore,
+                                        String shipperName,
+                                        ShipperConfig shipConfig) throws LogException;
 
 	/**
 	 * Delete a shipper
@@ -2486,8 +2464,9 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public DeleteShipperResponse DeleteShipper(String project, String logStore,
-			String ShipperName) throws LogException;
+    DeleteShipperResponse DeleteShipper(String project,
+                                        String logStore,
+                                        String ShipperName) throws LogException;
 
 	/**
 	 * Get a shipper config
@@ -2506,8 +2485,9 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetShipperResponse GetShipperConfig(String project, String logStore,
-			String shipperName) throws LogException;
+    GetShipperResponse GetShipperConfig(String project,
+                                        String logStore,
+                                        String shipperName) throws LogException;
 
 	/**
 	 * List shipper of a logstore
@@ -2524,8 +2504,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListShipperResponse ListShipper(String project, String logStore)
-			throws LogException;
+    ListShipperResponse ListShipper(String project, String logStore) throws LogException;
 
 	/**
 	 * Get the tasks of a logstore shipper
@@ -2555,9 +2534,14 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetShipperTasksResponse GetShipperTasks(String project,
-			String logStore, String shipperName, int startTime, int endTime,
-			String statusType, int offset, int size) throws LogException;
+    GetShipperTasksResponse GetShipperTasks(String project,
+                                            String logStore,
+                                            String shipperName,
+                                            int startTime,
+                                            int endTime,
+                                            String statusType,
+                                            int offset,
+                                            int size) throws LogException;
 
 	/**
 	 * retry the failed tasks, for every time it can only retry 10 task
@@ -2579,9 +2563,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public RetryShipperTasksResponse RetryShipperTasks(String project,
-			String logStore, String shipperName, List<String> taskList)
-			throws LogException;
+    RetryShipperTasksResponse RetryShipperTasks(String project,
+                                                String logStore,
+                                                String shipperName,
+                                                List<String> taskList) throws LogException;
 
 	/**
 	 * create a project
@@ -2599,8 +2584,8 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public CreateProjectResponse CreateProject(String project,
-			String projectDescription) throws LogException;
+    CreateProjectResponse CreateProject(String project,
+                                        String projectDescription) throws LogException;
 
 	/**
 	 * get a project
@@ -2615,7 +2600,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public GetProjectResponse GetProject(String project) throws LogException;
+    GetProjectResponse GetProject(String project) throws LogException;
 
 	/**
 	 * list project
@@ -2634,7 +2619,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListProjectResponse ListProject(String ProjectName, int offset, int size) throws LogException;
+    ListProjectResponse ListProject(String ProjectName, int offset, int size) throws LogException;
 
 	/**
 	 * list all project
@@ -2649,7 +2634,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public ListProjectResponse ListProject(ListProjectRequest request) throws LogException;
+    ListProjectResponse ListProject(ListProjectRequest request) throws LogException;
 
 	/**
 	 * delete a project
@@ -2664,8 +2649,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	public DeleteProjectResponse DeleteProject(String project)
-			throws LogException;
+    DeleteProjectResponse DeleteProject(String project) throws LogException;
 
 	/**
 	 * Updates project.

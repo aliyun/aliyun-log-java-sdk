@@ -516,8 +516,8 @@ public class Client implements LogService {
 
 	public GetLogtailProfileResponse ExtractLogtailProfile(Map<String, String> resHeaders, JSONObject object) throws LogException {
 		try {
-			int count = object.getInt("count");
-			int total = object.getInt("total");
+			int count = object.getInt(Consts.CONST_COUNT);
+			int total = object.getInt(Consts.CONST_TOTAL);
 			JSONArray array = object.getJSONArray("profile");
 			List<LogtailProfile> logtailProfiles = new ArrayList<LogtailProfile>();
 			for (int i = 0; i < array.size(); i++) {
@@ -1583,8 +1583,8 @@ public class Client implements LogService {
 
 			object = ParserResponseMessage(response, requestId);
 
-			int total = object.getInt("total");
-			int count = object.getInt("count");
+			int total = object.getInt(Consts.CONST_TOTAL);
+			int count = object.getInt(Consts.CONST_COUNT);
             List<String> configs = ExtractConfigs(object, requestId);
 
 			listConfigResponse = new ListConfigResponse(resHeaders, count,
@@ -1807,10 +1807,9 @@ public class Client implements LogService {
 	private ListMachinesResponse ExtractMachinesFromResponse(
 			Map<String, String> resHeaders, JSONObject dict)
 			throws LogException {
-
 		try {
-			int count = dict.getInt("count");
-			int total = dict.getInt("total");
+			int count = dict.getInt(Consts.CONST_COUNT);
+			int total = dict.getInt(Consts.CONST_TOTAL);
 			JSONArray array = dict.getJSONArray("machines");
 			List<Machine> machines = new ArrayList<Machine>();
 			for (int i = 0; i < array.size(); i++) {
@@ -1950,8 +1949,8 @@ public class Client implements LogService {
 
 			object = ParserResponseMessage(response, requestId);
 
-			int total = object.getInt("total");
-			int count = object.getInt("count");
+			int total = object.getInt(Consts.CONST_TOTAL);
+			int count = object.getInt(Consts.CONST_COUNT);
             List<String>  groups = ExtractMachineGroups(object, requestId);
 
 			listMachineGroupResponse = new ListMachineGroupResponse(resHeaders,
@@ -2166,8 +2165,8 @@ public class Client implements LogService {
             String requestId = GetRequestId(resHeaders);
 			object = ParserResponseMessage(response, requestId);
 
-			int total = object.getInt("total");
-			int count = object.getInt("count");
+			int total = object.getInt(Consts.CONST_TOTAL);
+			int count = object.getInt(Consts.CONST_COUNT);
             List<ACL> acls = ExtractACLs(object, requestId);
 
 			listACLResponse = new ListACLResponse(resHeaders, count, total,
@@ -3069,8 +3068,8 @@ public class Client implements LogService {
 
 		JSONObject object = ParserResponseMessage(response, requestId);
 
-		return new ListShipperResponse(resHeaders, ExtractJsonInteger("count",
-				object), ExtractJsonInteger("total", object), ExtractJsonArray(
+		return new ListShipperResponse(resHeaders, ExtractJsonInteger(Consts.CONST_COUNT,
+				object), ExtractJsonInteger(Consts.CONST_TOTAL, object), ExtractJsonArray(
 				"shipper", object));
 	}
 
@@ -3100,7 +3099,7 @@ public class Client implements LogService {
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = ParserResponseMessage(response, requestId);
 		return new GetShipperTasksResponse(resHeaders, ExtractJsonInteger(
-				"count", object), ExtractJsonInteger("total", object),
+				Consts.CONST_COUNT, object), ExtractJsonInteger(Consts.CONST_TOTAL, object),
 				ExtractTasksStatisTic(object), ExtractShipperTask(object));
 	}
 
