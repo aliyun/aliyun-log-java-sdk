@@ -3,40 +3,9 @@
  */
 package com.aliyun.openservices.log;
 
-import com.aliyun.openservices.log.common.ACL;
-import com.aliyun.openservices.log.common.Alert;
-import com.aliyun.openservices.log.common.AlertFail;
-import com.aliyun.openservices.log.common.Chart;
-import com.aliyun.openservices.log.common.Config;
-import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.Consts.CompressType;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
-import com.aliyun.openservices.log.common.ConsumerGroup;
-import com.aliyun.openservices.log.common.Dashboard;
-import com.aliyun.openservices.log.common.EtlJob;
-import com.aliyun.openservices.log.common.EtlMeta;
-import com.aliyun.openservices.log.common.Histogram;
-import com.aliyun.openservices.log.common.Index;
-import com.aliyun.openservices.log.common.LZ4Encoder;
-import com.aliyun.openservices.log.common.LogContent;
-import com.aliyun.openservices.log.common.LogItem;
-import com.aliyun.openservices.log.common.LogStore;
-import com.aliyun.openservices.log.common.Logging;
-import com.aliyun.openservices.log.common.Logs;
-import com.aliyun.openservices.log.common.LogtailProfile;
-import com.aliyun.openservices.log.common.Machine;
-import com.aliyun.openservices.log.common.MachineGroup;
-import com.aliyun.openservices.log.common.MachineList;
-import com.aliyun.openservices.log.common.OdpsShipperConfig;
-import com.aliyun.openservices.log.common.OssShipperConfig;
-import com.aliyun.openservices.log.common.Project;
-import com.aliyun.openservices.log.common.QueriedLog;
-import com.aliyun.openservices.log.common.SavedSearch;
-import com.aliyun.openservices.log.common.Shard;
-import com.aliyun.openservices.log.common.ShipperConfig;
-import com.aliyun.openservices.log.common.ShipperTask;
-import com.aliyun.openservices.log.common.ShipperTasksStatistic;
-import com.aliyun.openservices.log.common.TagContent;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.ClientConfiguration;
 import com.aliyun.openservices.log.http.client.ClientConnectionContainer;
@@ -127,98 +96,7 @@ import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupRequest;
 import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
-import com.aliyun.openservices.log.response.ApplyConfigToMachineGroupResponse;
-import com.aliyun.openservices.log.response.ApproveMachineGroupResponse;
-import com.aliyun.openservices.log.response.BatchGetLogResponse;
-import com.aliyun.openservices.log.response.ConsumerGroupCheckPointResponse;
-import com.aliyun.openservices.log.response.ConsumerGroupHeartBeatResponse;
-import com.aliyun.openservices.log.response.ConsumerGroupUpdateCheckPointResponse;
-import com.aliyun.openservices.log.response.CreateAlertResponse;
-import com.aliyun.openservices.log.response.CreateChartResponse;
-import com.aliyun.openservices.log.response.CreateConfigResponse;
-import com.aliyun.openservices.log.response.CreateConsumerGroupResponse;
-import com.aliyun.openservices.log.response.CreateDashboardResponse;
-import com.aliyun.openservices.log.response.CreateEtlJobResponse;
-import com.aliyun.openservices.log.response.CreateEtlMetaResponse;
-import com.aliyun.openservices.log.response.CreateIndexResponse;
-import com.aliyun.openservices.log.response.CreateLogStoreResponse;
-import com.aliyun.openservices.log.response.CreateLoggingResponse;
-import com.aliyun.openservices.log.response.CreateMachineGroupResponse;
-import com.aliyun.openservices.log.response.CreateProjectResponse;
-import com.aliyun.openservices.log.response.CreateSavedSearchResponse;
-import com.aliyun.openservices.log.response.CreateShipperResponse;
-import com.aliyun.openservices.log.response.DeleteAlertResponse;
-import com.aliyun.openservices.log.response.DeleteChartResponse;
-import com.aliyun.openservices.log.response.DeleteConfigResponse;
-import com.aliyun.openservices.log.response.DeleteConsumerGroupResponse;
-import com.aliyun.openservices.log.response.DeleteDashboardResponse;
-import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
-import com.aliyun.openservices.log.response.DeleteEtlMetaResponse;
-import com.aliyun.openservices.log.response.DeleteIndexResponse;
-import com.aliyun.openservices.log.response.DeleteLogStoreResponse;
-import com.aliyun.openservices.log.response.DeleteLoggingResponse;
-import com.aliyun.openservices.log.response.DeleteMachineGroupResponse;
-import com.aliyun.openservices.log.response.DeleteProjectResponse;
-import com.aliyun.openservices.log.response.DeleteSavedSearchResponse;
-import com.aliyun.openservices.log.response.DeleteShardResponse;
-import com.aliyun.openservices.log.response.DeleteShipperResponse;
-import com.aliyun.openservices.log.response.GetAlertResponse;
-import com.aliyun.openservices.log.response.GetAppliedConfigResponse;
-import com.aliyun.openservices.log.response.GetAppliedMachineGroupsResponse;
-import com.aliyun.openservices.log.response.GetChartResponse;
-import com.aliyun.openservices.log.response.GetConfigResponse;
-import com.aliyun.openservices.log.response.GetCursorResponse;
-import com.aliyun.openservices.log.response.GetCursorTimeResponse;
-import com.aliyun.openservices.log.response.GetDashboardResponse;
-import com.aliyun.openservices.log.response.GetEtlJobResponse;
-import com.aliyun.openservices.log.response.GetHistogramsResponse;
-import com.aliyun.openservices.log.response.GetIndexResponse;
-import com.aliyun.openservices.log.response.GetIndexStringResponse;
-import com.aliyun.openservices.log.response.GetLogStoreResponse;
-import com.aliyun.openservices.log.response.GetLoggingResponse;
-import com.aliyun.openservices.log.response.GetLogsResponse;
-import com.aliyun.openservices.log.response.GetLogtailProfileResponse;
-import com.aliyun.openservices.log.response.GetMachineGroupResponse;
-import com.aliyun.openservices.log.response.GetProjectResponse;
-import com.aliyun.openservices.log.response.GetSavedSearchResponse;
-import com.aliyun.openservices.log.response.GetShipperResponse;
-import com.aliyun.openservices.log.response.GetShipperTasksResponse;
-import com.aliyun.openservices.log.response.ListACLResponse;
-import com.aliyun.openservices.log.response.ListAlertFailResponse;
-import com.aliyun.openservices.log.response.ListAlertResponse;
-import com.aliyun.openservices.log.response.ListConfigResponse;
-import com.aliyun.openservices.log.response.ListConsumerGroupResponse;
-import com.aliyun.openservices.log.response.ListDashboardResponse;
-import com.aliyun.openservices.log.response.ListEtlJobResponse;
-import com.aliyun.openservices.log.response.ListEtlMetaNameResponse;
-import com.aliyun.openservices.log.response.ListEtlMetaResponse;
-import com.aliyun.openservices.log.response.ListLogStoresResponse;
-import com.aliyun.openservices.log.response.ListMachineGroupResponse;
-import com.aliyun.openservices.log.response.ListMachinesResponse;
-import com.aliyun.openservices.log.response.ListProjectResponse;
-import com.aliyun.openservices.log.response.ListSavedSearchResponse;
-import com.aliyun.openservices.log.response.ListShardResponse;
-import com.aliyun.openservices.log.response.ListShipperResponse;
-import com.aliyun.openservices.log.response.ListTopicsResponse;
-import com.aliyun.openservices.log.response.PutLogsResponse;
-import com.aliyun.openservices.log.response.RemoveConfigFromMachineGroupResponse;
-import com.aliyun.openservices.log.response.RetryShipperTasksResponse;
-import com.aliyun.openservices.log.response.UpdateACLResponse;
-import com.aliyun.openservices.log.response.UpdateAlertResponse;
-import com.aliyun.openservices.log.response.UpdateChartResponse;
-import com.aliyun.openservices.log.response.UpdateConfigResponse;
-import com.aliyun.openservices.log.response.UpdateConsumerGroupResponse;
-import com.aliyun.openservices.log.response.UpdateDashboardResponse;
-import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
-import com.aliyun.openservices.log.response.UpdateEtlMetaResponse;
-import com.aliyun.openservices.log.response.UpdateIndexResponse;
-import com.aliyun.openservices.log.response.UpdateLogStoreResponse;
-import com.aliyun.openservices.log.response.UpdateLoggingResponse;
-import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
-import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
-import com.aliyun.openservices.log.response.UpdateProjectResponse;
-import com.aliyun.openservices.log.response.UpdateSavedSearchResponse;
-import com.aliyun.openservices.log.response.UpdateShipperResponse;
+import com.aliyun.openservices.log.response.*;
 import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.NetworkUtils;
 import net.sf.json.JSONArray;
@@ -2571,6 +2449,52 @@ public class Client implements LogService {
 		}
 
 		return shards;
+	}
+
+	@Override
+    public UpdateLogStoreInternalResponse UpdateLogStoreInternal(String project, InternalLogStore internalLogStore) throws LogException {
+        CodingUtils.assertStringNotNullOrEmpty(project, "project");
+        CodingUtils.assertParameterNotNull(internalLogStore, "InternallogStore");
+
+        Map<String, String> headParameter = GetCommonHeadPara(project);
+
+        byte[] body = encodeToUtf8(internalLogStore.ToRequestString());
+
+        headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+
+        String resourceUri = "/logstores/" + internalLogStore.GetLogStoreName() + "?type=inner";
+
+        Map<String, String> urlParameter = new HashMap<String, String>();
+
+        ResponseMessage response = SendData(project, HttpMethod.PUT,
+                resourceUri, urlParameter, headParameter, body);
+
+        Map<String, String> resHeaders = response.getHeaders();
+
+        return new UpdateLogStoreInternalResponse(resHeaders);
+    }
+
+	@Override
+	public CreateLogStoreInternalResponse CreateLogStoreInternal(String project, InternalLogStore internalLogStore) throws LogException {
+        CodingUtils.assertStringNotNullOrEmpty(project, "project");
+        CodingUtils.assertParameterNotNull(internalLogStore, "InternallogStore");
+
+        Map<String, String> headParameter = GetCommonHeadPara(project);
+
+        byte[] body = encodeToUtf8(internalLogStore.ToRequestString());
+
+        headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+
+        String resourceUri = "/logstores?type=inner";
+
+        Map<String, String> urlParameter = new HashMap<String, String>();
+
+        ResponseMessage response = SendData(project, HttpMethod.POST,
+                resourceUri, urlParameter, headParameter, body);
+
+        Map<String, String> resHeaders = response.getHeaders();
+
+        return new CreateLogStoreInternalResponse(resHeaders);
 	}
 
 	@Override
