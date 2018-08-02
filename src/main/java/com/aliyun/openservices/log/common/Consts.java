@@ -201,6 +201,7 @@ public class Consts {
     public static final String CONST_CONFIG_INPUTDETAIL_LOGTIMEZONE = "logTimezone";
     public static final String CONST_CONFIG_INPUTDETAIL_PRIORITY = "priority";
     public static final String CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES = "delaySkipBytes";
+	public static final String CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS = "customizedFields";
 	
 	public static final String CONST_TYPE = "type";
 	public static final String CONST_TYPE_CURSOR = "cursor";
