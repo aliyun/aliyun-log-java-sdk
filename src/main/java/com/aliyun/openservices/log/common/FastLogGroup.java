@@ -23,6 +23,8 @@ public class FastLogGroup {
     private int metaMessageOffset = -1;
     private int metaMessageEnd = -1;
     private byte[] logGroupBytes = null;
+    private byte[] logGroupBytesWithoutMeta = null;
+
 
     public FastLogGroup(byte[] rawBytes, int offset, int length) {
         this.rawBytes = rawBytes;
@@ -120,47 +122,76 @@ public class FastLogGroup {
         return (pos == this.endOffset);
     }
 
-    public byte[] getBytes() {
-        if (this.logGroupBytes == null) {
-            int length = this.endOffset - this.beginOffset;
-            if (categoryMessageOffset >= 0 && metaMessageOffset >= 0) {
-                length -= (metaMessageEnd - metaMessageOffset) + (categoryMessageEnd - categoryMessageOffset);
-                this.logGroupBytes = new byte[length];
-                // copy [beginOffset, s1), [s2,s3), [s4, endOffset) to logGroupBytes
-                int s1 = Math.min(metaMessageOffset, categoryMessageOffset);
-                int s4 = Math.max(metaMessageEnd, categoryMessageEnd);
-                int s2, s3;
-                if (metaMessageOffset < categoryMessageOffset) {
-                    s2 = metaMessageEnd;
-                    s3 = categoryMessageOffset;
-                } else {
-                    s2 = categoryMessageEnd;
-                    s3 = metaMessageOffset;
-                }
-                System.arraycopy(this.rawBytes, beginOffset, this.logGroupBytes, 0, s1 - beginOffset);
-                int len = s1 - beginOffset;
-                System.arraycopy(this.rawBytes, s2, this.logGroupBytes, len, s3 - s2);
-                len += s3 - s2;
-                System.arraycopy(this.rawBytes, s4, this.logGroupBytes, len, endOffset - s4);
-            } else if (categoryMessageOffset >= 0) {
-                length -= categoryMessageEnd - categoryMessageOffset;
-                logGroupBytes = new byte[length];
-                final int prefixSize = categoryMessageOffset - beginOffset;
-                System.arraycopy(this.rawBytes, this.beginOffset, this.logGroupBytes, 0, prefixSize);
-                System.arraycopy(this.rawBytes, categoryMessageEnd, this.logGroupBytes, prefixSize, endOffset - categoryMessageEnd);
-            } else if (metaMessageOffset >= 0) {
-                length -= metaMessageEnd - metaMessageOffset;
-                logGroupBytes = new byte[length];
-                final int prefixSize = metaMessageOffset - beginOffset;
-                System.arraycopy(this.rawBytes, this.beginOffset, this.logGroupBytes, 0, prefixSize);
-                System.arraycopy(this.rawBytes, metaMessageEnd, this.logGroupBytes, prefixSize, endOffset - metaMessageEnd);
-            } else {
-                // No category and meta found.
-                this.logGroupBytes = new byte[length];
-                System.arraycopy(this.rawBytes, this.beginOffset, this.logGroupBytes, 0, length);
-            }
+    public byte[] getBytesWithoutMeta() {
+        if (logGroupBytesWithoutMeta == null) {
+            logGroupBytesWithoutMeta = excludeCategoryAndMeta();
         }
-        return this.logGroupBytes;
+        return logGroupBytesWithoutMeta;
+    }
+
+    private byte[] excludeCategoryAndMeta() {
+        byte[] logGroupBytes;
+        int length = this.endOffset - this.beginOffset;
+        if (categoryMessageOffset >= 0 && metaMessageOffset >= 0) {
+            length -= (metaMessageEnd - metaMessageOffset) + (categoryMessageEnd - categoryMessageOffset);
+            logGroupBytes = new byte[length];
+            // copy [beginOffset, s1), [s2,s3), [s4, endOffset) to logGroupBytes
+            int s1 = Math.min(metaMessageOffset, categoryMessageOffset);
+            int s4 = Math.max(metaMessageEnd, categoryMessageEnd);
+            int s2, s3;
+            if (metaMessageOffset < categoryMessageOffset) {
+                s2 = metaMessageEnd;
+                s3 = categoryMessageOffset;
+            } else {
+                s2 = categoryMessageEnd;
+                s3 = metaMessageOffset;
+            }
+            System.arraycopy(this.rawBytes, beginOffset, logGroupBytes, 0, s1 - beginOffset);
+            int len = s1 - beginOffset;
+            System.arraycopy(this.rawBytes, s2, logGroupBytes, len, s3 - s2);
+            len += s3 - s2;
+            System.arraycopy(this.rawBytes, s4, this.logGroupBytes, len, endOffset - s4);
+        } else if (categoryMessageOffset >= 0) {
+            length -= categoryMessageEnd - categoryMessageOffset;
+            logGroupBytes = new byte[length];
+            final int prefixSize = categoryMessageOffset - beginOffset;
+            System.arraycopy(this.rawBytes, this.beginOffset, logGroupBytes, 0, prefixSize);
+            System.arraycopy(this.rawBytes, categoryMessageEnd, logGroupBytes, prefixSize, endOffset - categoryMessageEnd);
+        } else if (metaMessageOffset >= 0) {
+            length -= metaMessageEnd - metaMessageOffset;
+            logGroupBytes = new byte[length];
+            final int prefixSize = metaMessageOffset - beginOffset;
+            System.arraycopy(this.rawBytes, this.beginOffset, logGroupBytes, 0, prefixSize);
+            System.arraycopy(this.rawBytes, metaMessageEnd, logGroupBytes, prefixSize, endOffset - metaMessageEnd);
+        } else {
+            // No category and meta found.
+            logGroupBytes = new byte[length];
+            System.arraycopy(this.rawBytes, this.beginOffset, logGroupBytes, 0, length);
+        }
+        return logGroupBytes;
+    }
+
+    public byte[] getBytes() {
+        if (logGroupBytes == null) {
+            logGroupBytes = excludeCategory();
+        }
+        return logGroupBytes;
+    }
+
+    private byte[] excludeCategory() {
+        byte[] logGroupBytes;
+        int length = this.endOffset - this.beginOffset;
+        if (categoryMessageOffset >= 0) {
+            length -= categoryMessageEnd - categoryMessageOffset;
+            logGroupBytes = new byte[length];
+            final int prefixSize = categoryMessageOffset - beginOffset;
+            System.arraycopy(this.rawBytes, this.beginOffset, logGroupBytes, 0, prefixSize);
+            System.arraycopy(this.rawBytes, categoryMessageEnd, logGroupBytes, prefixSize, endOffset - categoryMessageEnd);
+        } else {
+            logGroupBytes = new byte[length];
+            System.arraycopy(this.rawBytes, this.beginOffset, logGroupBytes, 0, length);
+        }
+        return logGroupBytes;
     }
 
     public String getCategory() {

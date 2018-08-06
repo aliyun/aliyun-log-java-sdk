@@ -26,12 +26,12 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import static com.aliyun.openservices.log.common.Consts.CONST_GZIP_ENCODING;
 import static com.aliyun.openservices.log.common.Consts.CONST_LZ4;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -39,7 +39,7 @@ import static org.junit.Assert.fail;
 public class SlsLoghubDataFunctionTest extends FunctionTest {
     static private final String project = "project1";
     static private final String logStore = "javasdk2";
-    private final int startTime = (int) (new Date().getTime() / 1000);
+    private final int startTime = timestampNow();
     private final String topic = "sls_java_topic_" + String.valueOf(startTime);
     private final String source = "127.0.0.1";
     private final int defaultShardNum = 2;
@@ -112,9 +112,8 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         logStoreRes.setAppendMeta(randomBoolean());
         reCreateLogStore(project, logStoreRes);
 
-        Vector<LogItem> logGroupSample = new Vector<LogItem>();
-        LogItem logItemSample = new LogItem(
-                (int) (new Date().getTime() / 1000));
+        List<LogItem> logGroupSample = new ArrayList<LogItem>();
+        LogItem logItemSample = new LogItem(timestampNow());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -191,14 +190,14 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
     @Test
     public void testBatchGetLogFastPb() {
         LogStore logStoreRes = new LogStore(logStore, 1, defaultShardNum);
-        logStoreRes.setAppendMeta(randomBoolean());
+        boolean includeMeta = randomBoolean();
+        logStoreRes.setAppendMeta(includeMeta);
         reCreateLogStore(project, logStoreRes);
 
-        int caseStartTime = (int) (new Date().getTime() / 1000);
+        int caseStartTime = timestampNow();
         String caseTopic = "sls_java_topic_" + String.valueOf(caseStartTime);
-        Vector<LogItem> logGroupSample = new Vector<LogItem>();
-        LogItem logItemSample = new LogItem(
-                (int) (new Date().getTime() / 1000));
+        List<LogItem> logGroupSample = new ArrayList<LogItem>();
+        LogItem logItemSample = new LogItem(timestampNow());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -217,7 +216,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
 
         waitForSeconds(3);
 
-        int newCaseStartTime = (int) (new Date().getTime() / 1000);
+        int newCaseStartTime = timestampNow();
         boolean verified = true;
         try {
             GetCursorResponse cursorRes;
@@ -256,7 +255,6 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
                         System.out.println("Meta:");
                         System.out.println(meta.getClientIP());
                         System.out.println(meta.getReceiveTime());
-                        return;
                     }
                     System.out.println("Tags");
                     for (int tagIdx = 0; tagIdx < logGroup.getLogTagsCount(); ++tagIdx) {
@@ -288,27 +286,11 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
                         byte[] logGroupBytes = logGroup.getBytes();
 
                         Logs.LogGroup logGroup1 = Logs.LogGroup.parseFrom(logGroupBytes);
-                        assertFalse(logGroup1.hasCategory());
-                        assertFalse(logGroup1.hasMeta());
-                        assertEquals(logGroup.hasSource(), logGroup1.hasSource());
-                        assertEquals(logGroup.getSource(), logGroup1.getSource());
-                        assertEquals(logGroup.hasTopic(), logGroup1.hasTopic());
-                        assertEquals(logGroup.getTopic(), logGroup1.getTopic());
-                        assertEquals(logGroup.hasMachineUUID(), logGroup1.hasMachineUUID());
-                        assertEquals(logGroup.getMachineUUID(), logGroup1.getMachineUUID());
-                        assertEquals(logGroup.getLogsCount(), logGroup1.getLogsCount());
-                        for (int x = 0; x < logGroup.getLogsCount(); x++) {
-                            assertEquals(logGroup.getLogs(x).getTime(), logGroup1.getLogs(x).getTime());
-                            for (int j = 0; j < logGroup.getLogs(x).getContentsCount(); j++) {
-                                assertEquals(logGroup.getLogs(x).getContents(j).getKey(), logGroup1.getLogs(x).getContents(j).getKey());
-                                assertEquals(logGroup.getLogs(x).getContents(j).getValue(), logGroup1.getLogs(x).getContents(j).getValue());
-                            }
-                        }
-                        assertEquals(logGroup.getLogTagsCount(), logGroup1.getLogTagsCount());
-                        for (int x = 0; x < logGroup.getLogTagsCount(); x++) {
-                            assertEquals(logGroup1.getLogTags(x).getKey(), logGroup.getLogTags(x).getKey());
-                            assertEquals(logGroup1.getLogTags(x).getValue(), logGroup.getLogTags(x).getValue());
-                        }
+                        verifyEqualsExceptMeta(logGroup, logGroup1, includeMeta);
+
+                        logGroupBytes = logGroup.getBytesWithoutMeta();
+                        Logs.LogGroup logGroup2 = Logs.LogGroup.parseFrom(logGroupBytes);
+                        verifyEqualsExceptMeta(logGroup, logGroup2, false);
 
                         client.PutLogs(project, logStore, logGroupBytes, "", null);
                         client.PutLogs(project, logStore, logGroupBytes, CONST_LZ4, null);
@@ -380,6 +362,46 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         assertTrue("Verify failed", verified);
     }
 
+    private static void verifyEqualsExceptMeta(FastLogGroup logGroup1, Logs.LogGroup logGroup2, boolean hasMeta) {
+        assertFalse(logGroup1.hasCategory());
+        assertFalse(logGroup2.hasCategory());
+        assertEquals(logGroup2.hasMeta(), hasMeta);
+        verifyPbStringEquals(logGroup1.hasSource(), logGroup2.hasSource(), logGroup1.getSource(), logGroup2.getSource());
+        verifyPbStringEquals(logGroup1.hasTopic(), logGroup2.hasTopic(), logGroup1.getTopic(), logGroup2.getTopic());
+        verifyPbStringEquals(logGroup1.hasMachineUUID(), logGroup2.hasMachineUUID(), logGroup1.getMachineUUID(), logGroup2.getMachineUUID());
+
+        assertEquals(logGroup1.getLogsCount(), logGroup2.getLogsCount());
+        for (int x = 0; x < logGroup1.getLogsCount(); x++) {
+            FastLog log1 = logGroup1.getLogs(x);
+            Logs.Log log2 = logGroup2.getLogs(x);
+            assertEquals(log1.getTime(), log2.getTime());
+            for (int j = 0; j < log1.getContentsCount(); j++) {
+                FastLogContent content1 = log1.getContents(j);
+                Logs.Log.Content content2 = log2.getContents(j);
+                assertEquals(content1.getKey(), content2.getKey());
+                assertEquals(content1.getValue(), content2.getValue());
+            }
+        }
+        assertEquals(logGroup1.getLogTagsCount(), logGroup2.getLogTagsCount());
+        for (int x = 0; x < logGroup1.getLogTagsCount(); x++) {
+            assertEquals(logGroup1.getLogTags(x).getKey(), logGroup2.getLogTags(x).getKey());
+            assertEquals(logGroup1.getLogTags(x).getValue(), logGroup2.getLogTags(x).getValue());
+        }
+    }
+
+    private static void verifyPbStringEquals(boolean fastHas, boolean normalHas, String fast, String normal) {
+        assertEquals(fastHas, normalHas);
+        if (fastHas) {
+            assertEquals(fast, normal);
+        } else {
+            assertNull(fast);
+        }
+    }
+
+    private static int timestampNow() {
+        return (int) (new Date().getTime() / 1000);
+    }
+
     private void shardAPI() {
         try {
             ListShardResponse listRes = client.ListShard(project, logStore);
@@ -402,11 +424,10 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         logStoreRes.setAppendMeta(randomBoolean());
         reCreateLogStore(project, logStoreRes);
 
-        int caseStartTime = (int) (new Date().getTime() / 1000);
+        int caseStartTime = timestampNow();
         String caseTopic = "sls_java_topic_" + String.valueOf(caseStartTime);
-        Vector<LogItem> logGroupSample = new Vector<LogItem>();
-        LogItem logItemSample = new LogItem(
-                (int) (new Date().getTime() / 1000));
+        List<LogItem> logGroupSample = new ArrayList<LogItem>();
+        LogItem logItemSample = new LogItem(timestampNow());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -523,11 +544,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
             fail();
         }
 
-        try {
-            Thread.sleep(3 * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        waitForSeconds(3);
 
         boolean verified = true;
         try {
