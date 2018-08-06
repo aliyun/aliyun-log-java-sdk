@@ -51,10 +51,38 @@ public class FastLogGroupMeta {
                 clientIPLength = value[1];
                 pos = value[2] + value[1];
             } else {
-                return false;
+                // ignore unknown fields
+                if ((pos = skip(mode, value[2])) == -1) {
+                    return false;
+                }
             }
         }
         return pos == this.endOffset;
+    }
+
+    private int skip(int mode, int nextOffset) {
+        int[] value;
+        switch (mode) {
+            case 0:
+                value = VarintUtil.DecodeVarInt32(this.rawBytes, nextOffset, this.endOffset);
+                if (value[0] == 0) {
+                    return -1;
+                }
+                return value[2];
+            case 1:
+                return nextOffset + 8;
+            case 2:
+                value = VarintUtil.DecodeVarInt32(this.rawBytes, nextOffset, this.endOffset);
+                if (value[0] == 0) {
+                    return -1;
+                }
+                return value[2] + value[1];
+            case 5:
+                return nextOffset + 4;
+            default:
+                break;
+        }
+        return -1;
     }
 
     public String getClientIP() {
