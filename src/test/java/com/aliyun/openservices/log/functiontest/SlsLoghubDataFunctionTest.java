@@ -1,48 +1,48 @@
 package com.aliyun.openservices.log.functiontest;
 
-import static com.aliyun.openservices.log.common.Consts.CONST_GZIP_ENCODING;
-import static com.aliyun.openservices.log.common.Consts.CONST_LZ4;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
-
-import com.aliyun.openservices.log.common.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.aliyun.openservices.log.Client;
+import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.Consts.CompressType;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
+import com.aliyun.openservices.log.common.FastLog;
+import com.aliyun.openservices.log.common.FastLogContent;
+import com.aliyun.openservices.log.common.FastLogGroup;
+import com.aliyun.openservices.log.common.FastLogGroupMeta;
+import com.aliyun.openservices.log.common.FastLogTag;
+import com.aliyun.openservices.log.common.LogContent;
+import com.aliyun.openservices.log.common.LogGroupData;
+import com.aliyun.openservices.log.common.LogItem;
+import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.Logs;
+import com.aliyun.openservices.log.common.TagContent;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.PutLogsRequest;
 import com.aliyun.openservices.log.response.BatchGetLogResponse;
 import com.aliyun.openservices.log.response.GetCursorResponse;
 import com.aliyun.openservices.log.response.ListShardResponse;
+import com.google.protobuf.InvalidProtocolBufferException;
+import org.junit.After;
+import org.junit.Test;
 
-public class SlsLoghubDataFunctionTest {
-    static private final String endPoint = "http://cn-hangzhou-corp.sls.aliyuncs.com";
-    static private final String akId = "";
-    static private final String ak = "";
-    static private final String project = "";
-    static private final String logStore = "javasdk";
-    static private final Client client = new Client(endPoint, akId, ak);
-    private final int startTime = (int) (new Date().getTime() / 1000);
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.aliyun.openservices.log.common.Consts.CONST_GZIP_ENCODING;
+import static com.aliyun.openservices.log.common.Consts.CONST_LZ4;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+
+public class SlsLoghubDataFunctionTest extends FunctionTest {
+    static private final String project = "project1";
+    static private final String logStore = "javasdk2";
+    private final int startTime = timestampNow();
     private final String topic = "sls_java_topic_" + String.valueOf(startTime);
     private final String source = "127.0.0.1";
     private final int defaultShardNum = 2;
 
-    @BeforeClass
-    public static void SetupOnce() {
-    }
-
-    @AfterClass
-    public static void CleanUpOnce() {
-    }
 
     private boolean VerifyLogItem(LogItem logItem, LogItem logItemSample) {
         boolean ret = false;
@@ -108,29 +108,11 @@ public class SlsLoghubDataFunctionTest {
     @Test
     public void testLogData() {
         LogStore logStoreRes = new LogStore(logStore, 1, defaultShardNum);
-        try {
-            client.DeleteLogStore(project, logStore);
-            Thread.sleep(60 * 1000);
-        } catch (LogException e) {
+        logStoreRes.setAppendMeta(randomBoolean());
+        reCreateLogStore(project, logStoreRes);
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            client.CreateLogStore(project, logStoreRes);
-            Thread.sleep(60 * 1000);
-        } catch (LogException e) {
-            System.out.println("ErrorCode:" + e.GetErrorCode());
-            System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Vector<LogItem> logGroupSample = new Vector<LogItem>();
-        LogItem logItemSample = new LogItem(
-                (int) (new Date().getTime() / 1000));
+        List<LogItem> logGroupSample = new ArrayList<LogItem>();
+        LogItem logItemSample = new LogItem(timestampNow());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -145,14 +127,10 @@ public class SlsLoghubDataFunctionTest {
             System.out.println("RID:" + e.GetRequestId());
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
+            fail();
         }
 
-        try {
-            Thread.sleep(120 * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        waitForSeconds(120);
 
         boolean verified = false;
         try {
@@ -172,7 +150,7 @@ public class SlsLoghubDataFunctionTest {
                         if (logGroup.GetAllLogs().size() == 1 && logGroup.GetTopic().equals(topic) &&
                                 newLogGroup.getLogsCount() == 1 && newLogGroup.getTopic().equals(topic)) {
                             ArrayList<LogContent> logContents = new ArrayList<LogContent>();
-                            for(Logs.Log.Content content:newLogGroup.getLogs(0).getContentsList()) {
+                            for (Logs.Log.Content content : newLogGroup.getLogs(0).getContentsList()) {
                                 logContents.add(new LogContent(content.getKey(), content.getValue()));
                             }
                             LogItem newLogItem = new LogItem(newLogGroup.getLogs(0).getTime(), logContents);
@@ -191,61 +169,34 @@ public class SlsLoghubDataFunctionTest {
             }
 
         } catch (LogException e) {
-            assertTrue(e.GetErrorMessage(), false);
+            fail(e.GetErrorMessage());
         }
 
         assertTrue("Verify failed", verified);
 
         try {
             client.MergeShards(project, logStore, 0);
-            Thread.sleep(60 * 1000);
+            waitForSeconds(60);
         } catch (LogException e) {
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            fail();
         }
 
         shardAPI();
-
-        try {
-            client.DeleteLogStore(project, logStore);
-        } catch (LogException e) {
-            System.out.println("ErrorCode:" + e.GetErrorCode());
-            System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
-        }
     }
 
     @Test
     public void testBatchGetLogFastPb() {
         LogStore logStoreRes = new LogStore(logStore, 1, defaultShardNum);
-        try {
-            client.DeleteLogStore(project, logStore);
-            Thread.sleep(60 * 1000);
-        } catch (LogException e) {
+        boolean includeMeta = randomBoolean();
+        logStoreRes.setAppendMeta(includeMeta);
+        reCreateLogStore(project, logStoreRes);
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            client.CreateLogStore(project, logStoreRes);
-            Thread.sleep(60 * 1000);
-        } catch (LogException e) {
-            System.out.println("ErrorCode:" + e.GetErrorCode());
-            System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        int caseStartTime = (int) (new Date().getTime() / 1000);
+        int caseStartTime = timestampNow();
         String caseTopic = "sls_java_topic_" + String.valueOf(caseStartTime);
-        Vector<LogItem> logGroupSample = new Vector<LogItem>();
-        LogItem logItemSample = new LogItem(
-                (int) (new Date().getTime() / 1000));
+        List<LogItem> logGroupSample = new ArrayList<LogItem>();
+        LogItem logItemSample = new LogItem(timestampNow());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -259,16 +210,12 @@ public class SlsLoghubDataFunctionTest {
             System.out.println("RID:" + e.GetRequestId());
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
+            fail();
         }
 
-        try {
-            Thread.sleep(3 * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        waitForSeconds(3);
 
-        int newCaseStartTime = (int) (new Date().getTime() / 1000);
+        int newCaseStartTime = timestampNow();
         boolean verified = true;
         try {
             GetCursorResponse cursorRes;
@@ -283,20 +230,30 @@ public class SlsLoghubDataFunctionTest {
                     FastLogGroup logGroup = logDataRes.GetLogGroup(lgIdx).GetFastLogGroup();
                     System.out.println("----------------\nlogGroup: " + lgIdx);
                     if (logGroup.hasCategory()) {
-                        logGroup.getCategory();
+                        System.out.println("Category:");
+                        System.out.println(logGroup.getCategory());
                         logGroup.getCategoryBytes();
                     }
                     if (logGroup.hasTopic()) {
-                        logGroup.getTopic();
+                        System.out.println("Topic:");
+                        System.out.println(logGroup.getTopic());
                         logGroup.getTopicBytes();
                     }
                     if (logGroup.hasMachineUUID()) {
-                        logGroup.getMachineUUID();
+                        System.out.println("MachineUUID:");
+                        System.out.println(logGroup.getMachineUUID());
                         logGroup.getMachineUUIDBytes();
                     }
                     if (logGroup.hasSource()) {
-                        logGroup.getSource();
+                        System.out.println("Source:");
+                        System.out.println(logGroup.getSource());
                         logGroup.getSourceBytes();
+                    }
+                    if (logGroup.hasMeta()) {
+                        FastLogGroupMeta meta = logGroup.getMeta();
+                        System.out.println("Meta:");
+                        System.out.println(meta.getClientIP());
+                        System.out.println(meta.getReceiveTime());
                     }
                     System.out.println("Tags");
                     for (int tagIdx = 0; tagIdx < logGroup.getLogTagsCount(); ++tagIdx) {
@@ -326,6 +283,14 @@ public class SlsLoghubDataFunctionTest {
                     }
                     try {
                         byte[] logGroupBytes = logGroup.getBytes();
+
+                        Logs.LogGroup logGroup1 = Logs.LogGroup.parseFrom(logGroupBytes);
+                        verifyEqualsExceptMeta(logGroup, logGroup1, includeMeta);
+
+                        logGroupBytes = logGroup.getBytesWithoutMeta();
+                        Logs.LogGroup logGroup2 = Logs.LogGroup.parseFrom(logGroupBytes);
+                        verifyEqualsExceptMeta(logGroup, logGroup2, false);
+
                         client.PutLogs(project, logStore, logGroupBytes, "", null);
                         client.PutLogs(project, logStore, logGroupBytes, CONST_LZ4, null);
                         client.PutLogs(project, logStore, logGroupBytes, CONST_GZIP_ENCODING, null);
@@ -333,20 +298,21 @@ public class SlsLoghubDataFunctionTest {
                         System.out.println("RID:" + e.GetRequestId());
                         System.out.println("ErrorCode:" + e.GetErrorCode());
                         System.out.println("ErrorMessage:" + e.GetErrorMessage());
-                        assertTrue(false);
+                        fail();
+                    } catch (InvalidProtocolBufferException e) {
+                        e.printStackTrace();
+                        System.out.println("Illegal message:");
+                        System.out.println(e.getUnfinishedMessage().toString());
+                        fail();
                     }
                 }
             }
 
         } catch (LogException e) {
-            assertTrue(e.GetErrorMessage(), false);
+            fail(e.GetErrorMessage());
         }
 
-        try {
-            Thread.sleep(3 * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        waitForSeconds(3);
 
         System.out.println("######################################");
         try {
@@ -389,17 +355,45 @@ public class SlsLoghubDataFunctionTest {
             }
 
         } catch (LogException e) {
-            assertTrue(e.GetErrorMessage(), false);
+            fail(e.GetErrorMessage());
         }
 
         assertTrue("Verify failed", verified);
+    }
 
-        try {
-            client.DeleteLogStore(project, logStore);
-        } catch (LogException e) {
-            System.out.println("ErrorCode:" + e.GetErrorCode());
-            System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
+    private static void verifyEqualsExceptMeta(FastLogGroup logGroup1, Logs.LogGroup logGroup2, boolean hasMeta) {
+        assertFalse(logGroup1.hasCategory());
+        assertFalse(logGroup2.hasCategory());
+        assertEquals(logGroup2.hasMeta(), hasMeta);
+        verifyPbStringEquals(logGroup1.hasSource(), logGroup2.hasSource(), logGroup1.getSource(), logGroup2.getSource());
+        verifyPbStringEquals(logGroup1.hasTopic(), logGroup2.hasTopic(), logGroup1.getTopic(), logGroup2.getTopic());
+        verifyPbStringEquals(logGroup1.hasMachineUUID(), logGroup2.hasMachineUUID(), logGroup1.getMachineUUID(), logGroup2.getMachineUUID());
+
+        assertEquals(logGroup1.getLogsCount(), logGroup2.getLogsCount());
+        for (int x = 0; x < logGroup1.getLogsCount(); x++) {
+            FastLog log1 = logGroup1.getLogs(x);
+            Logs.Log log2 = logGroup2.getLogs(x);
+            assertEquals(log1.getTime(), log2.getTime());
+            for (int j = 0; j < log1.getContentsCount(); j++) {
+                FastLogContent content1 = log1.getContents(j);
+                Logs.Log.Content content2 = log2.getContents(j);
+                assertEquals(content1.getKey(), content2.getKey());
+                assertEquals(content1.getValue(), content2.getValue());
+            }
+        }
+        assertEquals(logGroup1.getLogTagsCount(), logGroup2.getLogTagsCount());
+        for (int x = 0; x < logGroup1.getLogTagsCount(); x++) {
+            assertEquals(logGroup1.getLogTags(x).getKey(), logGroup2.getLogTags(x).getKey());
+            assertEquals(logGroup1.getLogTags(x).getValue(), logGroup2.getLogTags(x).getValue());
+        }
+    }
+
+    private static void verifyPbStringEquals(boolean fastHas, boolean normalHas, String fast, String normal) {
+        assertEquals(fastHas, normalHas);
+        if (fastHas) {
+            assertEquals(fast, normal);
+        } else {
+            assertNull(fast);
         }
     }
 
@@ -408,7 +402,7 @@ public class SlsLoghubDataFunctionTest {
             ListShardResponse listRes = client.ListShard(project, logStore);
             assertEquals("ShardNum does not match", defaultShardNum + 1, listRes.GetShards().size());
         } catch (LogException e) {
-            assertTrue(e.GetErrorMessage(), false);
+            fail(e.GetErrorMessage());
         }
 
         try {
@@ -422,31 +416,13 @@ public class SlsLoghubDataFunctionTest {
     @Test
     public void testLogTags() {
         LogStore logStoreRes = new LogStore(logStore, 1, 1);
-        try {
-            client.DeleteLogStore(project, logStore);
-            Thread.sleep(60 * 1000);
-        } catch (LogException e) {
+        logStoreRes.setAppendMeta(randomBoolean());
+        reCreateLogStore(project, logStoreRes);
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            client.CreateLogStore(project, logStoreRes);
-            Thread.sleep(60 * 1000);
-        } catch (LogException e) {
-            System.out.println("ErrorCode:" + e.GetErrorCode());
-            System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        int caseStartTime = (int) (new Date().getTime() / 1000);
+        int caseStartTime = timestampNow();
         String caseTopic = "sls_java_topic_" + String.valueOf(caseStartTime);
-        Vector<LogItem> logGroupSample = new Vector<LogItem>();
-        LogItem logItemSample = new LogItem(
-                (int) (new Date().getTime() / 1000));
+        List<LogItem> logGroupSample = new ArrayList<LogItem>();
+        LogItem logItemSample = new LogItem(timestampNow());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -465,7 +441,7 @@ public class SlsLoghubDataFunctionTest {
             System.out.println("RID:" + e.GetRequestId());
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
+            fail();
         }
         System.out.println("1#send pb, with tag and uuid");
         try {
@@ -483,7 +459,7 @@ public class SlsLoghubDataFunctionTest {
             System.out.println("RID:" + e.GetRequestId());
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
+            fail();
         }
         System.out.println("2#send pb, no tag, with uuid");
         try {
@@ -497,7 +473,7 @@ public class SlsLoghubDataFunctionTest {
             System.out.println("RID:" + e.GetRequestId());
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
+            fail();
         }
         System.out.println("3#send json, with tag, no uuid");
         try {
@@ -514,7 +490,7 @@ public class SlsLoghubDataFunctionTest {
             System.out.println("RID:" + e.GetRequestId());
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
+            fail();
         }
         System.out.println("4#send json, with tag and uuid");
         try {
@@ -533,7 +509,7 @@ public class SlsLoghubDataFunctionTest {
             System.out.println("RID:" + e.GetRequestId());
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
+            fail();
         }
         System.out.println("5#send json, no tag, with uuid");
         try {
@@ -548,7 +524,7 @@ public class SlsLoghubDataFunctionTest {
             System.out.println("RID:" + e.GetRequestId());
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
+            fail();
         }
         System.out.println("6#send pb, no tag, no uuid");
         try {
@@ -560,16 +536,11 @@ public class SlsLoghubDataFunctionTest {
             System.out.println("RID:" + e.GetRequestId());
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
+            fail();
         }
 
-        try {
-            Thread.sleep(3 * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        waitForSeconds(3);
 
-        int newCaseStartTime = (int) (new Date().getTime() / 1000);
         boolean verified = true;
         try {
             GetCursorResponse cursorRes;
@@ -623,18 +594,21 @@ public class SlsLoghubDataFunctionTest {
                 }
             }
         } catch (LogException e) {
-            assertTrue(e.GetErrorMessage(), false);
+            fail(e.GetErrorMessage());
         }
 
         assertTrue("Verify failed", verified);
+    }
 
+    @After
+    public void tearDown() {
         try {
             client.DeleteLogStore(project, logStore);
+            waitForSeconds(60);
         } catch (LogException e) {
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
-            assertTrue(false);
+            fail();
         }
     }
-
 }
