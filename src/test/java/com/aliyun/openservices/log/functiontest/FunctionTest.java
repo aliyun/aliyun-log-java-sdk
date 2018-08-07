@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -86,6 +87,10 @@ public abstract class FunctionTest {
                 false, 30000, 30000, 30000);
     }
 
+    static int timestampNow() {
+        return (int) (new Date().getTime() / 1000);
+    }
+
     static <T> T randomFrom(final T[] array) {
         return array[RANDOM.nextInt(array.length)];
     }
@@ -103,7 +108,7 @@ public abstract class FunctionTest {
     }
 
     static boolean randomBoolean() {
-        return randomBetween(0, 10) % 2 == 1;
+        return randomBetween(1, 10) % 2 == 1;
     }
 
     void safeDeleteProject(String project) {

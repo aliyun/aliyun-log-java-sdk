@@ -24,7 +24,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static com.aliyun.openservices.log.common.Consts.CONST_GZIP_ENCODING;
@@ -396,10 +395,6 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         } else {
             assertNull(fast);
         }
-    }
-
-    private static int timestampNow() {
-        return (int) (new Date().getTime() / 1000);
     }
 
     private void shardAPI() {

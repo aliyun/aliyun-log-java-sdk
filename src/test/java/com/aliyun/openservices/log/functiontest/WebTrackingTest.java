@@ -44,17 +44,13 @@ public class WebTrackingTest extends FunctionTest {
 
     @Test
     public void testWebTracking() throws Exception {
-        safeCreateProject(TEST_PROJECT, "test web tracking");
-        if (safeDeleteLogStore(TEST_PROJECT, TEST_LOGSTORE)) {
-            waitForSeconds(60);
-        }
         LogStore logStore = new LogStore();
         logStore.SetTtl(1);
         logStore.SetShardCount(2);
         logStore.SetLogStoreName(TEST_LOGSTORE);
         logStore.setEnableWebTracking(true);
-        client.CreateLogStore(TEST_PROJECT, logStore);
-        waitForSeconds(60);
+        reCreateLogStore(TEST_PROJECT, logStore);
+
         assertTrue(testPutLogs());
 
         logStore.setEnableWebTracking(false);

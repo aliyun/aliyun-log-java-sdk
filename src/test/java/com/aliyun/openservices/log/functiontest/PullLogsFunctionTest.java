@@ -14,8 +14,8 @@ import com.aliyun.openservices.log.response.GetLogStoreResponse;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
-import java.util.Date;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -33,21 +33,15 @@ public class PullLogsFunctionTest extends FunctionTest {
         logStore.SetTtl(1);
         logStore.SetShardCount(2);
         logStore.setAppendMeta(enabled);
-        if (safeDeleteLogStore(TEST_PROJECT, logStoreName)) {
-            waitForSeconds(60);
-        }
-        client.CreateLogStore(TEST_PROJECT, logStore);
-        waitForSeconds(60);
+        reCreateLogStore(TEST_PROJECT, logStore);
     }
-
 
     private int writeData(String logStore) {
         int round = randomBetween(10, 20);
         for (int i = 0; i < round; i++) {
-            Vector<LogItem> logGroup = new Vector<LogItem>();
+            List<LogItem> logGroup = new ArrayList<LogItem>(600);
             for (int j = 0; j < 600; j++) {
-                LogItem logItem = new LogItem(
-                        (int) (new Date().getTime() / 1000));
+                LogItem logItem = new LogItem(timestampNow());
                 logItem.PushBack("ID", "id_" + String.valueOf(i * 600 + j));
                 logGroup.add(logItem);
             }

@@ -7,8 +7,8 @@ import com.aliyun.openservices.log.exception.LogException;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Date;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.fail;
 
@@ -22,26 +22,21 @@ public class PushLogsFunctionTest extends FunctionTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        safeCreateProject(TEST_PROJECT, "desc");
         LogStore logStore = new LogStore();
         logStore.SetLogStoreName(TEST_LOGSTORE);
         logStore.SetTtl(1);
         logStore.SetShardCount(2);
         logStore.setAppendMeta(true);
-        if (safeDeleteLogStore(TEST_PROJECT, TEST_LOGSTORE)) {
-            waitForSeconds(60);
-        }
-        client.CreateLogStore(TEST_PROJECT, logStore);
+        reCreateLogStore(TEST_PROJECT, logStore);
     }
 
     @Test
     public void testPutData() {
         int round = randomBetween(10, 20);
         for (int i = 0; i < round; i++) {
-            Vector<LogItem> logGroup = new Vector<LogItem>();
+            List<LogItem> logGroup = new ArrayList<LogItem>(600);
             for (int j = 0; j < 600; j++) {
-                LogItem logItem = new LogItem(
-                        (int) (new Date().getTime() / 1000));
+                LogItem logItem = new LogItem(timestampNow());
                 logItem.PushBack("ID", "id_" + String.valueOf(i * 600 + j));
                 logGroup.add(logItem);
             }
