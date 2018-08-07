@@ -13,7 +13,6 @@ import com.aliyun.openservices.log.common.Logs.Log;
 import com.aliyun.openservices.log.common.Logs.Log.Content;
 import com.aliyun.openservices.log.common.Logs.LogGroup;
 import com.aliyun.openservices.log.exception.LogException;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * LogGroup is the basic data structure for send, contains meta and logs
