@@ -18,6 +18,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 	private ArrayList<String> key = new ArrayList<String>();
 	private String logBeginRegex = "";
 	private String regex = "";
+	private String customizedFields = "";
 
 	public ConfigInputDetail() {
 		this.logType = Consts.CONST_CONFIG_LOGTYPE_COMMON;
@@ -44,10 +45,12 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 	 *            the time format to parse the "time" field
 	 * @param localStorage
 	 *            true if save the log data if failed to send to the sls server
+	 * @param customizedFields
+	 *            the customized fields configuration for special usage
 	 */
 	public ConfigInputDetail(String logPath, String filePattern,
 			String logType, String logBeginRegex, String regex,
-			ArrayList<String> key, String timeFormat, boolean localStorage) {
+			ArrayList<String> key, String timeFormat, boolean localStorage, String customizedFields) {
 		super();
 		this.logType = Consts.CONST_CONFIG_LOGTYPE_COMMON;
 		this.logPath = logPath;
@@ -58,6 +61,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		SetKey(key);
 		this.timeFormat = timeFormat;
 		this.localStorage = localStorage;
+		this.customizedFields = customizedFields;
 	}
 		
 	public JSONObject ToJsonObject() {
@@ -71,6 +75,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_KEY, keyArray);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX, logBeginRegex);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_REGEX, regex);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS, customizedFields);
 
 		return jsonObj;
 	}
@@ -88,6 +93,8 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 				this.logBeginRegex = ".*";
 			this.regex = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_REGEX);
 			SetKey(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_KEY));
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS))
+				this.customizedFields = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateInputDetail", e.getMessage(),
 					e, "");
@@ -116,6 +123,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		this.timeFormat = inputDetail.GetTimeFormat();
 		SetFilterKeyRegex(inputDetail.GetFilterKey(), inputDetail.GetFilterRegex());
 		this.topicFormat = inputDetail.GetTopicFormat();
+		this.customizedFields = inputDetail.customizedFields;
 	}
 
 	public ArrayList<String> GetKey() {
@@ -152,4 +160,8 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 	public void SetRegex(String regex) {
 		this.regex = regex;
 	}
+
+	public String GetCustomizedFields() { return customizedFields; }
+
+	public void SetCustomizedFields(String customizedFields) { this.customizedFields = customizedFields; }
 }
