@@ -26,8 +26,8 @@
     </licenses>
     <scm>
         <url>https://github.com/aliyun/aliyun-log-java-sdk</url>
-        <connection>scm:git:https://github.com/aliyun/aliyun-log-java-sdk.git</connection>
-        <developerConnection>scm:git:https://github.com/aliyun/aliyun-log-java-sdk.git
+        <connection>scm:git:git@github.com:aliyun/aliyun-log-java-sdk.git</connection>
+        <developerConnection>scm:git:git@github.com:aliyun/aliyun-log-java-sdk.git
         </developerConnection>
     </scm>
     <developers>
