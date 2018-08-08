@@ -49,11 +49,11 @@ public class ConsumerGroupFunctionTest extends FunctionTest {
         response = client.ListConsumerGroup(TEST_PROJECT, TEST_LOGSTORE);
         assertEquals(2, response.GetConsumerGroups().size());
 
-        assertExists(response.GetConsumerGroups(), "test1");
-        assertExists(response.GetConsumerGroups(), "test2");
+        assertExactOne(response.GetConsumerGroups(), "test1");
+        assertExactOne(response.GetConsumerGroups(), "test2");
     }
 
-    private static void assertExists(List<ConsumerGroup> groupList, String name) {
+    private static void assertExactOne(List<ConsumerGroup> groupList, String name) {
         boolean ok = false;
         for (ConsumerGroup item : groupList) {
             if (item.getConsumerGroupName().equals(name)) {

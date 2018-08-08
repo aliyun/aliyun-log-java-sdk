@@ -2104,6 +2104,590 @@ public final class Logs {
     // @@protoc_insertion_point(class_scope:com.aliyun.openservices.log.common.LogTag)
   }
 
+  public interface LogGroupMetaOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // optional uint32 ReceiveTime = 1;
+    /**
+     * <code>optional uint32 ReceiveTime = 1;</code>
+     *
+     * <pre>
+     * UNIX Time Format
+     * </pre>
+     */
+    boolean hasReceiveTime();
+    /**
+     * <code>optional uint32 ReceiveTime = 1;</code>
+     *
+     * <pre>
+     * UNIX Time Format
+     * </pre>
+     */
+    int getReceiveTime();
+
+    // optional string ClientIP = 2;
+    /**
+     * <code>optional string ClientIP = 2;</code>
+     */
+    boolean hasClientIP();
+    /**
+     * <code>optional string ClientIP = 2;</code>
+     */
+    java.lang.String getClientIP();
+    /**
+     * <code>optional string ClientIP = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getClientIPBytes();
+  }
+  /**
+   * Protobuf type {@code com.aliyun.openservices.log.common.LogGroupMeta}
+   */
+  public static final class LogGroupMeta extends
+      com.google.protobuf.GeneratedMessage
+      implements LogGroupMetaOrBuilder {
+    // Use LogGroupMeta.newBuilder() to construct.
+    private LogGroupMeta(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private LogGroupMeta(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final LogGroupMeta defaultInstance;
+    public static LogGroupMeta getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public LogGroupMeta getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private LogGroupMeta(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              receiveTime_ = input.readUInt32();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              clientIP_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.aliyun.openservices.log.common.Logs.internal_static_com_aliyun_openservices_log_common_LogGroupMeta_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.aliyun.openservices.log.common.Logs.internal_static_com_aliyun_openservices_log_common_LogGroupMeta_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.aliyun.openservices.log.common.Logs.LogGroupMeta.class, com.aliyun.openservices.log.common.Logs.LogGroupMeta.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<LogGroupMeta> PARSER =
+        new com.google.protobuf.AbstractParser<LogGroupMeta>() {
+      public LogGroupMeta parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new LogGroupMeta(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<LogGroupMeta> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // optional uint32 ReceiveTime = 1;
+    public static final int RECEIVETIME_FIELD_NUMBER = 1;
+    private int receiveTime_;
+    /**
+     * <code>optional uint32 ReceiveTime = 1;</code>
+     *
+     * <pre>
+     * UNIX Time Format
+     * </pre>
+     */
+    public boolean hasReceiveTime() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional uint32 ReceiveTime = 1;</code>
+     *
+     * <pre>
+     * UNIX Time Format
+     * </pre>
+     */
+    public int getReceiveTime() {
+      return receiveTime_;
+    }
+
+    // optional string ClientIP = 2;
+    public static final int CLIENTIP_FIELD_NUMBER = 2;
+    private java.lang.Object clientIP_;
+    /**
+     * <code>optional string ClientIP = 2;</code>
+     */
+    public boolean hasClientIP() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional string ClientIP = 2;</code>
+     */
+    public java.lang.String getClientIP() {
+      java.lang.Object ref = clientIP_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          clientIP_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string ClientIP = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getClientIPBytes() {
+      java.lang.Object ref = clientIP_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        clientIP_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private void initFields() {
+      receiveTime_ = 0;
+      clientIP_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, receiveTime_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getClientIPBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, receiveTime_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getClientIPBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.aliyun.openservices.log.common.Logs.LogGroupMeta parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.aliyun.openservices.log.common.Logs.LogGroupMeta parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.aliyun.openservices.log.common.Logs.LogGroupMeta parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.aliyun.openservices.log.common.Logs.LogGroupMeta parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.aliyun.openservices.log.common.Logs.LogGroupMeta parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.aliyun.openservices.log.common.Logs.LogGroupMeta parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.aliyun.openservices.log.common.Logs.LogGroupMeta parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.aliyun.openservices.log.common.Logs.LogGroupMeta parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.aliyun.openservices.log.common.Logs.LogGroupMeta parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.aliyun.openservices.log.common.Logs.LogGroupMeta parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.aliyun.openservices.log.common.Logs.LogGroupMeta prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code com.aliyun.openservices.log.common.LogGroupMeta}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.aliyun.openservices.log.common.Logs.LogGroupMetaOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.aliyun.openservices.log.common.Logs.internal_static_com_aliyun_openservices_log_common_LogGroupMeta_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.aliyun.openservices.log.common.Logs.internal_static_com_aliyun_openservices_log_common_LogGroupMeta_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.aliyun.openservices.log.common.Logs.LogGroupMeta.class, com.aliyun.openservices.log.common.Logs.LogGroupMeta.Builder.class);
+      }
+
+      // Construct using com.aliyun.openservices.log.common.Logs.LogGroupMeta.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        receiveTime_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        clientIP_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.aliyun.openservices.log.common.Logs.internal_static_com_aliyun_openservices_log_common_LogGroupMeta_descriptor;
+      }
+
+      public com.aliyun.openservices.log.common.Logs.LogGroupMeta getDefaultInstanceForType() {
+        return com.aliyun.openservices.log.common.Logs.LogGroupMeta.getDefaultInstance();
+      }
+
+      public com.aliyun.openservices.log.common.Logs.LogGroupMeta build() {
+        com.aliyun.openservices.log.common.Logs.LogGroupMeta result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.aliyun.openservices.log.common.Logs.LogGroupMeta buildPartial() {
+        com.aliyun.openservices.log.common.Logs.LogGroupMeta result = new com.aliyun.openservices.log.common.Logs.LogGroupMeta(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.receiveTime_ = receiveTime_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.clientIP_ = clientIP_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.aliyun.openservices.log.common.Logs.LogGroupMeta) {
+          return mergeFrom((com.aliyun.openservices.log.common.Logs.LogGroupMeta)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.aliyun.openservices.log.common.Logs.LogGroupMeta other) {
+        if (other == com.aliyun.openservices.log.common.Logs.LogGroupMeta.getDefaultInstance()) return this;
+        if (other.hasReceiveTime()) {
+          setReceiveTime(other.getReceiveTime());
+        }
+        if (other.hasClientIP()) {
+          bitField0_ |= 0x00000002;
+          clientIP_ = other.clientIP_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.aliyun.openservices.log.common.Logs.LogGroupMeta parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.aliyun.openservices.log.common.Logs.LogGroupMeta) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // optional uint32 ReceiveTime = 1;
+      private int receiveTime_ ;
+      /**
+       * <code>optional uint32 ReceiveTime = 1;</code>
+       *
+       * <pre>
+       * UNIX Time Format
+       * </pre>
+       */
+      public boolean hasReceiveTime() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional uint32 ReceiveTime = 1;</code>
+       *
+       * <pre>
+       * UNIX Time Format
+       * </pre>
+       */
+      public int getReceiveTime() {
+        return receiveTime_;
+      }
+      /**
+       * <code>optional uint32 ReceiveTime = 1;</code>
+       *
+       * <pre>
+       * UNIX Time Format
+       * </pre>
+       */
+      public Builder setReceiveTime(int value) {
+        bitField0_ |= 0x00000001;
+        receiveTime_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 ReceiveTime = 1;</code>
+       *
+       * <pre>
+       * UNIX Time Format
+       * </pre>
+       */
+      public Builder clearReceiveTime() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        receiveTime_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional string ClientIP = 2;
+      private java.lang.Object clientIP_ = "";
+      /**
+       * <code>optional string ClientIP = 2;</code>
+       */
+      public boolean hasClientIP() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string ClientIP = 2;</code>
+       */
+      public java.lang.String getClientIP() {
+        java.lang.Object ref = clientIP_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          clientIP_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string ClientIP = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getClientIPBytes() {
+        java.lang.Object ref = clientIP_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          clientIP_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string ClientIP = 2;</code>
+       */
+      public Builder setClientIP(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        clientIP_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string ClientIP = 2;</code>
+       */
+      public Builder clearClientIP() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        clientIP_ = getDefaultInstance().getClientIP();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string ClientIP = 2;</code>
+       */
+      public Builder setClientIPBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        clientIP_ = value;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:com.aliyun.openservices.log.common.LogGroupMeta)
+    }
+
+    static {
+      defaultInstance = new LogGroupMeta(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:com.aliyun.openservices.log.common.LogGroupMeta)
+  }
+
   public interface LogGroupOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
@@ -2216,6 +2800,20 @@ public final class Logs {
      */
     com.aliyun.openservices.log.common.Logs.LogTagOrBuilder getLogTagsOrBuilder(
         int index);
+
+    // optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;
+    /**
+     * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+     */
+    boolean hasMeta();
+    /**
+     * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+     */
+    com.aliyun.openservices.log.common.Logs.LogGroupMeta getMeta();
+    /**
+     * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+     */
+    com.aliyun.openservices.log.common.Logs.LogGroupMetaOrBuilder getMetaOrBuilder();
   }
   /**
    * Protobuf type {@code com.aliyun.openservices.log.common.LogGroup}
@@ -2302,6 +2900,19 @@ public final class Logs {
                 mutable_bitField0_ |= 0x00000020;
               }
               logTags_.add(input.readMessage(com.aliyun.openservices.log.common.Logs.LogTag.PARSER, extensionRegistry));
+              break;
+            }
+            case 58: {
+              com.aliyun.openservices.log.common.Logs.LogGroupMeta.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                subBuilder = meta_.toBuilder();
+              }
+              meta_ = input.readMessage(com.aliyun.openservices.log.common.Logs.LogGroupMeta.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(meta_);
+                meta_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000010;
               break;
             }
           }
@@ -2594,6 +3205,28 @@ public final class Logs {
       return logTags_.get(index);
     }
 
+    // optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;
+    public static final int META_FIELD_NUMBER = 7;
+    private com.aliyun.openservices.log.common.Logs.LogGroupMeta meta_;
+    /**
+     * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+     */
+    public boolean hasMeta() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+     */
+    public com.aliyun.openservices.log.common.Logs.LogGroupMeta getMeta() {
+      return meta_;
+    }
+    /**
+     * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+     */
+    public com.aliyun.openservices.log.common.Logs.LogGroupMetaOrBuilder getMetaOrBuilder() {
+      return meta_;
+    }
+
     private void initFields() {
       logs_ = java.util.Collections.emptyList();
       category_ = "";
@@ -2601,6 +3234,7 @@ public final class Logs {
       source_ = "";
       machineUUID_ = "";
       logTags_ = java.util.Collections.emptyList();
+      meta_ = com.aliyun.openservices.log.common.Logs.LogGroupMeta.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2644,6 +3278,9 @@ public final class Logs {
       for (int i = 0; i < logTags_.size(); i++) {
         output.writeMessage(6, logTags_.get(i));
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeMessage(7, meta_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -2676,6 +3313,10 @@ public final class Logs {
       for (int i = 0; i < logTags_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, logTags_.get(i));
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, meta_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2787,6 +3428,7 @@ public final class Logs {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getLogsFieldBuilder();
           getLogTagsFieldBuilder();
+          getMetaFieldBuilder();
         }
       }
       private static Builder create() {
@@ -2815,6 +3457,12 @@ public final class Logs {
         } else {
           logTagsBuilder_.clear();
         }
+        if (metaBuilder_ == null) {
+          meta_ = com.aliyun.openservices.log.common.Logs.LogGroupMeta.getDefaultInstance();
+        } else {
+          metaBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
@@ -2876,6 +3524,14 @@ public final class Logs {
           result.logTags_ = logTags_;
         } else {
           result.logTags_ = logTagsBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        if (metaBuilder_ == null) {
+          result.meta_ = meta_;
+        } else {
+          result.meta_ = metaBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -2964,6 +3620,9 @@ public final class Logs {
               logTagsBuilder_.addAllMessages(other.logTags_);
             }
           }
+        }
+        if (other.hasMeta()) {
+          mergeMeta(other.getMeta());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -3780,6 +4439,123 @@ public final class Logs {
         return logTagsBuilder_;
       }
 
+      // optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;
+      private com.aliyun.openservices.log.common.Logs.LogGroupMeta meta_ = com.aliyun.openservices.log.common.Logs.LogGroupMeta.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.aliyun.openservices.log.common.Logs.LogGroupMeta, com.aliyun.openservices.log.common.Logs.LogGroupMeta.Builder, com.aliyun.openservices.log.common.Logs.LogGroupMetaOrBuilder> metaBuilder_;
+      /**
+       * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+       */
+      public boolean hasMeta() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+       */
+      public com.aliyun.openservices.log.common.Logs.LogGroupMeta getMeta() {
+        if (metaBuilder_ == null) {
+          return meta_;
+        } else {
+          return metaBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+       */
+      public Builder setMeta(com.aliyun.openservices.log.common.Logs.LogGroupMeta value) {
+        if (metaBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          meta_ = value;
+          onChanged();
+        } else {
+          metaBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+       */
+      public Builder setMeta(
+          com.aliyun.openservices.log.common.Logs.LogGroupMeta.Builder builderForValue) {
+        if (metaBuilder_ == null) {
+          meta_ = builderForValue.build();
+          onChanged();
+        } else {
+          metaBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+       */
+      public Builder mergeMeta(com.aliyun.openservices.log.common.Logs.LogGroupMeta value) {
+        if (metaBuilder_ == null) {
+          if (((bitField0_ & 0x00000040) == 0x00000040) &&
+              meta_ != com.aliyun.openservices.log.common.Logs.LogGroupMeta.getDefaultInstance()) {
+            meta_ =
+              com.aliyun.openservices.log.common.Logs.LogGroupMeta.newBuilder(meta_).mergeFrom(value).buildPartial();
+          } else {
+            meta_ = value;
+          }
+          onChanged();
+        } else {
+          metaBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+       */
+      public Builder clearMeta() {
+        if (metaBuilder_ == null) {
+          meta_ = com.aliyun.openservices.log.common.Logs.LogGroupMeta.getDefaultInstance();
+          onChanged();
+        } else {
+          metaBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000040);
+        return this;
+      }
+      /**
+       * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+       */
+      public com.aliyun.openservices.log.common.Logs.LogGroupMeta.Builder getMetaBuilder() {
+        bitField0_ |= 0x00000040;
+        onChanged();
+        return getMetaFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+       */
+      public com.aliyun.openservices.log.common.Logs.LogGroupMetaOrBuilder getMetaOrBuilder() {
+        if (metaBuilder_ != null) {
+          return metaBuilder_.getMessageOrBuilder();
+        } else {
+          return meta_;
+        }
+      }
+      /**
+       * <code>optional .com.aliyun.openservices.log.common.LogGroupMeta Meta = 7;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.aliyun.openservices.log.common.Logs.LogGroupMeta, com.aliyun.openservices.log.common.Logs.LogGroupMeta.Builder, com.aliyun.openservices.log.common.Logs.LogGroupMetaOrBuilder> 
+          getMetaFieldBuilder() {
+        if (metaBuilder_ == null) {
+          metaBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.aliyun.openservices.log.common.Logs.LogGroupMeta, com.aliyun.openservices.log.common.Logs.LogGroupMeta.Builder, com.aliyun.openservices.log.common.Logs.LogGroupMetaOrBuilder>(
+                  meta_,
+                  getParentForChildren(),
+                  isClean());
+          meta_ = null;
+        }
+        return metaBuilder_;
+      }
+
       // @@protoc_insertion_point(builder_scope:com.aliyun.openservices.log.common.LogGroup)
     }
 
@@ -4493,6 +5269,11 @@ public final class Logs {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_com_aliyun_openservices_log_common_LogTag_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_aliyun_openservices_log_common_LogGroupMeta_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_com_aliyun_openservices_log_common_LogGroupMeta_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_com_aliyun_openservices_log_common_LogGroup_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -4516,14 +5297,17 @@ public final class Logs {
       "s\030\002 \003(\0132/.com.aliyun.openservices.log.co" +
       "mmon.Log.Content\032%\n\007Content\022\013\n\003Key\030\001 \002(\t" +
       "\022\r\n\005Value\030\002 \002(\t\"$\n\006LogTag\022\013\n\003Key\030\001 \002(\t\022\r" +
-      "\n\005Value\030\002 \002(\t\"\304\001\n\010LogGroup\0225\n\004Logs\030\001 \003(\013" +
-      "2\'.com.aliyun.openservices.log.common.Lo" +
-      "g\022\020\n\010Category\030\002 \001(\t\022\r\n\005Topic\030\003 \001(\t\022\016\n\006So" +
-      "urce\030\004 \001(\t\022\023\n\013MachineUUID\030\005 \001(\t\022;\n\007LogTa" +
-      "gs\030\006 \003(\0132*.com.aliyun.openservices.log.c",
-      "ommon.LogTag\"R\n\014LogGroupList\022B\n\014logGroup" +
-      "List\030\001 \003(\0132,.com.aliyun.openservices.log" +
-      ".common.LogGroup"
+      "\n\005Value\030\002 \002(\t\"5\n\014LogGroupMeta\022\023\n\013Receive" +
+      "Time\030\001 \001(\r\022\020\n\010ClientIP\030\002 \001(\t\"\204\002\n\010LogGrou" +
+      "p\0225\n\004Logs\030\001 \003(\0132\'.com.aliyun.openservice" +
+      "s.log.common.Log\022\020\n\010Category\030\002 \001(\t\022\r\n\005To" +
+      "pic\030\003 \001(\t\022\016\n\006Source\030\004 \001(\t\022\023\n\013MachineUUID",
+      "\030\005 \001(\t\022;\n\007LogTags\030\006 \003(\0132*.com.aliyun.ope" +
+      "nservices.log.common.LogTag\022>\n\004Meta\030\007 \001(" +
+      "\01320.com.aliyun.openservices.log.common.L" +
+      "ogGroupMeta\"R\n\014LogGroupList\022B\n\014logGroupL" +
+      "ist\030\001 \003(\0132,.com.aliyun.openservices.log." +
+      "common.LogGroupB\006B\004Logs"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4548,14 +5332,20 @@ public final class Logs {
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_aliyun_openservices_log_common_LogTag_descriptor,
               new java.lang.String[] { "Key", "Value", });
-          internal_static_com_aliyun_openservices_log_common_LogGroup_descriptor =
+          internal_static_com_aliyun_openservices_log_common_LogGroupMeta_descriptor =
             getDescriptor().getMessageTypes().get(2);
+          internal_static_com_aliyun_openservices_log_common_LogGroupMeta_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_com_aliyun_openservices_log_common_LogGroupMeta_descriptor,
+              new java.lang.String[] { "ReceiveTime", "ClientIP", });
+          internal_static_com_aliyun_openservices_log_common_LogGroup_descriptor =
+            getDescriptor().getMessageTypes().get(3);
           internal_static_com_aliyun_openservices_log_common_LogGroup_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_aliyun_openservices_log_common_LogGroup_descriptor,
-              new java.lang.String[] { "Logs", "Category", "Topic", "Source", "MachineUUID", "LogTags", });
+              new java.lang.String[] { "Logs", "Category", "Topic", "Source", "MachineUUID", "LogTags", "Meta", });
           internal_static_com_aliyun_openservices_log_common_LogGroupList_descriptor =
-            getDescriptor().getMessageTypes().get(3);
+            getDescriptor().getMessageTypes().get(4);
           internal_static_com_aliyun_openservices_log_common_LogGroupList_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_aliyun_openservices_log_common_LogGroupList_descriptor,
