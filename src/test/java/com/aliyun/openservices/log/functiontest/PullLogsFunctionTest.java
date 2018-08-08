@@ -27,7 +27,7 @@ public class PullLogsFunctionTest extends FunctionTest {
     private static final String TEST_PROJECT = "project-to-append-metadata";
 
 
-    private void ensureLogStoreEnabled(String logStoreName, boolean enabled) throws LogException {
+    private void ensureLogStoreEnabled(String logStoreName, boolean enabled) {
         LogStore logStore = new LogStore();
         logStore.SetLogStoreName(logStoreName);
         logStore.SetTtl(1);
@@ -93,7 +93,6 @@ public class PullLogsFunctionTest extends FunctionTest {
         String logStore = "logstore-append-meta";
         ensureLogStoreEnabled(logStore, true);
         int written = writeData(logStore);
-
         assertEquals(written, countAppended(logStore, 0) + countAppended(logStore, 1));
     }
 
