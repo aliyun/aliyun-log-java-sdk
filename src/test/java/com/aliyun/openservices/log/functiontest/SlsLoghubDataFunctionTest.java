@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.aliyun.openservices.log.common.Consts.CONST_GZIP_ENCODING;
@@ -201,10 +202,12 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
 
+        TagContent testTag = new TagContent("Tag", "value");
+        PutLogsRequest request = new PutLogsRequest(project, logStore, caseTopic,
+                source, logGroupSample);
+        request.SetTags(Collections.singletonList(testTag));
+        request.SetCompressType(CompressType.GZIP);
         try {
-            PutLogsRequest request = new PutLogsRequest(project, logStore, caseTopic,
-                    source, logGroupSample);
-            request.SetCompressType(CompressType.GZIP);
             client.PutLogs(request);
         } catch (LogException e) {
             System.out.println("RID:" + e.GetRequestId());
@@ -370,6 +373,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         verifyPbStringEquals(logGroup1.hasMachineUUID(), logGroup2.hasMachineUUID(), logGroup1.getMachineUUID(), logGroup2.getMachineUUID());
 
         assertEquals(logGroup1.getLogsCount(), logGroup2.getLogsCount());
+        assertEquals(logGroup1.getLogsCount(), 1);
         for (int x = 0; x < logGroup1.getLogsCount(); x++) {
             FastLog log1 = logGroup1.getLogs(x);
             Logs.Log log2 = logGroup2.getLogs(x);
