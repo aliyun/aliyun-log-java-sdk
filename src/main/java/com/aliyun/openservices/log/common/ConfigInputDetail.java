@@ -50,7 +50,23 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 	 */
 	public ConfigInputDetail(String logPath, String filePattern,
 			String logType, String logBeginRegex, String regex,
-			ArrayList<String> key, String timeFormat, boolean localStorage, String customizedFields) {
+			ArrayList<String> key, String timeFormat, boolean localStorage) {
+		super();
+		this.logType = Consts.CONST_CONFIG_LOGTYPE_COMMON;
+		this.logPath = logPath;
+		this.filePattern = filePattern;
+		this.logType = logType;
+		this.logBeginRegex = logBeginRegex;
+		this.regex = regex;
+		SetKey(key);
+		this.timeFormat = timeFormat;
+		this.localStorage = localStorage;
+	}
+
+	public ConfigInputDetail(String logPath, String filePattern,
+			String logType, String logBeginRegex, String regex,
+			ArrayList<String> key, String timeFormat,
+			boolean localStorage, String customizedFields) {
 		super();
 		this.logType = Consts.CONST_CONFIG_LOGTYPE_COMMON;
 		this.logPath = logPath;
@@ -161,7 +177,11 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		this.regex = regex;
 	}
 
-	public String GetCustomizedFields() { return customizedFields; }
+	public String GetCustomizedFields() {
+		return customizedFields;
+        }
 
-	public void SetCustomizedFields(String customizedFields) { this.customizedFields = customizedFields; }
+	public void SetCustomizedFields(String customizedFields) {
+		this.customizedFields = customizedFields;
+        }
 }
