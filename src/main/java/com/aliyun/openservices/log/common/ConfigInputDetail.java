@@ -45,8 +45,6 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 	 *            the time format to parse the "time" field
 	 * @param localStorage
 	 *            true if save the log data if failed to send to the sls server
-	 * @param customizedFields
-	 *            the customized fields configuration for special usage
 	 */
 	public ConfigInputDetail(String logPath, String filePattern,
 			String logType, String logBeginRegex, String regex,
@@ -63,6 +61,30 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		this.localStorage = localStorage;
 	}
 
+	/**
+	 * @param logPath
+	 *            the log file dir path
+	 * @param filePattern
+	 *            the file name pattern, e.g "access.log" , "access.log.*"
+	 * @param logType
+	 *            the log data type , currently it only support
+	 *            "common_reg_log", "apsara_log", "streamlog"
+	 * @param logBeginRegex
+	 *            the regex used to check if one line match the start of a log
+	 * @param regex
+	 *            the regex used to parse the log data if log type is
+	 *            "common_reg_log", leave to "" if log type is "apsara_log"
+	 * @param key
+	 *            the key lists for every captured value using the defined
+	 *            regex, "time" must be one name in key
+	 * 
+	 * @param timeFormat
+	 *            the time format to parse the "time" field
+	 * @param localStorage
+	 *            true if save the log data if failed to send to the sls server
+	 * @param customizedFields
+	 *            the customized fields configuration for special usage
+	 */
 	public ConfigInputDetail(String logPath, String filePattern,
 			String logType, String logBeginRegex, String regex,
 			ArrayList<String> key, String timeFormat,
