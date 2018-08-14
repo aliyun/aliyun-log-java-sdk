@@ -29,11 +29,11 @@ CreateLogStoreResponse res = client.CreateLogStore(project, store);
 ### sample 3 : 写数据
 ```
 
-int log_group_num = 10;
+int numLogGroup = 10;
 /**
  * 向log service发送一个日志包，每个日志包中，有2行日志
  */
-for (int i = 0; i < log_group_num; i++) {
+for (int i = 0; i < numLogGroup; i++) {
     Vector<LogItem> logGroup = new Vector<LogItem>();
     LogItem logItem = new LogItem((int) (new Date().getTime() / 1000));
     logItem.PushBack("level", "info");
@@ -97,7 +97,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.19</version>
+    <version>0.6.20</version>
 </dependency>
 ```
 
@@ -107,7 +107,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.19</version>
+    <version>0.6.20</version>
     <classifier>jar-with-dependencies</classifier>
     <exclusions>
         <exclusion>
