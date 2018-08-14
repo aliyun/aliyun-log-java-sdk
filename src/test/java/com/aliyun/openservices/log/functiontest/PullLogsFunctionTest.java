@@ -11,7 +11,6 @@ import com.aliyun.openservices.log.request.BatchGetLogRequest;
 import com.aliyun.openservices.log.response.BatchGetLogResponse;
 import com.aliyun.openservices.log.response.GetCursorResponse;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
-import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -65,15 +64,7 @@ public class PullLogsFunctionTest extends FunctionTest {
             BatchGetLogResponse response1 = client.BatchGetLog(request);
             for (LogGroupData data : response1.GetLogGroups()) {
                 Logs.LogGroup group = data.GetLogGroup();
-                if (group.hasMeta()) {
-                    Logs.LogGroupMeta meta = group.getMeta();
-                    ++n;
-                    if (StringUtils.isBlank(meta.getClientIP())) {
-                        fail("Client IP expect not null");
-                    } else if (meta.getReceiveTime() == 0) {
-                        fail("ReceiveTime expect not null");
-                    }
-                }
+                ++n;
                 for (Logs.Log log : group.getLogsList()) {
                     assertEquals(log.getContentsCount(), 1);
                     assertEquals("ID", log.getContents(0).getKey());

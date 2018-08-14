@@ -6,7 +6,6 @@ import com.aliyun.openservices.log.common.Consts.CursorMode;
 import com.aliyun.openservices.log.common.FastLog;
 import com.aliyun.openservices.log.common.FastLogContent;
 import com.aliyun.openservices.log.common.FastLogGroup;
-import com.aliyun.openservices.log.common.FastLogGroupMeta;
 import com.aliyun.openservices.log.common.FastLogTag;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.LogGroupData;
@@ -252,12 +251,6 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
                         System.out.println(logGroup.getSource());
                         logGroup.getSourceBytes();
                     }
-                    if (logGroup.hasMeta()) {
-                        FastLogGroupMeta meta = logGroup.getMeta();
-                        System.out.println("Meta:");
-                        System.out.println(meta.getClientIP());
-                        System.out.println(meta.getReceiveTime());
-                    }
                     System.out.println("Tags");
                     for (int tagIdx = 0; tagIdx < logGroup.getLogTagsCount(); ++tagIdx) {
                         FastLogTag logtag = logGroup.getLogTags(tagIdx);
@@ -288,11 +281,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
                         byte[] logGroupBytes = logGroup.getBytes();
 
                         Logs.LogGroup logGroup1 = Logs.LogGroup.parseFrom(logGroupBytes);
-                        verifyEqualsExceptMeta(logGroup, logGroup1, includeMeta);
-
-                        logGroupBytes = logGroup.getBytesWithoutMeta();
-                        Logs.LogGroup logGroup2 = Logs.LogGroup.parseFrom(logGroupBytes);
-                        verifyEqualsExceptMeta(logGroup, logGroup2, false);
+                        verifyEqualsExceptMeta(logGroup, logGroup1);
 
                         client.PutLogs(project, logStore, logGroupBytes, "", null);
                         client.PutLogs(project, logStore, logGroupBytes, CONST_LZ4, null);
@@ -364,10 +353,9 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         assertTrue("Verify failed", verified);
     }
 
-    private static void verifyEqualsExceptMeta(FastLogGroup logGroup1, Logs.LogGroup logGroup2, boolean hasMeta) {
+    private static void verifyEqualsExceptMeta(FastLogGroup logGroup1, Logs.LogGroup logGroup2) {
         assertFalse(logGroup1.hasCategory());
         assertFalse(logGroup2.hasCategory());
-        assertEquals(logGroup2.hasMeta(), hasMeta);
         verifyPbStringEquals(logGroup1.hasSource(), logGroup2.hasSource(), logGroup1.getSource(), logGroup2.getSource());
         verifyPbStringEquals(logGroup1.hasTopic(), logGroup2.hasTopic(), logGroup1.getTopic(), logGroup2.getTopic());
         verifyPbStringEquals(logGroup1.hasMachineUUID(), logGroup2.hasMachineUUID(), logGroup1.getMachineUUID(), logGroup2.getMachineUUID());
