@@ -17,7 +17,8 @@ public class DelimiterConfigInputDetail extends LocalFileConfigInputDetail imple
 	private ArrayList<String> key = new ArrayList<String>();
 	private String timeKey = "";
 	private boolean autoExtend = true;
-	
+	private boolean acceptNoEnoughKeys = false;
+
 	public DelimiterConfigInputDetail() {
 		this.logType = Consts.CONST_CONFIG_LOGTYPE_DELIMITER;
 	}
@@ -95,6 +96,14 @@ public class DelimiterConfigInputDetail extends LocalFileConfigInputDetail imple
 		this.autoExtend = autoExtend;
 	}
 	
+	public boolean isAcceptNoEnoughKeys() {
+		return acceptNoEnoughKeys;
+	}
+
+	public void setAcceptNoEnoughKeys(boolean acceptNoEnoughKeys) {
+		this.acceptNoEnoughKeys = acceptNoEnoughKeys;
+	}
+
 	@Override
 	public JSONObject ToJsonObject() {
 		JSONObject jsonObj = new JSONObject();
@@ -110,6 +119,7 @@ public class DelimiterConfigInputDetail extends LocalFileConfigInputDetail imple
 		
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_TIMEKEY, timeKey);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_AUTOEXTEND, autoExtend);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ACCEPTNOENOUGHKEYS, acceptNoEnoughKeys);
 		
 		return jsonObj;
 	}
@@ -122,6 +132,10 @@ public class DelimiterConfigInputDetail extends LocalFileConfigInputDetail imple
 		SetKey(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_KEY));
 		this.timeKey = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_TIMEKEY);
 		this.autoExtend = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_AUTOEXTEND);
+		if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_ACCEPTNOENOUGHKEYS))
+			this.acceptNoEnoughKeys = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ACCEPTNOENOUGHKEYS);
+		else
+			this.acceptNoEnoughKeys = false;
 	}
 
 }
