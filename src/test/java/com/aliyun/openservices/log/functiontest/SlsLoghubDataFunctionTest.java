@@ -281,7 +281,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
                         byte[] logGroupBytes = logGroup.getBytes();
 
                         Logs.LogGroup logGroup1 = Logs.LogGroup.parseFrom(logGroupBytes);
-                        verifyEqualsExceptMeta(logGroup, logGroup1);
+                        verifyLogGroupEquals(logGroup, logGroup1);
 
                         client.PutLogs(project, logStore, logGroupBytes, "", null);
                         client.PutLogs(project, logStore, logGroupBytes, CONST_LZ4, null);
@@ -353,7 +353,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         assertTrue("Verify failed", verified);
     }
 
-    private static void verifyEqualsExceptMeta(FastLogGroup logGroup1, Logs.LogGroup logGroup2) {
+    private static void verifyLogGroupEquals(FastLogGroup logGroup1, Logs.LogGroup logGroup2) {
         assertFalse(logGroup1.hasCategory());
         assertFalse(logGroup2.hasCategory());
         verifyPbStringEquals(logGroup1.hasSource(), logGroup2.hasSource(), logGroup1.getSource(), logGroup2.getSource());
