@@ -40,7 +40,7 @@ public class PullLogsFunctionTest extends FunctionTest {
         for (int i = 0; i < round; i++) {
             List<LogItem> logGroup = new ArrayList<LogItem>(600);
             for (int j = 0; j < 600; j++) {
-                LogItem logItem = new LogItem(timestampNow());
+                LogItem logItem = new LogItem(getNowTimestamp());
                 logItem.PushBack("ID", "id_" + String.valueOf(i * 600 + j));
                 logGroup.add(logItem);
             }
@@ -99,7 +99,7 @@ public class PullLogsFunctionTest extends FunctionTest {
         LogStore logStore1 = response.GetLogStore();
         logStore1.setAppendMeta(true);
         client.UpdateLogStore(TEST_PROJECT, logStore1);
-        waitForSeconds(60);
+        waitOneMinutes();
 
         int written = writeData(logStore);
         assertEquals(written, countAppended(logStore, 0) + countAppended(logStore, 1));
@@ -107,7 +107,7 @@ public class PullLogsFunctionTest extends FunctionTest {
         logStore1 = response.GetLogStore();
         logStore1.setAppendMeta(false);
         client.UpdateLogStore(TEST_PROJECT, logStore1);
-        waitForSeconds(60);
+        waitOneMinutes();
 
         writeData(logStore);
         assertEquals(written, countAppended(logStore, 0) + countAppended(logStore, 1));

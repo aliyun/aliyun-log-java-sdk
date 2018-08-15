@@ -36,7 +36,7 @@ public class PushLogsFunctionTest extends FunctionTest {
         for (int i = 0; i < round; i++) {
             List<LogItem> logGroup = new ArrayList<LogItem>(600);
             for (int j = 0; j < 600; j++) {
-                LogItem logItem = new LogItem(timestampNow());
+                LogItem logItem = new LogItem(getNowTimestamp());
                 logItem.PushBack("ID", "id_" + String.valueOf(i * 600 + j));
                 logGroup.add(logItem);
             }

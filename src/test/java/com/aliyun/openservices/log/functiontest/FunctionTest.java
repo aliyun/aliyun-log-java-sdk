@@ -87,7 +87,7 @@ public abstract class FunctionTest {
                 false, 30000, 30000, 30000);
     }
 
-    static int timestampNow() {
+    static int getNowTimestamp() {
         return (int) (new Date().getTime() / 1000);
     }
 
@@ -115,7 +115,7 @@ public abstract class FunctionTest {
         try {
             client.DeleteProject(project);
             // Wait cache refresh completed
-            waitForSeconds(60);
+            waitOneMinutes();
         } catch (LogException ex) {
             if (!ex.GetErrorCode().equals("ProjectNotExist")) {
                 fail("Delete project failed: " + ex.GetErrorMessage());
@@ -140,13 +140,13 @@ public abstract class FunctionTest {
 
     void reCreateLogStore(String project, LogStore logStore) {
         if (safeCreateProject(project, "")) {
-            waitForSeconds(60);
+            waitOneMinutes();
         }
         if (safeDeleteLogStore(project, logStore.GetLogStoreName())) {
-            waitForSeconds(60);
+            waitOneMinutes();
         }
         if (safeCreateLogStore(project, logStore)) {
-            waitForSeconds(60);
+            waitOneMinutes();
         }
     }
 
@@ -170,7 +170,11 @@ public abstract class FunctionTest {
         return false;
     }
 
-    void waitForSeconds(int seconds) {
+    static void waitOneMinutes() {
+        waitForSeconds(60);
+    }
+
+    static void waitForSeconds(int seconds) {
         try {
             TimeUnit.SECONDS.sleep(seconds);
         } catch (InterruptedException e) {

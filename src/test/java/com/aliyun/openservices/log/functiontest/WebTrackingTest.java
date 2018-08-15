@@ -55,12 +55,12 @@ public class WebTrackingTest extends FunctionTest {
 
         logStore.setEnableWebTracking(false);
         client.UpdateLogStore(TEST_PROJECT, logStore);
-        waitForSeconds(60);
+        waitOneMinutes();
         assertFalse(testPutLogs());
 
         logStore.setEnableWebTracking(true);
         client.UpdateLogStore(TEST_PROJECT, logStore);
-        waitForSeconds(60);
+        waitOneMinutes();
         assertTrue(testPutLogs());
     }
 }

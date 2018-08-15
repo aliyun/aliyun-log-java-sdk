@@ -38,7 +38,7 @@ import static org.junit.Assert.fail;
 public class SlsLoghubDataFunctionTest extends FunctionTest {
     static private final String project = "project1";
     static private final String logStore = "javasdk2";
-    private final int startTime = timestampNow();
+    private final int startTime = getNowTimestamp();
     private final String topic = "sls_java_topic_" + String.valueOf(startTime);
     private final String source = "127.0.0.1";
     private final int defaultShardNum = 2;
@@ -112,7 +112,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         reCreateLogStore(project, logStoreRes);
 
         List<LogItem> logGroupSample = new ArrayList<LogItem>();
-        LogItem logItemSample = new LogItem(timestampNow());
+        LogItem logItemSample = new LogItem(getNowTimestamp());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -176,7 +176,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
 
         try {
             client.MergeShards(project, logStore, 0);
-            waitForSeconds(60);
+            waitOneMinutes();
         } catch (LogException e) {
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
@@ -193,10 +193,10 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         logStoreRes.setAppendMeta(includeMeta);
         reCreateLogStore(project, logStoreRes);
 
-        int caseStartTime = timestampNow();
+        int caseStartTime = getNowTimestamp();
         String caseTopic = "sls_java_topic_" + String.valueOf(caseStartTime);
         List<LogItem> logGroupSample = new ArrayList<LogItem>();
-        LogItem logItemSample = new LogItem(timestampNow());
+        LogItem logItemSample = new LogItem(getNowTimestamp());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -217,7 +217,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
 
         waitForSeconds(3);
 
-        int newCaseStartTime = timestampNow();
+        int newCaseStartTime = getNowTimestamp();
         boolean verified = true;
         try {
             GetCursorResponse cursorRes;
@@ -411,10 +411,10 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         logStoreRes.setAppendMeta(randomBoolean());
         reCreateLogStore(project, logStoreRes);
 
-        int caseStartTime = timestampNow();
+        int caseStartTime = getNowTimestamp();
         String caseTopic = "sls_java_topic_" + String.valueOf(caseStartTime);
         List<LogItem> logGroupSample = new ArrayList<LogItem>();
-        LogItem logItemSample = new LogItem(timestampNow());
+        LogItem logItemSample = new LogItem(getNowTimestamp());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -596,7 +596,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
     public void tearDown() {
         try {
             client.DeleteLogStore(project, logStore);
-            waitForSeconds(60);
+            waitOneMinutes();
         } catch (LogException e) {
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
