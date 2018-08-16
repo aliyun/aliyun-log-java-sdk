@@ -4,7 +4,11 @@ import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.EtlMeta;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.response.*;
+import com.aliyun.openservices.log.response.CreateEtlMetaResponse;
+import com.aliyun.openservices.log.response.DeleteEtlMetaResponse;
+import com.aliyun.openservices.log.response.ListEtlMetaNameResponse;
+import com.aliyun.openservices.log.response.ListEtlMetaResponse;
+import com.aliyun.openservices.log.response.UpdateEtlMetaResponse;
 import net.sf.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -15,6 +19,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class EtlMetaFunctionTest {
 
@@ -64,7 +72,7 @@ public class EtlMetaFunctionTest {
                 Assert.assertTrue(true);
             } catch (LogException e) {
                 System.err.println(e.GetErrorCode() + ", " + e.GetErrorMessage() + ", " + e.GetRequestId());
-                Assert.assertTrue(false);
+                fail();
             }
         }
         for (int i = 0; i < etlMetaCount_2; ++i) {
@@ -82,7 +90,7 @@ public class EtlMetaFunctionTest {
                 Assert.assertTrue(true);
             } catch (LogException e) {
                 System.err.println(e.GetErrorCode() + ", " + e.GetErrorMessage() + ", " + e.GetRequestId());
-                Assert.assertTrue(false);
+                fail();
             }
             if (i % 10 == 0) {
                 try {
@@ -102,7 +110,7 @@ public class EtlMetaFunctionTest {
             while (true) {
                 ListEtlMetaResponse metas = logClient.listEtlMeta(project, etlMetaName_1,"ali-log-test", "slb-log", offset, 100);
                 offset += 100;
-                Assert.assertEquals(metas.getTotal(), etlMetaCount_1);
+                assertEquals(metas.getTotal(), etlMetaCount_1);
                 for (EtlMeta m : metas.getEtlMetaList()) {
                     slbMetas.add(m);
                 }
@@ -113,32 +121,32 @@ public class EtlMetaFunctionTest {
         } catch (LogException e) {
             e.printStackTrace();
         }
-        Assert.assertEquals(slbMetas.size(), etlMetaCount_1);
+        assertEquals(slbMetas.size(), etlMetaCount_1);
         int i = 0;
         for (EtlMeta m : slbMetas) {
-            Assert.assertEquals(m.getMetaKey(), etlMetaKeyPrefxi_1 + "_" + String.valueOf(i++));
+            assertEquals(m.getMetaKey(), etlMetaKeyPrefxi_1 + "_" + String.valueOf(i++));
         }
 
         try {
             ListEtlMetaResponse metas = logClient.listEtlMeta(project, etlMetaName_2,"ali-log-test", "apigateway-log", 0, 100);
-            Assert.assertEquals(metas.getTotal(), etlMetaCount_2);
-            Assert.assertEquals(metas.getCount(), etlMetaCount_2);
+            assertEquals(metas.getTotal(), etlMetaCount_2);
+            assertEquals(metas.getCount(), etlMetaCount_2);
         } catch (LogException e) {
             e.printStackTrace();
         }
 
         try {
             ListEtlMetaResponse metas = logClient.listEtlMeta(project, etlMetaName_1,"ali-log-test", "apigateway-log", 0, 100);
-            Assert.assertEquals(metas.getTotal(), 0);
-            Assert.assertEquals(metas.getCount(), 0);
+            assertEquals(metas.getTotal(), 0);
+            assertEquals(metas.getCount(), 0);
         } catch (LogException e) {
             e.printStackTrace();
         }
 
         try {
             ListEtlMetaResponse metas = logClient.listEtlMeta(project, etlMetaName_2 + "xxx","ali-log-test", "apigateway-log", 0, 100);
-            Assert.assertEquals(metas.getTotal(), 0);
-            Assert.assertEquals(metas.getCount(), 0);
+            assertEquals(metas.getTotal(), 0);
+            assertEquals(metas.getCount(), 0);
         } catch (LogException e) {
             e.printStackTrace();
         }
@@ -159,10 +167,10 @@ public class EtlMetaFunctionTest {
         meta.setMetaValue(metaValueObj);
         try {
             CreateEtlMetaResponse resp = logClient.createEtlMeta(project, meta);
-            Assert.assertTrue(false);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertEquals(e.GetErrorCode(), "EtlMetaAlreadyExist");
+            assertEquals(e.GetErrorCode(), "EtlMetaAlreadyExist");
         }
 
         metaKey = etlMetaKeyPrefxi_1 + "_" + String.valueOf(500);
@@ -176,10 +184,10 @@ public class EtlMetaFunctionTest {
         meta.setMetaValue(metaValueObj);
         try {
             CreateEtlMetaResponse resp = logClient.createEtlMeta(project, meta);
-            Assert.assertTrue(false);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
         }
 
         meta = new EtlMeta(etlMetaName_2, "n", etlMetaKeyPrefxi_2);
@@ -192,10 +200,10 @@ public class EtlMetaFunctionTest {
         meta.setMetaValue(metaValueObj);
         try {
             CreateEtlMetaResponse resp = logClient.createEtlMeta(project, meta);
-            Assert.assertTrue(false);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
         }
 
         meta = new EtlMeta("x", metaKey, "");
@@ -208,10 +216,10 @@ public class EtlMetaFunctionTest {
         meta.setMetaValue(metaValueObj);
         try {
             CreateEtlMetaResponse resp = logClient.createEtlMeta(project, meta);
-            Assert.assertTrue(false);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
         }
     }
 
@@ -223,16 +231,16 @@ public class EtlMetaFunctionTest {
         etlNameSet.add(etlMetaName_2);
         try {
             ListEtlMetaNameResponse resp = logClient.listEtlMetaName(project, 0, 200);
-            Assert.assertEquals(2, resp.getCount());
-            Assert.assertEquals(2, resp.getTotal());
+            assertEquals(2, resp.getCount());
+            assertEquals(2, resp.getTotal());
             for (String etlMetaName : resp.getEtlMetaNameList()) {
                 if (etlNameSet.contains(etlMetaName))
                     etlNameSet.remove(etlMetaName);
             }
-            Assert.assertEquals(0, etlNameSet.size());
+            assertEquals(0, etlNameSet.size());
         } catch (LogException e) {
             e.printStackTrace();
-            Assert.assertTrue(false);
+            fail();
         }
     }
 
@@ -253,20 +261,20 @@ public class EtlMetaFunctionTest {
             Assert.assertTrue(true);
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertTrue(false);
+            fail();
         }
 
         try {
             ListEtlMetaResponse resp = logClient.getEtlMeta(project, etlMetaName_1, metaKey);
             EtlMeta etlMeta = resp.getHeadEtlMeta();
-            Assert.assertTrue(etlMeta != null);
-            Assert.assertEquals(resp.getCount(), 1);
-            Assert.assertEquals(etlMeta.getMetaTag(), "");
-            Assert.assertEquals(etlMeta.getMetaKey(), metaKey);
-            Assert.assertEquals(etlMeta.getMetaName(), etlMetaName_1);
+            assertNotNull(etlMeta);
+            assertEquals(resp.getCount(), 1);
+            assertEquals(etlMeta.getMetaTag(), "");
+            assertEquals(etlMeta.getMetaKey(), metaKey);
+            assertEquals(etlMeta.getMetaName(), etlMetaName_1);
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertTrue(false);
+            fail();
         }
 
         meta = new EtlMeta(etlMetaName_2, "notexitkey", etlMetaKeyPrefxi_2);
@@ -279,10 +287,10 @@ public class EtlMetaFunctionTest {
         meta.setMetaValue(metaValueObj);
         try {
             UpdateEtlMetaResponse resp = logClient.updateEtlMeta(project, meta);
-            Assert.assertTrue(false);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            Assert.assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
+            assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
         }
     }
 
@@ -291,24 +299,24 @@ public class EtlMetaFunctionTest {
         System.out.println("testListAndDeleteEtlMeta");
         try {
             ListEtlMetaResponse resp = logClient.listEtlMeta(project, etlMetaName_1, "", 0, 200);
-            Assert.assertEquals(resp.getCount(), 1);
-            Assert.assertEquals(resp.getTotal(), 1);
+            assertEquals(resp.getCount(), 1);
+            assertEquals(resp.getTotal(), 1);
             resp = logClient.listEtlMeta(project, etlMetaName_1, etlMetaKeyPrefxi_1, 0, 200);
-            Assert.assertEquals(resp.getCount(), 200);
-            Assert.assertEquals(resp.getTotal(), etlMetaCount_1 - 1);
+            assertEquals(resp.getCount(), 200);
+            assertEquals(resp.getTotal(), etlMetaCount_1 - 1);
             resp = logClient.listEtlMeta(project, etlMetaName_1, etlMetaKeyPrefxi_1, 200, 200);
-            Assert.assertEquals(resp.getCount(), 4);
-            Assert.assertEquals(resp.getTotal(), etlMetaCount_1 - 1);
+            assertEquals(resp.getCount(), 4);
+            assertEquals(resp.getTotal(), etlMetaCount_1 - 1);
             resp = logClient.listEtlMeta(project, etlMetaName_2, etlMetaKeyPrefxi_2, 0, 200);
-            Assert.assertEquals(resp.getCount(), 0);
-            Assert.assertEquals(resp.getTotal(), 0);
+            assertEquals(resp.getCount(), 0);
+            assertEquals(resp.getTotal(), 0);
             resp = logClient.listEtlMeta(project, etlMetaName_2, "", 0, 200);
-            Assert.assertEquals(resp.getCount(), etlMetaCount_2);
-            Assert.assertEquals(resp.getTotal(), etlMetaCount_2);
+            assertEquals(resp.getCount(), etlMetaCount_2);
+            assertEquals(resp.getTotal(), etlMetaCount_2);
 
             ListEtlMetaNameResponse lsNameResp = logClient.listEtlMetaName(project, 0, 100);
-            Assert.assertEquals(lsNameResp.getCount(), 2);
-            Assert.assertEquals(lsNameResp.getTotal(), 2);
+            assertEquals(lsNameResp.getCount(), 2);
+            assertEquals(lsNameResp.getTotal(), 2);
 
             ArrayList<EtlMeta> toDeleted = new ArrayList<EtlMeta>();
             resp = logClient.listEtlMeta(project, etlMetaName_1, 0, 200);
@@ -319,23 +327,23 @@ public class EtlMetaFunctionTest {
             for (EtlMeta meta : resp.getEtlMetaList()) {
                 toDeleted.add(meta);
             }
-            Assert.assertEquals(toDeleted.size(), etlMetaCount_1);
+            assertEquals(toDeleted.size(), etlMetaCount_1);
             for (int i = 0; i < 10; ++i) {
                 EtlMeta meta = toDeleted.get(i);
                 try {
                     DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey(), etlMetaKeyPrefxi_2);
-                    Assert.assertTrue(false);
+                    fail();
                 } catch (LogException e) {
-                    Assert.assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
+                    assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
                 }
             }
             for (int i = 10; i < 20; ++i) {
                 EtlMeta meta = toDeleted.get(i);
                 try {
                     DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey(), "");
-                    Assert.assertTrue(false);
+                    fail();
                 } catch (LogException e) {
-                    Assert.assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
+                    assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
                 }
             }
             int i = 0;
@@ -362,9 +370,9 @@ public class EtlMetaFunctionTest {
             for (EtlMeta meta : toDeleted) {
                 try {
                     DeleteEtlMetaResponse delResp = logClient.deleteEtlMeta(project, meta.getMetaName(), meta.getMetaKey(), etlMetaKeyPrefxi_1);
-                    Assert.assertTrue(false);
+                    fail();
                 } catch (LogException e) {
-                    Assert.assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
+                    assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
                 }
             }
             i = 0;
@@ -384,11 +392,11 @@ public class EtlMetaFunctionTest {
                 e.printStackTrace();
             }
             lsNameResp = logClient.listEtlMetaName(project, 0, 100);
-            Assert.assertEquals(lsNameResp.getCount(), 0);
-            Assert.assertEquals(lsNameResp.getTotal(), 0);
+            assertEquals(lsNameResp.getCount(), 0);
+            assertEquals(lsNameResp.getTotal(), 0);
         } catch (LogException e) {
             e.printStackTrace();
-            Assert.assertTrue(false);
+            fail();
         }
     }
 
