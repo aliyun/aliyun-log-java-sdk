@@ -2,7 +2,6 @@ package com.aliyun.openservices.log.functiontest;
 
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.Logs;
-import com.aliyun.openservices.log.exception.LogException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -11,9 +10,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -32,8 +29,7 @@ public class WebTrackingTest extends BaseMetadataTest {
         for (int i = 0; i < 100; ++i) {
             params.append("&key").append(i).append("=").append("value").append(i);
         }
-        Config config = readConfig();
-        HttpGet httpGet = new HttpGet("http://" + TEST_PROJECT + "." + config.getEndpoint() + "/logstores/" + TEST_LOGSTORE + "/track?" + params);
+        HttpGet httpGet = new HttpGet("http://" + TEST_PROJECT + "." + client.getEndpoint() + "/logstores/" + TEST_LOGSTORE + "/track?" + params);
         try {
             HttpResponse res = httpClient.execute(httpGet);
             if (res.getStatusLine().getStatusCode() / 200 != 1) {

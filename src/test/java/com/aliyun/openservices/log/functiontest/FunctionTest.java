@@ -6,7 +6,6 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.NetworkUtils;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 
 import java.io.File;
@@ -21,70 +20,13 @@ import static org.junit.Assert.fail;
 
 public abstract class FunctionTest {
 
-    private static final Random RANDOM = new Random();
+    static final Random RANDOM = new Random();
 
     private static final String CONFIG_FILE = "credentials.json";
-
-    // Overwrite configuration in CONFIG_FILE
-    private static final String ENDPOINT = "";
-    private static final String ACCESS_KEY_ID = "";
-    private static final String ACCESS_KEY = "";
-
-
-    protected Client client;
-
-
-    protected static class Config {
-        private final String accessKeyID;
-        private final String accessKey;
-        private final String endpoint;
-
-        Config(String accessKey, String accessKeyID, String endpoint) {
-            this.accessKeyID = accessKeyID;
-            this.accessKey = accessKey;
-            this.endpoint = endpoint;
-        }
-
-        public String getAccessKeyID() {
-            return accessKeyID;
-        }
-
-        public String getAccessKey() {
-            return accessKey;
-        }
-
-        public String getEndpoint() {
-            return endpoint;
-        }
-    }
-
-    static Config readConfig() {
-        if (StringUtils.isNotBlank(ENDPOINT)
-                && StringUtils.isNotBlank(ACCESS_KEY_ID)
-                && StringUtils.isNotBlank(ACCESS_KEY)) {
-            return new Config(ACCESS_KEY, ACCESS_KEY_ID, ENDPOINT);
-        }
-        final File file = new File(System.getProperty("user.home"), CONFIG_FILE);
-        if (!file.exists()) {
-            throw new IllegalStateException(String.format("[%s] doest not exist!", file.getAbsolutePath()));
-        }
-        try {
-            final String text = new Scanner(file).useDelimiter("\\A").next();
-            JSONObject object = JSONObject.fromObject(text);
-            String endpoint = object.getString("endpoint");
-            String accessKeyID = object.getString("accessKeyID");
-            String accessKey = object.getString("accessKey");
-            return new Config(accessKey, accessKeyID, endpoint);
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
+    final static ClientWrapper client = ClientWrapper.createFromConfig();
 
     @Before
     public void setUp() throws Exception {
-        final Config config = readConfig();
-        client = new Client(config.endpoint, config.accessKeyID, config.accessKey, NetworkUtils.getLocalMachineIP(),
-                false, 30000, 30000, 30000);
     }
 
     static int getNowTimestamp() {
@@ -107,11 +49,24 @@ public abstract class FunctionTest {
         return low + RANDOM.nextInt(high - low);
     }
 
-    static boolean randomBoolean() {
-        return randomBetween(1, 10) % 2 == 1;
+    static int randomInt(int upperBound) {
+        Args.check(upperBound > 0, "upperBound <= 0");
+        return RANDOM.nextInt(upperBound);
     }
 
-    void safeDeleteProject(String project) {
+    static int randomInt() {
+        return RANDOM.nextInt();
+    }
+
+    static long randomLong() {
+        return RANDOM.nextLong();
+    }
+
+    static boolean randomBoolean() {
+        return RANDOM.nextBoolean();
+    }
+
+    static void safeDeleteProject(String project) {
         try {
             client.DeleteProject(project);
             // Wait cache refresh completed
@@ -123,7 +78,7 @@ public abstract class FunctionTest {
         }
     }
 
-    boolean safeDeleteLogStore(String project, String logStore) {
+    static boolean safeDeleteLogStore(String project, String logStore) {
         try {
             client.DeleteLogStore(project, logStore);
             return true;
@@ -138,7 +93,7 @@ public abstract class FunctionTest {
         return false;
     }
 
-    void reCreateLogStore(String project, LogStore logStore) {
+    static void reCreateLogStore(String project, LogStore logStore) {
         if (safeCreateProject(project, "")) {
             waitOneMinutes();
         }
@@ -150,7 +105,7 @@ public abstract class FunctionTest {
         }
     }
 
-    boolean safeCreateProject(String project, String desc) {
+    static boolean safeCreateProject(String project, String desc) {
         try {
             client.CreateProject(project, desc);
             return true;
@@ -160,7 +115,7 @@ public abstract class FunctionTest {
         return false;
     }
 
-    boolean safeCreateLogStore(String project, LogStore logStore) {
+    private static boolean safeCreateLogStore(String project, LogStore logStore) {
         try {
             client.CreateLogStore(project, logStore);
             return true;
@@ -179,6 +134,37 @@ public abstract class FunctionTest {
             TimeUnit.SECONDS.sleep(seconds);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        }
+    }
+
+    static class ClientWrapper extends Client {
+        private String endpoint;
+
+        ClientWrapper(String accessKey, String accessKeyId, String endpoint) {
+            super(endpoint, accessKeyId, accessKey, NetworkUtils.getLocalMachineIP(),
+                    false, 30000, 30000, 30000);
+            this.endpoint = endpoint;
+        }
+
+        String getEndpoint() {
+            return endpoint;
+        }
+
+        static ClientWrapper createFromConfig() {
+            final File file = new File(System.getProperty("user.home"), CONFIG_FILE);
+            if (!file.exists()) {
+                throw new IllegalStateException(String.format("[%s] does not exist!", file.getAbsolutePath()));
+            }
+            try {
+                final String text = new Scanner(file).useDelimiter("\\A").next();
+                JSONObject object = JSONObject.fromObject(text);
+                String endpoint = object.getString("endpoint");
+                String accessKeyId = object.getString("accessKeyId");
+                String accessKey = object.getString("accessKey");
+                return new ClientWrapper(accessKey, accessKeyId, endpoint);
+            } catch (Exception ex) {
+                throw new IllegalStateException(ex);
+            }
         }
     }
 }

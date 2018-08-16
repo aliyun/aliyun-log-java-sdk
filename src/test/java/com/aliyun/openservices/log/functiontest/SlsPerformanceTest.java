@@ -1,28 +1,40 @@
 package com.aliyun.openservices.log.functiontest;
 
-import java.util.*;
-
-import com.aliyun.openservices.log.common.*;
-import com.aliyun.openservices.log.response.*;
+import com.aliyun.openservices.log.common.FastLog;
+import com.aliyun.openservices.log.common.FastLogContent;
+import com.aliyun.openservices.log.common.FastLogGroup;
+import com.aliyun.openservices.log.common.FastLogTag;
+import com.aliyun.openservices.log.common.LogGroupData;
+import com.aliyun.openservices.log.common.LogItem;
+import com.aliyun.openservices.log.common.Logs.Log;
+import com.aliyun.openservices.log.common.Logs.LogGroup;
+import com.aliyun.openservices.log.common.Logs.LogGroupList;
+import com.aliyun.openservices.log.common.Logs.LogTag;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.response.BatchGetLogResponse;
+import com.aliyun.openservices.log.response.GetHistogramsResponse;
+import com.aliyun.openservices.log.response.GetLogsResponse;
+import com.aliyun.openservices.log.response.ListLogStoresResponse;
+import com.aliyun.openservices.log.response.ListTopicsResponse;
+import com.aliyun.openservices.log.response.PutLogsResponse;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import com.aliyun.openservices.log.Client;
-import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.common.Logs.*;
-
-public class SlsPerformanceTest {
-
-    private String accessId = "x";
-    private String accessKey = "x";
+public class SlsPerformanceTest extends FunctionTest {
 
     private String project = "ali-cn-yunlei-sls-admin";
-    private String host = "x";
     private String logStore = "data-ft";
 
     private int logItemLine = 30;
@@ -31,38 +43,20 @@ public class SlsPerformanceTest {
 
     private int fromTime;
     private int toTime;
-    private Random rand = new Random();
 
-    private Client client = new Client(host, accessId, accessKey);
-
-    public SlsPerformanceTest() {
-    }
-
-    @BeforeClass
-    public static void SetupOnce() {
-    }
-
-    @AfterClass
-    public static void CleanUpOnce() {
-    }
-
-    private String RandomString(int minLength, int maxLength) {
-        int length = minLength + this.rand.nextInt(maxLength - minLength);
-        String randString = new String();
+    private String randomString(int minLength, int maxLength) {
+        int length = randomBetween(minLength, maxLength);
+        StringBuilder randString = new StringBuilder();
         int i = 0;
         while (i < length) {
-            randString += Character.toString((char) (33 + this.rand.nextInt(126 - 33)));
+            randString.append(Character.toString((char) (randomBetween(33, 126))));
             i++;
         }
         return " " + randString;
     }
 
-    private int RandomInt(int min, int max) {
-        return min + this.rand.nextInt(max - min);
-    }
-
     private void VerifyFastPbDeserialize(byte[][] testDataSet, int logGroupCount, int logCount, int tagCount, int contentCount, int categoryCount,
-                                          int sourceCount, int topicCount, int uuidCount) throws InvalidProtocolBufferException, LogException {
+                                         int sourceCount, int topicCount, int uuidCount) throws InvalidProtocolBufferException, LogException {
         int vLogGroupCount = 0;
         int vLogCount = 0;
         int vTagCount = 0;
@@ -96,8 +90,8 @@ public class SlsPerformanceTest {
                     assertEquals(logGroup.getCategory(), fastLogGroup.getCategory());
                     assertEquals(new String(logGroup.getCategoryBytes().toByteArray()), new String(fastLogGroup.getCategoryBytes()));
                 } else {
-                    assertEquals(fastLogGroup.getCategory(), null);
-                    assertEquals(fastLogGroup.getCategoryBytes(), null);
+                    assertNull(fastLogGroup.getCategory());
+                    assertNull(fastLogGroup.getCategoryBytes());
                 }
                 if (logGroup.hasTopic()) {
                     vTopicCount++;
@@ -106,8 +100,8 @@ public class SlsPerformanceTest {
                     assertEquals(logGroup.getTopic(), fastLogGroup.getTopic());
                     assertEquals(new String(logGroup.getTopicBytes().toByteArray()), new String(fastLogGroup.getTopicBytes()));
                 } else {
-                    assertEquals(fastLogGroup.getTopic(), null);
-                    assertEquals(fastLogGroup.getTopicBytes(), null);
+                    assertNull(fastLogGroup.getTopic());
+                    assertNull(fastLogGroup.getTopicBytes());
                 }
                 if (logGroup.hasSource()) {
                     vSourceCount++;
@@ -116,8 +110,8 @@ public class SlsPerformanceTest {
                     assertEquals(logGroup.getSource(), fastLogGroup.getSource());
                     assertEquals(new String(logGroup.getSourceBytes().toByteArray()), new String(fastLogGroup.getSourceBytes()));
                 } else {
-                    assertEquals(fastLogGroup.getSource(), null);
-                    assertEquals(fastLogGroup.getSourceBytes(), null);
+                    assertNull(fastLogGroup.getSource());
+                    assertNull(fastLogGroup.getSourceBytes());
                 }
                 if (logGroup.hasMachineUUID()) {
                     vUuidCount++;
@@ -126,8 +120,8 @@ public class SlsPerformanceTest {
                     assertEquals(logGroup.getMachineUUID(), fastLogGroup.getMachineUUID());
                     assertEquals(new String(logGroup.getMachineUUIDBytes().toByteArray()), new String(fastLogGroup.getMachineUUIDBytes()));
                 } else {
-                    assertEquals(fastLogGroup.getMachineUUID(),null);
-                    assertEquals(fastLogGroup.getMachineUUIDBytes(),null);
+                    assertNull(fastLogGroup.getMachineUUID());
+                    assertNull(fastLogGroup.getMachineUUIDBytes());
                 }
                 assertEquals(copyLogGroup.getLogTagsCount(), fastLogGroup.getLogTagsCount());
                 assertEquals(logGroup.getLogTagsCount(), fastLogGroup.getLogTagsCount());
@@ -242,12 +236,12 @@ public class SlsPerformanceTest {
 
                 }
             } catch (InvalidProtocolBufferException e) {
-                System.err.println(e.getStackTrace());
+                e.printStackTrace();
             } catch (LogException e) {
                 System.err.println((e.getStackTrace()));
             }
         }
-        int cost = (int)(System.currentTimeMillis() - beginTime);
+        int cost = (int) (System.currentTimeMillis() - beginTime);
         assertEquals(logGroupCount, vLogGroupCount);
         assertEquals(logCount, vLogCount);
         assertEquals(tagCount, vTagCount);
@@ -301,7 +295,7 @@ public class SlsPerformanceTest {
                     for (int l = 0; l < fastLog.getContentsCount(); ++l) {
                         FastLogContent fastLogContent = fastLog.getContents(l);
                         vContentCount++;
-                        if (vLogGroupCount% sampleCount == 0) {
+                        if (vLogGroupCount % sampleCount == 0) {
                             if (bytes) {
                                 byte[] keyBytes = fastLogContent.getKeyBytes();
                                 byte[] valueBytes = fastLogContent.getValueBytes();
@@ -314,7 +308,7 @@ public class SlsPerformanceTest {
                 }
             }
         }
-        int cost = (int)(System.currentTimeMillis() - beginTime);
+        int cost = (int) (System.currentTimeMillis() - beginTime);
         assertEquals(logGroupCount, vLogGroupCount);
         assertEquals(logCount, vLogCount);
         assertEquals(tagCount, vTagCount);
@@ -341,47 +335,47 @@ public class SlsPerformanceTest {
         int uuidCount = 0;
         for (int i = 0; i < LOGGROUP_LIST_COUNT; ++i) {
             LogGroupList.Builder logGroupListBuilder = LogGroupList.newBuilder();
-            int LOGGROUP_COUNT = this.rand.nextInt(30) + 1;
+            int LOGGROUP_COUNT = randomInt(30) + 1;
             logGroupCount += LOGGROUP_COUNT;
             for (int j = 0; j < LOGGROUP_COUNT; ++j) {
                 LogGroup.Builder logGroupBuilder = LogGroup.newBuilder();
-                if (this.rand.nextInt(3) != 0) {
-                    logGroupBuilder.setCategory(RandomString(0, 64));
+                if (randomInt(3) != 0) {
+                    logGroupBuilder.setCategory(randomString(0, 64));
                     categoryCount++;
                 }
-                if (this.rand.nextInt(3) != 0) {
-                    logGroupBuilder.setTopic(RandomString(0, 64));
+                if (randomInt(3) != 0) {
+                    logGroupBuilder.setTopic(randomString(0, 64));
                     topicCount++;
                 }
-                if (this.rand.nextInt(3) != 0) {
-                    logGroupBuilder.setSource(RandomString(0, 64));
+                if (randomInt(3) != 0) {
+                    logGroupBuilder.setSource(randomString(0, 64));
                     sourceCount++;
                 }
-                if (this.rand.nextInt(3) != 0) {
-                    logGroupBuilder.setMachineUUID(RandomString(0, 64));
+                if (randomInt(3) != 0) {
+                    logGroupBuilder.setMachineUUID(randomString(0, 64));
                     uuidCount++;
                 }
-                int TAG_COUNT = this.rand.nextInt(3);
+                int TAG_COUNT = randomInt(3);
                 tagCount += TAG_COUNT;
                 for (int k = 0; k < TAG_COUNT; ++k) {
                     LogTag.Builder tagBuilder = LogTag.newBuilder();
-                    tagBuilder.setKey(RandomString(0, 8));
-                    tagBuilder.setValue(RandomString(0, 64));
+                    tagBuilder.setKey(randomString(0, 8));
+                    tagBuilder.setValue(randomString(0, 64));
                     logGroupBuilder.addLogTags(tagBuilder.build());
                 }
-                int LOG_COUNT = this.rand.nextInt(2000);
+                int LOG_COUNT = randomInt(2000);
                 logCount += LOG_COUNT;
                 for (int k = 0; k < LOG_COUNT; ++k) {
                     Log.Builder logBuilder = Log.newBuilder();
-                    int CONTENT_COUNT = this.rand.nextInt(30) + 1;
+                    int CONTENT_COUNT = randomInt(30) + 1;
                     contentCount += CONTENT_COUNT;
                     for (int l = 0; l < CONTENT_COUNT; ++l) {
                         Log.Content.Builder contentBuilder = Log.Content.newBuilder();
-                        contentBuilder.setKey(RandomString(0, 8));
-                        contentBuilder.setValue(RandomString(0, 128));
+                        contentBuilder.setKey(randomString(0, 8));
+                        contentBuilder.setValue(randomString(0, 128));
                         logBuilder.addContents(contentBuilder.build());
                     }
-                    logBuilder.setTime(RandomInt(minTime, maxTime));
+                    logBuilder.setTime(randomBetween(minTime, maxTime));
                     logGroupBuilder.addLogs(logBuilder.build());
                 }
                 logGroupListBuilder.addLogGroupList(logGroupBuilder.build());
@@ -462,85 +456,85 @@ public class SlsPerformanceTest {
         int uuidCount = 0;
         for (int i = 0; i < LOGGROUP_LIST_COUNT; ++i) {
             MockLogs.MockLogGroupList.Builder logGroupListBuilder = MockLogs.MockLogGroupList.newBuilder();
-            if (this.rand.nextInt(3) == 0) {
-                logGroupListBuilder.setLgl1(this.rand.nextInt(1000000));
+            if (randomInt(3) == 0) {
+                logGroupListBuilder.setLgl1(randomInt(1000000));
             }
-            if (this.rand.nextInt(3) == 0) {
-                logGroupListBuilder.setLgl2(RandomString(0, 8));
+            if (randomInt(3) == 0) {
+                logGroupListBuilder.setLgl2(randomString(0, 8));
             }
-            int lgl3Count = this.rand.nextInt(5);
+            int lgl3Count = randomInt(5);
             for (int j = 0; j < lgl3Count; ++j) {
-                logGroupListBuilder.addLgl3(this.rand.nextLong());
+                logGroupListBuilder.addLgl3(randomLong());
             }
-            int LOGGROUP_COUNT = this.rand.nextInt(30) + 1;
+            int LOGGROUP_COUNT = randomInt(30) + 1;
             logGroupCount += LOGGROUP_COUNT;
             for (int j = 0; j < LOGGROUP_COUNT; ++j) {
                 MockLogs.MockLogGroup.Builder logGroupBuilder = MockLogs.MockLogGroup.newBuilder();
-                if (this.rand.nextInt(3) != 0) {
-                    logGroupBuilder.setCategory(RandomString(0, 64));
+                if (randomInt(3) != 0) {
+                    logGroupBuilder.setCategory(randomString(0, 64));
                     categoryCount++;
                 }
-                if (this.rand.nextInt(3) != 0) {
-                    logGroupBuilder.setTopic(RandomString(0, 64));
+                if (randomInt(3) != 0) {
+                    logGroupBuilder.setTopic(randomString(0, 64));
                     topicCount++;
                 }
-                if (this.rand.nextInt(3) != 0) {
-                    logGroupBuilder.setSource(RandomString(0, 64));
+                if (randomInt(3) != 0) {
+                    logGroupBuilder.setSource(randomString(0, 64));
                     sourceCount++;
                 }
-                if (this.rand.nextInt(3) != 0) {
-                    logGroupBuilder.setMachineUUID(RandomString(0, 64));
+                if (randomInt(3) != 0) {
+                    logGroupBuilder.setMachineUUID(randomString(0, 64));
                     uuidCount++;
                 }
-                if (this.rand.nextInt(3) == 0) {
-                    logGroupBuilder.setLg1(ByteString.copyFromUtf8(RandomString(0, 128)));
+                if (randomInt(3) == 0) {
+                    logGroupBuilder.setLg1(ByteString.copyFromUtf8(randomString(0, 128)));
                 }
-                if (this.rand.nextInt(3) == 0) {
-                    logGroupBuilder.setLg2(this.rand.nextBoolean());
+                if (randomInt(3) == 0) {
+                    logGroupBuilder.setLg2(randomBoolean());
                 }
-                if (this.rand.nextInt(3) == 0) {
-                    logGroupBuilder.setLg3(this.rand.nextDouble());
+                if (randomInt(3) == 0) {
+                    logGroupBuilder.setLg3(RANDOM.nextDouble());
                 }
-                int TAG_COUNT = this.rand.nextInt(3);
+                int TAG_COUNT = randomInt(3);
                 tagCount += TAG_COUNT;
                 for (int k = 0; k < TAG_COUNT; ++k) {
                     MockLogs.MockLogTag.Builder tagBuilder = MockLogs.MockLogTag.newBuilder();
-                    tagBuilder.setKey(RandomString(0, 8));
-                    tagBuilder.setValue(RandomString(0, 64));
-                    if (this.rand.nextInt(3) == 0) {
-                        tagBuilder.setT2(ByteString.copyFromUtf8(RandomString(0, 128)));
+                    tagBuilder.setKey(randomString(0, 8));
+                    tagBuilder.setValue(randomString(0, 64));
+                    if (randomInt(3) == 0) {
+                        tagBuilder.setT2(ByteString.copyFromUtf8(randomString(0, 128)));
                     }
-                    int t2Count = this.rand.nextInt(5);
+                    int t2Count = randomInt(5);
                     for (int l = 0; l < t2Count; ++l) {
-                        tagBuilder.addT1(this.rand.nextFloat());
+                        tagBuilder.addT1(RANDOM.nextFloat());
                     }
                     logGroupBuilder.addLogTags(tagBuilder.build());
                 }
-                int LOG_COUNT = this.rand.nextInt(2000);
+                int LOG_COUNT = randomInt(2000);
                 logCount += LOG_COUNT;
                 for (int k = 0; k < LOG_COUNT; ++k) {
                     MockLogs.MockLog.Builder logBuilder = MockLogs.MockLog.newBuilder();
-                    if (this.rand.nextInt(3) == 0) {
-                        logBuilder.setL1(this.rand.nextDouble());
+                    if (randomInt(3) == 0) {
+                        logBuilder.setL1(RANDOM.nextDouble());
                     }
-                    int CONTENT_COUNT = this.rand.nextInt(30) + 1;
+                    int CONTENT_COUNT = randomInt(30) + 1;
                     contentCount += CONTENT_COUNT;
                     for (int l = 0; l < CONTENT_COUNT; ++l) {
                         MockLogs.MockLog.MockContent.Builder contentBuilder = MockLogs.MockLog.MockContent.newBuilder();
-                        contentBuilder.setKey(RandomString(0, 8));
-                        contentBuilder.setValue(RandomString(0, 128));
-                        if (this.rand.nextInt(3) == 0) {
-                            contentBuilder.setC1(RandomString(0, 128));
+                        contentBuilder.setKey(randomString(0, 8));
+                        contentBuilder.setValue(randomString(0, 128));
+                        if (randomInt(3) == 0) {
+                            contentBuilder.setC1(randomString(0, 128));
                         }
-                        if (this.rand.nextInt(3) == 0) {
-                            contentBuilder.setC2(this.rand.nextInt());
+                        if (randomInt(3) == 0) {
+                            contentBuilder.setC2(randomInt());
                         }
-                        if (this.rand.nextInt(3) == 0) {
-                            contentBuilder.setC3(this.rand.nextLong());
+                        if (randomInt(3) == 0) {
+                            contentBuilder.setC3(randomLong());
                         }
                         logBuilder.addContents(contentBuilder.build());
                     }
-                    logBuilder.setTime(RandomInt(minTime, maxTime));
+                    logBuilder.setTime(randomBetween(minTime, maxTime));
                     logGroupBuilder.addLogs(logBuilder.build());
                 }
                 logGroupListBuilder.addLogGroupList(logGroupBuilder.build());
@@ -614,7 +608,7 @@ public class SlsPerformanceTest {
             System.out.println("ave time: " + totalTime / runTimes);
         } catch (LogException e) {
             System.out.println(e.GetErrorCode() + ":" + e.GetErrorMessage());
-            assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+            fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
         }
     }
 
@@ -645,7 +639,7 @@ public class SlsPerformanceTest {
             System.out.println("ave time: " + totalTime / runTimes);
         } catch (LogException e) {
             System.out.println(e.GetErrorCode() + ":" + e.GetErrorMessage());
-            assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+            fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
         }
         return -1;
     }
@@ -684,7 +678,7 @@ public class SlsPerformanceTest {
             System.out.println("ave time: " + totalTime / times);
         } catch (LogException e) {
             System.out.println(e.GetErrorCode() + ":" + e.GetErrorMessage());
-            assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+            fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
         }
         return -1;
     }
