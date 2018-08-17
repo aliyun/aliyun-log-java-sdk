@@ -2920,7 +2920,7 @@ public interface LogService {
 	 * @param project
 	 * 			project name
 	 * @param offset
-	 * 			should > 0
+	 * 			should greater than 0
 	 * @param size
 	 * 			[1, 200]
 	 * @return
@@ -2940,7 +2940,7 @@ public interface LogService {
 	 * @param etlMetaName
 	 * 			etl meta name
 	 * @param offset
-	 * 			should > 0
+	 * 			should greater than 0
 	 * @param size
 	 * 			[1, 200]
 	 * @return
@@ -2962,7 +2962,7 @@ public interface LogService {
 	 * @param etlMetaTag
 	 * 			etl meta tag, useful to filter lots of meta keys
 	 * @param offset
-	 * 			should > 0
+	 * 			should greater than 0
 	 * @param size
 	 * 			[1, 200]
 	 * @return
@@ -2986,7 +2986,7 @@ public interface LogService {
 	 * @param dispatchLogstore
 	 * 		    logstore name in meta value, only used by sls.console.aliyun.com
 	 * @param offset
-	 * 			should > 0
+	 * 			should greater than 0
 	 * @param size
 	 * 			[1, 200]
 	 * @return
