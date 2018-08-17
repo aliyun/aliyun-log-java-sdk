@@ -1,19 +1,13 @@
 package com.aliyun.openservices.log.functiontest;
 
 
-import com.aliyun.openservices.log.common.Project;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.request.ListProjectRequest;
 import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.response.GetProjectResponse;
-import com.aliyun.openservices.log.response.ListProjectResponse;
 import org.junit.After;
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
@@ -21,7 +15,7 @@ public class ProjectFunctionTest extends FunctionTest {
 
     // For testing environment, please make sure the endpoint
     // project1.<endpoint> is accessible.
-    private static final String TEST_PROJECT = "project1";
+    private static final String TEST_PROJECT = "project-to-update";
 
 
     private void verifyUpdate(final String description,
@@ -75,7 +69,7 @@ public class ProjectFunctionTest extends FunctionTest {
                 "x@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@" +
                 "@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@" +
                 "@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxx@@@@@@";
-        shouldFails(tooLongDesc, "Invalid project description", "ParameterInvalid");
+        shouldFails(tooLongDesc, "Invalid project description: '" + tooLongDesc + "'", "ParameterInvalid");
 
         StringBuilder chineseBuilder = new StringBuilder();
         for (int i = 0; i < 15; i++) {
@@ -83,21 +77,6 @@ public class ProjectFunctionTest extends FunctionTest {
         }
         final String chinese = chineseBuilder.toString();
         verifyUpdate(chinese, chinese);
-    }
-
-    @Test
-    public void testListProject() throws Exception {
-        ListProjectRequest request = new ListProjectRequest("", 0, 100);
-        ListProjectResponse response = client.ListProject(request);
-
-        List<Project> projects = response.getProjects();
-        assertTrue(projects.size() < 100);
-        for (int i = 1; i < projects.size(); i++) {
-            // Check projects were ordered by create time in descending order
-            final String createTime = projects.get(i).getCreateTime();
-            final String lastOneCreateTime = projects.get(i - 1).getCreateTime();
-            assertTrue(createTime.compareTo(lastOneCreateTime) <= 0);
-        }
     }
 
 
