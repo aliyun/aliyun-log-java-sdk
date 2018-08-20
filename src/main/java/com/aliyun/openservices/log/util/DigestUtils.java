@@ -20,8 +20,7 @@ public final class DigestUtils {
 
     public static String md5Crypt(byte[] bytes) {
         try {
-            MessageDigest md;
-            md = MessageDigest.getInstance(Consts.CONST_MD5);
+            MessageDigest md = MessageDigest.getInstance(Consts.CONST_MD5);
             String res = new BigInteger(1, md.digest(bytes)).toString(16).toUpperCase();
 
             StringBuilder zeros = new StringBuilder();
@@ -95,13 +94,13 @@ public final class DigestUtils {
             return new String(Base64.encodeBase64(mac.doFinal(dataBytes)));
         } catch (UnsupportedEncodingException e) { // actually these exceptions
             // should never happened
-            throw new RuntimeException("Not Supported encoding method "
+            throw new RuntimeException("Not supported encoding method "
                     + Consts.UTF_8_ENCODING, e);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Not Supported signature method "
+            throw new RuntimeException("Not supported signature method "
                     + Consts.HMAC_SHA1, e);
         } catch (InvalidKeyException e) {
-            throw new RuntimeException("Failed to calcuate the signature", e);
+            throw new RuntimeException("Failed to calculate the signature", e);
         }
     }
 }
