@@ -14,12 +14,8 @@ public class CodingUtils {
 	}
 	public static void assertStringNotNullOrEmpty(String param, String paramName) {
 		assertParameterNotNull(param, paramName);
-		assert (param != null);
-		if (param.length() == 0) {
+		if (param.isEmpty()) {
 			throw new IllegalArgumentException(paramName + " is empty");
 		}
-	}
-	public static boolean isNullOrEmpty(String value) {
-		return value == null || value.length() == 0;
 	}
 }
