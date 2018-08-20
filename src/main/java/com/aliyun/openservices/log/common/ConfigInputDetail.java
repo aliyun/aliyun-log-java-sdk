@@ -101,7 +101,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		this.localStorage = localStorage;
 		this.customizedFields = customizedFields;
 	}
-		
+
 	public JSONObject ToJsonObject() {
 		JSONObject jsonObj = new JSONObject();
 		LocalFileConfigToJsonObject(jsonObj);
@@ -113,8 +113,11 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_KEY, keyArray);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX, logBeginRegex);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_REGEX, regex);
-		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS, customizedFields);
 
+		if (customizedFields != null && !customizedFields.isEmpty()) {
+			JSONObject toObject = JSONObject.fromObject(customizedFields);
+			jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS, toObject);
+		}
 		return jsonObj;
 	}
 
