@@ -22,13 +22,11 @@ public class ConsumerGroupFunctionTest extends FunctionTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        safeDeleteProject(TEST_PROJECT);
-        client.CreateProject(TEST_PROJECT, "testing");
         LogStore logStore = new LogStore();
         logStore.SetLogStoreName(TEST_LOGSTORE);
         logStore.SetShardCount(2);
         logStore.SetTtl(2);
-        client.CreateLogStore(TEST_PROJECT, logStore);
+        reCreateLogStore(TEST_PROJECT, logStore);
     }
 
     @Test

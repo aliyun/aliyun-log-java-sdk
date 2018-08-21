@@ -12,19 +12,11 @@ public class FastLogGroup {
     private int endOffset;
     private ArrayList<FastLog> logs;
     private ArrayList<FastLogTag> tags;
-    private FastLogGroupMeta meta;
-    private int categoryOffset;
-    private int categoryMessageOffset = -1;
-    private int categoryMessageEnd = -1;
+    private int categoryOffset; //contain two varint to support getBytes of FastLogGroup
     private int topicOffset;
     private int sourceOffset;
     private int machineUUIDOffset;
-    private int metaOffset;
-    private int metaMessageOffset = -1;
-    private int metaMessageEnd = -1;
     private byte[] logGroupBytes = null;
-    private byte[] logGroupBytesWithoutMeta = null;
-
 
     public FastLogGroup(byte[] rawBytes, int offset, int length) {
         this.rawBytes = rawBytes;
@@ -34,19 +26,15 @@ public class FastLogGroup {
         this.topicOffset = -1;
         this.sourceOffset = -1;
         this.machineUUIDOffset = -1;
-        this.metaOffset = -1;
         this.logs = new ArrayList<FastLog>();
         this.tags = new ArrayList<FastLogTag>();
         if (!parse()) {
             this.logs.clear();
             this.tags.clear();
             this.categoryOffset = -1;
-            this.categoryMessageOffset = -1;
             this.topicOffset = -1;
             this.sourceOffset = -1;
             this.machineUUIDOffset = -1;
-            this.metaOffset = -1;
-            this.metaMessageOffset = -1;
         }
     }
 
@@ -75,8 +63,7 @@ public class FastLogGroup {
                         //logs
                         break;
                     case 2:
-                        categoryMessageOffset = pos;
-                        categoryOffset = value[2];
+                        this.categoryOffset = pos;
                         break;
                     case 3:
                         this.topicOffset = value[2];
@@ -90,12 +77,7 @@ public class FastLogGroup {
                     case 6:
                         //tags
                         break;
-                    case 7:
-                        metaMessageOffset = pos;
-                        metaOffset = value[2];
-                        break;
                     default:
-                        break;
                 }
                 pos = value[2];
                 value = VarintUtil.DecodeVarInt32(this.rawBytes, pos, this.endOffset);
@@ -105,13 +87,8 @@ public class FastLogGroup {
                 pos = value[2] + value[1];
                 if (index == 1) {
                     this.logs.add(new FastLog(this.rawBytes, value[2], value[1]));
-                } else if (index == 2) {
-                    categoryMessageEnd = pos;
                 } else if (index == 6) {
                     this.tags.add(new FastLogTag(this.rawBytes, value[2], value[1]));
-                } else if (index == 7) {
-                    this.meta = new FastLogGroupMeta(this.rawBytes, value[2], value[1]);
-                    this.metaMessageEnd = pos;
                 }
             } else if (mode == 5) {
                 pos = value[2] + 4;
@@ -122,101 +99,84 @@ public class FastLogGroup {
         return (pos == this.endOffset);
     }
 
-    public byte[] getBytesWithoutMeta() {
-        if (logGroupBytesWithoutMeta == null) {
-            logGroupBytesWithoutMeta = excludeCategoryAndMeta();
-        }
-        return logGroupBytesWithoutMeta;
-    }
-
-    private byte[] excludeCategoryAndMeta() {
-        byte[] logGroupBytes;
-        int length = this.endOffset - this.beginOffset;
-        if (categoryMessageOffset >= 0 && metaMessageOffset >= 0) {
-            length -= (metaMessageEnd - metaMessageOffset) + (categoryMessageEnd - categoryMessageOffset);
-            logGroupBytes = new byte[length];
-            // copy [beginOffset, s1), [s2,s3), [s4, endOffset) to logGroupBytes
-            int s1 = Math.min(metaMessageOffset, categoryMessageOffset);
-            int s4 = Math.max(metaMessageEnd, categoryMessageEnd);
-            int s2, s3;
-            if (metaMessageOffset < categoryMessageOffset) {
-                s2 = metaMessageEnd;
-                s3 = categoryMessageOffset;
-            } else {
-                s2 = categoryMessageEnd;
-                s3 = metaMessageOffset;
-            }
-            System.arraycopy(this.rawBytes, beginOffset, logGroupBytes, 0, s1 - beginOffset);
-            int len = s1 - beginOffset;
-            System.arraycopy(this.rawBytes, s2, logGroupBytes, len, s3 - s2);
-            len += s3 - s2;
-            System.arraycopy(this.rawBytes, s4, this.logGroupBytes, len, endOffset - s4);
-        } else if (categoryMessageOffset >= 0) {
-            length -= categoryMessageEnd - categoryMessageOffset;
-            logGroupBytes = new byte[length];
-            final int prefixSize = categoryMessageOffset - beginOffset;
-            System.arraycopy(this.rawBytes, this.beginOffset, logGroupBytes, 0, prefixSize);
-            System.arraycopy(this.rawBytes, categoryMessageEnd, logGroupBytes, prefixSize, endOffset - categoryMessageEnd);
-        } else if (metaMessageOffset >= 0) {
-            length -= metaMessageEnd - metaMessageOffset;
-            logGroupBytes = new byte[length];
-            final int prefixSize = metaMessageOffset - beginOffset;
-            System.arraycopy(this.rawBytes, this.beginOffset, logGroupBytes, 0, prefixSize);
-            System.arraycopy(this.rawBytes, metaMessageEnd, logGroupBytes, prefixSize, endOffset - metaMessageEnd);
-        } else {
-            // No category and meta found.
-            logGroupBytes = new byte[length];
-            System.arraycopy(this.rawBytes, this.beginOffset, logGroupBytes, 0, length);
-        }
-        return logGroupBytes;
-    }
-
     public byte[] getBytes() {
-        if (logGroupBytes == null) {
-            logGroupBytes = excludeCategory();
+        if (this.logGroupBytes == null) {
+            int length = this.endOffset - this.beginOffset;
+            if (this.categoryOffset < 0) {
+                this.logGroupBytes = new byte[length];
+                System.arraycopy(this.rawBytes, this.beginOffset, this.logGroupBytes, 0, length);
+            } else {
+                // remove category field for logGroup transmission
+                int prefixLength = this.categoryOffset - this.beginOffset;
+                int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, this.categoryOffset, this.endOffset);
+                if (value[0] == 0) {
+                    return null;
+                }
+                int mode = value[1] & 0x7;
+                int index = value[1] >> 3;
+                if (mode != 2 && index != 2) {
+                    return null;
+                }
+                value = VarintUtil.DecodeVarInt32(this.rawBytes, value[2], this.endOffset);
+                if (value[0] == 0) {
+                    return null;
+                }
+                int postfixLength = this.endOffset - value[2] - value[1];
+                logGroupBytes = new byte[prefixLength + postfixLength];
+                System.arraycopy(this.rawBytes, this.beginOffset, logGroupBytes, 0, prefixLength);
+                System.arraycopy(this.rawBytes, value[1] + value[2], logGroupBytes, prefixLength, postfixLength);
+            }
         }
-        return logGroupBytes;
-    }
-
-    private byte[] excludeCategory() {
-        byte[] logGroupBytes;
-        int length = this.endOffset - this.beginOffset;
-        if (categoryMessageOffset >= 0) {
-            length -= categoryMessageEnd - categoryMessageOffset;
-            logGroupBytes = new byte[length];
-            final int prefixSize = categoryMessageOffset - beginOffset;
-            System.arraycopy(this.rawBytes, this.beginOffset, logGroupBytes, 0, prefixSize);
-            System.arraycopy(this.rawBytes, categoryMessageEnd, logGroupBytes, prefixSize, endOffset - categoryMessageEnd);
-        } else {
-            logGroupBytes = new byte[length];
-            System.arraycopy(this.rawBytes, this.beginOffset, logGroupBytes, 0, length);
-        }
-        return logGroupBytes;
+        return this.logGroupBytes;
     }
 
     public String getCategory() {
-        return decodeString(categoryOffset);
+        if (this.categoryOffset < 0) {
+            return null;
+        }
+        int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, this.categoryOffset, this.endOffset);
+        if (value[0] == 0) {
+            return null;
+        }
+        int mode = value[1] & 0x7;
+        int index = value[1] >> 3;
+        if (mode != 2 && index != 2) {
+            return null;
+        }
+        value = VarintUtil.DecodeVarInt32(this.rawBytes, value[2], this.endOffset);
+        if (value[0] == 0) {
+            return null;
+        }
+        return new String(this.rawBytes, value[2], value[1]);
     }
 
     public String getTopic() {
-        return decodeString(topicOffset);
+        if (this.topicOffset < 0) {
+            return null;
+        }
+        int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, this.topicOffset, this.endOffset);
+        if (value[0] == 0) {
+            return null;
+        }
+        return new String(this.rawBytes, value[2], value[1]);
     }
 
     public String getSource() {
-        return decodeString(sourceOffset);
+        if (this.sourceOffset < 0) {
+            return null;
+        }
+        int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, this.sourceOffset, this.endOffset);
+        if (value[0] == 0) {
+            return null;
+        }
+        return new String(this.rawBytes, value[2], value[1]);
     }
 
     public String getMachineUUID() {
-        return decodeString(machineUUIDOffset);
-    }
-
-    private String decodeString(int offset) {
-        // Decode the length of string from offset and then extract
-        // string based on the length and new offset.
-        if (offset < 0) {
+        if (this.machineUUIDOffset < 0) {
             return null;
         }
-        int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, offset, this.endOffset);
+        int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, this.machineUUIDOffset, this.endOffset);
         if (value[0] == 0) {
             return null;
         }
@@ -224,34 +184,64 @@ public class FastLogGroup {
     }
 
     public byte[] getCategoryBytes() {
-        return cutBytes(categoryOffset);
-    }
-
-    public byte[] getTopicBytes() {
-        return cutBytes(topicOffset);
-    }
-
-    public byte[] getSourceBytes() {
-        return cutBytes(sourceOffset);
-    }
-
-    public byte[] getMachineUUIDBytes() {
-        return cutBytes(machineUUIDOffset);
-    }
-
-    private byte[] cutBytes(int offset) {
-        // Decode the length of string and then copy bytes of string within
-        // new offset and new offset + length.
-        if (offset < 0) {
+        if (this.categoryOffset < 0) {
             return null;
         }
-        int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, offset, this.endOffset);
+        int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, this.categoryOffset, this.endOffset);
         if (value[0] == 0) {
             return null;
         }
-        byte[] cutBytes = new byte[value[1]];
-        System.arraycopy(this.rawBytes, value[2], cutBytes, 0, value[1]);
-        return cutBytes;
+        int mode = value[1] & 0x7;
+        int index = value[1] >> 3;
+        if (mode != 2 && index != 2) {
+            return null;
+        }
+        value = VarintUtil.DecodeVarInt32(this.rawBytes, value[2], this.endOffset);
+        if (value[0] == 0) {
+            return null;
+        }
+        byte[] categoryBytes = new byte[value[1]];
+        System.arraycopy(this.rawBytes, value[2], categoryBytes, 0, value[1]);
+        return categoryBytes;
+    }
+
+    public byte[] getTopicBytes() {
+        if (this.topicOffset < 0) {
+            return null;
+        }
+        int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, this.topicOffset, this.endOffset);
+        if (value[0] == 0) {
+            return null;
+        }
+        byte[] topicBytes = new byte[value[1]];
+        System.arraycopy(this.rawBytes, value[2], topicBytes, 0, value[1]);
+        return topicBytes;
+    }
+
+    public byte[] getSourceBytes() {
+        if (this.sourceOffset < 0) {
+            return null;
+        }
+        int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, this.sourceOffset, this.endOffset);
+        if (value[0] == 0) {
+            return null;
+        }
+        byte[] sourceBytes = new byte[value[1]];
+        System.arraycopy(this.rawBytes, value[2], sourceBytes, 0, value[1]);
+        return sourceBytes;
+    }
+
+    public byte[] getMachineUUIDBytes() {
+        if (this.machineUUIDOffset < 0) {
+            return null;
+        }
+        int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, this.machineUUIDOffset, this.endOffset);
+        if (value[0] == 0) {
+            return null;
+        }
+        byte[] machineUUIDBytes = new byte[value[1]];
+        System.arraycopy(this.rawBytes, value[2], machineUUIDBytes, 0, value[1]);
+        return machineUUIDBytes;
     }
 
     public int getLogTagsCount() {
@@ -278,10 +268,6 @@ public class FastLogGroup {
         }
     }
 
-    public FastLogGroupMeta getMeta() {
-        return meta;
-    }
-
     public boolean hasCategory() {
         return this.categoryOffset >= 0;
     }
@@ -296,9 +282,5 @@ public class FastLogGroup {
 
     public boolean hasMachineUUID() {
         return this.machineUUIDOffset >= 0;
-    }
-
-    public boolean hasMeta() {
-        return this.metaOffset >= 0;
     }
 }

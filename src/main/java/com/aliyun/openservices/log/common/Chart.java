@@ -26,8 +26,23 @@ public class Chart implements Serializable {
 	private long width = 0;
 	private long height = 0;
 	private String displayName = "";
+	private String rawSearchAttr = "";
 	private String rawDisplayAttr = "";
+	private String rawActionAttr = "";
+
 	
+	public String getRawSearchAttr() {
+		return rawSearchAttr;
+	}
+	public void setRawSearchAttr(String rawSearchAttr) {
+		this.rawSearchAttr = rawSearchAttr;
+	}
+	public String getRawActionAttr() {
+		return rawActionAttr;
+	}
+	public void setRawActionAttr(String rawActionAttr) {
+		this.rawActionAttr = rawActionAttr;
+	}
 	public String getRawDisplayAttr() {
 		return rawDisplayAttr;
 	}
@@ -183,6 +198,9 @@ public class Chart implements Serializable {
 		chartJson.put("type", getType());
 		
 		JSONObject searchJson = new JSONObject();
+		if (getRawSearchAttr().length() > 0) {
+			searchJson = JSONObject.fromObject(getRawSearchAttr());
+		}
 		searchJson.put("logstore", getLogstore());
 		searchJson.put("topic", getTopic());
 		searchJson.put("query", getQuery());
@@ -191,6 +209,12 @@ public class Chart implements Serializable {
 		chartJson.put("search", searchJson);
 		
 		chartJson.put("display", RawDisplayToJsonObject());
+
+		if (getRawActionAttr().length() > 0) {
+			chartJson.put("action", JSONObject.fromObject(getRawActionAttr()));
+		} else {
+			chartJson.put("action", JSONObject.fromObject("{}"));
+		}
 
 		return chartJson;
 	}
@@ -202,6 +226,8 @@ public class Chart implements Serializable {
 			setTitle(dict.getString("title"));
 			setType(dict.getString("type"));
 			JSONObject searchJson = dict.getJSONObject("search");
+			setRawSearchAttr(searchJson.toString());
+			System.out.println(getRawSearchAttr());
 			setLogstore(searchJson.getString("logstore"));
 			setTopic(searchJson.getString("topic"));
 			setQuery(searchJson.getString("query"));
@@ -216,6 +242,12 @@ public class Chart implements Serializable {
 			setWidth(displayJson.getLong("width"));
 			setHeight(displayJson.getLong("height"));
 			setDisplayName(displayJson.getString("displayName"));
+
+			// action attribute
+			if (dict.containsKey("action")) {
+				JSONObject actionJson = dict.getJSONObject("action");
+				setRawActionAttr(actionJson.toString());
+			}
 			
 			// xAxis is optional 
 			if (displayJson.containsKey("xAxis")) {

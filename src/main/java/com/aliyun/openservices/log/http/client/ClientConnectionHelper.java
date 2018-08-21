@@ -21,13 +21,14 @@ public class ClientConnectionHelper {
 	}
 
 	public ClientConnectionContainer GetConnectionContainer(String endpoint, String accessId, String accessKey) {
-		if (mAllConnections.containsKey(endpoint) == false) {
+		String key = endpoint + "#" + accessId;
+		if (mAllConnections.containsKey(key) == false) {
 			ClientConnectionContainer container = new ClientConnectionContainer();
 			container.Init(endpoint, accessId, accessKey);
-			mAllConnections.put(endpoint, container);
+			mAllConnections.put(key, container);
 			return container;
 		} else {
-			return mAllConnections.get(endpoint);
+			return mAllConnections.get(key);
 		}
 	}
 

@@ -1,50 +1,43 @@
 package com.aliyun.openservices.log.functiontest;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import com.aliyun.openservices.log.Client;
-import com.aliyun.openservices.log.response.GetConfigResponse;
-import com.aliyun.openservices.log.response.GetMachineGroupResponse;
-import com.aliyun.openservices.log.response.ListACLResponse;
-import com.aliyun.openservices.log.response.ListConfigResponse;
-import com.aliyun.openservices.log.response.ListMachineGroupResponse;
-import com.aliyun.openservices.log.response.ListProjectResponse;
 import com.aliyun.openservices.log.common.ACL;
 import com.aliyun.openservices.log.common.ACLPrivileges;
 import com.aliyun.openservices.log.common.ApsaraLogConfigInputDetail;
 import com.aliyun.openservices.log.common.Config;
 import com.aliyun.openservices.log.common.ConfigInputDetail;
 import com.aliyun.openservices.log.common.ConfigOutputDetail;
+import com.aliyun.openservices.log.common.Consts.ACLAction;
+import com.aliyun.openservices.log.common.Consts.ACLPrivilege;
+import com.aliyun.openservices.log.common.DelimiterConfigInputDetail;
 import com.aliyun.openservices.log.common.GroupAttribute;
 import com.aliyun.openservices.log.common.JsonConfigInputDetail;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.MachineGroup;
 import com.aliyun.openservices.log.common.Project;
 import com.aliyun.openservices.log.common.StreamLogConfigInputDetail;
-import com.aliyun.openservices.log.common.Consts.ACLAction;
-import com.aliyun.openservices.log.common.Consts.ACLPrivilege;
-import com.aliyun.openservices.log.common.DelimiterConfigInputDetail;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.response.GetConfigResponse;
+import com.aliyun.openservices.log.response.GetMachineGroupResponse;
+import com.aliyun.openservices.log.response.ListACLResponse;
+import com.aliyun.openservices.log.response.ListConfigResponse;
+import com.aliyun.openservices.log.response.ListMachineGroupResponse;
+import com.aliyun.openservices.log.response.ListProjectResponse;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-public class SlsScmFunctionTest {
-	static private String endPoint = "cn-hangzhou-devcommon-intranet.sls.aliyuncs.com";
-	static private String akId = "";
-	static private String ak = "";
-	static private int sec = 0;
-	static private Client client = null;
-	static private String project = "ali-cn-devcommon-sls-admin";
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+public class SlsScmFunctionTest extends FunctionTest {
+	static private String project = "project-test-scm";
 	static private String logStore = "test-java-sdk";
 	static private String configName;
 	static private String syslogConfigName;
@@ -56,30 +49,22 @@ public class SlsScmFunctionTest {
 	static private String uuid2;
 	@BeforeClass
 	public static void SetupOnce() {
-		sec = (int) (new Date().getTime() / 1000);
-		configName = "sdkftconfig" + sec;
-		syslogConfigName = "syslogConfig" + sec;
-		apsaraConfigName = "apsaraConfig" + sec;
-		jsonConfigName = "jsonConfig" + sec;
-		dilimeterConfigName = "dilimeterConfig" + sec;
+		int timestamp = getNowTimestamp();
+		configName = "sdkftconfig" + timestamp;
+		syslogConfigName = "syslogConfig" + timestamp;
+		apsaraConfigName = "apsaraConfig" + timestamp;
+		jsonConfigName = "jsonConfig" + timestamp;
+		dilimeterConfigName = "dilimeterConfig" + timestamp;
 		
-		groupName = "sdkftgroup" + sec;
-		uuid1 = "uuid0" + sec;
-		uuid2 = "uuid1" + sec;
-		client = new Client(endPoint, akId, ak);
+		groupName = "sdkftgroup" + timestamp;
+		uuid1 = "uuid0" + timestamp;
+		uuid2 = "uuid1" + timestamp;
 
 		LogStore logStoreRes = new LogStore(logStore, 1, 10);
-
-		try {
-			client.CreateLogStore(project, logStoreRes);
-			Thread.sleep(1000);
-		} catch (LogException e) {
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		reCreateLogStore(project, logStoreRes);
 	}
 
-	@AfterClass
+    @AfterClass
 	public static void CleanUpOnce() {
 		try {
 			client.DeleteConfig(project, configName);
@@ -93,9 +78,11 @@ public class SlsScmFunctionTest {
 			System.out.println(e.getMessage());
 		}
 	}
-	
-	private void syslogConfigAPI(String testConfigName) {
+
+	@Test
+	public void testSyslogConfigAPI() {
 		GetConfigResponse res = null;
+		String testConfigName = syslogConfigName;
 		try {
 			Config config = new Config(testConfigName);
 			config.SetInputType("syslog");
@@ -118,11 +105,11 @@ public class SlsScmFunctionTest {
 			assertEquals("configName does not match", testConfigName, res.GetConfig().GetConfigName());
 
 			assertEquals("input type does not match", res.GetConfig().GetInputType(), "syslog");
-			assertEquals("localStorage does not match", inputDetail.GetLocalStorage(), ((StreamLogConfigInputDetail)res.GetConfig().GetInputDetail()).GetLocalStorage());
+			assertEquals("localStorage does not match", inputDetail.GetLocalStorage(), res.GetConfig().GetInputDetail().GetLocalStorage());
 			assertEquals("logstoreName does not match", outputDetail.GetLogstoreName(), res.GetConfig().GetOutputDetail().GetLogstoreName());
 
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+            fail(e.getMessage());
 		}
 	}
 	
@@ -161,17 +148,17 @@ public class SlsScmFunctionTest {
 			assertEquals("logType does not match", inputDetail.GetLogType(), ((ApsaraLogConfigInputDetail)(res.GetConfig().GetInputDetail())).GetLogType());
 			assertEquals("logPath does not match", inputDetail.GetLogPath(), ((ApsaraLogConfigInputDetail)res.GetConfig().GetInputDetail()).GetLogPath());
 			assertEquals("filePattern does not match", inputDetail.GetFilePattern(), ((ApsaraLogConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilePattern());
-			assertEquals("localStorage does not match", inputDetail.GetLocalStorage(), ((ApsaraLogConfigInputDetail)res.GetConfig().GetInputDetail()).GetLocalStorage());
+			assertEquals("localStorage does not match", inputDetail.GetLocalStorage(), res.GetConfig().GetInputDetail().GetLocalStorage());
 			assertEquals("timeFormat does not match", inputDetail.GetTimeFormat(), ((ApsaraLogConfigInputDetail)res.GetConfig().GetInputDetail()).GetTimeFormat());
 			assertEquals("topicFormat does not match", inputDetail.GetTopicFormat(), ((ApsaraLogConfigInputDetail)res.GetConfig().GetInputDetail()).GetTopicFormat());
 			
-			List<String> filterKeyRes = ((ApsaraLogConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilterKey();
+			List<String> filterKeyRes = res.GetConfig().GetInputDetail().GetFilterKey();
 			assertEquals("filterKey size does not match", filterKey.size(), filterKeyRes.size());
 			for (int i = 0;i < filterKey.size();i++) {
 				assertEquals("filterKey " + i + " does not match", filterKey.get(0), filterKeyRes.get(0));
 			}
 			
-			List<String> filterRegexRes = ((ApsaraLogConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilterRegex();
+			List<String> filterRegexRes = res.GetConfig().GetInputDetail().GetFilterRegex();
 			assertEquals("filterRegex size does not match", filterRegex.size(), filterRegexRes.size());
 			for (int i = 0;i < filterRegex.size();i++) {
 				assertEquals("filterRegex " + i + " does not match", filterRegex.get(0), filterRegexRes.get(0));
@@ -179,16 +166,18 @@ public class SlsScmFunctionTest {
 
 			assertEquals("logstoreName does not match", outputDetail.GetLogstoreName(), res.GetConfig().GetOutputDetail().GetLogstoreName());
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+            fail(e.getMessage());
 		}
 	}
-	
-	private void jsonConfigAPI(String testConfigName) {
-		GetConfigResponse res = null;
+
+	@Test
+	public void testJsonConfigAPI() {
+		GetConfigResponse res;
+		final String testConfigName = jsonConfigName;
 		try {
 			Config config = new Config(testConfigName);
 			JsonConfigInputDetail inputDetail = new JsonConfigInputDetail();
-			inputDetail.SetLogType("json");
+			inputDetail.SetLogType("json_log");
 			inputDetail.SetLogPath("/json");
 			inputDetail.SetFilePattern("json.log");
 			inputDetail.SetLocalStorage(true);
@@ -220,18 +209,18 @@ public class SlsScmFunctionTest {
 			assertEquals("logType does not match", inputDetail.GetLogType(), ((JsonConfigInputDetail)(res.GetConfig().GetInputDetail())).GetLogType());
 			assertEquals("logPath does not match", inputDetail.GetLogPath(), ((JsonConfigInputDetail)res.GetConfig().GetInputDetail()).GetLogPath());
 			assertEquals("filePattern does not match", inputDetail.GetFilePattern(), ((JsonConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilePattern());
-			assertEquals("localStorage does not match", inputDetail.GetLocalStorage(), ((JsonConfigInputDetail)res.GetConfig().GetInputDetail()).GetLocalStorage());
+			assertEquals("localStorage does not match", inputDetail.GetLocalStorage(), res.GetConfig().GetInputDetail().GetLocalStorage());
 			assertEquals("timeFormat does not match", inputDetail.GetTimeFormat(), ((JsonConfigInputDetail)res.GetConfig().GetInputDetail()).GetTimeFormat());
 			assertEquals("timeKey does not match", inputDetail.GetTimeKey(), ((JsonConfigInputDetail)res.GetConfig().GetInputDetail()).GetTimeKey());
 			assertEquals("topicFormat does not match", inputDetail.GetTopicFormat(), ((JsonConfigInputDetail)res.GetConfig().GetInputDetail()).GetTopicFormat());
 			
-			List<String> filterKeyRes = ((JsonConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilterKey();
+			List<String> filterKeyRes = res.GetConfig().GetInputDetail().GetFilterKey();
 			assertEquals("filterKey size does not match", filterKey.size(), filterKeyRes.size());
 			for (int i = 0;i < filterKey.size();i++) {
 				assertEquals("filterKey " + i + " does not match", filterKey.get(0), filterKeyRes.get(0));
 			}
 			
-			List<String> filterRegexRes = ((JsonConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilterRegex();
+			List<String> filterRegexRes = res.GetConfig().GetInputDetail().GetFilterRegex();
 			assertEquals("filterRegex size does not match", filterRegex.size(), filterRegexRes.size());
 			for (int i = 0;i < filterRegex.size();i++) {
 				assertEquals("filterRegex " + i + " does not match", filterRegex.get(0), filterRegexRes.get(0));
@@ -240,12 +229,15 @@ public class SlsScmFunctionTest {
 			assertEquals("logstoreName does not match", outputDetail.GetLogstoreName(), res.GetConfig().GetOutputDetail().GetLogstoreName());
 			
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+		    e.printStackTrace();
+            fail(e.getMessage());
 		}
 	}
-	
-	private void delimiterConfigAPI(String testConfigName) {
-		GetConfigResponse res = null;
+
+	@Test
+	public void testDelimiterConfigAPI() {
+		GetConfigResponse res;
+		final String testConfigName = dilimeterConfigName;
 		try {
 			Config config = new Config(testConfigName);
 			DelimiterConfigInputDetail inputDetail = new DelimiterConfigInputDetail();
@@ -286,20 +278,20 @@ public class SlsScmFunctionTest {
 			assertEquals("logType does not match", inputDetail.GetLogType(), ((DelimiterConfigInputDetail)(res.GetConfig().GetInputDetail())).GetLogType());
 			assertEquals("logPath does not match", inputDetail.GetLogPath(), ((DelimiterConfigInputDetail)res.GetConfig().GetInputDetail()).GetLogPath());
 			assertEquals("filePattern does not match", inputDetail.GetFilePattern(), ((DelimiterConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilePattern());
-			assertEquals("localStorage does not match", inputDetail.GetLocalStorage(), ((DelimiterConfigInputDetail)res.GetConfig().GetInputDetail()).GetLocalStorage());
+			assertEquals("localStorage does not match", inputDetail.GetLocalStorage(), res.GetConfig().GetInputDetail().GetLocalStorage());
 			assertEquals("timeFormat does not match", inputDetail.GetTimeFormat(), ((DelimiterConfigInputDetail)res.GetConfig().GetInputDetail()).GetTimeFormat());
 			assertEquals("timeKey does not match", inputDetail.GetTimeKey(), ((DelimiterConfigInputDetail)res.GetConfig().GetInputDetail()).GetTimeKey());
 			assertEquals("topicFormat does not match", inputDetail.GetTopicFormat(), ((DelimiterConfigInputDetail)res.GetConfig().GetInputDetail()).GetTopicFormat());
 			assertEquals("seperator does not match", inputDetail.GetSeparator(), ((DelimiterConfigInputDetail)res.GetConfig().GetInputDetail()).GetSeparator());
 			assertEquals("quote does not match", inputDetail.GetQuote(), ((DelimiterConfigInputDetail)res.GetConfig().GetInputDetail()).GetQuote());
 			
-			List<String> filterKeyRes = ((DelimiterConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilterKey();
+			List<String> filterKeyRes = res.GetConfig().GetInputDetail().GetFilterKey();
 			assertEquals("filterKey size does not match", filterKey.size(), filterKeyRes.size());
 			for (int i = 0;i < filterKey.size();i++) {
 				assertEquals("filterKey " + i + " does not match", filterKey.get(0), filterKeyRes.get(0));
 			}
 			
-			List<String> filterRegexRes = ((DelimiterConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilterRegex();
+			List<String> filterRegexRes = res.GetConfig().GetInputDetail().GetFilterRegex();
 			assertEquals("filterRegex size does not match", filterRegex.size(), filterRegexRes.size());
 			for (int i = 0;i < filterRegex.size();i++) {
 				assertEquals("filterRegex " + i + " does not match", filterRegex.get(0), filterRegexRes.get(0));
@@ -308,7 +300,7 @@ public class SlsScmFunctionTest {
 			assertEquals("logstoreName does not match", outputDetail.GetLogstoreName(), res.GetConfig().GetOutputDetail().GetLogstoreName());
 		
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+            fail(e.getMessage());
 		}
 	}
 	
@@ -355,10 +347,10 @@ public class SlsScmFunctionTest {
 				res = client.GetConfig(project, testConfigName);
 				assertEquals("configName does not match", testConfigName, res.GetConfig().GetConfigName());
 				
-				assertEquals("logType does not match", inputDetail.GetLogType(), ((ConfigInputDetail)((ConfigInputDetail)res.GetConfig().GetInputDetail())).GetLogType());
+				assertEquals("logType does not match", inputDetail.GetLogType(), ((ConfigInputDetail)res.GetConfig().GetInputDetail()).GetLogType());
 				assertEquals("logPath does not match", inputDetail.GetLogPath(), ((ConfigInputDetail)res.GetConfig().GetInputDetail()).GetLogPath());
 				assertEquals("filePattern does not match", inputDetail.GetFilePattern(), ((ConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilePattern());
-				assertEquals("localStorage does not match", inputDetail.GetLocalStorage(), ((ConfigInputDetail)res.GetConfig().GetInputDetail()).GetLocalStorage());
+				assertEquals("localStorage does not match", inputDetail.GetLocalStorage(), res.GetConfig().GetInputDetail().GetLocalStorage());
 				assertEquals("timeFormat does not match", inputDetail.GetTimeFormat(), ((ConfigInputDetail)res.GetConfig().GetInputDetail()).GetTimeFormat());
 				assertEquals("logBeginRegex does not match", inputDetail.GetLogBeginRegex(), ((ConfigInputDetail)res.GetConfig().GetInputDetail()).GetLogBeginRegex());
 				assertEquals("regex does not match", inputDetail.GetRegex(), ((ConfigInputDetail)res.GetConfig().GetInputDetail()).GetRegex());
@@ -371,13 +363,13 @@ public class SlsScmFunctionTest {
 					assertEquals("key " + i + " does not match", key.get(0), keyRes.get(0));
 				}
 				
-				List<String> filterKeyRes = ((ConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilterKey();
+				List<String> filterKeyRes = res.GetConfig().GetInputDetail().GetFilterKey();
 				assertEquals("filterKey size does not match", filterKey.size(), filterKeyRes.size());
 				for (int i = 0;i < filterKey.size();i++) {
 					assertEquals("filterKey " + i + " does not match", filterKey.get(0), filterKeyRes.get(0));
 				}
 				
-				List<String> filterRegexRes = ((ConfigInputDetail)res.GetConfig().GetInputDetail()).GetFilterRegex();
+				List<String> filterRegexRes = res.GetConfig().GetInputDetail().GetFilterRegex();
 				assertEquals("filterRegex size does not match", filterRegex.size(), filterRegexRes.size());
 				for (int i = 0;i < filterRegex.size();i++) {
 					assertEquals("filterRegex " + i + " does not match", filterRegex.get(0), filterRegexRes.get(0));
@@ -466,7 +458,7 @@ public class SlsScmFunctionTest {
 				assertEquals("configName does not match", testConfigName, listRes.GetConfigs().get(0));
 			}
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+            fail(e.getMessage());
 		}
 	}
 	
@@ -539,7 +531,7 @@ public class SlsScmFunctionTest {
 			client.ApplyConfigToMachineGroup(project, testGroupName, testConfigName);
 			client.RemoveConfigFromMachineGroup(project, testGroupName, testConfigName);
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+            fail(e.getMessage());
 		}
 	}
 
@@ -585,7 +577,7 @@ public class SlsScmFunctionTest {
 			assertTrue(listRes2.GetACLs().get(0).GetPrivilege().GetPrivileges().contains(ACLPrivilege.WRITE));
 
 		} catch (LogException e) {
-			assertTrue(e.GetErrorMessage(), false);
+            fail(e.GetErrorMessage());
 		}
 	}
 	
@@ -597,7 +589,7 @@ public class SlsScmFunctionTest {
 			client.DeleteConfig(project, jsonConfigName);
 			client.DeleteConfig(project, dilimeterConfigName);
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+            fail(e.getMessage());
 		}
 
 		try {
@@ -609,7 +601,7 @@ public class SlsScmFunctionTest {
 		try {
 			client.DeleteMachineGroup(project, testMachineGroupName);
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+            fail(e.getMessage());
 		}
 		
 		try {
@@ -628,18 +620,15 @@ public class SlsScmFunctionTest {
 			System.out.println(response.getCount());
 			System.out.println(response.getTotal());
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+            fail(e.getMessage());
 		}
 	}
 	
 	@Test
-	public void TestAll() throws LogException {
+	public void TestAll() {
 		listAllProject();
 		aclAPI();
 		apsaraConfigAPI(apsaraConfigName);
-		syslogConfigAPI(syslogConfigName);
-		jsonConfigAPI(jsonConfigName);
-		delimiterConfigAPI(dilimeterConfigName);
 		configAPI(configName);
 		machineGroupAPI(groupName, configName);
 		testReleaseSCM(configName, groupName);

@@ -6,7 +6,6 @@ import com.aliyun.openservices.log.common.Consts.CursorMode;
 import com.aliyun.openservices.log.common.FastLog;
 import com.aliyun.openservices.log.common.FastLogContent;
 import com.aliyun.openservices.log.common.FastLogGroup;
-import com.aliyun.openservices.log.common.FastLogGroupMeta;
 import com.aliyun.openservices.log.common.FastLogTag;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.LogGroupData;
@@ -39,7 +38,7 @@ import static org.junit.Assert.fail;
 public class SlsLoghubDataFunctionTest extends FunctionTest {
     static private final String project = "project1";
     static private final String logStore = "javasdk2";
-    private final int startTime = timestampNow();
+    private final int startTime = getNowTimestamp();
     private final String topic = "sls_java_topic_" + String.valueOf(startTime);
     private final String source = "127.0.0.1";
     private final int defaultShardNum = 2;
@@ -113,7 +112,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         reCreateLogStore(project, logStoreRes);
 
         List<LogItem> logGroupSample = new ArrayList<LogItem>();
-        LogItem logItemSample = new LogItem(timestampNow());
+        LogItem logItemSample = new LogItem(getNowTimestamp());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -177,7 +176,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
 
         try {
             client.MergeShards(project, logStore, 0);
-            waitForSeconds(60);
+            waitOneMinutes();
         } catch (LogException e) {
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());
@@ -194,10 +193,10 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         logStoreRes.setAppendMeta(includeMeta);
         reCreateLogStore(project, logStoreRes);
 
-        int caseStartTime = timestampNow();
+        int caseStartTime = getNowTimestamp();
         String caseTopic = "sls_java_topic_" + String.valueOf(caseStartTime);
         List<LogItem> logGroupSample = new ArrayList<LogItem>();
-        LogItem logItemSample = new LogItem(timestampNow());
+        LogItem logItemSample = new LogItem(getNowTimestamp());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -218,7 +217,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
 
         waitForSeconds(3);
 
-        int newCaseStartTime = timestampNow();
+        int newCaseStartTime = getNowTimestamp();
         boolean verified = true;
         try {
             GetCursorResponse cursorRes;
@@ -252,12 +251,6 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
                         System.out.println(logGroup.getSource());
                         logGroup.getSourceBytes();
                     }
-                    if (logGroup.hasMeta()) {
-                        FastLogGroupMeta meta = logGroup.getMeta();
-                        System.out.println("Meta:");
-                        System.out.println(meta.getClientIP());
-                        System.out.println(meta.getReceiveTime());
-                    }
                     System.out.println("Tags");
                     for (int tagIdx = 0; tagIdx < logGroup.getLogTagsCount(); ++tagIdx) {
                         FastLogTag logtag = logGroup.getLogTags(tagIdx);
@@ -288,11 +281,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
                         byte[] logGroupBytes = logGroup.getBytes();
 
                         Logs.LogGroup logGroup1 = Logs.LogGroup.parseFrom(logGroupBytes);
-                        verifyEqualsExceptMeta(logGroup, logGroup1, includeMeta);
-
-                        logGroupBytes = logGroup.getBytesWithoutMeta();
-                        Logs.LogGroup logGroup2 = Logs.LogGroup.parseFrom(logGroupBytes);
-                        verifyEqualsExceptMeta(logGroup, logGroup2, false);
+                        verifyLogGroupEquals(logGroup, logGroup1);
 
                         client.PutLogs(project, logStore, logGroupBytes, "", null);
                         client.PutLogs(project, logStore, logGroupBytes, CONST_LZ4, null);
@@ -364,10 +353,9 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         assertTrue("Verify failed", verified);
     }
 
-    private static void verifyEqualsExceptMeta(FastLogGroup logGroup1, Logs.LogGroup logGroup2, boolean hasMeta) {
+    private static void verifyLogGroupEquals(FastLogGroup logGroup1, Logs.LogGroup logGroup2) {
         assertFalse(logGroup1.hasCategory());
         assertFalse(logGroup2.hasCategory());
-        assertEquals(logGroup2.hasMeta(), hasMeta);
         verifyPbStringEquals(logGroup1.hasSource(), logGroup2.hasSource(), logGroup1.getSource(), logGroup2.getSource());
         verifyPbStringEquals(logGroup1.hasTopic(), logGroup2.hasTopic(), logGroup1.getTopic(), logGroup2.getTopic());
         verifyPbStringEquals(logGroup1.hasMachineUUID(), logGroup2.hasMachineUUID(), logGroup1.getMachineUUID(), logGroup2.getMachineUUID());
@@ -423,10 +411,10 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         logStoreRes.setAppendMeta(randomBoolean());
         reCreateLogStore(project, logStoreRes);
 
-        int caseStartTime = timestampNow();
+        int caseStartTime = getNowTimestamp();
         String caseTopic = "sls_java_topic_" + String.valueOf(caseStartTime);
         List<LogItem> logGroupSample = new ArrayList<LogItem>();
-        LogItem logItemSample = new LogItem(timestampNow());
+        LogItem logItemSample = new LogItem(getNowTimestamp());
         logItemSample.PushBack("key", "value");
         logItemSample.PushBack("ID", "id");
         logGroupSample.add(logItemSample);
@@ -608,7 +596,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
     public void tearDown() {
         try {
             client.DeleteLogStore(project, logStore);
-            waitForSeconds(60);
+            waitOneMinutes();
         } catch (LogException e) {
             System.out.println("ErrorCode:" + e.GetErrorCode());
             System.out.println("ErrorMessage:" + e.GetErrorMessage());

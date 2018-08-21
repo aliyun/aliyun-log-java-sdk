@@ -15,7 +15,10 @@ public class SavedSearch implements Serializable {
 	protected String logstore = "";
 	protected String topic = "";
 	protected String displayName = "";
+	protected String rawSavedSearchAttr = "";
 
+	public String getRawSavedSearchAttr() { return rawSavedSearchAttr; }
+	public void setRawSavedSearchAttr(String rawSavedSearchAttr) { this.rawSavedSearchAttr = rawSavedSearchAttr; }
 	public String getDisplayName() { return displayName; }
 	public void setDisplayName(String displayName) { this.displayName = displayName; }
 	public String getSavedSearchName() {
@@ -50,14 +53,21 @@ public class SavedSearch implements Serializable {
 		this.logstore = savedSearch.logstore;
 		this.topic = savedSearch.topic;
 		this.displayName = savedSearch.displayName;
+		this.rawSavedSearchAttr = savedSearch.rawSavedSearchAttr;
 	}
 	public JSONObject ToJsonObject() {
 		JSONObject savedSearchJson = new JSONObject();
+
+		if (rawSavedSearchAttr.length() > 0) {
+			savedSearchJson = JSONObject.fromObject(rawSavedSearchAttr);
+		}
+
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_NAME, getSavedSearchName());
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_QUERY, getSearchQuery());
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_LOGSTORE, getLogstore());
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_TOPIC, getTopic());
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_DISPLAYNAME, getDisplayName());
+
 		return savedSearchJson;
 	}
 	public String ToJsonString() {
@@ -71,6 +81,9 @@ public class SavedSearch implements Serializable {
 			setTopic(dict.getString(Consts.CONST_SAVEDSEARCH_TOPIC));
 			if (dict.has(Consts.CONST_SAVEDSEARCH_DISPLAYNAME))
 				setDisplayName(dict.getString(Consts.CONST_SAVEDSEARCH_DISPLAYNAME));
+
+			setRawSavedSearchAttr(dict.toString());
+
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateSavedSearch",  e.getMessage(), e, "");
 		}

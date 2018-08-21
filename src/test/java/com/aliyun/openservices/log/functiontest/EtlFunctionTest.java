@@ -1,26 +1,33 @@
 package com.aliyun.openservices.log.functiontest;
 
-import com.aliyun.openservices.log.Client;
-import com.aliyun.openservices.log.common.*;
+import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.common.EtlFunctionFcConfig;
+import com.aliyun.openservices.log.common.EtlJob;
+import com.aliyun.openservices.log.common.EtlLogConfig;
+import com.aliyun.openservices.log.common.EtlSourceConfig;
+import com.aliyun.openservices.log.common.EtlTriggerConfig;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.request.*;
-import com.aliyun.openservices.log.response.*;
-import net.sf.json.JSONObject;
+import com.aliyun.openservices.log.request.CreateEtlJobRequest;
+import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
+import com.aliyun.openservices.log.request.GetEtlJobRequest;
+import com.aliyun.openservices.log.request.ListEtlJobRequest;
+import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
+import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
+import com.aliyun.openservices.log.response.GetEtlJobResponse;
+import com.aliyun.openservices.log.response.ListEtlJobResponse;
+import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public class EtlFunctionTest {
+public class EtlFunctionTest extends FunctionTest {
 
-    private static String accessKeyId = "";
-    private static String accessKeySecret = "";
-    private static String endpoint = "http://cn-hangzhou-staging-intranet.sls.aliyuncs.com";
     private static String project = "ali-slstest-trigger";
     private static String roleArn = "";
-    private static Client logClient = null;
     private static String fcEndpoint = "http://fc.cn-shanghai.aliyuncs.com";
     private static String fcRegion = "cn-shanghai";
     private static String fcAccountId = "";
@@ -29,24 +36,20 @@ public class EtlFunctionTest {
     private static String etlJobName = "v2-test";
     private static String logstore = "from";
     private static String logLogstore = "etl-log";
+
     @BeforeClass
     public static void setup() {
-        logClient = new Client(endpoint, accessKeyId, accessKeySecret);
         try {
             DeleteEtlJobRequest req = new DeleteEtlJobRequest(project, etlJobName);
-            DeleteEtlJobResponse resp = logClient.deleteEtlJob(req);
+            client.deleteEtlJob(req);
         } catch (LogException e) {
         }
         try {
             DeleteEtlJobRequest req = new DeleteEtlJobRequest(project, etlJobName + "_1");
-            DeleteEtlJobResponse resp = logClient.deleteEtlJob(req);
+            client.deleteEtlJob(req);
         } catch (LogException e) {
         }
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        waitForSeconds(1);
     }
 
 
@@ -61,41 +64,41 @@ public class EtlFunctionTest {
         EtlSourceConfig sourceConfig = new EtlSourceConfig(logstore);
         EtlTriggerConfig triggerConfig = new EtlTriggerConfig(roleArn, 300, 1);
         EtlFunctionFcConfig fcConfig = new EtlFunctionFcConfig(Consts.FUNCTION_PROVIDER_FC, fcEndpoint, fcAccountId, fcRegion, fcService, fcFunction);
-        EtlLogConfig logConfig = new EtlLogConfig(this.endpoint, this.project, this.logLogstore);
+        EtlLogConfig logConfig = new EtlLogConfig(client.getEndpoint(), project, logLogstore);
         String functionParameter = "{\"source\":{\"endpoint\":\"http://cn-shanghai-intranet.log.aliyuncs.com\"}, \"target\":{\"endpoint\":\"http://cn-shanghai-intranet.log.aliyuncs.com\", \"projectName\":\"etl-test\", \"logstoreName\":\"etl-1\"}}";
-        EtlJob job = new EtlJob(this.etlJobName, sourceConfig, triggerConfig, fcConfig, functionParameter, logConfig, true);
+        EtlJob job = new EtlJob(etlJobName, sourceConfig, triggerConfig, fcConfig, functionParameter, logConfig, true);
         try {
             sourceConfig.setLogstoreName("x");
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
             sourceConfig.setLogstoreName(logstore);
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
         try {
             triggerConfig.setMaxRetryTime(1000);
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
             triggerConfig.setMaxRetryTime(1);
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
         try {
             triggerConfig.setTriggerInterval(-1);
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
             triggerConfig.setTriggerInterval(100);
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
         /*
         try {
@@ -113,111 +116,111 @@ public class EtlFunctionTest {
         try {
             triggerConfig.setRoleArn(" ");
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
             triggerConfig.setRoleArn(roleArn);
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
         try {
             fcConfig.setFunctionProvider("StreamCompute");
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
             fcConfig.setFunctionProvider(Consts.FUNCTION_PROVIDER_FC);
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
         try {
             fcConfig.setAccountId("");
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
             fcConfig.setAccountId(fcAccountId);
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
         try {
             logConfig.setLogstoreName("");
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
             logConfig.setLogstoreName(logLogstore);
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
         try {
             logConfig.setLogstoreName(logstore);
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
             logConfig.setLogstoreName(logLogstore);
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
         try {
             logConfig.setProjectName("");
             logConfig.setLogstoreName(logstore);
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
             logConfig.setLogstoreName(logLogstore);
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
         try {
             job.setFunctionParameter("xxxxx");
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
             job.setFunctionParameter(functionParameter);
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
         try {
             job.setJobName("1");
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            fail();
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
             job.setJobName(etlJobName);
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
         try {
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(true);
+            client.createEtlJob(req);
+            assertTrue(true);
         } catch (LogException e) {
             System.out.println(e.GetErrorCode());
             System.out.println(e.GetErrorMessage());
-            Assert.assertTrue(false);
+            fail();
         }
         try {
             job.setJobName(etlJobName + "_1");
             job.setEnable(false);
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(true);
+            client.createEtlJob(req);
+            assertTrue(true);
         } catch (LogException e) {
             System.out.println(e.GetErrorCode());
             System.out.println(e.GetErrorMessage());
-            Assert.assertTrue(false);
+            fail();
         }
     }
 
@@ -225,13 +228,13 @@ public class EtlFunctionTest {
     public void testGetEtlJob() {
         GetEtlJobRequest req = new GetEtlJobRequest(project, etlJobName);
         try {
-            GetEtlJobResponse resp = logClient.getEtlJob(req);
+            GetEtlJobResponse resp = client.getEtlJob(req);
             System.out.println(resp.getEtljob().toJsonString(true, true));
-            Assert.assertTrue(true);
+            assertTrue(true);
         } catch (LogException e) {
             System.out.println(e.GetErrorCode());
             System.out.println(e.GetErrorMessage());
-            Assert.assertTrue(false);
+            fail();
         }
     }
 
@@ -240,19 +243,19 @@ public class EtlFunctionTest {
         EtlSourceConfig sourceConfig = new EtlSourceConfig(logstore);
         EtlTriggerConfig triggerConfig = new EtlTriggerConfig(roleArn, 5, 1);
         EtlFunctionFcConfig fcConfig = new EtlFunctionFcConfig(Consts.FUNCTION_PROVIDER_FC, fcEndpoint, fcAccountId, fcRegion, fcService, fcFunction);
-        EtlLogConfig logConfig = new EtlLogConfig(this.endpoint, this.project, this.logLogstore);
+        EtlLogConfig logConfig = new EtlLogConfig(client.getEndpoint(), project, logLogstore);
         String functionParameter = "{\"source\":{\"endpoint\":\"http://cn-shanghai-intranet.log.aliyuncs.com\"}, " +
                 "\"target\":{\"endpoint\":\"http://cn-shanghai-intranet.log.aliyuncs.com\", \"projectName\":\"etl-test\", \"logstoreName\":\"stg-etl-log\"}}";
-        EtlJob job = new EtlJob(this.etlJobName, sourceConfig, triggerConfig, fcConfig, functionParameter, logConfig, true);
+        EtlJob job = new EtlJob(etlJobName, sourceConfig, triggerConfig, fcConfig, functionParameter, logConfig, true);
         try {
-            UpdateEtlJobRequest req = new UpdateEtlJobRequest(this.project, job);
-            UpdateEtlJobResponse resp = this.logClient.updateEtlJob(req);
+            UpdateEtlJobRequest req = new UpdateEtlJobRequest(project, job);
+            UpdateEtlJobResponse resp = client.updateEtlJob(req);
             System.out.println(resp.GetAllHeaders());
-            Assert.assertTrue(true);
+            assertTrue(true);
         } catch (LogException e) {
             System.out.print(e.GetErrorCode());
             System.out.print(e.GetErrorMessage());
-            Assert.assertTrue(false);
+            fail();
         }
         /*
         try {
@@ -269,88 +272,88 @@ public class EtlFunctionTest {
         }
         */
         try {
-            logConfig.setLogstoreName(this.logstore);
-            UpdateEtlJobRequest req = new UpdateEtlJobRequest(this.project, job);
-            UpdateEtlJobResponse resp = this.logClient.updateEtlJob(req);
+            logConfig.setLogstoreName(logstore);
+            UpdateEtlJobRequest req = new UpdateEtlJobRequest(project, job);
+            UpdateEtlJobResponse resp = client.updateEtlJob(req);
             System.out.println(resp.GetAllHeaders());
-            Assert.assertTrue(false);
+            fail();
         } catch (LogException e) {
             System.out.print(e.GetErrorMessage());
-            Assert.assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
         }
     }
 
     @Test
     public void testListEtlJob() {
         try {
-            ListEtlJobRequest req = new ListEtlJobRequest(this.project, 0, 1);
-            ListEtlJobResponse resp = this.logClient.listEtlJob(req);
-            Assert.assertEquals(resp.getCount(), 1);
-            Assert.assertEquals(resp.getTotal(), 2);
+            ListEtlJobRequest req = new ListEtlJobRequest(project, 0, 1);
+            ListEtlJobResponse resp = client.listEtlJob(req);
+            assertEquals(resp.getCount(), 1);
+            assertEquals(resp.getTotal(), 2);
         } catch (LogException e) {
             System.out.print(e.GetErrorCode());
             System.out.print(e.GetErrorMessage());
-            Assert.assertTrue(false);
+            assertTrue(false);
         }
         try {
-            ListEtlJobRequest req = new ListEtlJobRequest(this.project, 0, 10);
-            ListEtlJobResponse resp = this.logClient.listEtlJob(req);
-            Assert.assertEquals(resp.getCount(), 2);
-            Assert.assertEquals(resp.getTotal(), 2);
+            ListEtlJobRequest req = new ListEtlJobRequest(project, 0, 10);
+            ListEtlJobResponse resp = client.listEtlJob(req);
+            assertEquals(resp.getCount(), 2);
+            assertEquals(resp.getTotal(), 2);
             int hit = 0;
             for (String jobName : resp.getEtlJobNameList()) {
                 if (jobName.equalsIgnoreCase(etlJobName)) {
-                    GetEtlJobResponse getresp = this.logClient.getEtlJob(new GetEtlJobRequest(project, etlJobName));
-                    Assert.assertEquals(getresp.getEtljob().getJobName(), etlJobName);
-                    Assert.assertTrue(getresp.getEtljob().getEnable());
+                    GetEtlJobResponse getresp = client.getEtlJob(new GetEtlJobRequest(project, etlJobName));
+                    assertEquals(getresp.getEtljob().getJobName(), etlJobName);
+                    assertTrue(getresp.getEtljob().getEnable());
                     ++hit;
                 } else if (jobName.equalsIgnoreCase(etlJobName + "_1")) {
-                    GetEtlJobResponse getresp = this.logClient.getEtlJob(new GetEtlJobRequest(project, etlJobName + "_1"));
-                    Assert.assertEquals(getresp.getEtljob().getJobName(), etlJobName + "_1");
-                    Assert.assertTrue(!getresp.getEtljob().getEnable());
+                    GetEtlJobResponse getresp = client.getEtlJob(new GetEtlJobRequest(project, etlJobName + "_1"));
+                    assertEquals(getresp.getEtljob().getJobName(), etlJobName + "_1");
+                    assertTrue(!getresp.getEtljob().getEnable());
                     ++hit;
                 }
             }
-            Assert.assertEquals(hit, 2);
+            assertEquals(hit, 2);
         } catch (LogException e) {
             System.out.print(e.GetErrorCode());
             System.out.print(e.GetErrorMessage());
-            Assert.assertTrue(false);
+            fail();
         }
     }
 
     @Test
     public void testDeleteEtlJob() {
         try {
-            DeleteEtlJobRequest req = new DeleteEtlJobRequest(this.project, this.etlJobName);
-            DeleteEtlJobResponse resp = this.logClient.deleteEtlJob(req);
+            DeleteEtlJobRequest req = new DeleteEtlJobRequest(project, etlJobName);
+            DeleteEtlJobResponse resp = client.deleteEtlJob(req);
             System.out.println(resp.GetAllHeaders());
-            Assert.assertTrue(true);
+            assertTrue(true);
         } catch (LogException e) {
             System.out.print(e.GetErrorCode());
             System.out.print(e.GetErrorMessage());
-            Assert.assertTrue(false);
+            fail();
         }
         try {
-            DeleteEtlJobRequest req = new DeleteEtlJobRequest(this.project, this.etlJobName + "_1");
-            DeleteEtlJobResponse resp = this.logClient.deleteEtlJob(req);
+            DeleteEtlJobRequest req = new DeleteEtlJobRequest(project, etlJobName + "_1");
+            DeleteEtlJobResponse resp = client.deleteEtlJob(req);
             System.out.println(resp.GetAllHeaders());
-            Assert.assertTrue(true);
+            assertTrue(true);
         } catch (LogException e) {
             System.out.print(e.GetErrorCode());
             System.out.print(e.GetErrorMessage());
-            Assert.assertTrue(false);
+            fail();
         }
         try {
-            ListEtlJobRequest req = new ListEtlJobRequest(this.project, 0, 10);
-            ListEtlJobResponse resp = this.logClient.listEtlJob(req);
-            Assert.assertEquals(resp.getCount(), 0);
-            Assert.assertEquals(resp.getTotal(), 0);
+            ListEtlJobRequest req = new ListEtlJobRequest(project, 0, 10);
+            ListEtlJobResponse resp = client.listEtlJob(req);
+            assertEquals(resp.getCount(), 0);
+            assertEquals(resp.getTotal(), 0);
         } catch (LogException e) {
             System.out.print(e.GetErrorCode());
             System.out.print(e.GetErrorMessage());
-            Assert.assertTrue(false);
+            fail();
         }
     }
 
