@@ -18,7 +18,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 	private ArrayList<String> key = new ArrayList<String>();
 	private String logBeginRegex = "";
 	private String regex = "";
-	private String customizedFields = "";
+	private CustomizedFields customizedFields = new CustomizedFields();
 
 	public ConfigInputDetail() {
 		this.logType = Consts.CONST_CONFIG_LOGTYPE_COMMON;
@@ -83,12 +83,12 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 	 * @param localStorage
 	 *            true if save the log data if failed to send to the sls server
 	 * @param customizedFields
-	 *            the customized fields configuration for special usage
+	 *            the customized fields for special usage
 	 */
 	public ConfigInputDetail(String logPath, String filePattern,
 			String logType, String logBeginRegex, String regex,
 			ArrayList<String> key, String timeFormat,
-			boolean localStorage, String customizedFields) {
+			boolean localStorage, CustomizedFields customizedFields) {
 		super();
 		this.logType = Consts.CONST_CONFIG_LOGTYPE_COMMON;
 		this.logPath = logPath;
@@ -113,14 +113,8 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_KEY, keyArray);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX, logBeginRegex);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_REGEX, regex);
-		if (customizedFields != null && !customizedFields.isEmpty()) {
-			try {
-				JSONObject toObject = JSONObject.fromObject(customizedFields);
-				jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS, toObject);
-			} catch (Exception ex) {
-				throw new IllegalArgumentException("Unable to read object from string: " + customizedFields, ex);
-			}
-		}
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS, customizedFields.ToJsonObject());
+
 		return jsonObj;
 	}
 
@@ -138,7 +132,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 			this.regex = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_REGEX);
 			SetKey(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_KEY));
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS))
-				this.customizedFields = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS);
+				SetCustomizedFields(inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS));
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateInputDetail", e.getMessage(),
 					e, "");
@@ -185,7 +179,8 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 				this.key.add(key.getString(i));
 			}
 		} catch (JSONException e) {
-			throw new LogException("FailToSetKey", e.getMessage(), e, "");
+			throw new LogException("FailToSetKey", e.getMessage(),
+					e, "");
 		}
 	}
 
@@ -205,11 +200,22 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		this.regex = regex;
 	}
 
-	public String GetCustomizedFields() {
+	public CustomizedFields GetCustomizedFields() {
 		return customizedFields;
-        }
+	}
 
-	public void SetCustomizedFields(String customizedFields) {
+	public void SetCustomizedFields(CustomizedFields customizedFields) {
 		this.customizedFields = customizedFields;
-        }
+	}
+
+	public void SetCustomizedFields(JSONObject customizedFields) throws LogException {
+		try {
+			this.customizedFields = new CustomizedFields();
+			this.customizedFields.SetDataIntegrity(customizedFields.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS_DATAINTEGRITY));
+			this.customizedFields.SetLineCount(customizedFields.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS_LINECOUNT));
+		} catch (JSONException e) {
+			throw new LogException("FailToSetCustomizedFields", e.getMessage(),
+					e, "");
+		}
+	}
 }

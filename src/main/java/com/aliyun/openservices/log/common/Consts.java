@@ -202,6 +202,14 @@ public class Consts {
 	public static final String CONST_CONFIG_INPUTDETAIL_PRIORITY = "priority";
 	public static final String CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES = "delaySkipBytes";
 	public static final String CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS = "customizedFields";
+	public static final String CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS_DATAINTEGRITY = "dataIntegrity";
+	public static final String CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS_LOG_TIME_REG = "log_time_reg";
+	public static final String CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS_LOGSTORE = "logstore";
+	public static final String CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS_PROJECT_NAME = "project_name";
+	public static final String CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS_SWITCH = "switch";
+	public static final String CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS_TIME_POS = "time_pos";
+	public static final int CONST_CONFIG_INPUTDETAIL_DATAINTEGRITY_DEFAULT_TIMEPOS = -1;
+	public static final String CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS_LINECOUNT = "lineCount";
 	public static final String CONST_CONFIG_INPUTDETAIL_ACCEPTNOENOUGHKEYS = "acceptNoEnoughKeys";
 	
 	public static final String CONST_TYPE = "type";
