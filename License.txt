@@ -30,10 +30,6 @@ commons-validator
 ------------------
 License：Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
 
-org.jdom
-------------------
-License：Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
-
 org.apache.httpcomponents
 ------------------
 License：Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
@@ -47,14 +43,6 @@ ezmorph
 License：Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
 
 net.sf.ezmorph
-------------------
-License：Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
-
-hamcrest-core-1.1.jar 
-------------------
-License：New BSD License (http://opensource.org/licenses/BSD-3-Clause)
-
-gson
 ------------------
 License：Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
 
