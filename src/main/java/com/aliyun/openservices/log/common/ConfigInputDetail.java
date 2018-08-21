@@ -115,8 +115,12 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_REGEX, regex);
 
 		if (customizedFields != null && !customizedFields.isEmpty()) {
-			JSONObject toObject = JSONObject.fromObject(customizedFields);
-			jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS, toObject);
+			try {
+				JSONObject toObject = JSONObject.fromObject(customizedFields);
+				jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS, toObject);
+			} catch (JSONException ex) {
+				throw new IllegalArgumentException("Unable to marshal object from string: " + customizedFields, ex);
+			}
 		}
 		return jsonObj;
 	}
