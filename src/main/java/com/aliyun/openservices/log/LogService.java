@@ -2865,6 +2865,24 @@ public interface LogService {
 	/**
 	 * @param project
 	 * 			project name
+	 * @param etlMetaList
+	 * 			List of etlMeta which contains the metaName/metaKey/metaTag/metaValue, List size shoud be [1, 50]
+	 * @return
+	 * 			CreateEtlMetaResponse
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	CreateEtlMetaResponse batchCreateEtlMeta(String project, ArrayList<EtlMeta> etlMetaList) throws LogException;
+
+	/**
+	 * delete etlMeta with etlMetaName + etlMetaKey
+	 *
+	 * @param project
+	 * 			project name
 	 * @param etlMetaName
      * 			etl meta name
 	 * @param etlMetaKey
@@ -2881,6 +2899,7 @@ public interface LogService {
 	DeleteEtlMetaResponse deleteEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException;
 
 	/**
+	 * delete etlMeta with etlMetaName + etlMetaKey, and delete operation need double checked with etlMetaTag value
 	 * @param project
 	 * 			project name
 	 * @param etlMetaName
@@ -2888,7 +2907,7 @@ public interface LogService {
 	 * @param etlMetaKey
 	 * 			etl meta key
 	 * @param etlMetaTag
-	 * 			etl meta key
+	 * 			etl meta tag
 	 * @return
 	 * 			DeleteEtlMetaResponse
 	 * @throws LogException
@@ -2899,6 +2918,68 @@ public interface LogService {
 	 *             if any required string parameter is empty
 	 */
 	DeleteEtlMetaResponse deleteEtlMeta(String project, String etlMetaName, String etlMetaKey, String etlMetaTag) throws LogException;
+
+	/**
+	 * delete all etlMeta with specified etlMetaTag, and value of etlMetaTag must not be reserved string `__all_etl_meta_tag_match__`
+	 *
+	 * @param project
+	 * 			project name
+	 * @param etlMetaName
+	 * 			etl meta name
+	 * @param etlMetaTag
+	 * 			etl meta tag
+	 * @return
+	 * 			DeleteEtlMetaResponse
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, String etlMetaTag) throws LogException;
+
+	/**
+     * delete all etlMeta of specified etlMetaKey(List), and etlMetaTag will not be checked, List size should be [1, 200]
+	 *
+	 * @param project
+	 * 			project name
+	 * @param etlMetaName
+	 * 			etl meta name
+	 * @param etlMetaKeyList
+	 * 			List of etl meta key
+	 * @return
+	 * 			DeleteEtlMetaResponse
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, ArrayList<String> etlMetaKeyList) throws LogException;
+
+	/**
+	 * delete etlMetaList of specified etlMetaKey(List), delete operation double checked with etlMetaTag,  List size should be [1, 200]
+	 *
+	 * @param project
+	 * 			project name
+	 * @param etlMetaName
+	 * 			etl meta name
+	 * @param etlMetaKeyList
+	 * 			List of etl meta key
+	 * @param etlMetaTag
+	 * 			etl meta tag
+	 * @return
+	 * 			DeleteEtlMetaResponse
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, String etlMetaTag) throws LogException;
 
 	/**
 	 * @param project
@@ -2915,6 +2996,22 @@ public interface LogService {
 	 *             if any required string parameter is empty
 	 */
 	UpdateEtlMetaResponse updateEtlMeta(String project, EtlMeta etlMeta) throws LogException;
+
+	/**
+	 * @param project
+	 * 			project name
+	 * @param etlMetaList
+	 * 			List of etlMeta which contains the metaName/metaKey/metaTag/metaValue, List size should be [1, 50]
+	 * @return
+	 * 			UpdateEtlMetaResponse
+	 * @throws LogException
+	 *             if any error happened
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	UpdateEtlMetaResponse batchUpdateEtlMeta(String project, ArrayList<EtlMeta> etlMetaList) throws LogException;
 
 	/**
 	 * @param project

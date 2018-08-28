@@ -344,6 +344,9 @@ public class Consts {
 	public static final String ETL_META_KEY = "etlMetaKey";
 	public static final String ETL_META_TAG = "etlMetaTag";
 	public static final String ETL_META_VALUE = "etlMetaValue";
+	public static final String ETL_META_BATCH_DELETE_RANGE = "batchDeleteRange";
+	public static final String ETL_META_KEY_LIST = "etlMetaKeyList";
+	public static final String ETL_META_LIST = "etlMetaList";
 
 	public static final String LOGGING_URI = "/logging";
 }

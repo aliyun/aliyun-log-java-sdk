@@ -4053,6 +4053,28 @@ public class Client implements LogService {
 	}
 
 	@Override
+	public CreateEtlMetaResponse batchCreateEtlMeta(String project, ArrayList<EtlMeta> etlMetaList) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertParameterNotNull(etlMetaList, "etlMetaList");
+		if (etlMetaList.size() == 0 || etlMetaList.size() > 50) {
+			throw new IllegalArgumentException("etlMetaList size not valid, should be [1, 50]");
+		}
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = Consts.CONST_ETLMETA_URI;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		JSONObject requestBodyJsonObject = new JSONObject();
+		JSONArray etlMetaJsonArray = new JSONArray();
+		for (EtlMeta meta : etlMetaList) {
+			etlMetaJsonArray.add(meta.toJsonObject());
+		}
+		requestBodyJsonObject.put(Consts.ETL_META_LIST, etlMetaJsonArray);
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, urlParameter, headParameter, requestBodyJsonObject.toString());
+		return new CreateEtlMetaResponse(response.getHeaders());
+	}
+
+	@Override
 	public DeleteEtlMetaResponse deleteEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
@@ -4086,6 +4108,56 @@ public class Client implements LogService {
 	}
 
 	@Override
+	public DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, String etlMetaTag) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
+		CodingUtils.assertParameterNotNull(etlMetaTag, "etlMetaTag");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = Consts.CONST_ETLMETA_URI;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		urlParameter.put("type", "batch_delete");
+		JSONObject requestBodyJsonObject = new JSONObject();
+		JSONArray etlMetaKeyJsonArray = new JSONArray();
+		requestBodyJsonObject.put(Consts.ETL_META_NAME, etlMetaName);
+		requestBodyJsonObject.put(Consts.ETL_META_TAG, etlMetaTag);
+		requestBodyJsonObject.put(Consts.ETL_META_BATCH_DELETE_RANGE, "all");
+		ResponseMessage response = SendData(project, HttpMethod.PUT,
+				resourceUri, urlParameter, headParameter, requestBodyJsonObject.toString());
+		return new DeleteEtlMetaResponse(response.getHeaders());
+	}
+
+	@Override
+	public DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, ArrayList<String> etlMetaKeyList) throws LogException {
+		return batchDeleteEtlMeta(project, etlMetaName, etlMetaKeyList, Consts.CONST_ETLMETA_ALL_TAG_MATCH);
+	}
+
+	@Override
+	public DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, String etlMetaTag) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
+		CodingUtils.assertParameterNotNull(etlMetaTag, "etlMetaTag");
+		if (etlMetaKeyList == null || etlMetaKeyList.size() == 0 || etlMetaKeyList.size() > 200) {
+			throw new IllegalArgumentException("etlMetaKeyList size not valid, should be [1, 200]");
+		}
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = Consts.CONST_ETLMETA_URI;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		urlParameter.put("type", "batch_delete");
+		JSONObject requestBodyJsonObject = new JSONObject();
+		JSONArray etlMetaKeyJsonArray = new JSONArray();
+		for (String key : etlMetaKeyList) {
+			etlMetaKeyJsonArray.add(key);
+		}
+		requestBodyJsonObject.put(Consts.ETL_META_NAME, etlMetaName);
+		requestBodyJsonObject.put(Consts.ETL_META_TAG, etlMetaTag);
+		requestBodyJsonObject.put(Consts.ETL_META_BATCH_DELETE_RANGE, "list");
+		requestBodyJsonObject.put(Consts.ETL_META_KEY_LIST, etlMetaKeyJsonArray);
+		ResponseMessage response = SendData(project, HttpMethod.PUT,
+		resourceUri, urlParameter, headParameter, requestBodyJsonObject.toString());
+		return new DeleteEtlMetaResponse(response.getHeaders());
+	}
+
+	@Override
 	public UpdateEtlMetaResponse updateEtlMeta(String project, EtlMeta etlMeta) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertParameterNotNull(etlMeta, "etlMeta");
@@ -4095,6 +4167,28 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter, etlMeta.toJsonObject().toString());
+		return new UpdateEtlMetaResponse(response.getHeaders());
+	}
+
+	@Override
+	public UpdateEtlMetaResponse batchUpdateEtlMeta(String project, ArrayList<EtlMeta> etlMetaList) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertParameterNotNull(etlMetaList, "etlMetaList");
+		if (etlMetaList.size() == 0 || etlMetaList.size() > 50) {
+			throw new IllegalArgumentException("etlMetaList size not valid, should be [1, 50]");
+		}
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = Consts.CONST_ETLMETA_URI;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		JSONObject requestBodyJsonObject = new JSONObject();
+		JSONArray etlMetaJsonArray = new JSONArray();
+		for (EtlMeta meta : etlMetaList) {
+			etlMetaJsonArray.add(meta.toJsonObject());
+		}
+		requestBodyJsonObject.put(Consts.ETL_META_LIST, etlMetaJsonArray);
+		ResponseMessage response = SendData(project, HttpMethod.PUT,
+				resourceUri, urlParameter, headParameter, requestBodyJsonObject.toString());
 		return new UpdateEtlMetaResponse(response.getHeaders());
 	}
 
