@@ -4109,21 +4109,7 @@ public class Client implements LogService {
 
 	@Override
 	public DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, String etlMetaTag) throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
-		CodingUtils.assertParameterNotNull(etlMetaTag, "etlMetaTag");
-		Map<String, String> headParameter = GetCommonHeadPara(project);
-		String resourceUri = Consts.CONST_ETLMETA_URI;
-		Map<String, String> urlParameter = new HashMap<String, String>();
-		urlParameter.put("type", "batch_delete");
-		JSONObject requestBodyJsonObject = new JSONObject();
-		JSONArray etlMetaKeyJsonArray = new JSONArray();
-		requestBodyJsonObject.put(Consts.ETL_META_NAME, etlMetaName);
-		requestBodyJsonObject.put(Consts.ETL_META_TAG, etlMetaTag);
-		requestBodyJsonObject.put(Consts.ETL_META_BATCH_DELETE_RANGE, "all");
-		ResponseMessage response = SendData(project, HttpMethod.PUT,
-				resourceUri, urlParameter, headParameter, requestBodyJsonObject.toString());
-		return new DeleteEtlMetaResponse(response.getHeaders());
+		return batchDeleteEtlMeta(project, etlMetaName, null, etlMetaTag, Consts.ETL_META_BATCH_DELETE_RANGE_ALL);
 	}
 
 	@Override
@@ -4133,27 +4119,39 @@ public class Client implements LogService {
 
 	@Override
 	public DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, String etlMetaTag) throws LogException {
+		return batchDeleteEtlMeta(project, etlMetaName, etlMetaKeyList, etlMetaTag, Consts.ETL_META_BATCH_DELETE_RANGE_LIST);
+	}
+
+	private DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, String etlMetaTag, String batchDeleteRange) throws LogException {
+		if (batchDeleteRange.equals(Consts.ETL_META_BATCH_DELETE_RANGE_LIST)) {
+			if (etlMetaKeyList == null || etlMetaKeyList.size() == 0 || etlMetaKeyList.size() > 200) {
+				throw new IllegalArgumentException("etlMetaKeyList size not valid, should be [1, 200]");
+			}
+		} else if (batchDeleteRange.equals(Consts.ETL_META_BATCH_DELETE_RANGE_ALL)) {
+			if (etlMetaTag.equals(Consts.CONST_ETLMETA_ALL_TAG_MATCH)) {
+				throw new IllegalArgumentException("parameter etlMetaTag can not be `__all_etl_meta_tag_match__` when batchDelete by tag");
+			}
+		} else {
+			throw new IllegalArgumentException("batchDeleteRange not valid, should be `all` or `list`");
+		}
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
 		CodingUtils.assertParameterNotNull(etlMetaTag, "etlMetaTag");
-		if (etlMetaKeyList == null || etlMetaKeyList.size() == 0 || etlMetaKeyList.size() > 200) {
-			throw new IllegalArgumentException("etlMetaKeyList size not valid, should be [1, 200]");
-		}
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		String resourceUri = Consts.CONST_ETLMETA_URI;
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		urlParameter.put("type", "batch_delete");
 		JSONObject requestBodyJsonObject = new JSONObject();
-		JSONArray etlMetaKeyJsonArray = new JSONArray();
-		for (String key : etlMetaKeyList) {
-			etlMetaKeyJsonArray.add(key);
-		}
 		requestBodyJsonObject.put(Consts.ETL_META_NAME, etlMetaName);
 		requestBodyJsonObject.put(Consts.ETL_META_TAG, etlMetaTag);
-		requestBodyJsonObject.put(Consts.ETL_META_BATCH_DELETE_RANGE, "list");
-		requestBodyJsonObject.put(Consts.ETL_META_KEY_LIST, etlMetaKeyJsonArray);
+		requestBodyJsonObject.put(Consts.ETL_META_BATCH_DELETE_RANGE, batchDeleteRange);
+		if (batchDeleteRange.equals(Consts.ETL_META_BATCH_DELETE_RANGE_LIST)) {
+			JSONArray etlMetaKeyJsonArray = new JSONArray();
+			etlMetaKeyJsonArray.addAll(etlMetaKeyList);
+			requestBodyJsonObject.put(Consts.ETL_META_KEY_LIST, etlMetaKeyJsonArray);
+		}
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
-		resourceUri, urlParameter, headParameter, requestBodyJsonObject.toString());
+				resourceUri, urlParameter, headParameter, requestBodyJsonObject.toString());
 		return new DeleteEtlMetaResponse(response.getHeaders());
 	}
 

@@ -16,15 +16,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class EtlMetaFunctionTest extends FunctionTest {
     private static String project = "26";
     private static String etlMetaName_1 = "test-meta-1";
     private static String etlMetaName_2 = "test-meta-2";
-    private static String etlMetaKeyPrefxi_1 = UUID.randomUUID().toString();
+    private static String etlMetaKeyPrefxi_1 = UUID.randomUUID().toString() + "\"'";
     private static String etlMetaKeyPrefxi_2 = UUID.randomUUID().toString();
     private static int etlMetaCount_1 = 205;
     private static int etlMetaCount_2 = 5;
@@ -81,6 +79,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
 
     @Test
     public void testListEtlMetaReverse() {
+        long curSecond = System.currentTimeMillis() / 1000;
         int offset = 0;
         ArrayList<EtlMeta> slbMetas = new ArrayList<EtlMeta>();
         try {
@@ -102,6 +101,8 @@ public class EtlMetaFunctionTest extends FunctionTest {
         int i = 0;
         for (EtlMeta m : slbMetas) {
             assertEquals(m.getMetaKey(), etlMetaKeyPrefxi_1 + "_" + String.valueOf(i++));
+            assertTrue(m.getCreateTime() > curSecond - 300 && m.getCreateTime() < curSecond + 5);
+            assertTrue(m.getCreateTime() <= m.getLastModifyTime());
         }
 
         try {
