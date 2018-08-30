@@ -20,6 +20,7 @@ import com.aliyun.openservices.log.http.comm.ResponseMessage;
 import com.aliyun.openservices.log.http.comm.ServiceClient;
 import com.aliyun.openservices.log.http.utils.CodingUtils;
 import com.aliyun.openservices.log.http.utils.DateUtil;
+import com.aliyun.openservices.log.internal.ErrorCodes;
 import com.aliyun.openservices.log.request.ApplyConfigToMachineGroupRequest;
 import com.aliyun.openservices.log.request.ApproveMachineGroupRequest;
 import com.aliyun.openservices.log.request.BatchGetLogRequest;
@@ -33,6 +34,7 @@ import com.aliyun.openservices.log.request.CreateConsumerGroupRequest;
 import com.aliyun.openservices.log.request.CreateDashboardRequest;
 import com.aliyun.openservices.log.request.CreateEtlJobRequest;
 import com.aliyun.openservices.log.request.CreateIndexRequest;
+import com.aliyun.openservices.log.request.CreateJobRequest;
 import com.aliyun.openservices.log.request.CreateLogStoreRequest;
 import com.aliyun.openservices.log.request.CreateLoggingRequest;
 import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
@@ -43,11 +45,14 @@ import com.aliyun.openservices.log.request.DeleteConfigRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
 import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
 import com.aliyun.openservices.log.request.DeleteIndexRequest;
+import com.aliyun.openservices.log.request.DeleteJobRequest;
 import com.aliyun.openservices.log.request.DeleteLogStoreRequest;
 import com.aliyun.openservices.log.request.DeleteLoggingRequest;
 import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
 import com.aliyun.openservices.log.request.DeleteSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteShardRequest;
+import com.aliyun.openservices.log.request.DisableJobRequest;
+import com.aliyun.openservices.log.request.EnableJobRequest;
 import com.aliyun.openservices.log.request.GetAlertRequest;
 import com.aliyun.openservices.log.request.GetAppliedConfigsRequest;
 import com.aliyun.openservices.log.request.GetAppliedMachineGroupRequest;
@@ -59,6 +64,7 @@ import com.aliyun.openservices.log.request.GetDashboardRequest;
 import com.aliyun.openservices.log.request.GetEtlJobRequest;
 import com.aliyun.openservices.log.request.GetHistogramsRequest;
 import com.aliyun.openservices.log.request.GetIndexRequest;
+import com.aliyun.openservices.log.request.GetJobRequest;
 import com.aliyun.openservices.log.request.GetLogStoreRequest;
 import com.aliyun.openservices.log.request.GetLoggingRequest;
 import com.aliyun.openservices.log.request.GetLogsRequest;
@@ -73,6 +79,8 @@ import com.aliyun.openservices.log.request.ListConfigRequest;
 import com.aliyun.openservices.log.request.ListDashboardRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
 import com.aliyun.openservices.log.request.ListEtlMetaRequest;
+import com.aliyun.openservices.log.request.ListJobHistoryRequest;
+import com.aliyun.openservices.log.request.ListJobsRequest;
 import com.aliyun.openservices.log.request.ListLogStoresRequest;
 import com.aliyun.openservices.log.request.ListMachineGroupRequest;
 import com.aliyun.openservices.log.request.ListProjectRequest;
@@ -90,6 +98,7 @@ import com.aliyun.openservices.log.request.UpdateConfigRequest;
 import com.aliyun.openservices.log.request.UpdateDashboardRequest;
 import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
 import com.aliyun.openservices.log.request.UpdateIndexRequest;
+import com.aliyun.openservices.log.request.UpdateJobRequest;
 import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
 import com.aliyun.openservices.log.request.UpdateLoggingRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
@@ -98,6 +107,7 @@ import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
 import com.aliyun.openservices.log.response.*;
 import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.NetworkUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -366,7 +376,7 @@ public class Client implements LogService {
 		try {
 			return new URI(endPointUrl);
 		} catch (URISyntaxException e) {
-			throw new LogException("EndpointInvalid", 
+			throw new LogException(ErrorCodes.ENDPOINT_INVALID,
 					"Failed to get real server ip when direct mode in enabled", "");
 		}
 	}
@@ -375,27 +385,27 @@ public class Client implements LogService {
 		try {
 			return source.getBytes(Consts.UTF_8_ENCODING);
 		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
+			throw new LogException(ErrorCodes.ENCODING_EXCEPTION, e.getMessage(), "");
 		}
 	}
 
 	private static String encodeResponseBodyToUtf8String(ResponseMessage response, String requestId) throws LogException {
 		byte[] body = response.GetRawBody();
 		if (body == null) {
-			throw new LogException("BadResponse", "The response body is null", null, requestId);
+			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response body is null", requestId);
 		}
 		try {
 			return new String(body, Consts.UTF_8_ENCODING);
 		} catch (UnsupportedEncodingException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid utf-8 string: ", e, requestId);
 		}
 	}
 
 	public GetLogtailProfileResponse ExtractLogtailProfile(Map<String, String> resHeaders, JSONObject object) throws LogException {
 		try {
-			int count = object.getInt("count");
-			int total = object.getInt("total");
+			int count = object.getInt(Consts.CONST_COUNT);
+			int total = object.getInt(Consts.CONST_TOTAL);
 			JSONArray array = object.getJSONArray("profile");
 			List<LogtailProfile> logtailProfiles = new ArrayList<LogtailProfile>();
 			for (int i = 0; i < array.size(); i++) {
@@ -702,8 +712,7 @@ public class Client implements LogService {
 			connection_status = connection_container.GetGlobalConnection();
 			if (connection_status == null || connection_status.GetIpAddress() == null
 					|| connection_status.GetIpAddress().isEmpty()) {
-				throw new LogException("EndpointInvalid", "Failed to get real server ip when direct mode is enabled",
-						"");
+				throw new LogException(ErrorCodes.ENDPOINT_INVALID, "Failed to get real server ip when direct mode is enabled");
 			}
 		}
 		return connection_status;
@@ -1012,13 +1021,13 @@ public class Client implements LogService {
 	public GetCursorTimeResponse GetPrevCursorTime(String project, String logStore,int shardId, String cursor) throws LogException
 	{
 		if(cursor.isEmpty())
-			throw new LogException("InvalidCursor", "empty cursor string", "");
+			throw new LogException(ErrorCodes.INVALID_CURSOR, "empty cursor string");
 		Long prv = Long.parseLong(new String(Base64.decodeBase64(cursor))) - 1;
 		if(prv >= 0){
 			cursor = new String(Base64.encodeBase64(prv.toString().getBytes()));
 		}
 		else{
-			throw new LogException("InvalidCursor", "this cursor has no prev value", "");
+			throw new LogException(ErrorCodes.INVALID_CURSOR, "this cursor has no prev value");
 		}
 		GetCursorTimeRequest request = new GetCursorTimeRequest(project,
 				logStore, shardId, cursor);
@@ -4134,7 +4143,7 @@ public class Client implements LogService {
 				listResp.addEtlMeta(meta);
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse", e.getMessage(), listResp.GetRequestId());
+			throw new LogException(ErrorCodes.BAD_RESPONSE, e.getMessage(), listResp.GetRequestId());
 		}
 		return listResp;
 	}
@@ -4228,7 +4237,7 @@ public class Client implements LogService {
 		try {
 			return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
 		} catch (JSONException ex) {
-			throw new LogException("BadResponse", ex.getMessage(), response.getRequestId());
+			throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
 		}
 	}
 
@@ -4240,5 +4249,111 @@ public class Client implements LogService {
         ResponseMessage response = SendData(project, HttpMethod.DELETE,
                 Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers);
         return new DeleteLoggingResponse(response.getHeaders());
+    }
+
+    @Override
+    public CreateJobResponse createJob(CreateJobRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        final Job job = request.getJob();
+        ResponseMessage response = SendData(project, HttpMethod.POST,
+                Consts.JOB_URI, Collections.<String, String>emptyMap(), headers, JsonUtils.serialize(job));
+        return new CreateJobResponse(response.getHeaders());
+    }
+
+    @Override
+    public GetJobResponse getJob(GetJobRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        String uri = Consts.JOB_URI + "/" + request.getJobName();
+        ResponseMessage response = SendData(project, HttpMethod.GET, uri, Collections.<String, String>emptyMap(), headers);
+        String responseBody = encodeResponseBodyToUtf8String(response, response.getRequestId());
+        try {
+            Job job = new Job();
+            job.deserialize(JSONObject.fromObject(responseBody));
+            return new GetJobResponse(response.getHeaders(), job);
+        } catch (Exception ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
+    }
+
+    @Override
+    public UpdateJobResponse updateJob(UpdateJobRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        final Job job = request.getJob();
+        String uri = Consts.JOB_URI + "/" + job.getJobName();
+        ResponseMessage response = SendData(project, HttpMethod.PUT, uri,
+                Collections.<String, String>emptyMap(), headers, JsonUtils.serialize(job));
+        return new UpdateJobResponse(response.getHeaders());
+    }
+
+    @Override
+    public DeleteJobResponse deleteJob(DeleteJobRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        String uri = Consts.JOB_URI + "/" + request.getJobName();
+        ResponseMessage response = SendData(project, HttpMethod.DELETE, uri,
+                Collections.<String, String>emptyMap(), headers);
+        return new DeleteJobResponse(response.getHeaders());
+    }
+
+    @Override
+    public EnableJobResponse enableJob(EnableJobRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        Map<String, String> urlParameters = request.GetAllParams();
+        String uri = Consts.JOB_URI + "/" + request.getJobName();
+        ResponseMessage response = SendData(project, HttpMethod.PUT, uri, urlParameters, headers);
+        return new EnableJobResponse(response.getHeaders());
+    }
+
+    @Override
+    public DisableJobResponse disableJob(DisableJobRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        Map<String, String> urlParameters = request.GetAllParams();
+        String uri = Consts.JOB_URI + "/" + request.getJobName();
+        ResponseMessage response = SendData(project, HttpMethod.PUT, uri, urlParameters, headers);
+        return new DisableJobResponse(response.getHeaders());
+    }
+
+    @Override
+    public ListJobsResponse listJobs(ListJobsRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        Map<String, String> urlParameters = request.GetAllParams();
+        ResponseMessage response = SendData(project, HttpMethod.GET, Consts.JOB_URI, urlParameters, headers);
+        JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
+        try {
+            JobList jobList = new JobList();
+            jobList.deserialize(responseBody);
+            return new ListJobsResponse(response.getHeaders(), jobList);
+        } catch (Exception ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
+    }
+
+    @Override
+    public ListJobHistoryResponse listJobHistory(ListJobHistoryRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        String uri = Consts.JOB_URI + "/" + request.getJobName();
+        ResponseMessage response = SendData(project, HttpMethod.GET, uri,
+                request.GetAllParams(), headers);
+        String responseBody = encodeResponseBodyToUtf8String(response, response.getRequestId());
+        try {
+            return new ListJobHistoryResponse(response.getHeaders(), JsonUtils.deserialize(responseBody, JobHistoryList.class));
+        } catch (Exception ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
     }
 }

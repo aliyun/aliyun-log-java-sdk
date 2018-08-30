@@ -2,12 +2,10 @@ package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
 import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class InternalLogStore extends LogStore implements Serializable {
 

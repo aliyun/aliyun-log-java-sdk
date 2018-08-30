@@ -17,6 +17,10 @@ public class LogException extends Exception {
 
 	private String requestId;
 
+	public LogException(String errorCode, String message) {
+	    this(errorCode, message, "");
+	}
+
 	/**
 	 * Construct LogException
 	 * 

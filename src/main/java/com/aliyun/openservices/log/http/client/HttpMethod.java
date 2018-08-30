@@ -53,4 +53,13 @@ public enum HttpMethod {
 	public String toString() {
 		return this.text;
 	}
+
+	public static HttpMethod fromString(String value) {
+		for (HttpMethod method : HttpMethod.values()) {
+			if (method.text.equals(value)) {
+				return method;
+			}
+		}
+		throw new IllegalArgumentException("Illegal http method: " + value);
+	}
 }
