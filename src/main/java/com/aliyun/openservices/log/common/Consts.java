@@ -9,7 +9,7 @@ public class Consts {
 		
 		private String strValue;
 		
-		private CompressType(String strValue) {
+		CompressType(String strValue) {
 			this.strValue = strValue;
 		}
 		
@@ -23,7 +23,7 @@ public class Consts {
 		
 		private String strValue;
 		
-		private CursorMode(String strValue) {
+		CursorMode(String strValue) {
 			this.strValue = strValue;
 		}
 		
@@ -37,7 +37,7 @@ public class Consts {
 		
 		private String strValue;
 		
-		private ACLPrivilege(String strValue) {
+		ACLPrivilege(String strValue) {
 			this.strValue = strValue;
 		}
 		
@@ -50,7 +50,7 @@ public class Consts {
 		GRANT("grant"), REVOKE("revoke");
 		private String strValue;
 
-		private ACLAction(String strValue) {
+		ACLAction(String strValue) {
 			this.strValue = strValue;
 		}
 

@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.http.utils;
 
-import static com.aliyun.openservices.log.http.utils.CodingUtils.*;
+import com.aliyun.openservices.log.util.Args;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,8 +19,7 @@ public class CaseInsensitiveMap<V> implements Map<String, V>{
     }
 
     public CaseInsensitiveMap(Map<String, V> wrappedMap) {
-        assertParameterNotNull(wrappedMap, "wrappedMap");
-
+        Args.notNull(wrappedMap, "wrappedMap");
         this.wrappedMap = wrappedMap;
     }
 
@@ -53,7 +52,7 @@ public class CaseInsensitiveMap<V> implements Map<String, V>{
     }
 
     public void putAll(Map<? extends String, ? extends V> m) {
-        for(java.util.Map.Entry<? extends String, ? extends V> entry : m.entrySet()) {
+        for(Entry<? extends String, ? extends V> entry : m.entrySet()) {
             this.put(entry.getKey(), entry.getValue());
         }
     }
@@ -70,7 +69,7 @@ public class CaseInsensitiveMap<V> implements Map<String, V>{
         return wrappedMap.values();
     }
 
-    public Set<java.util.Map.Entry<String, V>> entrySet() {
+    public Set<Entry<String, V>> entrySet() {
         return wrappedMap.entrySet();
     }
 
