@@ -2224,8 +2224,7 @@ public class Client implements LogService {
 		headParameter.put(Consts.CONST_CONTENT_LENGTH, "0");
 		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, "0");
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_PROTO_BUF);
-		headParameter.put(Consts.CONST_DATE,
-				DateUtil.formatRfc822Date(new Date()));
+		headParameter.put(Consts.CONST_DATE, DateUtil.formatRfc822Date(new Date()));
 
 		if (!project.isEmpty()) {
 			headParameter.put(Consts.CONST_HOST, project + "." + this.hostName);

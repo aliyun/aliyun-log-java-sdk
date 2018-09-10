@@ -8,15 +8,12 @@
  */
 package com.aliyun.openservices.log.http.comm;
 
-import static com.aliyun.openservices.log.http.utils.CodingUtils.assertParameterNotNull;
-import static com.aliyun.openservices.log.http.utils.CodingUtils.assertStringNotNullOrEmpty;
+import com.aliyun.openservices.log.http.client.HttpMethod;
+import com.aliyun.openservices.log.util.Args;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.aliyun.openservices.log.http.client.HttpMethod;
-
 
 
 /**
@@ -90,15 +87,8 @@ public class RequestMessage extends HttpMesssage {
      * @param parameters the parameters to set
      */
     public void setParameters(Map<String, String> parameters) {
-        assertParameterNotNull(parameters, "parameters");
-
+        Args.notNull(parameters, "parameters");
         this.parameters = parameters;
-    }
-
-    public void addParameter(String key, String value) {
-        assertStringNotNullOrEmpty(key, "key");
-
-        this.parameters.put(key, value);
     }
 
     /**
