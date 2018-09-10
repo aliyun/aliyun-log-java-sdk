@@ -113,8 +113,14 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_KEY, keyArray);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX, logBeginRegex);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_REGEX, regex);
-		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS, customizedFields);
-
+		if (customizedFields != null && !customizedFields.isEmpty()) {
+			try {
+				JSONObject toObject = JSONObject.fromObject(customizedFields);
+				jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS, toObject);
+			} catch (Exception ex) {
+				throw new IllegalArgumentException("Unable to read object from string: " + customizedFields, ex);
+			}
+		}
 		return jsonObj;
 	}
 

@@ -13,6 +13,8 @@ public class EtlMeta implements Serializable {
     private String metaKey;
     private String metaTag;
     private JSONObject metaValue;
+    private long createTime; //for ListEtlMetaReponse, the field is not used when create/update etlMeta
+    private long lastModifyTime; //for ListEtlMetaReponse, the field is not used when create/update etlMeta
 
     public EtlMeta() {
     }
@@ -51,10 +53,17 @@ public class EtlMeta implements Serializable {
         return metaValue;
     }
 
+    public long getCreateTime() {
+        return createTime;
+    }
+
+    public long getLastModifyTime() {
+        return lastModifyTime;
+    }
+
     public void setMetaValue(JSONObject metaValue) {
         this.metaValue = metaValue;
     }
-
 
     public JSONObject toJsonObject() {
         JSONObject etlMetaJson = new JSONObject();
@@ -73,6 +82,16 @@ public class EtlMeta implements Serializable {
             // For etl metas created by logging, EtlMetaValue may ends with new line.
             final String value = etlMetaJson.getString(Consts.ETL_META_VALUE);
             this.metaValue = JSONObject.fromObject(value.trim());
+            if (etlMetaJson.has(Consts.ETL_META_CREATE_TIME)) {
+                this.createTime = etlMetaJson.getLong(Consts.ETL_META_CREATE_TIME);
+            } else {
+                this.createTime = 0;
+            }
+            if (etlMetaJson.has(Consts.ETL_META_LAST_MODIFY_TIME)) {
+                this.lastModifyTime = etlMetaJson.getLong(Consts.ETL_META_LAST_MODIFY_TIME);
+            } else {
+                this.lastModifyTime = 0;
+            }
         } catch (JSONException e) {
             throw new LogException("BadResponse", e.getMessage(), e, "");
         }

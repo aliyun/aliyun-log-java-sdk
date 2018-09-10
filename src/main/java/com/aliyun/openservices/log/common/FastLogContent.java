@@ -2,6 +2,8 @@ package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.VarintUtil;
 
+import java.io.UnsupportedEncodingException;
+
 public class FastLogContent {
 
     private byte[] rawBytes;
@@ -67,34 +69,43 @@ public class FastLogContent {
     }
 
     public String getKey() {
-        if (this.keyOffset < 0) {
-            return null;
-        }
-        return new String(this.rawBytes, this.keyOffset, this.keyLength);
+        return decodeString(keyOffset, keyLength);
+    }
+
+    public String getKey(final String charset) throws UnsupportedEncodingException {
+        return decodeString(keyOffset, keyLength, charset);
     }
 
     public String getValue() {
-        if (this.valueOffset < 0) {
-            return null;
-        }
-        return new String(this.rawBytes, this.valueOffset, this.valueLength);
+        return decodeString(valueOffset, valueLength);
+    }
+
+    public String getValue(final String charset) throws UnsupportedEncodingException {
+        return decodeString(valueOffset, valueLength, charset);
+    }
+
+    private String decodeString(int offset, int length) {
+        return offset < 0 ? null : new String(rawBytes, offset, length);
+    }
+
+    private String decodeString(int offset, int length, String charset) throws UnsupportedEncodingException {
+        return offset < 0 ? null : new String(this.rawBytes, offset, length, charset);
     }
 
     public byte[] getKeyBytes() {
-        if (this.keyOffset < 0) {
-            return null;
-        }
-        byte[] keyBytes = new byte[this.keyLength];
-        System.arraycopy(this.rawBytes, this.keyOffset, keyBytes, 0, this.keyLength);
-        return keyBytes;
+        return cutBytes(keyOffset, keyLength);
     }
 
     public byte[] getValueBytes() {
-        if (this.valueOffset < 0) {
+        return cutBytes(valueOffset, valueLength);
+    }
+
+    private byte[] cutBytes(int offset, int length) {
+        if (offset < 0) {
             return null;
         }
-        byte[] valueBytes = new byte[this.valueLength];
-        System.arraycopy(this.rawBytes, this.valueOffset, valueBytes, 0, this.valueLength);
-        return valueBytes;
+        byte[] bytes = new byte[length];
+        System.arraycopy(this.rawBytes, offset, bytes, 0, length);
+        return bytes;
     }
 }
