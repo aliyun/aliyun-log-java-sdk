@@ -345,7 +345,7 @@ public class Consts {
 	public static final String ETL_META_TAG = "etlMetaTag";
 	public static final String ETL_META_VALUE = "etlMetaValue";
 
-	public static final String JOBS = "jobs";
-	public static final String LOGGING_URI = "/logging";
-	public static final String JOB_URI = "/jobs";
+    public static final String JOB_LIST = "jobList";
+    public static final String LOGGING_URI = "/logging";
+    public static final String JOB_URI = "/jobs";
 }

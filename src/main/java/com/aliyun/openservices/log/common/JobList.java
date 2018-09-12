@@ -46,7 +46,7 @@ public class JobList {
     public void deserialize(JSONObject value) {
         count = value.getInt(Consts.CONST_COUNT);
         total = value.getInt(Consts.CONST_TOTAL);
-        JSONArray jobsAsJson = value.getJSONArray(Consts.JOBS);
+        JSONArray jobsAsJson = value.getJSONArray(Consts.JOB_LIST);
         jobList = new ArrayList<Job>(jobsAsJson.size());
         for (int i = 0; i < jobsAsJson.size(); i++) {
             Job job = new Job();
