@@ -351,6 +351,7 @@ public class Consts {
 	public static final String ETL_META_LIST = "etlMetaList";
 	public static final String ETL_META_CREATE_TIME = "createTime";
 	public static final String ETL_META_LAST_MODIFY_TIME = "lastModifyTime";
+	public static final String ETL_META_ENABLE = "enable";
 
 	public static final String LOGGING_URI = "/logging";
 }

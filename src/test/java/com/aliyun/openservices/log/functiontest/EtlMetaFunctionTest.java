@@ -400,7 +400,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
             fail();
         }
 
-        for (int i = 0; i < 51; ++i) {
+        for (int i = 0; i < 101; ++i) {
             String metaKey = etlMetaKeyPrefxi_1 + "_" + String.valueOf(i);
             EtlMeta meta = new EtlMeta(BATCH_META_NAME, metaKey, "");
             JSONObject metaValueObj = new JSONObject();
@@ -653,4 +653,162 @@ public class EtlMetaFunctionTest extends FunctionTest {
         System.out.println("testBatchDeleteEtlMeta");
     }
 
+    @Test
+    public void testEnableDisableEtlMeta() {
+
+        final String META_NAME = "enable_disable_meta";
+        final int ENABLE_COUNT = 10;
+        final int DISABLE_COUNT = 10;
+        System.out.println("testEnableDisableEtlMeta");
+        ArrayList<String> totalMetaKeyList = new ArrayList<String>();
+        ArrayList<EtlMeta> enableMetaList = new ArrayList<EtlMeta>();
+        for (int i = 0; i < ENABLE_COUNT; ++i) {
+            String metaKey = "enable_" + String.valueOf(i);
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "slb-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            EtlMeta meta = new EtlMeta(META_NAME, metaKey, "", metaValueObj, true);
+            if (i == 0) {
+                try {
+                    client.createEtlMeta(project, meta);
+                } catch (LogException e) {
+                    e.printStackTrace();
+                    fail();
+                }
+            } else {
+                enableMetaList.add(meta);
+            }
+            totalMetaKeyList.add(metaKey);
+        }
+        try {
+            client.batchCreateEtlMeta(project, enableMetaList);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        ArrayList<EtlMeta> disableMetaList = new ArrayList<EtlMeta>();
+        for (int i = 0; i < DISABLE_COUNT; ++i) {
+            String metaKey = "disable_" + String.valueOf(i);
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "slb-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            EtlMeta meta = new EtlMeta(META_NAME, metaKey, "", metaValueObj, false);
+            if (i == 0) {
+                try {
+                    client.createEtlMeta(project, meta);
+                } catch (LogException e) {
+                    e.printStackTrace();
+                    fail();
+                }
+            } else {
+                disableMetaList.add(meta);
+            }
+            totalMetaKeyList.add(metaKey);
+        }
+        try {
+            client.batchCreateEtlMeta(project, disableMetaList);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        ListEtlMetaResponse resp = null;
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), ENABLE_COUNT + DISABLE_COUNT);
+        assertEquals(resp.getTotal(), ENABLE_COUNT + DISABLE_COUNT);
+        for (EtlMeta meta : resp.getEtlMetaList()) {
+            if (meta.getMetaKey().startsWith("enable_")) {
+                assertTrue(meta.isEnable());
+            } else if (meta.getMetaKey().startsWith("disable_")) {
+                assertTrue(!meta.isEnable());
+            } else {
+                fail();
+            }
+            assertEquals(meta.getMetaTag(), "");
+            assertTrue(meta.getMetaValue().toString().contains("aliyunlogwriteonlyrole"));
+        }
+
+        EtlMeta tmpMeta_1 = enableMetaList.get(0);
+        tmpMeta_1.setEnable(false);
+        try {
+            client.updateEtlMeta(project, tmpMeta_1);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        EtlMeta tmpMeta_2 = enableMetaList.get(1);
+        tmpMeta_2.setEnable(true);
+        try {
+            client.updateEtlMeta(project, tmpMeta_2);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        ArrayList<EtlMeta> tmpMetaList = new ArrayList<EtlMeta>();
+        tmpMetaList.add(new EtlMeta(disableMetaList.get(0).getMetaName(), disableMetaList.get(0).getMetaKey(), true));
+        tmpMetaList.add(new EtlMeta(disableMetaList.get(1).getMetaName(), disableMetaList.get(1).getMetaKey(), false));
+        try {
+            client.batchUpdateEtlMeta(project, tmpMetaList);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), ENABLE_COUNT + DISABLE_COUNT);
+        assertEquals(resp.getTotal(), ENABLE_COUNT + DISABLE_COUNT);
+        for (EtlMeta meta : resp.getEtlMetaList()) {
+            if (meta.getMetaKey().startsWith("enable_")) {
+                if (meta.getMetaKey().endsWith("_1")) {
+                    assertTrue(!meta.isEnable());
+                } else {
+                    assertTrue(meta.isEnable());
+                }
+            } else if (meta.getMetaKey().startsWith("disable_")) {
+                if (meta.getMetaKey().endsWith("_1")) {
+                    assertTrue(meta.isEnable());
+                } else {
+                    assertTrue(!meta.isEnable());
+                }
+            } else {
+                fail();
+            }
+            assertEquals(meta.getMetaTag(), "");
+            assertTrue(meta.getMetaValue().toString().contains("aliyunlogwriteonlyrole"));
+        }
+
+        try {
+            client.batchDeleteEtlMeta(project, META_NAME, totalMetaKeyList);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), 0);
+        assertEquals(resp.getTotal(), 0);
+
+        System.out.println("testEnableDisableEtlMeta");
+    }
 }
