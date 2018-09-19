@@ -20,8 +20,8 @@ import static org.junit.Assert.*;
 
 public class EtlMetaFunctionTest extends FunctionTest {
     private static String project = "26";
-    private static String etlMetaName_1 = "test-meta-1";
-    private static String etlMetaName_2 = "test-meta-2";
+    private static String etlMetaName_1 = "java_sdk_test_1";
+    private static String etlMetaName_2 = "java_sdk_test_2";
     private static String etlMetaKeyPrefxi_1 = UUID.randomUUID().toString() + "\"'";
     private static String etlMetaKeyPrefxi_2 = UUID.randomUUID().toString();
     private static int etlMetaCount_1 = 205;
@@ -376,7 +376,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
     @Test
     public void testBatchEtlMetaApi() {
 
-        final String BATCH_META_NAME = "batch_meta";
+        final String BATCH_META_NAME = "java_sdk_test_batch_meta";
         final int TAG_1_COUNT = 50;
         final int TAG_2_COUNT = 20;
         System.out.println("testBatchCreateEtlMeta");
@@ -563,7 +563,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
         assertEquals(resp.getCount(), TAG_2_COUNT - 10);
 
         try {
-            client.batchDeleteEtlMeta(project, BATCH_META_NAME, "");
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, "", Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
         } catch (LogException e) {
             e.printStackTrace();
             fail();
@@ -581,7 +581,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
             delKeyList.add(etlMetaKeyPrefxi_2 + String.valueOf(i));
         }
         try {
-            client.batchDeleteEtlMeta(project, BATCH_META_NAME, "");
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, "", Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
         } catch (LogException e) {
             e.printStackTrace();
             fail();
@@ -595,7 +595,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
         assertEquals(resp.getCount(), TAG_1_COUNT + TAG_2_COUNT - 10);
 
         try {
-            client.batchDeleteEtlMeta(project, BATCH_META_NAME, "2");
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, "2", Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
         } catch (LogException e) {
             e.printStackTrace();
             fail();
@@ -610,7 +610,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
 
         delKeyList.clear();
         try {
-            client.batchDeleteEtlMeta(project, BATCH_META_NAME, delKeyList);
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, delKeyList, Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
             fail();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
@@ -622,7 +622,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
             delKeyList.add(etlMetaKeyPrefxi_1 + "_" + String.valueOf(i));
         }
         try {
-            client.batchDeleteEtlMeta(project, BATCH_META_NAME, delKeyList);
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, delKeyList, Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
             fail();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
@@ -636,7 +636,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
             delKeyList.add(etlMetaKeyPrefxi_1 + "_" + String.valueOf(i));
         }
         try {
-            client.batchDeleteEtlMeta(project, BATCH_META_NAME, delKeyList);
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, delKeyList, Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
         } catch (LogException e) {
             e.printStackTrace();
             fail();
@@ -656,7 +656,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
     @Test
     public void testEnableDisableEtlMeta() {
 
-        final String META_NAME = "enable_disable_meta";
+        final String META_NAME = "java_sdk_test_enable_disable_meta";
         final int ENABLE_COUNT = 10;
         final int DISABLE_COUNT = 10;
         System.out.println("testEnableDisableEtlMeta");
@@ -795,7 +795,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
         }
 
         try {
-            client.batchDeleteEtlMeta(project, META_NAME, totalMetaKeyList);
+            client.batchModifyEtlMetaStatus(project, META_NAME, totalMetaKeyList, Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
         } catch (LogException e) {
             e.printStackTrace();
             fail();
@@ -810,5 +810,178 @@ public class EtlMetaFunctionTest extends FunctionTest {
         assertEquals(resp.getTotal(), 0);
 
         System.out.println("testEnableDisableEtlMeta");
+    }
+
+    @Test
+    public void testBatchModifyEtlMetaStatus() {
+
+        final String META_NAME = "java_sdk_test_batch_modify_status_meta";
+        final int ENABLE_COUNT = 10;
+        final int DISABLE_COUNT = 10;
+        System.out.println("testBatchModifyEtlMetaStatus");
+        ArrayList<EtlMeta> enableMetaList = new ArrayList<EtlMeta>();
+        ArrayList<String> enableMetaKeyList = new ArrayList<String>();
+        for (int i = 0; i < ENABLE_COUNT; ++i) {
+            String metaKey = "enable_" + String.valueOf(i);
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "slb-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            EtlMeta meta = new EtlMeta(META_NAME, metaKey, "enable", metaValueObj, true);
+            enableMetaList.add(meta);
+            enableMetaKeyList.add(metaKey);
+        }
+        try {
+            client.batchCreateEtlMeta(project, enableMetaList);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        ArrayList<EtlMeta> disableMetaList = new ArrayList<EtlMeta>();
+        ArrayList<String> disableMetaKeyList = new ArrayList<String>();
+        for (int i = 0; i < DISABLE_COUNT; ++i) {
+            String metaKey = "disable_" + String.valueOf(i);
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "slb-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            EtlMeta meta = new EtlMeta(META_NAME, metaKey, "disable", metaValueObj, false);
+            disableMetaList.add(meta);
+            disableMetaKeyList.add(metaKey);
+        }
+        try {
+            client.batchCreateEtlMeta(project, disableMetaList);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        ListEtlMetaResponse resp = null;
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), ENABLE_COUNT + DISABLE_COUNT);
+        assertEquals(resp.getTotal(), ENABLE_COUNT + DISABLE_COUNT);
+        for (EtlMeta meta : resp.getEtlMetaList()) {
+            if (meta.getMetaKey().startsWith("enable_")) {
+                assertTrue(meta.isEnable());
+                assertEquals(meta.getMetaTag(), "enable");
+            } else if (meta.getMetaKey().startsWith("disable_")) {
+                assertTrue(!meta.isEnable());
+                assertEquals(meta.getMetaTag(), "disable");
+            } else {
+                fail();
+            }
+            assertTrue(meta.getMetaValue().toString().contains("aliyunlogwriteonlyrole"));
+        }
+
+        ArrayList<String> tmpMetaKeyList_1 = new ArrayList<String>();
+        tmpMetaKeyList_1.add(enableMetaKeyList.get(0));
+        tmpMetaKeyList_1.add(enableMetaKeyList.get(1));
+        try {
+            client.batchModifyEtlMetaStatus(project, META_NAME, tmpMetaKeyList_1, Consts.BatchModifyEtlMetaType.BATCH_DISABLE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        ArrayList<String> tmpMetaKeyList_2 = new ArrayList<String>();
+        tmpMetaKeyList_2.add(disableMetaKeyList.get(0));
+        tmpMetaKeyList_2.add(disableMetaKeyList.get(1));
+        try {
+            client.batchModifyEtlMetaStatus(project, META_NAME, tmpMetaKeyList_2, Consts.BatchModifyEtlMetaType.BATCH_ENABLE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        ArrayList<String> tmpMetaKeyList_3 = new ArrayList<String>();
+        tmpMetaKeyList_3.add(disableMetaKeyList.get(2));
+        tmpMetaKeyList_3.add(disableMetaKeyList.get(3));
+        try {
+            client.batchModifyEtlMetaStatus(project, META_NAME, tmpMetaKeyList_3, "xxxx", Consts.BatchModifyEtlMetaType.BATCH_ENABLE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), ENABLE_COUNT + DISABLE_COUNT);
+        assertEquals(resp.getTotal(), ENABLE_COUNT + DISABLE_COUNT);
+        for (EtlMeta meta : resp.getEtlMetaList()) {
+            if (meta.getMetaKey().startsWith("enable_")) {
+                assertEquals(meta.getMetaTag(), "enable");
+                if (meta.getMetaKey().endsWith("_0") || meta.getMetaKey().endsWith("_1")) {
+                    assertTrue(!meta.isEnable());
+                } else {
+                    assertTrue(meta.isEnable());
+                }
+            } else if (meta.getMetaKey().startsWith("disable_")) {
+                assertEquals(meta.getMetaTag(), "disable");
+                if (meta.getMetaKey().endsWith("_0") || meta.getMetaKey().endsWith("_1")) {
+                    assertTrue(meta.isEnable());
+                } else {
+                    assertTrue(!meta.isEnable());
+                }
+            } else {
+                fail();
+            }
+            assertTrue(meta.getMetaValue().toString().contains("aliyunlogwriteonlyrole"));
+        }
+
+        try {
+            client.batchModifyEtlMetaStatus(project, META_NAME, "enable", Consts.BatchModifyEtlMetaType.BATCH_DISABLE_ETL_META);
+            client.batchModifyEtlMetaStatus(project, META_NAME, "disable", Consts.BatchModifyEtlMetaType.BATCH_ENABLE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), ENABLE_COUNT + DISABLE_COUNT);
+        assertEquals(resp.getTotal(), ENABLE_COUNT + DISABLE_COUNT);
+        for (EtlMeta meta : resp.getEtlMetaList()) {
+            if (meta.getMetaKey().startsWith("enable_")) {
+                assertTrue(!meta.isEnable());
+                assertEquals(meta.getMetaTag(), "enable");
+            } else if (meta.getMetaKey().startsWith("disable_")) {
+                assertTrue(meta.isEnable());
+                assertEquals(meta.getMetaTag(), "disable");
+            } else {
+                fail();
+            }
+            assertTrue(meta.getMetaValue().toString().contains("aliyunlogwriteonlyrole"));
+        }
+
+        try {
+            client.batchModifyEtlMetaStatus(project, META_NAME, "enable", Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
+            client.batchModifyEtlMetaStatus(project, META_NAME, "disable", Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), 0);
+        assertEquals(resp.getTotal(), 0);
+
+        System.out.println("testBatchModifyEtlMetaStatus");
     }
 }

@@ -4109,31 +4109,31 @@ public class Client implements LogService {
 	}
 
 	@Override
-	public DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, String etlMetaTag) throws LogException {
-		return batchDeleteEtlMeta(project, etlMetaName, null, etlMetaTag, Consts.ETL_META_BATCH_DELETE_RANGE_ALL);
+	public BatchModifyEtlMetaStatusResponse batchModifyEtlMetaStatus(String project, String etlMetaName, String etlMetaTag, Consts.BatchModifyEtlMetaType type) throws LogException {
+		return batchModifyEtlMetaStatus(project, etlMetaName, null, etlMetaTag, Consts.ETL_META_BATCH_MODIFY_STATUS_RANGE_ALL, type);
 	}
 
 	@Override
-	public DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, ArrayList<String> etlMetaKeyList) throws LogException {
-		return batchDeleteEtlMeta(project, etlMetaName, etlMetaKeyList, Consts.CONST_ETLMETA_ALL_TAG_MATCH);
+	public BatchModifyEtlMetaStatusResponse batchModifyEtlMetaStatus(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, Consts.BatchModifyEtlMetaType type) throws LogException {
+		return batchModifyEtlMetaStatus(project, etlMetaName, etlMetaKeyList, Consts.CONST_ETLMETA_ALL_TAG_MATCH, type);
 	}
 
 	@Override
-	public DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, String etlMetaTag) throws LogException {
-		return batchDeleteEtlMeta(project, etlMetaName, etlMetaKeyList, etlMetaTag, Consts.ETL_META_BATCH_DELETE_RANGE_LIST);
+	public BatchModifyEtlMetaStatusResponse batchModifyEtlMetaStatus(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, String etlMetaTag, Consts.BatchModifyEtlMetaType type) throws LogException {
+		return batchModifyEtlMetaStatus(project, etlMetaName, etlMetaKeyList, etlMetaTag, Consts.ETL_META_BATCH_MODIFY_STATUS_RANGE_LIST, type);
 	}
 
-	private DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, String etlMetaTag, String batchDeleteRange) throws LogException {
-		if (batchDeleteRange.equals(Consts.ETL_META_BATCH_DELETE_RANGE_LIST)) {
+	private BatchModifyEtlMetaStatusResponse batchModifyEtlMetaStatus(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, String etlMetaTag, String range, Consts.BatchModifyEtlMetaType type) throws LogException {
+		if (range.equals(Consts.ETL_META_BATCH_MODIFY_STATUS_RANGE_LIST)) {
 			if (etlMetaKeyList == null || etlMetaKeyList.size() == 0 || etlMetaKeyList.size() > 200) {
 				throw new IllegalArgumentException("etlMetaKeyList size not valid, should be [1, 200]");
 			}
-		} else if (batchDeleteRange.equals(Consts.ETL_META_BATCH_DELETE_RANGE_ALL)) {
+		} else if (range.equals(Consts.ETL_META_BATCH_MODIFY_STATUS_RANGE_ALL)) {
 			if (etlMetaTag.equals(Consts.CONST_ETLMETA_ALL_TAG_MATCH)) {
 				throw new IllegalArgumentException("parameter etlMetaTag can not be `__all_etl_meta_tag_match__` when batchDelete by tag");
 			}
 		} else {
-			throw new IllegalArgumentException("batchDeleteRange not valid, should be `all` or `list`");
+			throw new IllegalArgumentException("range not valid, should be `all` or `list`");
 		}
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
@@ -4141,19 +4141,19 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		String resourceUri = Consts.CONST_ETLMETA_URI;
 		Map<String, String> urlParameter = new HashMap<String, String>();
-		urlParameter.put("type", "batch_delete");
+		urlParameter.put("type", type.toString());
 		JSONObject requestBodyJsonObject = new JSONObject();
 		requestBodyJsonObject.put(Consts.ETL_META_NAME, etlMetaName);
 		requestBodyJsonObject.put(Consts.ETL_META_TAG, etlMetaTag);
-		requestBodyJsonObject.put(Consts.ETL_META_BATCH_DELETE_RANGE, batchDeleteRange);
-		if (batchDeleteRange.equals(Consts.ETL_META_BATCH_DELETE_RANGE_LIST)) {
+		requestBodyJsonObject.put(Consts.ETL_META_BATCH_MODIFY_STATUS_RANGE, range);
+		if (range.equals(Consts.ETL_META_BATCH_MODIFY_STATUS_RANGE_LIST)) {
 			JSONArray etlMetaKeyJsonArray = new JSONArray();
 			etlMetaKeyJsonArray.addAll(etlMetaKeyList);
 			requestBodyJsonObject.put(Consts.ETL_META_KEY_LIST, etlMetaKeyJsonArray);
 		}
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter, requestBodyJsonObject.toString());
-		return new DeleteEtlMetaResponse(response.getHeaders());
+		return new BatchModifyEtlMetaStatusResponse(response.getHeaders());
 	}
 
 	@Override
@@ -4220,6 +4220,7 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
+		System.out.println(object.toString());
 		ListEtlMetaResponse listResp = new ListEtlMetaResponse(response.getHeaders(), object.getInt(Consts.CONST_TOTAL));
 		try {
 			JSONArray items = object.getJSONArray("etlMetaList");

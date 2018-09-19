@@ -58,7 +58,22 @@ public class Consts {
 			return strValue;
 		}
 	}
-	
+
+	public enum BatchModifyEtlMetaType {
+		BATCH_ENABLE_ETL_META("batch_enable"),
+		BATCH_DISABLE_ETL_META("batch_disable"),
+		BATCH_DELETE_ETL_META("batch_delete");
+
+		private String strValue;
+
+		BatchModifyEtlMetaType(String strValue) {
+			this.strValue = strValue;
+		}
+
+		public String toString() {
+			return strValue;
+		}
+	}
 
 	public static final boolean DEFAULT_SLS_COMPRESS_FLAG = true;
 	
@@ -344,9 +359,9 @@ public class Consts {
 	public static final String ETL_META_KEY = "etlMetaKey";
 	public static final String ETL_META_TAG = "etlMetaTag";
 	public static final String ETL_META_VALUE = "etlMetaValue";
-	public static final String ETL_META_BATCH_DELETE_RANGE = "batchDeleteRange";
-	public static final String ETL_META_BATCH_DELETE_RANGE_ALL = "all";
-	public static final String ETL_META_BATCH_DELETE_RANGE_LIST = "list";
+	public static final String ETL_META_BATCH_MODIFY_STATUS_RANGE = "range";
+	public static final String ETL_META_BATCH_MODIFY_STATUS_RANGE_ALL = "all";
+	public static final String ETL_META_BATCH_MODIFY_STATUS_RANGE_LIST = "list";
 	public static final String ETL_META_KEY_LIST = "etlMetaKeyList";
 	public static final String ETL_META_LIST = "etlMetaList";
 	public static final String ETL_META_CREATE_TIME = "createTime";

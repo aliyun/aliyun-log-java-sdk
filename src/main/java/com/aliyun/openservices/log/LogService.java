@@ -2920,7 +2920,7 @@ public interface LogService {
 	DeleteEtlMetaResponse deleteEtlMeta(String project, String etlMetaName, String etlMetaKey, String etlMetaTag) throws LogException;
 
 	/**
-	 * delete all etlMeta with specified etlMetaTag, and value of etlMetaTag must not be reserved string `__all_etl_meta_tag_match__`
+	 * modify all etlMeta status with specified etlMetaTag, and value of etlMetaTag must not be reserved string `__all_etl_meta_tag_match__`
 	 *
 	 * @param project
 	 * 			project name
@@ -2928,8 +2928,10 @@ public interface LogService {
 	 * 			etl meta name
 	 * @param etlMetaTag
 	 * 			etl meta tag
+	 * @param type
+	 * 		    delete/enable/disable
 	 * @return
-	 * 			DeleteEtlMetaResponse
+	 * 			BatchModifyEtlMetaStatusResponse
 	 * @throws LogException
 	 *             if any error happened
 	 * @throws NullPointerException
@@ -2937,10 +2939,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, String etlMetaTag) throws LogException;
+	BatchModifyEtlMetaStatusResponse batchModifyEtlMetaStatus(String project, String etlMetaName, String etlMetaTag, Consts.BatchModifyEtlMetaType type) throws LogException;
 
 	/**
-     * delete all etlMeta of specified etlMetaKey(List), and etlMetaTag will not be checked, List size should be [1, 200]
+     * modify all etlMeta status with specified etlMetaKey(List), and etlMetaTag will not be checked, List size should be [1, 200]
 	 *
 	 * @param project
 	 * 			project name
@@ -2948,8 +2950,10 @@ public interface LogService {
 	 * 			etl meta name
 	 * @param etlMetaKeyList
 	 * 			List of etl meta key
+	 * @param type
+	 * 		    delete/enable/disable
 	 * @return
-	 * 			DeleteEtlMetaResponse
+	 * 			BatchModifyEtlMetaStatusResponse
 	 * @throws LogException
 	 *             if any error happened
 	 * @throws NullPointerException
@@ -2957,10 +2961,10 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, ArrayList<String> etlMetaKeyList) throws LogException;
+	BatchModifyEtlMetaStatusResponse batchModifyEtlMetaStatus(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, Consts.BatchModifyEtlMetaType type) throws LogException;
 
 	/**
-	 * delete etlMetaList of specified etlMetaKey(List), delete operation double checked with etlMetaTag,  List size should be [1, 200]
+	 * modify all etlMeta status with specified etlMetaKey(List), modify operation double checked with etlMetaTag,  List size should be [1, 200]
 	 *
 	 * @param project
 	 * 			project name
@@ -2970,8 +2974,10 @@ public interface LogService {
 	 * 			List of etl meta key
 	 * @param etlMetaTag
 	 * 			etl meta tag
+	 * @param type
+	 * 		    delete/enable/disable
 	 * @return
-	 * 			DeleteEtlMetaResponse
+	 * 			BatchModifyEtlMetaStatusResponse
 	 * @throws LogException
 	 *             if any error happened
 	 * @throws NullPointerException
@@ -2979,7 +2985,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	DeleteEtlMetaResponse batchDeleteEtlMeta(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, String etlMetaTag) throws LogException;
+	BatchModifyEtlMetaStatusResponse batchModifyEtlMetaStatus(String project, String etlMetaName, ArrayList<String> etlMetaKeyList, String etlMetaTag, Consts.BatchModifyEtlMetaType type) throws LogException;
 
 	/**
 	 * @param project
