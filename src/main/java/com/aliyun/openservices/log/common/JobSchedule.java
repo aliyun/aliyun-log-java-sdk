@@ -12,65 +12,43 @@ import java.util.Date;
  */
 public class JobSchedule implements Serializable {
 
-    public enum ScheduleType {
-        TimeWindow
+    public enum JobScheduleType {
+        TimePeriod,
+       // Hourly,
+       // Daily
     }
 
     @JSONField
-    private ScheduleType type;
+    private JobScheduleType type;
 
     @JSONField
-    private Integer interval;
-
-    // Optional
-    @JSONField
-    private Integer count;
+    private Date doNotRunUntil;
 
     @JSONField
-    private Date startTime;
+    private Long interval;
 
-    // Optional
-    @JSONField
-    private Date endTime;
-
-    public ScheduleType getType() {
+    public JobScheduleType getType() {
         return type;
     }
 
-    public void setType(ScheduleType type) {
+    public void setType(JobScheduleType type) {
         this.type = type;
     }
 
-    public Integer getInterval() {
+    public Date getDoNotRunUntil() {
+        return doNotRunUntil;
+    }
+
+    public void setDoNotRunUntil(Date doNotRunUntil) {
+        this.doNotRunUntil = doNotRunUntil;
+    }
+
+    public Long getInterval() {
         return interval;
     }
 
-    public void setInterval(Integer interval) {
+    public void setInterval(Long interval) {
         this.interval = interval;
-    }
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
     }
 
     @Override
@@ -81,21 +59,16 @@ public class JobSchedule implements Serializable {
         JobSchedule that = (JobSchedule) o;
 
         if (getType() != that.getType()) return false;
-        if (getInterval() != null ? !getInterval().equals(that.getInterval()) : that.getInterval() != null)
+        if (getDoNotRunUntil() != null ? !getDoNotRunUntil().equals(that.getDoNotRunUntil()) : that.getDoNotRunUntil() != null)
             return false;
-        if (getCount() != null ? !getCount().equals(that.getCount()) : that.getCount() != null) return false;
-        if (getStartTime() != null ? !getStartTime().equals(that.getStartTime()) : that.getStartTime() != null)
-            return false;
-        return getEndTime() != null ? getEndTime().equals(that.getEndTime()) : that.getEndTime() == null;
+        return getInterval() != null ? getInterval().equals(that.getInterval()) : that.getInterval() == null;
     }
 
     @Override
     public int hashCode() {
         int result = getType() != null ? getType().hashCode() : 0;
+        result = 31 * result + (getDoNotRunUntil() != null ? getDoNotRunUntil().hashCode() : 0);
         result = 31 * result + (getInterval() != null ? getInterval().hashCode() : 0);
-        result = 31 * result + (getCount() != null ? getCount().hashCode() : 0);
-        result = 31 * result + (getStartTime() != null ? getStartTime().hashCode() : 0);
-        result = 31 * result + (getEndTime() != null ? getEndTime().hashCode() : 0);
         return result;
     }
 }

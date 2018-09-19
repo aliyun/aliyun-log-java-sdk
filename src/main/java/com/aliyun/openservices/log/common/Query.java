@@ -18,10 +18,7 @@ public class Query implements Serializable {
     private String logStore;
 
     @JSONField
-    private Long startTime;
-
-    @JSONField
-    private Long endTime;
+    private long period;
 
     public String getChart() {
         return chart;
@@ -47,26 +44,17 @@ public class Query implements Serializable {
         this.logStore = logStore;
     }
 
-    public Long getStartTime() {
-        return startTime;
+    public long getPeriod() {
+        return period;
     }
 
-    public void setStartTime(Long startTime) {
-        this.startTime = startTime;
-    }
-
-    public Long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Long endTime) {
-        this.endTime = endTime;
+    public void setPeriod(long period) {
+        this.period = period;
     }
 
     public void deserialize(JSONObject value) {
         setChart(value.getString("chart"));
-        setEndTime(value.getLong("endTime"));
-        setStartTime(value.getLong("startTime"));
+        setPeriod(value.getLong("period"));
         setLogStore(value.getString("logStore"));
         setQuery(value.getString("query"));
     }
@@ -78,13 +66,13 @@ public class Query implements Serializable {
 
         Query query1 = (Query) o;
 
+        if (getPeriod() != query1.getPeriod())
+            return false;
         if (getChart() != null ? !getChart().equals(query1.getChart()) : query1.getChart() != null) return false;
         if (getQuery() != null ? !getQuery().equals(query1.getQuery()) : query1.getQuery() != null) return false;
         if (getLogStore() != null ? !getLogStore().equals(query1.getLogStore()) : query1.getLogStore() != null)
             return false;
-        if (getStartTime() != null ? !getStartTime().equals(query1.getStartTime()) : query1.getStartTime() != null)
-            return false;
-        return getEndTime() != null ? getEndTime().equals(query1.getEndTime()) : query1.getEndTime() == null;
+        return true;
     }
 
     @Override
@@ -92,8 +80,7 @@ public class Query implements Serializable {
         int result = getChart() != null ? getChart().hashCode() : 0;
         result = 31 * result + (getQuery() != null ? getQuery().hashCode() : 0);
         result = 31 * result + (getLogStore() != null ? getLogStore().hashCode() : 0);
-        result = 31 * result + (getStartTime() != null ? getStartTime().hashCode() : 0);
-        result = 31 * result + (getEndTime() != null ? getEndTime().hashCode() : 0);
+        result = 31 * result + (int) (getPeriod() ^ (getPeriod() >>> 32));
         return result;
     }
 }

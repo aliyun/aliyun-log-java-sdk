@@ -2,35 +2,38 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-public class EmailNotification extends Notification {
+import java.util.ArrayList;
+import java.util.List;
 
-    @JSONField
-    private String emailAddress;
+public class EmailNotification extends Notification {
 
     @JSONField
     private String subject;
 
     @JSONField
+    private List<String> emailList;
+
+    @JSONField
     private String dashboard;
 
     public EmailNotification() {
-        // For JSON deserialization
         super(NotificationType.Email);
     }
 
-    public EmailNotification(String content, String emailAddress) {
+    public EmailNotification(String content, List<String> emailList) {
         super(NotificationType.Email, content);
-        this.emailAddress = emailAddress;
+        this.emailList = emailList;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public List<String> getEmailList() {
+        return emailList;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public void setEmailList(List<String> emailList) {
+        this.emailList = emailList;
     }
 
     public String getSubject() {
@@ -54,7 +57,11 @@ public class EmailNotification extends Notification {
         super.deserialize(value);
         dashboard = value.getString("dashboard");
         subject = value.getString("subject");
-        emailAddress = value.getString("emailAddress");
+        JSONArray emails = value.getJSONArray("emailAddresses");
+        emailList = new ArrayList<String>(emails.size());
+        for (int i = 0; i < emails.size(); i++) {
+            emailList.add(emails.getString(i));
+        }
     }
 
     @Override
@@ -64,16 +71,16 @@ public class EmailNotification extends Notification {
 
         EmailNotification that = (EmailNotification) o;
 
-        if (getEmailAddress() != null ? !getEmailAddress().equals(that.getEmailAddress()) : that.getEmailAddress() != null)
-            return false;
         if (getSubject() != null ? !getSubject().equals(that.getSubject()) : that.getSubject() != null) return false;
+        if (getEmailList() != null ? !getEmailList().equals(that.getEmailList()) : that.getEmailList() != null)
+            return false;
         return getDashboard() != null ? getDashboard().equals(that.getDashboard()) : that.getDashboard() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getEmailAddress() != null ? getEmailAddress().hashCode() : 0;
-        result = 31 * result + (getSubject() != null ? getSubject().hashCode() : 0);
+        int result = getSubject() != null ? getSubject().hashCode() : 0;
+        result = 31 * result + (getEmailList() != null ? getEmailList().hashCode() : 0);
         result = 31 * result + (getDashboard() != null ? getDashboard().hashCode() : 0);
         return result;
     }

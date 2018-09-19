@@ -47,4 +47,22 @@ public class WebhookNotification extends Notification {
         serviceUri = value.getString("serviceUri");
         method = HttpMethod.fromString(value.getString("method"));
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        WebhookNotification that = (WebhookNotification) o;
+
+        if (getMethod() != that.getMethod()) return false;
+        return getServiceUri() != null ? getServiceUri().equals(that.getServiceUri()) : that.getServiceUri() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getMethod() != null ? getMethod().hashCode() : 0;
+        result = 31 * result + (getServiceUri() != null ? getServiceUri().hashCode() : 0);
+        return result;
+    }
 }

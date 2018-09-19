@@ -47,7 +47,7 @@ public class Job implements Serializable {
     private String description;
 
     @JSONField
-    private LogSetting logging;
+    private LogSetting logSetting;
 
     @JSONField
     private long timeout;
@@ -58,7 +58,6 @@ public class Job implements Serializable {
 
     // ---------- read only properties ----------------
 
-    // execution status
     @JSONField
     private JobStatus status;
 
@@ -67,7 +66,6 @@ public class Job implements Serializable {
 
     @JSONField
     private Date lastModifiedTime;
-
 
     public String getJobName() {
         return jobName;
@@ -117,12 +115,12 @@ public class Job implements Serializable {
         this.description = description;
     }
 
-    public LogSetting getLogging() {
-        return logging;
+    public LogSetting getLogSetting() {
+        return logSetting;
     }
 
-    public void setLogging(LogSetting logging) {
-        this.logging = logging;
+    public void setLogSetting(LogSetting logSetting) {
+        this.logSetting = logSetting;
     }
 
     public long getTimeout() {
@@ -220,8 +218,8 @@ public class Job implements Serializable {
         createTime = new Date(value.getLong("createTime"));
         lastModifiedTime = new Date(value.getLong("lastModifiedTime"));
         schedule = JsonUtils.deserialize(value.getString("schedule"), JobSchedule.class);
-        if (value.containsKey("logging")) {
-            logging = JsonUtils.deserialize(value.getString("logging"), LogSetting.class);
+        if (value.containsKey("logSetting")) {
+            logSetting = JsonUtils.deserialize(value.getString("logSetting"), LogSetting.class);
         }
         if (value.containsKey("retryPolicy")) {
             retryPolicy = JsonUtils.deserialize(value.getString("retryPolicy"), RetryPolicy.class);

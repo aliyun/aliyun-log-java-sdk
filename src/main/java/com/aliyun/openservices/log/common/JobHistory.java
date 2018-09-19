@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 
-// URI: /jobs/{jobName}/history
 public class JobHistory implements Serializable {
 
     @JSONField
@@ -89,6 +88,6 @@ public class JobHistory implements Serializable {
 
     public enum JobExecutionStatus {
         Failed,
-        Completed;
+        Successed
     }
 }

@@ -7,24 +7,29 @@ import java.io.Serializable;
 
 public class RetryPolicy implements Serializable {
 
+    public enum RetryType {
+        NoRetry,
+        Linear,
+        // Exponential,
+    }
+
     @JSONField
     private RetryType type;
 
     @JSONField
-    private int interval;
+    private Long deltaBackoff;
 
     @JSONField
-    private int count;
-
+    private Integer maxAttempts;
 
     public RetryPolicy() {
-        this.type = RetryType.None;
+        this.type = RetryType.NoRetry;
     }
 
-    public RetryPolicy(int interval, int count) {
-        this.type = RetryType.Fixed;
-        this.interval = interval;
-        this.count = count;
+    public RetryPolicy(Long deltaBackoff, Integer maxAttempts) {
+        this.deltaBackoff = deltaBackoff;
+        this.maxAttempts = maxAttempts;
+        this.type = RetryType.Linear;
     }
 
     public RetryType getType() {
@@ -35,25 +40,20 @@ public class RetryPolicy implements Serializable {
         this.type = type;
     }
 
-    public int getInterval() {
-        return interval;
+    public Long getDeltaBackoff() {
+        return deltaBackoff;
     }
 
-    public void setInterval(int interval) {
-        this.interval = interval;
+    public void setDeltaBackoff(Long deltaBackoff) {
+        this.deltaBackoff = deltaBackoff;
     }
 
-    public int getCount() {
-        return count;
+    public Integer getMaxAttempts() {
+        return maxAttempts;
     }
 
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public enum RetryType {
-        Fixed,
-        None
+    public void setMaxAttempts(Integer maxAttempts) {
+        this.maxAttempts = maxAttempts;
     }
 
     @Override
@@ -63,16 +63,17 @@ public class RetryPolicy implements Serializable {
 
         RetryPolicy that = (RetryPolicy) o;
 
-        if (getInterval() != that.getInterval()) return false;
-        if (getCount() != that.getCount()) return false;
-        return getType() == that.getType();
+        if (getType() != that.getType()) return false;
+        if (getDeltaBackoff() != null ? !getDeltaBackoff().equals(that.getDeltaBackoff()) : that.getDeltaBackoff() != null)
+            return false;
+        return getMaxAttempts() != null ? getMaxAttempts().equals(that.getMaxAttempts()) : that.getMaxAttempts() == null;
     }
 
     @Override
     public int hashCode() {
         int result = getType() != null ? getType().hashCode() : 0;
-        result = 31 * result + getInterval();
-        result = 31 * result + getCount();
+        result = 31 * result + (getDeltaBackoff() != null ? getDeltaBackoff().hashCode() : 0);
+        result = 31 * result + (getMaxAttempts() != null ? getMaxAttempts().hashCode() : 0);
         return result;
     }
 }
