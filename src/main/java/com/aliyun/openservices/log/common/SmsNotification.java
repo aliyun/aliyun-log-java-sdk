@@ -3,34 +3,37 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
+
+import java.util.List;
 
 public class SmsNotification extends Notification {
 
     @JSONField
-    private String phoneNumber;
+    private List<String> mobileList;
 
     public SmsNotification() {
         super(NotificationType.Sms);
     }
 
-    public SmsNotification(String content, String phoneNumber) {
+    public SmsNotification(String content, List<String> mobileList) {
         super(NotificationType.Sms, content);
-        Args.notNullOrEmpty(phoneNumber, "phoneNumber");
-        this.phoneNumber = phoneNumber;
+        Args.notNullOrEmpty(mobileList, "mobileList");
+        this.mobileList = mobileList;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public List<String> getMobileList() {
+        return mobileList;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setMobileList(List<String> mobileList) {
+        this.mobileList = mobileList;
     }
 
     @Override
     public void deserialize(final JSONObject value) {
         super.deserialize(value);
-        phoneNumber = value.getString("phoneNumber");
+        mobileList = JsonUtils.readList(value, "mobileList");
     }
 }

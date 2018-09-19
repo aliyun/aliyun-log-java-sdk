@@ -2,10 +2,9 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import net.sf.json.JSONArray;
+import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class EmailNotification extends Notification {
@@ -57,11 +56,7 @@ public class EmailNotification extends Notification {
         super.deserialize(value);
         dashboard = value.getString("dashboard");
         subject = value.getString("subject");
-        JSONArray emails = value.getJSONArray("emailAddresses");
-        emailList = new ArrayList<String>(emails.size());
-        for (int i = 0; i < emails.size(); i++) {
-            emailList.add(emails.getString(i));
-        }
+        emailList = JsonUtils.readList(value, "emailList");
     }
 
     @Override

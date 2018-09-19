@@ -41,7 +41,12 @@ public abstract class Notification {
     }
 
     public enum NotificationType {
+        DingTalk,
         Email,
+        /**
+         * Private message
+         */
+        Message,
         Sms,
         Webhook;
 

@@ -5,6 +5,9 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import net.sf.json.JSONObject;
 
+/**
+ * Type can be Webhook or DingTalk.
+ */
 // TODO support authentication, custom headers
 public class WebhookNotification extends Notification {
 
@@ -19,8 +22,8 @@ public class WebhookNotification extends Notification {
         method = HttpMethod.POST;
     }
 
-    public WebhookNotification(String content, HttpMethod method, String serviceUri) {
-        super(NotificationType.Webhook, content);
+    public WebhookNotification(NotificationType type, String content, HttpMethod method, String serviceUri) {
+        super(type, content);
         this.method = method;
         this.serviceUri = serviceUri;
     }

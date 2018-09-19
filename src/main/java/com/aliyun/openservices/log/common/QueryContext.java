@@ -16,17 +16,17 @@ public class QueryContext implements Serializable {
     private String dashboard;
 
     @JSONField
-    private List<Query> queries;
+    private List<Query> queryList;
 
     public QueryContext() {
         // For JSON deserialization
     }
 
-    public QueryContext(String dashboard, List<Query> queries) {
+    public QueryContext(String dashboard, List<Query> queryList) {
         Args.notNullOrEmpty(dashboard, "dashboard");
-        Args.notNullOrEmpty(queries, "queries");
+        Args.notNullOrEmpty(queryList, "queryList");
         this.dashboard = dashboard;
-        this.queries = queries;
+        this.queryList = queryList;
     }
 
     public String getDashboard() {
@@ -37,24 +37,23 @@ public class QueryContext implements Serializable {
         this.dashboard = dashboard;
     }
 
-    public List<Query> getQueries() {
-        return queries;
+    public List<Query> getQueryList() {
+        return queryList;
     }
 
-    public void setQueries(List<Query> queries) {
-        this.queries = queries;
+    public void setQueryList(List<Query> queryList) {
+        this.queryList = queryList;
     }
 
     public void deserialize(JSONObject value) {
         setDashboard(value.getString("dashboard"));
-        JSONArray queries = value.getJSONArray("queries");
-        List<Query> queryList = new ArrayList<Query>(queries.size());
+        JSONArray queries = value.getJSONArray("queryList");
+        queryList = new ArrayList<Query>(queries.size());
         for (int i = 0; i < queries.size(); i++) {
             Query query = new Query();
             query.deserialize(queries.getJSONObject(i));
             queryList.add(query);
         }
-        setQueries(queryList);
     }
 
     @Override
@@ -66,13 +65,13 @@ public class QueryContext implements Serializable {
 
         if (getDashboard() != null ? !getDashboard().equals(that.getDashboard()) : that.getDashboard() != null)
             return false;
-        return getQueries() != null ? getQueries().equals(that.getQueries()) : that.getQueries() == null;
+        return getQueryList() != null ? getQueryList().equals(that.getQueryList()) : that.getQueryList() == null;
     }
 
     @Override
     public int hashCode() {
         int result = getDashboard() != null ? getDashboard().hashCode() : 0;
-        result = 31 * result + (getQueries() != null ? getQueries().hashCode() : 0);
+        result = 31 * result + (getQueryList() != null ? getQueryList().hashCode() : 0);
         return result;
     }
 }

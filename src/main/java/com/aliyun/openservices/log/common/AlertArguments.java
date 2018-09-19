@@ -20,7 +20,7 @@ public class AlertArguments extends JobArguments {
     private String condition;
 
     @JSONField
-    private List<Notification> notifications;
+    private List<Notification> notificationList;
 
     @JSONField
     private QueryContext queryContext;
@@ -34,12 +34,12 @@ public class AlertArguments extends JobArguments {
         this.condition = condition;
     }
 
-    public List<Notification> getNotifications() {
-        return notifications;
+    public List<Notification> getNotificationList() {
+        return notificationList;
     }
 
-    public void setNotifications(List<Notification> notifications) {
-        this.notifications = notifications;
+    public void setNotificationList(List<Notification> notificationList) {
+        this.notificationList = notificationList;
     }
 
     public QueryContext getQueryContext() {
@@ -58,6 +58,10 @@ public class AlertArguments extends JobArguments {
                 return new EmailNotification();
             case Webhook:
                 return new WebhookNotification();
+            case DingTalk:
+                return new DingTalkNotification();
+            case Message:
+                return new MessageNotification();
             default:
                 throw new AssertionError();
         }
@@ -69,13 +73,13 @@ public class AlertArguments extends JobArguments {
         queryContext.deserialize(value.getJSONObject("queryContext"));
         condition = value.getString("condition");
         JSONArray notifications = value.getJSONArray("notifications");
-        this.notifications = new ArrayList<Notification>(notifications.size());
+        notificationList = new ArrayList<Notification>(notifications.size());
         for (int i = 0; i < notifications.size(); i++) {
             JSONObject itemAsJson = notifications.getJSONObject(i);
             NotificationType notificationType = NotificationType.fromString(itemAsJson.getString("type"));
             Notification notification = createNotificationFromType(notificationType);
             notification.deserialize(itemAsJson);
-            this.notifications.add(notification);
+            notificationList.add(notification);
         }
     }
 
@@ -88,7 +92,7 @@ public class AlertArguments extends JobArguments {
 
         if (getCondition() != null ? !getCondition().equals(arguments.getCondition()) : arguments.getCondition() != null)
             return false;
-        if (getNotifications() != null ? !getNotifications().equals(arguments.getNotifications()) : arguments.getNotifications() != null)
+        if (getNotificationList() != null ? !getNotificationList().equals(arguments.getNotificationList()) : arguments.getNotificationList() != null)
             return false;
         return getQueryContext() != null ? getQueryContext().equals(arguments.getQueryContext()) : arguments.getQueryContext() == null;
     }
@@ -96,7 +100,7 @@ public class AlertArguments extends JobArguments {
     @Override
     public int hashCode() {
         int result = getCondition() != null ? getCondition().hashCode() : 0;
-        result = 31 * result + (getNotifications() != null ? getNotifications().hashCode() : 0);
+        result = 31 * result + (getNotificationList() != null ? getNotificationList().hashCode() : 0);
         result = 31 * result + (getQueryContext() != null ? getQueryContext().hashCode() : 0);
         return result;
     }

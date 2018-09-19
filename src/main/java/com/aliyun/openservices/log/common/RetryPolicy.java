@@ -17,7 +17,7 @@ public class RetryPolicy implements Serializable {
     private RetryType type;
 
     @JSONField
-    private Long deltaBackoff;
+    private Integer deltaBackoff;
 
     @JSONField
     private Integer maxAttempts;
@@ -26,7 +26,7 @@ public class RetryPolicy implements Serializable {
         this.type = RetryType.NoRetry;
     }
 
-    public RetryPolicy(Long deltaBackoff, Integer maxAttempts) {
+    public RetryPolicy(Integer deltaBackoff, Integer maxAttempts) {
         this.deltaBackoff = deltaBackoff;
         this.maxAttempts = maxAttempts;
         this.type = RetryType.Linear;
@@ -40,11 +40,11 @@ public class RetryPolicy implements Serializable {
         this.type = type;
     }
 
-    public Long getDeltaBackoff() {
+    public Integer getDeltaBackoff() {
         return deltaBackoff;
     }
 
-    public void setDeltaBackoff(Long deltaBackoff) {
+    public void setDeltaBackoff(Integer deltaBackoff) {
         this.deltaBackoff = deltaBackoff;
     }
 
