@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ListJobsRequest extends Request {
     /**
-     * Job name for  fuzzy matching
+     * Job name for fuzzy matching
      */
     private String jobName;
     /**
@@ -15,10 +15,9 @@ public class ListJobsRequest extends Request {
      */
     private String jobType;
     /**
-     * extraInfo for searching
+     * resourceProvider for searching
      */
-    private String extraInfo;
-    private String resourceProdiver;
+    private String resourceProvider;
     private Integer offset;
     private Integer size;
 
@@ -58,12 +57,12 @@ public class ListJobsRequest extends Request {
         this.jobType = jobType;
     }
 
-    public String getExtraInfo() {
-        return extraInfo;
+    public String getResourceProvider() {
+        return resourceProvider;
     }
 
-    public void setExtraInfo(String extraInfo) {
-        this.extraInfo = extraInfo;
+    public void setResourceProvider(String resourceProvider) {
+        this.resourceProvider = resourceProvider;
     }
 
     @Override
@@ -75,8 +74,8 @@ public class ListJobsRequest extends Request {
         if (jobType != null && !jobType.isEmpty()) {
             urlParameters.put(Consts.JOB_TYPE, jobType);
         }
-        if (extraInfo != null && !extraInfo.isEmpty()) {
-            urlParameters.put(Consts.EXTRA_INFO, extraInfo);
+        if (resourceProvider != null && !resourceProvider.isEmpty()) {
+            urlParameters.put(Consts.RESOURCE_PROVIDER, resourceProvider);
         }
         if (offset != null) {
             urlParameters.put(Consts.CONST_OFFSET, offset.toString());

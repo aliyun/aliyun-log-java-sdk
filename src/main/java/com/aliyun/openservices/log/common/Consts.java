@@ -238,8 +238,6 @@ public class Consts {
 	public static final String CONST_RESULT_TIME = "__time__";
 	public static final String CONST_RESULT_SOURCE = "__source__";
 
-
-
 	public static final String CONST_ERROR_CODE = "errorCode";
 	public static final String CONST_ERROR_MESSAGE = "errorMessage";
 
@@ -371,7 +369,8 @@ public class Consts {
     public static final String JOB_LIST = "jobList";
     public static final String JOB_NAME = "jobName";
     public static final String JOB_TYPE = "jobType";
-    public static final String EXTRA_INFO = "extraInfo";
-    public static final String LOGGING_URI = "/logging";
     public static final String JOB_URI = "/jobs";
+
+    public static final String LOGGING_URI = "/logging";
+    public static final String RESOURCE_PROVIDER = "resourceProvider";
 }
