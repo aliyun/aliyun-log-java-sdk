@@ -16,6 +16,7 @@ import com.aliyun.openservices.log.request.CreateConsumerGroupRequest;
 import com.aliyun.openservices.log.request.CreateDashboardRequest;
 import com.aliyun.openservices.log.request.CreateEtlJobRequest;
 import com.aliyun.openservices.log.request.CreateIndexRequest;
+import com.aliyun.openservices.log.request.CreateJobRequest;
 import com.aliyun.openservices.log.request.CreateLogStoreRequest;
 import com.aliyun.openservices.log.request.CreateLoggingRequest;
 import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
@@ -26,11 +27,14 @@ import com.aliyun.openservices.log.request.DeleteConfigRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
 import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
 import com.aliyun.openservices.log.request.DeleteIndexRequest;
+import com.aliyun.openservices.log.request.DeleteJobRequest;
 import com.aliyun.openservices.log.request.DeleteLogStoreRequest;
 import com.aliyun.openservices.log.request.DeleteLoggingRequest;
 import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
 import com.aliyun.openservices.log.request.DeleteSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteShardRequest;
+import com.aliyun.openservices.log.request.DisableJobRequest;
+import com.aliyun.openservices.log.request.EnableJobRequest;
 import com.aliyun.openservices.log.request.GetAlertRequest;
 import com.aliyun.openservices.log.request.GetAppliedConfigsRequest;
 import com.aliyun.openservices.log.request.GetAppliedMachineGroupRequest;
@@ -42,6 +46,7 @@ import com.aliyun.openservices.log.request.GetDashboardRequest;
 import com.aliyun.openservices.log.request.GetEtlJobRequest;
 import com.aliyun.openservices.log.request.GetHistogramsRequest;
 import com.aliyun.openservices.log.request.GetIndexRequest;
+import com.aliyun.openservices.log.request.GetJobRequest;
 import com.aliyun.openservices.log.request.GetLogStoreRequest;
 import com.aliyun.openservices.log.request.GetLoggingRequest;
 import com.aliyun.openservices.log.request.GetLogsRequest;
@@ -54,6 +59,8 @@ import com.aliyun.openservices.log.request.ListAlertRequest;
 import com.aliyun.openservices.log.request.ListConfigRequest;
 import com.aliyun.openservices.log.request.ListDashboardRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
+import com.aliyun.openservices.log.request.ListJobHistoryRequest;
+import com.aliyun.openservices.log.request.ListJobsRequest;
 import com.aliyun.openservices.log.request.ListLogStoresRequest;
 import com.aliyun.openservices.log.request.ListMachineGroupRequest;
 import com.aliyun.openservices.log.request.ListProjectRequest;
@@ -71,6 +78,7 @@ import com.aliyun.openservices.log.request.UpdateConfigRequest;
 import com.aliyun.openservices.log.request.UpdateDashboardRequest;
 import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
 import com.aliyun.openservices.log.request.UpdateIndexRequest;
+import com.aliyun.openservices.log.request.UpdateJobRequest;
 import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
 import com.aliyun.openservices.log.request.UpdateLoggingRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
@@ -3156,5 +3164,76 @@ public interface LogService {
      * @return An instance of {@link DeleteLoggingResponse}
      * @throws LogException if any error occurs
      */
-	DeleteLoggingResponse deleteLogging(DeleteLoggingRequest request) throws LogException;
-}
+    DeleteLoggingResponse deleteLogging(DeleteLoggingRequest request) throws LogException;
+
+	/**
+	 * Create a job.
+	 *
+	 * @param request An instance of {@link CreateJobRequest}
+	 * @return An instance of {@link CreateJobResponse} if success
+	 * @throws LogException if any error occurs
+	 */
+	CreateJobResponse createJob(CreateJobRequest request) throws LogException;
+
+	/**
+	 * Get a job.
+	 *
+	 * @param request An instance of {@link GetJobRequest}
+	 * @return An instance of {@link GetJobResponse}
+	 * @throws LogException if any error occurs
+	 */
+	GetJobResponse getJob(GetJobRequest request) throws LogException;
+
+	/**
+	 * Updates a existing job.
+	 *
+	 * @param request An instance of {@link UpdateJobRequest}
+	 * @return An instance of {@link UpdateJobResponse}
+	 * @throws LogException if any error occurs
+	 */
+	UpdateJobResponse updateJob(UpdateJobRequest request) throws LogException;
+
+	/**
+	 * Delete a job.
+	 *
+	 * @param request An instance of {@link DeleteJobRequest}
+	 * @return An instance of {@link DeleteJobResponse}
+	 * @throws LogException if any error occurs
+	 */
+	DeleteJobResponse deleteJob(DeleteJobRequest request) throws LogException;
+
+	/**
+	 * Enable a job.
+	 *
+	 * @param request An instance of {@link EnableJobRequest}
+	 * @return An instance of {@link EnableJobResponse}
+	 * @throws LogException if any error occurs
+	 */
+	EnableJobResponse enableJob(EnableJobRequest request) throws LogException;
+
+	/**
+	 * Disable a job.
+	 *
+	 * @param request An instance of {@link DisableJobRequest}
+	 * @return An instance of {@link DisableJobResponse}
+	 * @throws LogException if any error occurs
+	 */
+	DisableJobResponse disableJob(DisableJobRequest request) throws LogException;
+
+	/**
+	 * Get job list in project.
+	 *
+	 * @param request An instance of {@link ListJobsRequest}
+	 * @return An instance of {@link ListJobsResponse}
+	 * @throws LogException if any error occurs
+	 */
+	ListJobsResponse listJobs(ListJobsRequest request) throws LogException;
+
+	/**
+	 * Get job execution history list.
+	 *
+	 * @param request An instance of {@link ListJobHistoryRequest}
+	 * @return An instance of {@link ListJobHistoryResponse}
+	 * @throws LogException if any error occurs
+	 */
+	ListJobHistoryResponse listJobHistory(ListJobHistoryRequest request) throws LogException;}
