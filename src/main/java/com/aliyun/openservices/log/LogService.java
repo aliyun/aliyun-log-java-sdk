@@ -3236,4 +3236,5 @@ public interface LogService {
 	 * @return An instance of {@link ListJobHistoryResponse}
 	 * @throws LogException if any error occurs
 	 */
-	ListJobHistoryResponse listJobHistory(ListJobHistoryRequest request) throws LogException;}
+	ListJobHistoryResponse listJobHistory(ListJobHistoryRequest request) throws LogException;
+}

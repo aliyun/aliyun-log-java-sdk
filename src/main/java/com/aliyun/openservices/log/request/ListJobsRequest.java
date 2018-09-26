@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.request;
 
 
 import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.common.Job;
 
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public class ListJobsRequest extends Request {
     /**
      * Job type for filtering
      */
-    private String jobType;
+    private Job.JobType jobType;
     /**
      * resourceProvider for searching
      */
@@ -49,11 +50,11 @@ public class ListJobsRequest extends Request {
         this.jobName = jobName;
     }
 
-    public String getJobType() {
+    public Job.JobType getJobType() {
         return jobType;
     }
 
-    public void setJobType(String jobType) {
+    public void setJobType(Job.JobType jobType) {
         this.jobType = jobType;
     }
 
@@ -71,8 +72,8 @@ public class ListJobsRequest extends Request {
         if (jobName != null && !jobName.isEmpty()) {
             urlParameters.put(Consts.JOB_NAME, jobName);
         }
-        if (jobType != null && !jobType.isEmpty()) {
-            urlParameters.put(Consts.JOB_TYPE, jobType);
+        if (jobType != null) {
+            urlParameters.put(Consts.JOB_TYPE, jobType.name());
         }
         if (resourceProvider != null && !resourceProvider.isEmpty()) {
             urlParameters.put(Consts.RESOURCE_PROVIDER, resourceProvider);
