@@ -75,6 +75,7 @@ public class Consts {
 		}
 	}
 
+	public static final String ACTION = "action";
 	public static final boolean DEFAULT_SLS_COMPRESS_FLAG = true;
 
 	public static final boolean DEFAULT_SLS_REVERSE = false;
@@ -326,6 +327,9 @@ public class Consts {
 	// oss shipper
 	public static final String CONST_OSSSHIPPER_STORAGEFORMAT = "format";
 
+	public static final String ENABLE = "enable";
+	public static final String DISABLE = "disable";
+	public static final String DISABLE_UNTIL = "disableUntil";
 	// ETL
 	public static final String CONST_ETLJOB_URI = "/etljobs";
 	public static final String FUNCTION_PROVIDER_FC = "FunctionCompute";

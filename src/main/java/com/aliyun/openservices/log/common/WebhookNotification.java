@@ -22,7 +22,13 @@ public class WebhookNotification extends Notification {
         method = HttpMethod.POST;
     }
 
-    public WebhookNotification(NotificationType type, String content, HttpMethod method, String serviceUri) {
+    public WebhookNotification(String content, HttpMethod method, String serviceUri) {
+        super(NotificationType.Webhook, content);
+        this.method = method;
+        this.serviceUri = serviceUri;
+    }
+
+    WebhookNotification(NotificationType type, String content, HttpMethod method, String serviceUri) {
         super(type, content);
         this.method = method;
         this.serviceUri = serviceUri;

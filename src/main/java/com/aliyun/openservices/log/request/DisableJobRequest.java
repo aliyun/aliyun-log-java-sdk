@@ -1,5 +1,6 @@
 package com.aliyun.openservices.log.request;
 
+import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.util.Args;
 
 import java.util.Date;
@@ -15,7 +16,6 @@ public class DisableJobRequest extends Request {
         super(project);
         Args.notNullOrEmpty(jobName, "Job name");
         this.jobName = jobName;
-        SetParam("action", "Disable");
     }
 
     public String getJobName() {
@@ -38,8 +38,9 @@ public class DisableJobRequest extends Request {
     public Map<String, String> GetAllParams() {
         Map<String, String> parameters = super.GetAllParams();
         if (disableUntil != null) {
-            parameters.put("disableUntil", String.valueOf(disableUntil.getTime()));
+            parameters.put(Consts.DISABLE_UNTIL, String.valueOf(disableUntil.getTime()));
         }
+        parameters.put(Consts.ACTION, Consts.DISABLE);
         return parameters;
     }
 }
