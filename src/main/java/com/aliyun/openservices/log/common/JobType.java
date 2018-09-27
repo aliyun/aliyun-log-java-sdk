@@ -4,7 +4,6 @@ public enum JobType {
     Alert,
     Report,
     ScheduleSearch;
-    // etc
 
     @Override
     public String toString() {

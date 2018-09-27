@@ -377,4 +377,6 @@ public class Consts {
 
     public static final String LOGGING_URI = "/logging";
     public static final String RESOURCE_PROVIDER = "resourceProvider";
+    public static final String START_TIME = "startTime";
+    public static final String END_TIME = "endTime";
 }

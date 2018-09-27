@@ -110,6 +110,7 @@ import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.DigestUtils;
 import com.aliyun.openservices.log.util.NetworkUtils;
+import com.aliyun.openservices.log.util.Utils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -362,10 +363,9 @@ public class Client implements LogService {
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(ErrorCodes.ENDPOINT_INVALID, e);
 		}
-
 	}
-	private URI GetHostURIByIp(String ip_addr) throws LogException
-	{
+
+	private URI GetHostURIByIp(String ip_addr) throws LogException {
 		String endPointUrl = this.httpType + ip_addr;
 		try {
 			return new URI(endPointUrl);
@@ -425,15 +425,13 @@ public class Client implements LogService {
 		return GetLogtailProfile(request);
 	}
 	
-	public GetLogtailProfileResponse GetLogtailProfile(GetLogtailProfileRequest request) throws LogException
-	{
+	public GetLogtailProfileResponse GetLogtailProfile(GetLogtailProfileRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
 		String project = request.GetProject();
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
 		String resourceUri = "/logstores/" + request.getLogStore() + Consts.CONST_GETLOGTAILPROFILE_URI;
-
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
 
@@ -452,7 +450,6 @@ public class Client implements LogService {
 
 		GetHistogramsRequest request = new GetHistogramsRequest(project,
 				logStore, topic, query, from, to);
-
 		return GetHistograms(request);
 	}
 
@@ -503,7 +500,6 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
 		CodingUtils.assertParameterNotNull(logItems, "logGroup");
-		// CodingUtils.assertParameterNotNull(source, "source");
 		PutLogsRequest request = new PutLogsRequest(project, logStore, topic,
 				source, logItems, shardHash);
 		request.SetCompressType(CompressType.LZ4);
@@ -518,7 +514,6 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
 		CodingUtils.assertParameterNotNull(logItems, "logGroup");
-		// CodingUtils.assertParameterNotNull(source, "source");
 		PutLogsRequest request = new PutLogsRequest(project, logStore, topic,
 				source, logItems, null);
 		request.SetCompressType(CompressType.LZ4);
@@ -664,7 +659,6 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = request.GetAllParams();
 		long cmp_size = logBytes.length;
 
-
 		for (int i = 0; i < 2; i++) {
 			String server_ip = null;
 			ClientConnectionStatus connection_status = null;
@@ -757,16 +751,12 @@ public class Client implements LogService {
 	public GetLogsResponse GetProjectLogs(GetProjectLogsRequest request) throws  LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
-
 		String project = request.GetProject();
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		String resourceUri = "/logs";
 
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 
@@ -810,7 +800,6 @@ public class Client implements LogService {
 		} catch (JSONException e) {
 			// ignore;
 		}
-
 	}
 	
 	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException {
@@ -834,7 +823,6 @@ public class Client implements LogService {
 		GetLogsResponse getLogsResponse = new GetLogsResponse(resHeaders);
 		ExtractLogsWithFastJson(getLogsResponse, object);
 		return getLogsResponse;
-
 	}
 
 	public ListLogStoresResponse ListLogStores(String project, int offset,
@@ -843,9 +831,7 @@ public class Client implements LogService {
 
 		ListLogStoresRequest request = new ListLogStoresRequest(project,
 				offset, size, logstoreName);
-
 		return ListLogStores(request);
-
 	}
 
 	public ListLogStoresResponse ListLogStores(ListLogStoresRequest request)
@@ -853,11 +839,8 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
 		String resourceUri = "/logstores";
-
 		String project = request.GetProject();
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
 
@@ -924,7 +907,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStream");
 		CodingUtils.assertParameterNotNull(fromTime, "fromTime");
-		long timeStamp = fromTime.getTime() / (long) 1000;
+		long timeStamp = Utils.getTimestamp(fromTime);
 		GetCursorRequest request = new GetCursorRequest(project, logStore,
 				shardId, timeStamp);
 		return GetCursor(request);
@@ -1171,11 +1154,7 @@ public class Client implements LogService {
 	}
 
 	protected String GetRequestId(Map<String, String> headers) {
-		if (headers.containsKey(Consts.CONST_X_SLS_REQUESTID)) {
-			return headers.get(Consts.CONST_X_SLS_REQUESTID);
-		} else {
-			return "";
-		}
+	    return Utils.getOrEmpty(headers, Consts.CONST_X_SLS_REQUESTID);
 	}
 
 	@Override

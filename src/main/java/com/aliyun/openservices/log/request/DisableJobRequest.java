@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.request;
 
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.util.Utils;
 
 import java.util.Date;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class DisableJobRequest extends Request {
     public Map<String, String> GetAllParams() {
         Map<String, String> parameters = super.GetAllParams();
         if (disableUntil != null) {
-            parameters.put(Consts.DISABLE_UNTIL, String.valueOf(disableUntil.getTime() / 1000));
+            parameters.put(Consts.DISABLE_UNTIL, String.valueOf(Utils.getTimestamp(disableUntil)));
         }
         parameters.put(Consts.ACTION, Consts.DISABLE);
         return parameters;

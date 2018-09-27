@@ -18,6 +18,9 @@ import java.util.List;
 
 public final class JsonUtils {
 
+    /**
+     * Serialize Date to Unix timestamp and deserialize Unix timestamp to date.
+     */
     private static final SerializeConfig SERIALIZE_CONFIG = new SerializeConfig();
 
     static {
@@ -52,13 +55,12 @@ public final class JsonUtils {
 
         @Override
         public void write(JSONSerializer serializer,
-                          Object object,
+                          Object date,
                           Object fieldName,
                           Type fieldType,
                           int features) {
-            if (object != null) {
-                Date date = (Date) object;
-                serializer.write(date.getTime() / 1000);
+            if (date != null) {
+                serializer.write(Utils.getTimestamp((Date) date));
             }
         }
     }
