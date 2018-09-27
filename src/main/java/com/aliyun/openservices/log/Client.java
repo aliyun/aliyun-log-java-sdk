@@ -98,6 +98,7 @@ import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
 import com.aliyun.openservices.log.response.*;
 import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.util.DigestUtils;
 import com.aliyun.openservices.log.util.NetworkUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -105,19 +106,13 @@ import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import org.apache.commons.codec.binary.Base64;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -125,7 +120,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.zip.Deflater;
 
@@ -2199,25 +2193,6 @@ public class Client implements LogService {
 		}
 	}
 
-	private String GetMd5Value(byte[] bytes) {
-		try {
-			MessageDigest md;
-			md = MessageDigest.getInstance(Consts.CONST_MD5);
-			String res = new BigInteger(1, md.digest(bytes)).toString(16)
-					.toUpperCase();
-
-			StringBuilder zeros = new StringBuilder();
-			for (int i = 0; i + res.length() < 32; i++) {
-				zeros.append("0");
-			}
-			return zeros.toString() + res;
-		} catch (NoSuchAlgorithmException e) {
-			// never happen
-			throw new RuntimeException("Not Supported signature method "
-					+ Consts.CONST_MD5, e);
-		}
-	}
-
 	private Map<String, String> GetCommonHeadPara(String project) {
 		HashMap<String, String> headParameter = new HashMap<String, String>();
 		headParameter.put(Consts.CONST_USER_AGENT, userAgent);
@@ -2272,19 +2247,15 @@ public class Client implements LogService {
 			Map<String, String> output_header, String serverIp)
 			throws LogException {
 		if (body.length > 0) {
-			headers.put(Consts.CONST_CONTENT_MD5, GetMd5Value(body));
+			headers.put(Consts.CONST_CONTENT_MD5, DigestUtils.md5Crypt(body));
 		}
 		headers.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(body.length));
 
-		GetSignature(this.accessId, this.accessKey, method.toString(), headers,
-				resourceUri, parameters);
-		URI uri = null;
-		if (serverIp == null)
-		{
+		DigestUtils.addSignature(this.accessId, this.accessKey, method.toString(), headers, resourceUri, parameters);
+		URI uri;
+		if (serverIp == null) {
 			uri = GetHostURI(project);
-		}
-		else
-		{
+		} else {
 			uri = GetHostURIByIp(serverIp);
 		}
 
@@ -2336,91 +2307,7 @@ public class Client implements LogService {
 		request.setHeaders(headers);
 		request.setContent(content);
 		request.setContentLength(size);
-
 		return request;
-	}
-
-	private String BuildUrlParameter(Map<String, String> paras) {
-		Map<String, String> treeMap = new TreeMap<String, String>(paras);
-		StringBuilder builder = new StringBuilder();
-		boolean isFirst = true;
-		for (Map.Entry<String, String> entry : treeMap.entrySet()) {
-			if (isFirst == true) {
-				isFirst = false;
-			} else {
-				builder.append("&");
-			}
-			builder.append(entry.getKey()).append("=").append(entry.getValue());
-		}
-		return builder.toString();
-	}
-
-	private String GetMapValue(Map<String, String> map, String key) {
-		if (map.containsKey(key)) {
-			return map.get(key);
-		} else {
-			return "";
-		}
-	}
-
-	private String GetCanonicalizedHeaders(Map<String, String> headers) {
-		Map<String, String> treeMap = new TreeMap<String, String>(headers);
-		StringBuilder builder = new StringBuilder();
-		boolean isFirst = true;
-		for (Map.Entry<String, String> entry : treeMap.entrySet()) {
-			if (!entry.getKey().startsWith(Consts.CONST_X_SLS_PREFIX)
-					&& !entry.getKey().startsWith(Consts.CONST_X_ACS_PREFIX)) {
-				continue;
-			}
-			if (isFirst == true) {
-				isFirst = false;
-			} else {
-				builder.append("\n");
-			}
-			builder.append(entry.getKey()).append(":").append(entry.getValue());
-		}
-		return builder.toString();
-	}
-
-	private void GetSignature(String accessid, String accesskey, String verb,
-			Map<String, String> headers, String resourceUri,
-			Map<String, String> urlParams) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(verb).append("\n");
-		builder.append(GetMapValue(headers, Consts.CONST_CONTENT_MD5)).append(
-				"\n");
-		builder.append(GetMapValue(headers, Consts.CONST_CONTENT_TYPE)).append(
-				"\n");
-		builder.append(GetMapValue(headers, Consts.CONST_DATE)).append("\n");
-		builder.append(GetCanonicalizedHeaders(headers)).append("\n");
-		builder.append(resourceUri);
-		if (urlParams.isEmpty() == false) {
-			builder.append("?");
-			builder.append(BuildUrlParameter(urlParams));
-		}
-		String signature = GetSignature(accesskey, builder.toString());
-		headers.put(Consts.CONST_AUTHORIZATION,
-				Consts.CONST_HEADSIGNATURE_PREFIX + accessid + ":" + signature);
-	}
-
-	private static String GetSignature(String accesskey, String data) {
-		try {
-			byte[] keyBytes = accesskey.getBytes(Consts.UTF_8_ENCODING);
-			byte[] dataBytes = data.getBytes(Consts.UTF_8_ENCODING);
-			Mac mac = Mac.getInstance(Consts.HMAC_SHA1_JAVA);
-			mac.init(new SecretKeySpec(keyBytes, Consts.HMAC_SHA1_JAVA));
-			String sig = new String(Base64.encodeBase64(mac.doFinal(dataBytes)));
-			return sig;
-		} catch (UnsupportedEncodingException e) { // actually these exceptions
-													// should never happened
-			throw new RuntimeException("Not Supported encoding method "
-					+ Consts.UTF_8_ENCODING, e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException("Not Supported signature method "
-					+ Consts.HMAC_SHA1, e);
-		} catch (InvalidKeyException e) {
-			throw new RuntimeException("Failed to calcuate the signature", e);
-		}
 	}
 
 	protected ArrayList<Shard> ExtractShards(JSONArray array, String requestId)
