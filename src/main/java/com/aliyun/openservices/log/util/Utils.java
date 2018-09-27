@@ -15,4 +15,8 @@ public class Utils {
     public static String getOrEmpty(Map<String, String> map, String key) {
         return map.containsKey(key) ? map.get(key) : "";
     }
+
+    public static String safeToString(final Object object) {
+        return object == null ? null : object.toString();
+    }
 }

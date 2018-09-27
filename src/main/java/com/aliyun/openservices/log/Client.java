@@ -765,6 +765,7 @@ public class Client implements LogService {
 		ExtractLogsWithFastJson(getLogsResponse, object);
 		return getLogsResponse;
 	}
+
 	private com.alibaba.fastjson.JSONArray ParseResponseMessageToArrayWithFastJson(ResponseMessage response,
 			String requestId) throws LogException {
 		String returnStr = encodeResponseBodyToUtf8String(response, requestId);
@@ -810,12 +811,10 @@ public class Client implements LogService {
 		String logStore = request.GetLogStore();
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		String resourceUri = "/logstores/" + logStore + "/index";
 
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 
@@ -890,7 +889,6 @@ public class Client implements LogService {
 		}
 		listTopicResponse.SetTopics(string_array);
 		return listTopicResponse;
-
 	}
 
 	public GetCursorResponse GetCursor(String project, String logStore,
@@ -971,7 +969,6 @@ public class Client implements LogService {
         String resourceUri = "/logstores/" + logStore + "/shards/" + shardId;
 
 		headParameter.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(0));
-
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = new ResponseMessage();
@@ -1437,7 +1434,7 @@ public class Client implements LogService {
 		} catch (JSONException e) {
 			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid list config json string : "
-							+ (object == null ? null : object.toString()), e,
+							+ Utils.safeToString(object), e,
 					GetRequestId(response.getHeaders()));
 		}
 		return listConfigResponse;
@@ -1790,7 +1787,7 @@ public class Client implements LogService {
 		} catch (JSONException e) {
 			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid config json string : "
-							+ (object == null ? null : object.toString()), e,
+							+ Utils.safeToString(object), e,
 					GetRequestId(response.getHeaders()));
 		}
 		return listMachineGroupResponse;
@@ -1989,7 +1986,7 @@ public class Client implements LogService {
 		} catch (JSONException e) {
 			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid list acl json string : "
-							+ (object == null ? null : object.toString()), e,
+							+ Utils.safeToString(object), e,
 					GetRequestId(response.getHeaders()));
 		}
 		return listACLResponse;
@@ -3240,7 +3237,7 @@ public class Client implements LogService {
 		} catch (JSONException e) {
 			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid list project json string : "
-							+ (object == null ? null : object.toString()), e,
+							+ Utils.safeToString(object), e,
 					GetRequestId(response.getHeaders()));
 		}
 		return listProjectResponse;
@@ -3925,7 +3922,6 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
-		System.out.println(object.toString());
 		ListEtlMetaResponse listResp = new ListEtlMetaResponse(response.getHeaders(), object.getInt(Consts.CONST_TOTAL));
 		try {
 			JSONArray items = object.getJSONArray("etlMetaList");
