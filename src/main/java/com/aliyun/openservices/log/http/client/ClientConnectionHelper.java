@@ -41,7 +41,6 @@ public class ClientConnectionHelper {
 
 		@Override
 		public void run() {
-			System.out.println("create thread");
 			while (true) {
 				for (Map.Entry<String, ClientConnectionContainer> entry : mHelper.mAllConnections.entrySet()) {
 					entry.getValue().UpdateConnections();
