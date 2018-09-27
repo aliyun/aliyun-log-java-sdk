@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.request;
 
 
 import com.aliyun.openservices.log.common.Consts;
-import com.aliyun.openservices.log.common.Job;
+import com.aliyun.openservices.log.common.JobType;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ public class ListJobsRequest extends Request {
     /**
      * Job type for filtering
      */
-    private Job.JobType jobType;
+    private JobType jobType;
     /**
      * resourceProvider for searching
      */
@@ -50,11 +50,11 @@ public class ListJobsRequest extends Request {
         this.jobName = jobName;
     }
 
-    public Job.JobType getJobType() {
+    public JobType getJobType() {
         return jobType;
     }
 
-    public void setJobType(Job.JobType jobType) {
+    public void setJobType(JobType jobType) {
         this.jobType = jobType;
     }
 

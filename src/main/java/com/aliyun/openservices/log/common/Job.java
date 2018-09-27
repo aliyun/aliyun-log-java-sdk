@@ -163,27 +163,6 @@ public class Job implements Serializable {
         this.lastModifiedTime = lastModifiedTime;
     }
 
-    public enum JobType {
-        Alert,
-        Report,
-        ScheduleSearch;
-        // etc
-
-        @Override
-        public String toString() {
-            return name();
-        }
-
-        public static JobType fromString(String value) {
-            for (JobType type : JobType.values()) {
-                if (type.name().equals(value)) {
-                    return type;
-                }
-            }
-            throw new IllegalArgumentException("Unknown job type: " + value);
-        }
-    }
-
     public enum JobState {
         Enabled,
         Disabled;
@@ -208,8 +187,6 @@ public class Job implements Serializable {
     }
 
     public void deserialize(JSONObject value) {
-        // FIXME We have to deserialize Job manually because fastjson
-        // cannot deserialize abstract class based on type.
         jobName = value.getString("jobName");
         type = JobType.fromString(value.getString("type"));
         state = JobState.fromString(value.getString("state"));
@@ -229,5 +206,48 @@ public class Job implements Serializable {
         if (value.containsKey("status")) {
             status = JsonUtils.deserialize(value.getString("status"), JobStatus.class);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Job job = (Job) o;
+
+        if (getTimeout() != job.getTimeout()) return false;
+        if (getJobName() != null ? !getJobName().equals(job.getJobName()) : job.getJobName() != null) return false;
+        if (getType() != job.getType()) return false;
+        if (getSchedule() != null ? !getSchedule().equals(job.getSchedule()) : job.getSchedule() != null) return false;
+        if (getState() != job.getState()) return false;
+        if (getArguments() != null ? !getArguments().equals(job.getArguments()) : job.getArguments() != null)
+            return false;
+        if (getDescription() != null ? !getDescription().equals(job.getDescription()) : job.getDescription() != null)
+            return false;
+        if (getLogSetting() != null ? !getLogSetting().equals(job.getLogSetting()) : job.getLogSetting() != null)
+            return false;
+        if (getRetryPolicy() != null ? !getRetryPolicy().equals(job.getRetryPolicy()) : job.getRetryPolicy() != null)
+            return false;
+        if (getStatus() != null ? !getStatus().equals(job.getStatus()) : job.getStatus() != null) return false;
+        if (getCreateTime() != null ? !getCreateTime().equals(job.getCreateTime()) : job.getCreateTime() != null)
+            return false;
+        return getLastModifiedTime() != null ? getLastModifiedTime().equals(job.getLastModifiedTime()) : job.getLastModifiedTime() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getJobName() != null ? getJobName().hashCode() : 0;
+        result = 31 * result + (getType() != null ? getType().hashCode() : 0);
+        result = 31 * result + (getSchedule() != null ? getSchedule().hashCode() : 0);
+        result = 31 * result + (getState() != null ? getState().hashCode() : 0);
+        result = 31 * result + (getArguments() != null ? getArguments().hashCode() : 0);
+        result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+        result = 31 * result + (getLogSetting() != null ? getLogSetting().hashCode() : 0);
+        result = 31 * result + (int) (getTimeout() ^ (getTimeout() >>> 32));
+        result = 31 * result + (getRetryPolicy() != null ? getRetryPolicy().hashCode() : 0);
+        result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
+        result = 31 * result + (getCreateTime() != null ? getCreateTime().hashCode() : 0);
+        result = 31 * result + (getLastModifiedTime() != null ? getLastModifiedTime().hashCode() : 0);
+        return result;
     }
 }
