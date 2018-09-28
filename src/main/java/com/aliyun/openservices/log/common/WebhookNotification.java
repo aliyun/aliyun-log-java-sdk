@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.http.client.HttpMethod;
+import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONObject;
 
 /**
@@ -24,6 +25,8 @@ public class WebhookNotification extends Notification {
 
     public WebhookNotification(String content, HttpMethod method, String serviceUri) {
         super(NotificationType.Webhook, content);
+        Args.notNullOrEmpty(serviceUri, Consts.SERVICE_URI);
+        Args.notNull(method, Consts.METHOD);
         this.method = method;
         this.serviceUri = serviceUri;
     }
@@ -53,8 +56,8 @@ public class WebhookNotification extends Notification {
     @Override
     public void deserialize(JSONObject value) {
         super.deserialize(value);
-        serviceUri = value.getString("serviceUri");
-        method = HttpMethod.fromString(value.getString("method"));
+        serviceUri = value.getString(Consts.SERVICE_URI);
+        method = HttpMethod.fromString(value.getString(Consts.METHOD));
     }
 
     @Override

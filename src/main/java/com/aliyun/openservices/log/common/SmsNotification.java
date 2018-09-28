@@ -19,7 +19,7 @@ public class SmsNotification extends Notification {
 
     public SmsNotification(String content, List<String> mobileList) {
         super(NotificationType.Sms, content);
-        Args.notNullOrEmpty(mobileList, "mobileList");
+        Args.notNullOrEmpty(mobileList, Consts.MOBILE_LIST);
         this.mobileList = mobileList;
     }
 
@@ -34,6 +34,6 @@ public class SmsNotification extends Notification {
     @Override
     public void deserialize(final JSONObject value) {
         super.deserialize(value);
-        mobileList = JsonUtils.readList(value, "mobileList");
+        mobileList = JsonUtils.readList(value, Consts.MOBILE_LIST);
     }
 }

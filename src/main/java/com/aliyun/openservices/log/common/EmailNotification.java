@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
@@ -13,10 +14,10 @@ public class EmailNotification extends Notification {
     private String subject;
 
     @JSONField
-    private List<String> emailList;
+    private String dashboard;
 
     @JSONField
-    private String dashboard;
+    private List<String> emailList;
 
     public EmailNotification() {
         super(NotificationType.Email);
@@ -24,6 +25,7 @@ public class EmailNotification extends Notification {
 
     public EmailNotification(String content, List<String> emailList) {
         super(NotificationType.Email, content);
+        Args.notNullOrEmpty(emailList, Consts.EMAIL_LIST);
         this.emailList = emailList;
     }
 
@@ -56,7 +58,7 @@ public class EmailNotification extends Notification {
         super.deserialize(value);
         dashboard = value.getString("dashboard");
         subject = value.getString("subject");
-        emailList = JsonUtils.readList(value, "emailList");
+        emailList = JsonUtils.readList(value, Consts.EMAIL_LIST);
     }
 
     @Override

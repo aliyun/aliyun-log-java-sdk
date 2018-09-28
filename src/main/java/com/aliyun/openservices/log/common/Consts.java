@@ -369,14 +369,17 @@ public class Consts {
 	public static final String ETL_META_CREATE_TIME = "createTime";
 	public static final String ETL_META_LAST_MODIFY_TIME = "lastModifyTime";
 	public static final String ETL_META_ENABLE = "enable";
-
+    public static final String EMAIL_LIST = "emailList";
     public static final String JOB_LIST = "jobList";
     public static final String JOB_NAME = "jobName";
     public static final String JOB_TYPE = "jobType";
     public static final String JOB_URI = "/jobs";
 
     public static final String LOGGING_URI = "/logging";
+    public static final String METHOD = "method";
+    public static final String MOBILE_LIST = "mobileList";
     public static final String RESOURCE_PROVIDER = "resourceProvider";
     public static final String START_TIME = "startTime";
     public static final String END_TIME = "endTime";
+    public static final String SERVICE_URI = "serviceUri";
 }
