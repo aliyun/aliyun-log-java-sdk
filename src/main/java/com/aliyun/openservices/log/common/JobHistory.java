@@ -105,31 +105,29 @@ public class JobHistory implements Serializable {
                     return status;
                 }
             }
-            throw new IllegalArgumentException("Unknown status: " + value);
+            throw new IllegalArgumentException("Unknown execution status: " + value);
         }
-    }
-
-    private static Date parseDate(String date) {
-        return new Date(Long.parseLong(date));
     }
 
     public void deserialize(final JSONObject value) {
         id = value.getString("id");
         jobName = value.getString("jobName");
         jobType = JobType.fromString(value.getString("jobType"));
-        completedAt = parseDate(value.getString("completedAt"));
-        startedAt = parseDate(value.getString("startedAt"));
+        startedAt = new Date(value.getLong("startedAt"));
+        completedAt = new Date(value.getLong("completedAt"));
         status = ExecutionStatus.fromString(value.getString("status"));
         if (value.containsKey("errorMessage")) {
             errorMessage = value.getString("errorMessage");
         }
-        switch (jobType) {
-            case Alert:
-                executionDetails = new AlertDetails();
-                executionDetails.deserialize(value.getJSONObject("executionDetails"));
-                break;
-            default:
-                throw new IllegalArgumentException("Unimplemented job type: " + jobType);
+        if (value.containsKey("executionDetails")) {
+            switch (jobType) {
+                case Alert:
+                    executionDetails = new AlertDetails();
+                    executionDetails.deserialize(value.getJSONObject("executionDetails"));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unimplemented job type: " + jobType);
+            }
         }
     }
 }

@@ -50,7 +50,7 @@ public class AlertDetails extends ExecutionDetails {
     }
 
     public void deserialize(final JSONObject value) {
-        fired = Boolean.parseBoolean(value.getString("fired"));
+        fired = value.getBoolean("fired");
         notificationStatus = NotificationStatus.fromString(value.getString("notificationStatus"));
     }
 }
