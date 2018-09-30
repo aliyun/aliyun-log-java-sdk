@@ -3,11 +3,10 @@ package com.aliyun.openservices.log.common;
 
 import net.sf.json.JSONObject;
 
-public abstract class JobArguments {
-
+public abstract class JobConfiguration {
 
     /**
-     * Deserialize arguments instance from JSON object.
+     * Deserialize instance from JSON object.
      **/
     public abstract void deserialize(JSONObject value);
 }

@@ -15,13 +15,25 @@ public class Job implements Serializable {
      * The name of job
      */
     @JSONField
-    private String jobName;
+    private String name;
 
     /**
      * The type of job. See {@link JobType}
      */
     @JSONField
     private JobType type;
+
+    /**
+     * The description of job
+     */
+    @JSONField
+    private String description;
+
+    @JSONField
+    private Date createTime;
+
+    @JSONField
+    private Date lastModifiedTime;
 
     /**
      * When and how often to repeat the job.
@@ -36,15 +48,10 @@ public class Job implements Serializable {
     private JobState state;
 
     /**
-     * The arguments of job.
+     * The configuration of job.
      */
     @JSONField
-    private JobArguments arguments;
-
-    // ---------- optional properties ----------------
-
-    @JSONField
-    private String description;
+    private JobConfiguration configuration;
 
     @JSONField
     private LogSetting logSetting;
@@ -55,24 +62,15 @@ public class Job implements Serializable {
     @JSONField
     private RetryPolicy retryPolicy;
 
-
-    // ---------- read only properties ----------------
-
     @JSONField
     private JobStatus status;
 
-    @JSONField
-    private Date createTime;
-
-    @JSONField
-    private Date lastModifiedTime;
-
-    public String getJobName() {
-        return jobName;
+    public String getName() {
+        return name;
     }
 
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public JobType getType() {
@@ -99,12 +97,12 @@ public class Job implements Serializable {
         this.state = state;
     }
 
-    public JobArguments getArguments() {
-        return arguments;
+    public JobConfiguration getConfiguration() {
+        return configuration;
     }
 
-    public void setArguments(JobArguments arguments) {
-        this.arguments = arguments;
+    public void setConfiguration(JobConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     public String getDescription() {
@@ -177,17 +175,17 @@ public class Job implements Serializable {
         }
     }
 
-    private static JobArguments createArgumentsFromType(JobType type) {
+    private static JobConfiguration createConfiguration(JobType type) {
         switch (type) {
             case Alert:
-                return new AlertArguments();
+                return new AlertConfiguration();
             default:
                 throw new IllegalArgumentException("Unimplemented job type: " + type);
         }
     }
 
     public void deserialize(JSONObject value) {
-        jobName = value.getString("jobName");
+        name = value.getString("name");
         type = JobType.fromString(value.getString("type"));
         state = JobState.fromString(value.getString("state"));
         timeout = value.getLong("timeout");
@@ -195,16 +193,16 @@ public class Job implements Serializable {
         createTime = new Date(value.getLong("createTime"));
         lastModifiedTime = new Date(value.getLong("lastModifiedTime"));
         schedule = JsonUtils.deserialize(value.getString("schedule"), JobSchedule.class);
+        configuration = createConfiguration(type);
+        configuration.deserialize(value.getJSONObject("configuration"));
+        if (value.containsKey("status")) {
+            status = JsonUtils.deserialize(value.getString("status"), JobStatus.class);
+        }
         if (value.containsKey("logSetting")) {
             logSetting = JsonUtils.deserialize(value.getString("logSetting"), LogSetting.class);
         }
         if (value.containsKey("retryPolicy")) {
             retryPolicy = JsonUtils.deserialize(value.getString("retryPolicy"), RetryPolicy.class);
-        }
-        arguments = createArgumentsFromType(type);
-        arguments.deserialize(value.getJSONObject("arguments"));
-        if (value.containsKey("status")) {
-            status = JsonUtils.deserialize(value.getString("status"), JobStatus.class);
         }
     }
 
@@ -216,13 +214,13 @@ public class Job implements Serializable {
         Job job = (Job) o;
 
         if (getTimeout() != job.getTimeout()) return false;
-        if (getJobName() != null ? !getJobName().equals(job.getJobName()) : job.getJobName() != null) return false;
+        if (getName() != null ? !getName().equals(job.getName()) : job.getName() != null) return false;
         if (getType() != job.getType()) return false;
+        if (getDescription() != null ? !getDescription().equals(job.getDescription()) : job.getDescription() != null)
+            return false;
         if (getSchedule() != null ? !getSchedule().equals(job.getSchedule()) : job.getSchedule() != null) return false;
         if (getState() != job.getState()) return false;
-        if (getArguments() != null ? !getArguments().equals(job.getArguments()) : job.getArguments() != null)
-            return false;
-        if (getDescription() != null ? !getDescription().equals(job.getDescription()) : job.getDescription() != null)
+        if (getConfiguration() != null ? !getConfiguration().equals(job.getConfiguration()) : job.getConfiguration() != null)
             return false;
         if (getLogSetting() != null ? !getLogSetting().equals(job.getLogSetting()) : job.getLogSetting() != null)
             return false;
@@ -236,12 +234,12 @@ public class Job implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = getJobName() != null ? getJobName().hashCode() : 0;
+        int result = getName() != null ? getName().hashCode() : 0;
         result = 31 * result + (getType() != null ? getType().hashCode() : 0);
+        result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
         result = 31 * result + (getSchedule() != null ? getSchedule().hashCode() : 0);
         result = 31 * result + (getState() != null ? getState().hashCode() : 0);
-        result = 31 * result + (getArguments() != null ? getArguments().hashCode() : 0);
-        result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+        result = 31 * result + (getConfiguration() != null ? getConfiguration().hashCode() : 0);
         result = 31 * result + (getLogSetting() != null ? getLogSetting().hashCode() : 0);
         result = 31 * result + (int) (getTimeout() ^ (getTimeout() >>> 32));
         result = 31 * result + (getRetryPolicy() != null ? getRetryPolicy().hashCode() : 0);

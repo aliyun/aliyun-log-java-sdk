@@ -14,9 +14,6 @@ public class EmailNotification extends Notification {
     private String subject;
 
     @JSONField
-    private String dashboard;
-
-    @JSONField
     private List<String> emailList;
 
     public EmailNotification() {
@@ -45,18 +42,9 @@ public class EmailNotification extends Notification {
         this.subject = subject;
     }
 
-    public String getDashboard() {
-        return dashboard;
-    }
-
-    public void setDashboard(String dashboard) {
-        this.dashboard = dashboard;
-    }
-
     @Override
     public void deserialize(final JSONObject value) {
         super.deserialize(value);
-        dashboard = value.getString("dashboard");
         subject = value.getString("subject");
         emailList = JsonUtils.readList(value, Consts.EMAIL_LIST);
     }
@@ -69,16 +57,13 @@ public class EmailNotification extends Notification {
         EmailNotification that = (EmailNotification) o;
 
         if (getSubject() != null ? !getSubject().equals(that.getSubject()) : that.getSubject() != null) return false;
-        if (getEmailList() != null ? !getEmailList().equals(that.getEmailList()) : that.getEmailList() != null)
-            return false;
-        return getDashboard() != null ? getDashboard().equals(that.getDashboard()) : that.getDashboard() == null;
+        return getEmailList() != null ? getEmailList().equals(that.getEmailList()) : that.getEmailList() == null;
     }
 
     @Override
     public int hashCode() {
         int result = getSubject() != null ? getSubject().hashCode() : 0;
         result = 31 * result + (getEmailList() != null ? getEmailList().hashCode() : 0);
-        result = 31 * result + (getDashboard() != null ? getDashboard().hashCode() : 0);
         return result;
     }
 }

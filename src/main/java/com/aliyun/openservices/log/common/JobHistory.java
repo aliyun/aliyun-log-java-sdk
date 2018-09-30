@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
+import net.sf.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -9,26 +9,21 @@ import java.util.Date;
 
 public class JobHistory implements Serializable {
 
-    @JSONField
     private String id;
 
-    @JSONField
     private String jobName;
 
-    @JSONField
-    private JobExecutionStatus status;
+    private JobType jobType;
 
-    @JSONField
+    private ExecutionStatus status;
+
     private Date startedAt;
 
-    @JSONField
-    private Date stoppedAt;
+    private Date completedAt;
 
-    @JSONField
-    private String message;
+    private String errorMessage;
 
-    @JSONField
-    private Integer retryCount;
+    private ExecutionResult result;
 
     public String getId() {
         return id;
@@ -46,6 +41,14 @@ public class JobHistory implements Serializable {
         this.jobName = jobName;
     }
 
+    public JobType getJobType() {
+        return jobType;
+    }
+
+    public void setJobType(JobType jobType) {
+        this.jobType = jobType;
+    }
+
     public Date getStartedAt() {
         return startedAt;
     }
@@ -54,40 +57,79 @@ public class JobHistory implements Serializable {
         this.startedAt = startedAt;
     }
 
-    public Date getStoppedAt() {
-        return stoppedAt;
+    public Date getCompletedAt() {
+        return completedAt;
     }
 
-    public void setStoppedAt(Date stoppedAt) {
-        this.stoppedAt = stoppedAt;
+    public void setCompletedAt(Date completedAt) {
+        this.completedAt = completedAt;
     }
 
-    public String getMessage() {
-        return message;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
-    public Integer getRetryCount() {
-        return retryCount;
-    }
-
-    public void setRetryCount(Integer retryCount) {
-        this.retryCount = retryCount;
-    }
-
-    public JobExecutionStatus getStatus() {
+    public ExecutionStatus getStatus() {
         return status;
     }
 
-    public void setStatus(JobExecutionStatus status) {
+    public void setStatus(ExecutionStatus status) {
         this.status = status;
     }
 
-    public enum JobExecutionStatus {
-        Failed,
-        Successed
+    public ExecutionResult getResult() {
+        return result;
+    }
+
+    public void setResult(ExecutionResult result) {
+        this.result = result;
+    }
+
+    public enum ExecutionStatus {
+        FAILED("Failed"),
+        SUCCEED("Succeed");
+
+        private final String value;
+
+        ExecutionStatus(String value) {
+            this.value = value;
+        }
+
+        public static ExecutionStatus fromString(final String value) {
+            for (ExecutionStatus status : ExecutionStatus.values()) {
+                if (status.value.equals(value)) {
+                    return status;
+                }
+            }
+            throw new IllegalArgumentException("Unknown status: " + value);
+        }
+    }
+
+    private static Date parseDate(String date) {
+        return new Date(Long.parseLong(date));
+    }
+
+    public void deserialize(final JSONObject value) {
+        id = value.getString("id");
+        jobName = value.getString("jobName");
+        jobType = JobType.fromString(value.getString("jobType"));
+        completedAt = parseDate(value.getString("completedAt"));
+        startedAt = parseDate(value.getString("startedAt"));
+        status = ExecutionStatus.fromString(value.getString("status"));
+        if (value.containsKey("errorMessage")) {
+            errorMessage = value.getString("errorMessage");
+        }
+        switch (jobType) {
+            case Alert:
+                result = new AlertResult();
+                result.deserialize(value.getJSONObject("result"));
+                break;
+            default:
+                break;
+        }
     }
 }

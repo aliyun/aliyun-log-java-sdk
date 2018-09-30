@@ -4,6 +4,9 @@ package com.aliyun.openservices.log.common;
 import com.alibaba.fastjson.annotation.JSONField;
 import net.sf.json.JSONObject;
 
+/**
+ * The base class of notifications.
+ */
 public abstract class Notification {
 
     @JSONField
@@ -11,9 +14,6 @@ public abstract class Notification {
 
     @JSONField
     private String content;
-
-    public Notification() {
-    }
 
     public Notification(NotificationType type) {
         this.type = type;
@@ -38,26 +38,6 @@ public abstract class Notification {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public enum NotificationType {
-        DingTalk,
-        Email,
-        /**
-         * Private message
-         */
-        Message,
-        Sms,
-        Webhook;
-
-        public static NotificationType fromString(String value) {
-            for (NotificationType type : NotificationType.values()) {
-                if (type.name().equals(value)) {
-                    return type;
-                }
-            }
-            throw new IllegalArgumentException("Unknown notification type: " + value);
-        }
     }
 
     public void deserialize(final JSONObject value) {

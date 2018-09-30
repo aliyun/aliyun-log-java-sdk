@@ -11,16 +11,28 @@ import java.util.List;
 public class SmsNotification extends Notification {
 
     @JSONField
+    private String countryCode;
+
+    @JSONField
     private List<String> mobileList;
 
     public SmsNotification() {
-        super(NotificationType.Sms);
+        super(NotificationType.SMS);
     }
 
-    public SmsNotification(String content, List<String> mobileList) {
-        super(NotificationType.Sms, content);
+    public SmsNotification(String content, String countryCode, List<String> mobileList) {
+        super(NotificationType.SMS, content);
+        Args.notNullOrEmpty(countryCode, "countryCode");
         Args.notNullOrEmpty(mobileList, Consts.MOBILE_LIST);
         this.mobileList = mobileList;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     public List<String> getMobileList() {

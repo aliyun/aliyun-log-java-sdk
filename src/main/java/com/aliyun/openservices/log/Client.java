@@ -4073,7 +4073,7 @@ public class Client implements LogService {
         final String project = request.GetProject();
         Map<String, String> headers = GetCommonHeadPara(project);
         final Job job = request.getJob();
-        String uri = Consts.JOB_URI + "/" + job.getJobName();
+        String uri = Consts.JOB_URI + "/" + job.getName();
         ResponseMessage response = SendData(project, HttpMethod.PUT, uri,
                 Collections.<String, String>emptyMap(), headers, JsonUtils.serialize(job));
         return new UpdateJobResponse(response.getHeaders());
@@ -4137,9 +4137,11 @@ public class Client implements LogService {
         String uri = Consts.JOB_URI + "/" + request.getJobName();
         ResponseMessage response = SendData(project, HttpMethod.GET, uri,
                 request.GetAllParams(), headers);
-        String responseBody = encodeResponseBodyToUtf8String(response, response.getRequestId());
+        JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
         try {
-            return new ListJobHistoryResponse(response.getHeaders(), JsonUtils.deserialize(responseBody, JobHistoryList.class));
+            JobHistoryList jobHistoryList = new JobHistoryList();
+            jobHistoryList.deserialize(responseBody);
+            return new ListJobHistoryResponse(response.getHeaders(), jobHistoryList);
         } catch (Exception ex) {
             throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
         }

@@ -13,9 +13,10 @@ import java.util.Date;
 public class JobSchedule implements Serializable {
 
     public enum JobScheduleType {
-        FixedTimeInterval,
-        // Hourly,
-        // Daily
+        /**
+         * Trigger in a fixed rate.
+         */
+        FixedRate
     }
 
     @JSONField
@@ -25,7 +26,7 @@ public class JobSchedule implements Serializable {
     private Date doNotRunUntil;
 
     @JSONField
-    private Long interval;
+    private long interval;
 
     public JobScheduleType getType() {
         return type;
@@ -43,11 +44,11 @@ public class JobSchedule implements Serializable {
         this.doNotRunUntil = doNotRunUntil;
     }
 
-    public Long getInterval() {
+    public long getInterval() {
         return interval;
     }
 
-    public void setInterval(Long interval) {
+    public void setInterval(long interval) {
         this.interval = interval;
     }
 
@@ -56,19 +57,18 @@ public class JobSchedule implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        JobSchedule that = (JobSchedule) o;
+        JobSchedule schedule = (JobSchedule) o;
 
-        if (getType() != that.getType()) return false;
-        if (getDoNotRunUntil() != null ? !getDoNotRunUntil().equals(that.getDoNotRunUntil()) : that.getDoNotRunUntil() != null)
-            return false;
-        return getInterval() != null ? getInterval().equals(that.getInterval()) : that.getInterval() == null;
+        if (getInterval() != schedule.getInterval()) return false;
+        if (getType() != schedule.getType()) return false;
+        return getDoNotRunUntil() != null ? getDoNotRunUntil().equals(schedule.getDoNotRunUntil()) : schedule.getDoNotRunUntil() == null;
     }
 
     @Override
     public int hashCode() {
         int result = getType() != null ? getType().hashCode() : 0;
         result = 31 * result + (getDoNotRunUntil() != null ? getDoNotRunUntil().hashCode() : 0);
-        result = 31 * result + (getInterval() != null ? getInterval().hashCode() : 0);
+        result = 31 * result + (int) (getInterval() ^ (getInterval() >>> 32));
         return result;
     }
 }

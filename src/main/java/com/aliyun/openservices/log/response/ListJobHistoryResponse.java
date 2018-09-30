@@ -10,8 +10,6 @@ import java.util.Map;
 
 public class ListJobHistoryResponse extends Response {
 
-    private int total;
-
     private int count;
 
     private List<JobHistory> jobHistoryList;
@@ -20,16 +18,7 @@ public class ListJobHistoryResponse extends Response {
         super(headers);
         Args.notNull(jobHistoryList, "jobHistoryList");
         this.jobHistoryList = jobHistoryList.getJobHistoryList();
-        this.total = jobHistoryList.getTotal();
         this.count = jobHistoryList.getCount();
-    }
-
-    public int getTotal() {
-        return total;
-    }
-
-    public void setTotal(int total) {
-        this.total = total;
     }
 
     public int getCount() {
