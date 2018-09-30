@@ -33,11 +33,11 @@ public class JobHistoryList {
 
     public void deserialize(JSONObject value) {
         count = value.getInt(Consts.CONST_COUNT);
-        JSONArray jobsAsJson = value.getJSONArray(Consts.JOB_LIST);
-        jobHistoryList = new ArrayList<JobHistory>(jobsAsJson.size());
-        for (int i = 0; i < jobsAsJson.size(); i++) {
+        JSONArray list = value.getJSONArray(Consts.JOB_HISTORY_LIST);
+        jobHistoryList = new ArrayList<JobHistory>(list.size());
+        for (int i = 0; i < list.size(); i++) {
             JobHistory history = new JobHistory();
-            history.deserialize(jobsAsJson.getJSONObject(i));
+            history.deserialize(list.getJSONObject(i));
             jobHistoryList.add(history);
         }
     }

@@ -4,7 +4,7 @@ package com.aliyun.openservices.log.common;
 import com.alibaba.fastjson.annotation.JSONField;
 import net.sf.json.JSONObject;
 
-public class AlertResult extends ExecutionResult {
+public class AlertDetails extends ExecutionDetails {
 
     @JSONField
     private boolean fired;
