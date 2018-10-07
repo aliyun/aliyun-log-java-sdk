@@ -2,9 +2,9 @@ package com.aliyun.openservices.log.http.utils;
 
 /**
  * Utils for common coding.
- * 
+ *
  * @author xiaoming.yin
- * 
+ *
  */
 public class CodingUtils {
 	public static void assertParameterNotNull(Object param, String paramName) {
