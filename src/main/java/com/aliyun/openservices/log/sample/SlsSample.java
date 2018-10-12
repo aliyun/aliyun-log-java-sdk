@@ -156,8 +156,7 @@ public class SlsSample {
 			int to = (int) (new Date().getTime() / 1000 + 10);
 			GetHistogramsResponse histogramsResponse = client.GetHistograms(
 					project, logStore, from, to, topic, query);
-			System.out
-					.println("histogram result: " + histogramsResponse.GetTotalCount());
+			System.out.println("histogram result: " + histogramsResponse.GetTotalCount());
 			System.out.println("is_completed : "
 					+ histogramsResponse.IsCompleted());
 			for (Histogram histogram : histogramsResponse.GetHistograms()) {

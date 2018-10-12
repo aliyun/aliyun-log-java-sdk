@@ -61,6 +61,7 @@ import com.aliyun.openservices.log.request.ListSavedSearchRequest;
 import com.aliyun.openservices.log.request.ListShardRequest;
 import com.aliyun.openservices.log.request.ListTopicsRequest;
 import com.aliyun.openservices.log.request.MergeShardsRequest;
+import com.aliyun.openservices.log.request.PullLogsRequest;
 import com.aliyun.openservices.log.request.PutLogsRequest;
 import com.aliyun.openservices.log.request.RemoveConfigFromMachineGroupRequest;
 import com.aliyun.openservices.log.request.SplitShardRequest;
@@ -712,7 +713,9 @@ public interface LogService {
 	 *             if any parameter is null
 	 * @throws IllegalArgumentException
 	 *             if project or logstore or cursor is empty
+     * @deprecated Please use {@code pullLogs} instead.
 	 */
+	@Deprecated
     BatchGetLogResponse BatchGetLog(String project, String logStore,
                                     int shardId, int count, String cursor) throws LogException;
 
@@ -741,7 +744,9 @@ public interface LogService {
 	 *             if any parameter is null
 	 * @throws IllegalArgumentException
 	 *             if project or logstore or cursor is empty
+     * @deprecated Please use {@code pullLogs} instead.
 	 */
+	@Deprecated
     BatchGetLogResponse BatchGetLog(String project, String logStore,
                                     int shardId, int count, String cursor, String end_cursor) throws LogException;
 
@@ -759,10 +764,21 @@ public interface LogService {
 	 *             if any parameter is null
 	 * @throws IllegalArgumentException
 	 *             if project or logstore or cursor in request is empty
+     * @deprecated Please use {@code pullLogs} instead.
 	 */
+	@Deprecated
     BatchGetLogResponse BatchGetLog(BatchGetLogRequest request) throws LogException;
 
-	/**
+    /**
+     * Pull logs from given shard id with cursor.
+     *
+     * @param request The pull logs request.
+     * @return The logs responded.
+     * @throws LogException
+     */
+    PullLogsResponse pullLogs(PullLogsRequest request) throws LogException;
+
+    /**
 	 * Create logtail config
 	 *
 	 * @param project

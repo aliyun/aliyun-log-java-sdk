@@ -33,8 +33,7 @@ class ClientSample {
 			res = client.GetCursor(project, logStore, shardId, fromTime);
 			System.out.println("Cursor:" + res.GetCursor());
 
-			res = client
-					.GetCursor(project, logStore, shardId, CursorMode.BEGIN);
+			res = client.GetCursor(project, logStore, shardId, CursorMode.BEGIN);
 			System.out.println("Cursor:" + res.GetCursor());
 
 			res = client.GetCursor(project, logStore, shardId, CursorMode.END);
