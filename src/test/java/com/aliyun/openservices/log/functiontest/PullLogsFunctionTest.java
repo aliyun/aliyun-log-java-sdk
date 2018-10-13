@@ -6,7 +6,6 @@ import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.Logs;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
