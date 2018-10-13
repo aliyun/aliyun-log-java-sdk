@@ -9,6 +9,8 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.PullLogsRequest;
 import com.aliyun.openservices.log.response.GetCursorResponse;
 import com.aliyun.openservices.log.response.PullLogsResponse;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +18,14 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-class BaseMetadataTest extends FunctionTest {
+public class BaseMetadataTest extends FunctionTest {
 
+    static String TEST_PROJECT = "project-intg-test-" + getNowTimestamp();
+
+    @BeforeClass
+    public static void setUp() {
+        createProjectIfNotExist(TEST_PROJECT, "For Intg testing");
+    }
 
     void ensureLogStoreEnabled(String project, String logStoreName, boolean enabled) {
         LogStore logStore = new LogStore();
@@ -25,7 +33,7 @@ class BaseMetadataTest extends FunctionTest {
         logStore.SetTtl(1);
         logStore.SetShardCount(2);
         logStore.setAppendMeta(enabled);
-        reCreateLogStore(project, logStore);
+        createOrUpdateLogStore(project, logStore);
     }
 
     private List<Logs.LogGroup> pullAllLogGroups(String project, String logStore, int shardNum) throws LogException {
@@ -98,5 +106,10 @@ class BaseMetadataTest extends FunctionTest {
     public interface Predicate {
 
         boolean test(Logs.LogGroup logGroup);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        safeDeleteProject(TEST_PROJECT);
     }
 }

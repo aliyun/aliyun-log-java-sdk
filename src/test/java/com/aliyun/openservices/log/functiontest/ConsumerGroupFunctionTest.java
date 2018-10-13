@@ -15,18 +15,16 @@ import static org.junit.Assert.fail;
 
 public class ConsumerGroupFunctionTest extends FunctionTest {
 
-    private static final String TEST_PROJECT = "project1";
+    private static final String TEST_PROJECT = "project-intg-" + getNowTimestamp();
     private static final String TEST_LOGSTORE = "logstore1";
 
-    @Override
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    public void setUp() {
         LogStore logStore = new LogStore();
         logStore.SetLogStoreName(TEST_LOGSTORE);
         logStore.SetShardCount(2);
-        logStore.SetTtl(2);
-        reCreateLogStore(TEST_PROJECT, logStore);
+        logStore.SetTtl(1);
+        createOrUpdateLogStore(TEST_PROJECT, logStore);
     }
 
     @Test

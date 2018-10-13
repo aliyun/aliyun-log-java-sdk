@@ -64,7 +64,7 @@ public class EtlFunctionTest extends FunctionTest {
         EtlSourceConfig sourceConfig = new EtlSourceConfig(logstore);
         EtlTriggerConfig triggerConfig = new EtlTriggerConfig(roleArn, 300, 1);
         EtlFunctionFcConfig fcConfig = new EtlFunctionFcConfig(Consts.FUNCTION_PROVIDER_FC, fcEndpoint, fcAccountId, fcRegion, fcService, fcFunction);
-        EtlLogConfig logConfig = new EtlLogConfig(client.getEndpoint(), project, logLogstore);
+        EtlLogConfig logConfig = new EtlLogConfig(credentials.getEndpoint(), project, logLogstore);
         String functionParameter = "{\"source\":{\"endpoint\":\"http://cn-shanghai-intranet.log.aliyuncs.com\"}, \"target\":{\"endpoint\":\"http://cn-shanghai-intranet.log.aliyuncs.com\", \"projectName\":\"etl-test\", \"logstoreName\":\"etl-1\"}}";
         EtlJob job = new EtlJob(etlJobName, sourceConfig, triggerConfig, fcConfig, functionParameter, logConfig, true);
         try {
@@ -243,7 +243,7 @@ public class EtlFunctionTest extends FunctionTest {
         EtlSourceConfig sourceConfig = new EtlSourceConfig(logstore);
         EtlTriggerConfig triggerConfig = new EtlTriggerConfig(roleArn, 5, 1);
         EtlFunctionFcConfig fcConfig = new EtlFunctionFcConfig(Consts.FUNCTION_PROVIDER_FC, fcEndpoint, fcAccountId, fcRegion, fcService, fcFunction);
-        EtlLogConfig logConfig = new EtlLogConfig(client.getEndpoint(), project, logLogstore);
+        EtlLogConfig logConfig = new EtlLogConfig(credentials.getEndpoint(), project, logLogstore);
         String functionParameter = "{\"source\":{\"endpoint\":\"http://cn-shanghai-intranet.log.aliyuncs.com\"}, " +
                 "\"target\":{\"endpoint\":\"http://cn-shanghai-intranet.log.aliyuncs.com\", \"projectName\":\"etl-test\", \"logstoreName\":\"stg-etl-log\"}}";
         EtlJob job = new EtlJob(etlJobName, sourceConfig, triggerConfig, fcConfig, functionParameter, logConfig, true);

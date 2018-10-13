@@ -4,15 +4,10 @@ import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.util.Args;
-import com.aliyun.openservices.log.util.NetworkUtils;
-import net.sf.json.JSONObject;
-import org.junit.Before;
 
-import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
@@ -21,13 +16,8 @@ import static org.junit.Assert.fail;
 public abstract class FunctionTest {
 
     static final Random RANDOM = new Random();
-
-    private static final String CONFIG_FILE = "credentials.json";
-    final static ClientWrapper client = ClientWrapper.createFromConfig();
-
-    @Before
-    public void setUp() throws Exception {
-    }
+    static final Credentials credentials = Credentials.load();
+    static final Client client = new Client(credentials.getEndpoint(), credentials.getAccessKeyId(), credentials.getAccessKey());
 
     static int getNowTimestamp() {
         return (int) (new Date().getTime() / 1000);
@@ -93,10 +83,27 @@ public abstract class FunctionTest {
         return false;
     }
 
-    static void reCreateLogStore(String project, LogStore logStore) {
-        if (safeCreateProject(project, "")) {
+    static void createOrUpdateLogStore(String project, LogStore logStore) {
+        createProjectIfNotExist(project, "");
+        try {
+            client.CreateLogStore(project, logStore);
             waitOneMinutes();
+            return;
+        } catch (LogException ex) {
+            if (!ex.GetErrorCode().equals("LogStoreAlreadyExist")) {
+                throw new IllegalStateException(ex);
+            }
         }
+        try {
+            client.UpdateLogStore(project, logStore);
+            waitOneMinutes();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    static void reCreateLogStore(String project, LogStore logStore) {
+        createProjectIfNotExist(project, "");
         if (safeDeleteLogStore(project, logStore.GetLogStoreName())) {
             waitOneMinutes();
         }
@@ -113,6 +120,12 @@ public abstract class FunctionTest {
             assertEquals("ProjectAlreadyExist", e.GetErrorCode());
         }
         return false;
+    }
+
+    static void createProjectIfNotExist(String project, String desc) {
+        if (safeCreateProject(project, desc)) {
+            waitOneMinutes();
+        }
     }
 
     private static boolean safeCreateLogStore(String project, LogStore logStore) {
@@ -134,37 +147,6 @@ public abstract class FunctionTest {
             TimeUnit.SECONDS.sleep(seconds);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        }
-    }
-
-    static class ClientWrapper extends Client {
-        private String endpoint;
-
-        ClientWrapper(String accessKey, String accessKeyId, String endpoint) {
-            super(endpoint, accessKeyId, accessKey, NetworkUtils.getLocalMachineIP(),
-                    false, 30000, 30000, 30000);
-            this.endpoint = endpoint;
-        }
-
-        String getEndpoint() {
-            return endpoint;
-        }
-
-        static ClientWrapper createFromConfig() {
-            final File file = new File(System.getProperty("user.home"), CONFIG_FILE);
-            if (!file.exists()) {
-                throw new IllegalStateException(String.format("[%s] does not exist!", file.getAbsolutePath()));
-            }
-            try {
-                final String text = new Scanner(file).useDelimiter("\\A").next();
-                JSONObject object = JSONObject.fromObject(text);
-                String endpoint = object.getString("endpoint");
-                String accessKeyId = object.getString("accessKeyId");
-                String accessKey = object.getString("accessKey");
-                return new ClientWrapper(accessKey, accessKeyId, endpoint);
-            } catch (Exception ex) {
-                throw new IllegalStateException(ex);
-            }
         }
     }
 }

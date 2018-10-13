@@ -17,8 +17,6 @@ import static org.junit.Assert.fail;
 
 public class PullLogsFunctionTest extends BaseMetadataTest {
 
-    private static final String TEST_PROJECT = "project-to-append-metadata";
-
     private int writeData(String logStore) {
         int round = randomBetween(10, 20);
         for (int i = 0; i < round; i++) {
@@ -83,5 +81,4 @@ public class PullLogsFunctionTest extends BaseMetadataTest {
         writeData(logStore);
         assertEquals(written, countLogGroupWithClientIpTag(TEST_PROJECT, logStore, 2));
     }
-
 }
