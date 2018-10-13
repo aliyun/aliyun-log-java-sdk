@@ -112,7 +112,7 @@ public class PullLogsResponse extends Response {
      * @return The count of LogGroup in response.
      */
     public int getCount() {
-        return Integer.parseInt(GetHeader(Consts.CONST_X_SLS_COUNT));
+        return count;
     }
 
     /**
@@ -123,7 +123,7 @@ public class PullLogsResponse extends Response {
      */
     public LogGroupData getLogGroup(int index) {
         Args.check(count > 0, "No LogGroups in response");
-        Args.check(index >= 0 && index < count, "index out of range [0, " + count + "]");
+        Args.check(index >= 0 && index < count, "index out of range [0, " + count + ")");
         return logGroups.get(index);
     }
 
@@ -135,7 +135,7 @@ public class PullLogsResponse extends Response {
      */
     public List<LogGroupData> getLogGroups(int offset) {
         Args.check(count > 0, "No LogGroups in response");
-        Args.check(offset >= 0 && offset < count, "offset out of range [0, " + count + "]");
+        Args.check(offset >= 0 && offset < count, "offset out of range [0, " + count + ")");
         return logGroups.subList(offset, count);
     }
 

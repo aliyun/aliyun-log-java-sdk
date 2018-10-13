@@ -73,20 +73,20 @@ public class WebTrackingTest extends BaseMetadataTest {
 
         assertTrue(testPutLogs());
         waitForSeconds(3);
-        assertEquals(1, countAppended(TEST_PROJECT, TEST_LOGSTORE, 2));
+        assertEquals(1, countLogGroupWithClientIpTag(TEST_PROJECT, TEST_LOGSTORE, 2));
 
         logStore.setEnableWebTracking(false);
         client.UpdateLogStore(TEST_PROJECT, logStore);
         waitOneMinutes();
         assertFalse(testPutLogs());
         waitForSeconds(3);
-        assertEquals(1, countAppended(TEST_PROJECT, TEST_LOGSTORE, 2));
+        assertEquals(1, countLogGroupWithClientIpTag(TEST_PROJECT, TEST_LOGSTORE, 2));
 
         logStore.setEnableWebTracking(true);
         client.UpdateLogStore(TEST_PROJECT, logStore);
         waitOneMinutes();
         assertTrue(testPutLogs());
         waitForSeconds(3);
-        assertEquals(2, countAppended(TEST_PROJECT, TEST_LOGSTORE, 2));
+        assertEquals(2, countLogGroupWithClientIpTag(TEST_PROJECT, TEST_LOGSTORE, 2));
     }
 }
