@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.functiontest;
 
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.Logs;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
 import org.junit.Test;
@@ -15,9 +16,6 @@ import static org.junit.Assert.fail;
 
 
 public class PullLogsFunctionTest extends BaseMetadataTest {
-
-    private static final String TEST_PROJECT = "project-to-append-metadata";
-
 
     private int writeData(String logStore) {
         int round = randomBetween(10, 20);
@@ -39,19 +37,32 @@ public class PullLogsFunctionTest extends BaseMetadataTest {
     }
 
     @Test
-    public void testNewData() throws Exception {
-        String logStore = "logstore-append-meta";
-        ensureLogStoreEnabled(TEST_PROJECT, logStore, true);
+    public void testPullLogs() throws Exception {
+        String logStore = "logstore-" + getNowTimestamp();
+        ensureLogStoreEnabled(TEST_PROJECT, logStore, randomBoolean());
         int written = writeData(logStore);
-        assertEquals(written, countAppended(TEST_PROJECT, logStore, 2));
+        assertEquals(written, countAppended(TEST_PROJECT, logStore, 2, new Predicate() {
+            @Override
+            public boolean test(Logs.LogGroup logGroup) {
+                return true;
+            }
+        }));
     }
 
     @Test
-    public void testMixData() throws Exception {
-        String logStore = "logstore-append-meta";
+    public void testNewDataWillAppendClientIp() throws Exception {
+        String logStore = "logstore-" + getNowTimestamp();
+        ensureLogStoreEnabled(TEST_PROJECT, logStore, true);
+        int written = writeData(logStore);
+        assertEquals(written, countLogGroupWithClientIpTag(TEST_PROJECT, logStore, 2));
+    }
+
+    @Test
+    public void testMixDataWillAppendClientIp() throws Exception {
+        String logStore = "logstore-" + getNowTimestamp();
         ensureLogStoreEnabled(TEST_PROJECT, logStore, false);
         writeData(logStore);
-        assertEquals(0, countAppended(TEST_PROJECT, logStore, 2));
+        assertEquals(0, countLogGroupWithClientIpTag(TEST_PROJECT, logStore, 2));
 
         GetLogStoreResponse response = client.GetLogStore(TEST_PROJECT, logStore);
         LogStore logStore1 = response.GetLogStore();
@@ -60,7 +71,7 @@ public class PullLogsFunctionTest extends BaseMetadataTest {
         waitOneMinutes();
 
         int written = writeData(logStore);
-        assertEquals(written, countAppended(TEST_PROJECT, logStore, 2));
+        assertEquals(written, countLogGroupWithClientIpTag(TEST_PROJECT, logStore, 2));
 
         logStore1 = response.GetLogStore();
         logStore1.setAppendMeta(false);
@@ -68,7 +79,6 @@ public class PullLogsFunctionTest extends BaseMetadataTest {
         waitOneMinutes();
 
         writeData(logStore);
-        assertEquals(written, countAppended(TEST_PROJECT, logStore, 2));
+        assertEquals(written, countLogGroupWithClientIpTag(TEST_PROJECT, logStore, 2));
     }
-
 }

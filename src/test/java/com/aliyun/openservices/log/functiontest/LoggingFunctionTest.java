@@ -43,7 +43,6 @@ public class LoggingFunctionTest extends FunctionTest {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         ListProjectResponse response = client.ListProject();
         List<Project> projects = response.getProjects();
 

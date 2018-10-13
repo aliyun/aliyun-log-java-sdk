@@ -80,6 +80,7 @@ import com.aliyun.openservices.log.request.ListSavedSearchRequest;
 import com.aliyun.openservices.log.request.ListShardRequest;
 import com.aliyun.openservices.log.request.ListTopicsRequest;
 import com.aliyun.openservices.log.request.MergeShardsRequest;
+import com.aliyun.openservices.log.request.PullLogsRequest;
 import com.aliyun.openservices.log.request.PutLogsRequest;
 import com.aliyun.openservices.log.request.RemoveConfigFromMachineGroupRequest;
 import com.aliyun.openservices.log.request.SplitShardRequest;
@@ -1232,14 +1233,13 @@ public class Client implements LogService {
 				byte[] rawData = response.GetRawBody();
 
 				batchGetLogResponse = new BatchGetLogResponse(resHeaders, rawData);
-				if (connection_status != null)
-				{
+				if (connection_status != null) {
 					connection_status.UpdateLastUsedTime(System.nanoTime());
 					connection_status.AddPullDataSize(batchGetLogResponse.GetRawSize());
 				}
 				return batchGetLogResponse;
 			} catch (LogException e) {
-				if (i == 1 || e.GetRequestId() != null && e.GetRequestId().isEmpty() == false) {
+				if (i == 1 || e.GetRequestId() != null && !e.GetRequestId().isEmpty()) {
 					throw e;
 				}
 				if (connection_status != null) {
@@ -1250,14 +1250,51 @@ public class Client implements LogService {
 		return null; // never happen
 	}
 
-	public CreateConfigResponse CreateConfig(String project, Config config)
-			throws LogException {
+    @Override
+    public PullLogsResponse pullLogs(PullLogsRequest request) throws LogException {
+        Args.notNull(request, "request");
+        String project = request.GetProject();
+        String logStore = request.getLogStore();
+
+        Map<String, String> headers = GetCommonHeadPara(project);
+        String resourceUri = "/logstores/" + logStore + "/shards/" + request.getShardId();
+        headers.put(Consts.CONST_ACCEPT_ENCODING, Consts.CONST_LZ4);
+        headers.put(Consts.CONST_HTTP_ACCEPT, Consts.CONST_PROTO_BUF);
+        Map<String, String> urlParameter = request.GetAllParams();
+
+        for (int i = 0; i < 2; i++) {
+            String serverIp = null;
+            ClientConnectionStatus connectionStatus = null;
+            if (mUseDirectMode) {
+                connectionStatus = GetShardConnectionStatus(project, logStore, request.getShardId());
+                serverIp = connectionStatus.GetIpAddress();
+            }
+            try {
+                ResponseMessage response = SendData(project, HttpMethod.GET, resourceUri, urlParameter, headers, new byte[0], null, serverIp);
+                Map<String, String> resHeaders = response.getHeaders();
+                PullLogsResponse plr = new PullLogsResponse(resHeaders, response.GetRawBody());
+                if (connectionStatus != null) {
+                    connectionStatus.UpdateLastUsedTime(System.nanoTime());
+                    connectionStatus.AddPullDataSize(plr.getRawSize());
+                }
+                return plr;
+            } catch (LogException ex) {
+                if (i == 1 || ex.GetRequestId() != null && !ex.GetRequestId().isEmpty()) {
+                    throw ex;
+                }
+                if (connectionStatus != null) {
+                    connectionStatus.DisableConnection();
+                }
+            }
+        }
+        return null;
+    }
+
+    public CreateConfigResponse CreateConfig(String project, Config config) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertParameterNotNull(config, "config");
 		return CreateConfig(new CreateConfigRequest(project, config));
 	}
-
-
 	
 	public CreateConfigResponse CreateConfig(CreateConfigRequest request)
 			throws LogException {
