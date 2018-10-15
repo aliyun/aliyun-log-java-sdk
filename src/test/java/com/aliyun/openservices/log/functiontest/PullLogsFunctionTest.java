@@ -18,12 +18,12 @@ import static org.junit.Assert.fail;
 public class PullLogsFunctionTest extends BaseMetadataTest {
 
     private int writeData(String logStore) {
-        int round = randomBetween(10, 20);
+        int round = randomBetween(1, 10);
         for (int i = 0; i < round; i++) {
-            List<LogItem> logGroup = new ArrayList<LogItem>(600);
-            for (int j = 0; j < 600; j++) {
+            List<LogItem> logGroup = new ArrayList<LogItem>(10);
+            for (int j = 0; j < 10; j++) {
                 LogItem logItem = new LogItem(getNowTimestamp());
-                logItem.PushBack("ID", "id_" + String.valueOf(i * 600 + j));
+                logItem.PushBack("ID", "id_" + String.valueOf(i * 10 + j));
                 logGroup.add(logItem);
             }
             String topic = "topic_" + String.valueOf(i);
