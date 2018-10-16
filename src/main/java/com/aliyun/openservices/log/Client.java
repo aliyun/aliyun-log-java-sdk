@@ -3549,10 +3549,8 @@ public class Client implements LogService {
 
     @Override
     public UpdateAlertResponse updateAlert(UpdateAlertRequestV2 request) throws LogException {
-        Args.notNull(request, "request");
-        UpdateJobRequest updateJobRequest = new UpdateJobRequest(request.GetProject(), request.toJob());
-        UpdateJobResponse response = updateJob(updateJobRequest);
-        return new UpdateAlertResponse(response.GetAllHeaders());
+        ResponseMessage message = send(request);
+        return new UpdateAlertResponse(message.getHeaders());
     }
 
     @Override
@@ -3570,10 +3568,8 @@ public class Client implements LogService {
 
     @Override
     public DeleteAlertResponse deleteAlert(DeleteAlertRequestV2 request) throws LogException {
-        Args.notNull(request, "request");
-        DeleteJobRequest deleteJobRequest = new DeleteJobRequest(request.GetProject(), request.getName());
-        DeleteJobResponse response = deleteJob(deleteJobRequest);
-        return new DeleteAlertResponse(response.GetAllHeaders());
+        ResponseMessage responseMessage = send(request);
+        return new DeleteAlertResponse(responseMessage.getHeaders());
     }
 
     protected Alert ExtractAlertFromResponse(JSONObject dict,

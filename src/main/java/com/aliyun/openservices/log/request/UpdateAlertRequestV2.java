@@ -25,15 +25,6 @@ public class UpdateAlertRequestV2 extends JobRequest {
         this.alert = alert;
     }
 
-    public Job toJob() {
-        Job job = new Job();
-        job.setType(JobType.Alert);
-        job.setName(alert.getName());
-        job.setSchedule(alert.getSchedule());
-        job.setConfiguration(alert.getConfiguration());
-        return job;
-    }
-
     @Override
     public HttpMethod getMethod() {
         return HttpMethod.PUT;
