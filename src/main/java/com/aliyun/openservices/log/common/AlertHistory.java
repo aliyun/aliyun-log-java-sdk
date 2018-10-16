@@ -4,7 +4,8 @@ package com.aliyun.openservices.log.common;
 import com.alibaba.fastjson.annotation.JSONField;
 import net.sf.json.JSONObject;
 
-public class AlertDetails extends ExecutionDetails {
+
+public class AlertHistory extends JobHistory {
 
     @JSONField
     private boolean fired;
@@ -50,6 +51,7 @@ public class AlertDetails extends ExecutionDetails {
     }
 
     public void deserialize(final JSONObject value) {
+        super.deserialize(value);
         fired = value.getBoolean("fired");
         notificationStatus = NotificationStatus.fromString(value.getString("notificationStatus"));
     }

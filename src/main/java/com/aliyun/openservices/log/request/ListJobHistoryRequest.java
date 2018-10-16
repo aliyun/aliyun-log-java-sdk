@@ -2,34 +2,42 @@ package com.aliyun.openservices.log.request;
 
 
 import com.aliyun.openservices.log.common.Consts;
-import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.common.JobType;
+import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.util.Utils;
 
 import java.util.Date;
 import java.util.Map;
 
-public class ListJobHistoryRequest extends Request {
+public class ListJobHistoryRequest extends JobRequest {
 
-    private String jobName;
+    private String name;
+    private JobType type;
     private Date startTime;
     private Date endTime;
     private Integer offset;
     private Integer size;
 
-    public ListJobHistoryRequest(String project, String jobName, Date startTime, Date endTime) {
+    public ListJobHistoryRequest(String project) {
         super(project);
-        Args.notNullOrEmpty(jobName, "Job name");
-        this.jobName = jobName;
-        this.startTime = startTime;
-        this.endTime = endTime;
     }
 
-    public String getJobName() {
-        return jobName;
+    public String getName() {
+        return name;
     }
 
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public HttpMethod getMethod() {
+        return HttpMethod.GET;
+    }
+
+    @Override
+    public String getUri() {
+        return Consts.JOB_URI + "/" + name + "/history";
     }
 
     public Date getStartTime() {
@@ -64,19 +72,34 @@ public class ListJobHistoryRequest extends Request {
         this.size = size;
     }
 
+    public JobType getType() {
+        return type;
+    }
+
+    public void setType(JobType type) {
+        this.type = type;
+    }
+
     @Override
     public Map<String, String> GetAllParams() {
-        Map<String, String> urlParameters = super.GetAllParams();
-        Args.notNull(startTime, Consts.START_TIME);
-        Args.notNull(endTime, Consts.END_TIME);
-        urlParameters.put(Consts.START_TIME, String.valueOf(Utils.getTimestamp(startTime)));
-        urlParameters.put(Consts.END_TIME, String.valueOf(Utils.getTimestamp(endTime)));
+        if (name != null && !name.isEmpty()) {
+            SetParam(Consts.JOB_NAME, name);
+        }
+        if (type != null) {
+            SetParam(Consts.JOB_TYPE, type.toString());
+        }
+        if (startTime != null) {
+            SetParam(Consts.START_TIME, String.valueOf(Utils.getTimestamp(startTime)));
+        }
+        if (endTime != null) {
+            SetParam(Consts.END_TIME, String.valueOf(Utils.getTimestamp(endTime)));
+        }
         if (offset != null) {
-            urlParameters.put(Consts.CONST_OFFSET, offset.toString());
+            SetParam(Consts.CONST_OFFSET, offset.toString());
         }
         if (size != null) {
-            urlParameters.put(Consts.CONST_SIZE, size.toString());
+            SetParam(Consts.CONST_SIZE, size.toString());
         }
-        return urlParameters;
+        return super.GetAllParams();
     }
 }

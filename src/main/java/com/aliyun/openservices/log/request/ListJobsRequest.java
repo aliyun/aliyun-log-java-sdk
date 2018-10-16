@@ -3,18 +3,19 @@ package com.aliyun.openservices.log.request;
 
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.JobType;
+import com.aliyun.openservices.log.http.client.HttpMethod;
 
 import java.util.Map;
 
-public class ListJobsRequest extends Request {
+public class ListJobsRequest extends JobRequest {
     /**
      * Job name for fuzzy matching
      */
-    private String jobName;
+    private String name;
     /**
      * Job type for filtering
      */
-    private JobType jobType;
+    private JobType type;
     /**
      * resourceProvider for searching
      */
@@ -24,6 +25,11 @@ public class ListJobsRequest extends Request {
 
     public ListJobsRequest(String project) {
         super(project);
+    }
+
+    public ListJobsRequest(String project, JobType type) {
+        super(project);
+        this.type = type;
     }
 
     public Integer getOffset() {
@@ -42,20 +48,30 @@ public class ListJobsRequest extends Request {
         this.size = size;
     }
 
-    public String getJobName() {
-        return jobName;
+    public String getName() {
+        return name;
     }
 
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public JobType getJobType() {
-        return jobType;
+    @Override
+    public HttpMethod getMethod() {
+        return HttpMethod.GET;
     }
 
-    public void setJobType(JobType jobType) {
-        this.jobType = jobType;
+    @Override
+    public String getUri() {
+        return Consts.JOB_URI;
+    }
+
+    public JobType getType() {
+        return type;
+    }
+
+    public void setType(JobType type) {
+        this.type = type;
     }
 
     public String getResourceProvider() {
@@ -68,22 +84,21 @@ public class ListJobsRequest extends Request {
 
     @Override
     public Map<String, String> GetAllParams() {
-        Map<String, String> urlParameters = super.GetAllParams();
-        if (jobName != null && !jobName.isEmpty()) {
-            urlParameters.put(Consts.JOB_NAME, jobName);
+        if (name != null && !name.isEmpty()) {
+            SetParam(Consts.JOB_NAME, name);
         }
-        if (jobType != null) {
-            urlParameters.put(Consts.JOB_TYPE, jobType.name());
+        if (type != null) {
+            SetParam(Consts.JOB_TYPE, type.name());
         }
         if (resourceProvider != null && !resourceProvider.isEmpty()) {
-            urlParameters.put(Consts.RESOURCE_PROVIDER, resourceProvider);
+            SetParam(Consts.RESOURCE_PROVIDER, resourceProvider);
         }
         if (offset != null) {
-            urlParameters.put(Consts.CONST_OFFSET, offset.toString());
+            SetParam(Consts.CONST_OFFSET, offset.toString());
         }
         if (size != null) {
-            urlParameters.put(Consts.CONST_SIZE, size.toString());
+            SetParam(Consts.CONST_SIZE, size.toString());
         }
-        return urlParameters;
+        return super.GetAllParams();
     }
 }

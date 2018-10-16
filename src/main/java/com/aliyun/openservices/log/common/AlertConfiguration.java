@@ -87,14 +87,14 @@ public class AlertConfiguration extends JobConfiguration {
     public void deserialize(JSONObject value) {
         condition = value.getString("condition");
         dashboard = value.getString("dashboard");
-        JSONArray queries = value.getJSONArray("queryList");
+        final JSONArray queries = value.getJSONArray("queryList");
         queryList = new ArrayList<Query>(queries.size());
         for (int i = 0; i < queries.size(); i++) {
             Query query = new Query();
             query.deserialize(queries.getJSONObject(i));
             queryList.add(query);
         }
-        JSONArray notifications = value.getJSONArray("notificationList");
+        final JSONArray notifications = value.getJSONArray("notificationList");
         notificationList = new ArrayList<Notification>(notifications.size());
         for (int i = 0; i < notifications.size(); i++) {
             JSONObject itemAsJson = notifications.getJSONObject(i);

@@ -10,6 +10,7 @@ import com.aliyun.openservices.log.request.ApplyConfigToMachineGroupRequest;
 import com.aliyun.openservices.log.request.ApproveMachineGroupRequest;
 import com.aliyun.openservices.log.request.BatchGetLogRequest;
 import com.aliyun.openservices.log.request.CreateAlertRequest;
+import com.aliyun.openservices.log.request.CreateAlertRequestV2;
 import com.aliyun.openservices.log.request.CreateChartRequest;
 import com.aliyun.openservices.log.request.CreateConfigRequest;
 import com.aliyun.openservices.log.request.CreateConsumerGroupRequest;
@@ -22,6 +23,7 @@ import com.aliyun.openservices.log.request.CreateLoggingRequest;
 import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
 import com.aliyun.openservices.log.request.CreateSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteAlertRequest;
+import com.aliyun.openservices.log.request.DeleteAlertRequestV2;
 import com.aliyun.openservices.log.request.DeleteChartRequest;
 import com.aliyun.openservices.log.request.DeleteConfigRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
@@ -36,6 +38,7 @@ import com.aliyun.openservices.log.request.DeleteShardRequest;
 import com.aliyun.openservices.log.request.DisableJobRequest;
 import com.aliyun.openservices.log.request.EnableJobRequest;
 import com.aliyun.openservices.log.request.GetAlertRequest;
+import com.aliyun.openservices.log.request.GetAlertRequestV2;
 import com.aliyun.openservices.log.request.GetAppliedConfigsRequest;
 import com.aliyun.openservices.log.request.GetAppliedMachineGroupRequest;
 import com.aliyun.openservices.log.request.GetChartRequest;
@@ -55,7 +58,9 @@ import com.aliyun.openservices.log.request.GetProjectLogsRequest;
 import com.aliyun.openservices.log.request.GetSavedSearchRequest;
 import com.aliyun.openservices.log.request.ListACLRequest;
 import com.aliyun.openservices.log.request.ListAlertFailRequest;
+import com.aliyun.openservices.log.request.ListAlertHistoryRequest;
 import com.aliyun.openservices.log.request.ListAlertRequest;
+import com.aliyun.openservices.log.request.ListAlertRequestV2;
 import com.aliyun.openservices.log.request.ListConfigRequest;
 import com.aliyun.openservices.log.request.ListDashboardRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
@@ -73,6 +78,7 @@ import com.aliyun.openservices.log.request.RemoveConfigFromMachineGroupRequest;
 import com.aliyun.openservices.log.request.SplitShardRequest;
 import com.aliyun.openservices.log.request.UpdateACLRequest;
 import com.aliyun.openservices.log.request.UpdateAlertRequest;
+import com.aliyun.openservices.log.request.UpdateAlertRequestV2;
 import com.aliyun.openservices.log.request.UpdateChartRequest;
 import com.aliyun.openservices.log.request.UpdateConfigRequest;
 import com.aliyun.openservices.log.request.UpdateDashboardRequest;
@@ -2701,6 +2707,9 @@ public interface LogService {
 	 */
 	UpdateAlertResponse updateAlert(UpdateAlertRequest request) throws LogException;
 
+
+	UpdateAlertResponse updateAlert(UpdateAlertRequestV2 request) throws LogException;
+
 	/**
 	 * delete alert
 	 *
@@ -2715,6 +2724,9 @@ public interface LogService {
 	 *             if any required string parameter is empty
 	 */
 	DeleteAlertResponse deleteAlert(DeleteAlertRequest request) throws LogException;
+
+
+	DeleteAlertResponse deleteAlert(DeleteAlertRequestV2 request) throws LogException;
 
 	/**
 	 * get alert
@@ -2731,6 +2743,9 @@ public interface LogService {
 	 */
 	GetAlertResponse getAlert(GetAlertRequest request) throws LogException;
 
+
+	GetAlertResponseV2 getAlert(GetAlertRequestV2 request) throws LogException;
+
 	/**
 	 * list alert
 	 *
@@ -2745,6 +2760,9 @@ public interface LogService {
 	 *             if any required string parameter is empty
 	 */
 	ListAlertResponse listAlert(ListAlertRequest request) throws LogException;
+
+
+	ListAlertResponseV2 listAlert(ListAlertRequestV2 request) throws LogException;
 
 	/**
 	 * list alert fail
@@ -3139,6 +3157,14 @@ public interface LogService {
 	 */
 	CreateJobResponse createJob(CreateJobRequest request) throws LogException;
 
+    /**
+     * Create an alert rule.
+     * @param request An instance of {@link CreateAlertRequestV2}
+     * @return
+     * @throws LogException
+     */
+    CreateAlertResponse createAlert(CreateAlertRequestV2 request) throws LogException;
+
 	/**
 	 * Get a job.
 	 *
@@ -3201,4 +3227,7 @@ public interface LogService {
 	 * @throws LogException if any error occurs
 	 */
 	ListJobHistoryResponse listJobHistory(ListJobHistoryRequest request) throws LogException;
+
+
+    ListAlertHistoryResponse listAlertHistory(ListAlertHistoryRequest request) throws LogException;
 }

@@ -2,38 +2,20 @@ package com.aliyun.openservices.log.response;
 
 
 import com.aliyun.openservices.log.common.JobHistory;
-import com.aliyun.openservices.log.common.JobHistoryList;
-import com.aliyun.openservices.log.util.Args;
+import net.sf.json.JSONObject;
 
-import java.util.List;
 import java.util.Map;
 
-public class ListJobHistoryResponse extends Response {
+public class ListJobHistoryResponse extends ResponseList<JobHistory> {
 
-    private int count;
-
-    private List<JobHistory> jobHistoryList;
-
-    public ListJobHistoryResponse(Map<String, String> headers, JobHistoryList jobHistoryList) {
+    public ListJobHistoryResponse(Map<String, String> headers) {
         super(headers);
-        Args.notNull(jobHistoryList, "jobHistoryList");
-        this.jobHistoryList = jobHistoryList.getJobHistoryList();
-        this.count = jobHistoryList.getCount();
     }
 
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public List<JobHistory> getJobHistoryList() {
-        return jobHistoryList;
-    }
-
-    public void setJobHistoryList(List<JobHistory> jobHistoryList) {
-        this.jobHistoryList = jobHistoryList;
+    @Override
+    public JobHistory unmarshal(JSONObject value) {
+        JobHistory jobHistory = new JobHistory();
+        jobHistory.deserialize(value);
+        return jobHistory;
     }
 }

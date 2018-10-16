@@ -1,0 +1,46 @@
+package com.aliyun.openservices.log.common;
+
+import com.aliyun.openservices.log.util.JsonUtils;
+import net.sf.json.JSONObject;
+
+import java.io.Serializable;
+
+public class AlertV2 implements Serializable {
+
+    private String name;
+
+    private AlertConfiguration configuration;
+
+    private JobSchedule schedule;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public AlertConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(AlertConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
+    public JobSchedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(JobSchedule schedule) {
+        this.schedule = schedule;
+    }
+
+    public void deserialize(JSONObject value) {
+        name = value.getString("name");
+        configuration = new AlertConfiguration();
+        configuration.deserialize(value.getJSONObject("configuration"));
+        schedule = JsonUtils.deserialize(value.getString("schedule"), JobSchedule.class);
+    }
+}

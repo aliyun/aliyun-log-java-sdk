@@ -1,23 +1,18 @@
 package com.aliyun.openservices.log.request;
 
 
-import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.http.client.HttpMethod;
 
-public class DeleteJobRequest extends Request {
+public class DeleteJobRequest extends JobRequest {
 
-    private String jobName;
 
     public DeleteJobRequest(String project, String jobName) {
-        super(project);
-        Args.notNullOrEmpty(jobName, "Job name");
-        this.jobName = jobName;
+        super(project, jobName);
     }
 
-    public String getJobName() {
-        return jobName;
+    @Override
+    public HttpMethod getMethod() {
+        return HttpMethod.DELETE;
     }
 
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
-    }
 }

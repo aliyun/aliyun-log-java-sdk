@@ -1,11 +1,12 @@
 package com.aliyun.openservices.log.request;
 
+
 import com.aliyun.openservices.log.http.client.HttpMethod;
 
-public class GetJobRequest extends JobRequest {
+public class GetAlertRequestV2 extends JobRequest {
 
-    public GetJobRequest(String project, String jobName) {
-        super(project, jobName);
+    public GetAlertRequestV2(String project, String name) {
+        super(project, name);
     }
 
     @Override

@@ -1,9 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 public enum JobType {
-    Alert,
-    Report,
-    ScheduleSearch;
+    Alert;
 
     @Override
     public String toString() {

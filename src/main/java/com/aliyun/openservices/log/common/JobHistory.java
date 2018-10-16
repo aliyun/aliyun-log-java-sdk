@@ -23,8 +23,6 @@ public class JobHistory implements Serializable {
 
     private String errorMessage;
 
-    private ExecutionDetails executionDetails;
-
     public String getId() {
         return id;
     }
@@ -81,14 +79,6 @@ public class JobHistory implements Serializable {
         this.status = status;
     }
 
-    public ExecutionDetails getExecutionDetails() {
-        return executionDetails;
-    }
-
-    public void setExecutionDetails(ExecutionDetails executionDetails) {
-        this.executionDetails = executionDetails;
-    }
-
     public enum ExecutionStatus {
         FAILED("Failed"),
         SUCCEED("Succeed");
@@ -118,16 +108,6 @@ public class JobHistory implements Serializable {
         status = ExecutionStatus.fromString(value.getString("status"));
         if (value.containsKey("errorMessage")) {
             errorMessage = value.getString("errorMessage");
-        }
-        if (value.containsKey("executionDetails")) {
-            switch (jobType) {
-                case Alert:
-                    executionDetails = new AlertDetails();
-                    executionDetails.deserialize(value.getJSONObject("executionDetails"));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unimplemented job type: " + jobType);
-            }
         }
     }
 }

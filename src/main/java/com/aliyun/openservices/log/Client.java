@@ -28,6 +28,7 @@ import com.aliyun.openservices.log.request.ConsumerGroupGetCheckPointRequest;
 import com.aliyun.openservices.log.request.ConsumerGroupHeartBeatRequest;
 import com.aliyun.openservices.log.request.ConsumerGroupUpdateCheckPointRequest;
 import com.aliyun.openservices.log.request.CreateAlertRequest;
+import com.aliyun.openservices.log.request.CreateAlertRequestV2;
 import com.aliyun.openservices.log.request.CreateChartRequest;
 import com.aliyun.openservices.log.request.CreateConfigRequest;
 import com.aliyun.openservices.log.request.CreateConsumerGroupRequest;
@@ -40,6 +41,7 @@ import com.aliyun.openservices.log.request.CreateLoggingRequest;
 import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
 import com.aliyun.openservices.log.request.CreateSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteAlertRequest;
+import com.aliyun.openservices.log.request.DeleteAlertRequestV2;
 import com.aliyun.openservices.log.request.DeleteChartRequest;
 import com.aliyun.openservices.log.request.DeleteConfigRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
@@ -54,6 +56,7 @@ import com.aliyun.openservices.log.request.DeleteShardRequest;
 import com.aliyun.openservices.log.request.DisableJobRequest;
 import com.aliyun.openservices.log.request.EnableJobRequest;
 import com.aliyun.openservices.log.request.GetAlertRequest;
+import com.aliyun.openservices.log.request.GetAlertRequestV2;
 import com.aliyun.openservices.log.request.GetAppliedConfigsRequest;
 import com.aliyun.openservices.log.request.GetAppliedMachineGroupRequest;
 import com.aliyun.openservices.log.request.GetChartRequest;
@@ -72,9 +75,12 @@ import com.aliyun.openservices.log.request.GetLogtailProfileRequest;
 import com.aliyun.openservices.log.request.GetMachineGroupRequest;
 import com.aliyun.openservices.log.request.GetProjectLogsRequest;
 import com.aliyun.openservices.log.request.GetSavedSearchRequest;
+import com.aliyun.openservices.log.request.JobRequest;
 import com.aliyun.openservices.log.request.ListACLRequest;
 import com.aliyun.openservices.log.request.ListAlertFailRequest;
+import com.aliyun.openservices.log.request.ListAlertHistoryRequest;
 import com.aliyun.openservices.log.request.ListAlertRequest;
+import com.aliyun.openservices.log.request.ListAlertRequestV2;
 import com.aliyun.openservices.log.request.ListConfigRequest;
 import com.aliyun.openservices.log.request.ListDashboardRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
@@ -93,6 +99,7 @@ import com.aliyun.openservices.log.request.RemoveConfigFromMachineGroupRequest;
 import com.aliyun.openservices.log.request.SplitShardRequest;
 import com.aliyun.openservices.log.request.UpdateACLRequest;
 import com.aliyun.openservices.log.request.UpdateAlertRequest;
+import com.aliyun.openservices.log.request.UpdateAlertRequestV2;
 import com.aliyun.openservices.log.request.UpdateChartRequest;
 import com.aliyun.openservices.log.request.UpdateConfigRequest;
 import com.aliyun.openservices.log.request.UpdateDashboardRequest;
@@ -2154,8 +2161,7 @@ public class Client implements LogService {
 	private ResponseMessage SendData(String project, HttpMethod method,
 			String resourceUri, Map<String, String> urlParams,
 			Map<String, String> headParams) throws LogException {
-		return SendData(project, method, resourceUri, urlParams, headParams,
-				new byte[0]);
+		return SendData(project, method, resourceUri, urlParams, headParams, new byte[0]);
 	}
 
 	protected ResponseMessage SendData(String project, HttpMethod method,
@@ -3540,8 +3546,16 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.PUT, resourceUri, urlParameter, headParameter, request.getAlert().ToJsonString());
 		return new UpdateAlertResponse(response.getHeaders());
 	}
-	
-	@Override
+
+    @Override
+    public UpdateAlertResponse updateAlert(UpdateAlertRequestV2 request) throws LogException {
+        Args.notNull(request, "request");
+        UpdateJobRequest updateJobRequest = new UpdateJobRequest(request.GetProject(), request.toJob());
+        UpdateJobResponse response = updateJob(updateJobRequest);
+        return new UpdateAlertResponse(response.GetAllHeaders());
+    }
+
+    @Override
 	public DeleteAlertResponse deleteAlert(DeleteAlertRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "projectName");
@@ -3553,8 +3567,16 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.DELETE, resourceUri, urlParameter, headParameter);
 		return new DeleteAlertResponse(response.getHeaders());
 	}
-	
-	protected Alert ExtractAlertFromResponse(JSONObject dict,
+
+    @Override
+    public DeleteAlertResponse deleteAlert(DeleteAlertRequestV2 request) throws LogException {
+        Args.notNull(request, "request");
+        DeleteJobRequest deleteJobRequest = new DeleteJobRequest(request.GetProject(), request.getName());
+        DeleteJobResponse response = deleteJob(deleteJobRequest);
+        return new DeleteAlertResponse(response.GetAllHeaders());
+    }
+
+    protected Alert ExtractAlertFromResponse(JSONObject dict,
 			String requestId) throws LogException {
 		Alert alert = new Alert();
 		try {
@@ -3581,8 +3603,21 @@ public class Client implements LogService {
 		Alert alert = ExtractAlertFromResponse(object, requestId);
         return new GetAlertResponse(response.getHeaders(), alert);
 	}
-	
-	protected List<String> ExtractAlerts(JSONObject object, String requestId)
+
+    @Override
+    public GetAlertResponseV2 getAlert(GetAlertRequestV2 request) throws LogException {
+        ResponseMessage response = send(request);
+        JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
+        try {
+            GetAlertResponseV2 alertResponse = new GetAlertResponseV2(response.getHeaders());
+            alertResponse.deserialize(responseBody);
+            return alertResponse;
+        } catch (Exception ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
+    }
+
+    protected List<String> ExtractAlerts(JSONObject object, String requestId)
 			throws LogException {
 		List<String> alerts = new ArrayList<String>();
 		JSONArray array = new JSONArray();
@@ -3614,8 +3649,21 @@ public class Client implements LogService {
         List<String> alerts = ExtractAlerts(object, requestId);
         return new ListAlertResponse(response.getHeaders(), count, total, alerts);
 	}
-	
-	protected List<AlertFail> ExtractAlertFails(JSONObject object, String requestId)
+
+    @Override
+    public ListAlertResponseV2 listAlert(ListAlertRequestV2 request) throws LogException {
+        ResponseMessage response = send(request);
+        JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
+        try {
+            ListAlertResponseV2 alertResponse = new ListAlertResponseV2(response.getHeaders());
+            alertResponse.deserialize(responseBody);
+            return alertResponse;
+        } catch (Exception ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
+    }
+
+    protected List<AlertFail> ExtractAlertFails(JSONObject object, String requestId)
 			throws LogException {
 		List<AlertFail> alerts = new ArrayList<AlertFail>();
 		JSONArray array = new JSONArray();
@@ -4025,7 +4073,7 @@ public class Client implements LogService {
 		try {
 			return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
 		} catch (JSONException ex) {
-			throw new LogException("BadResponse", ex.getMessage(), response.getRequestId());
+			throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
 		}
 	}
 
@@ -4041,22 +4089,19 @@ public class Client implements LogService {
 
     @Override
     public CreateJobResponse createJob(CreateJobRequest request) throws LogException {
-        Args.notNull(request, "request");
-        final String project = request.GetProject();
-        Map<String, String> headers = GetCommonHeadPara(project);
-        final Job job = request.getJob();
-        ResponseMessage response = SendData(project, HttpMethod.POST,
-                Consts.JOB_URI, Collections.<String, String>emptyMap(), headers, JsonUtils.serialize(job));
+        ResponseMessage response = send(request);
         return new CreateJobResponse(response.getHeaders());
     }
 
     @Override
+    public CreateAlertResponse createAlert(CreateAlertRequestV2 request) throws LogException {
+        ResponseMessage responseMessage = send(request);
+        return new CreateAlertResponse(responseMessage.getHeaders());
+    }
+
+    @Override
     public GetJobResponse getJob(GetJobRequest request) throws LogException {
-        Args.notNull(request, "request");
-        final String project = request.GetProject();
-        Map<String, String> headers = GetCommonHeadPara(project);
-        String uri = Consts.JOB_URI + "/" + request.getJobName();
-        ResponseMessage response = SendData(project, HttpMethod.GET, uri, Collections.<String, String>emptyMap(), headers);
+        ResponseMessage response = send(request);
         String responseBody = encodeResponseBodyToUtf8String(response, response.getRequestId());
         try {
             Job job = new Job();
@@ -4069,61 +4114,36 @@ public class Client implements LogService {
 
     @Override
     public UpdateJobResponse updateJob(UpdateJobRequest request) throws LogException {
-        Args.notNull(request, "request");
-        final String project = request.GetProject();
-        Map<String, String> headers = GetCommonHeadPara(project);
-        final Job job = request.getJob();
-        String uri = Consts.JOB_URI + "/" + job.getName();
-        ResponseMessage response = SendData(project, HttpMethod.PUT, uri,
-                Collections.<String, String>emptyMap(), headers, JsonUtils.serialize(job));
+        ResponseMessage response = send(request);
         return new UpdateJobResponse(response.getHeaders());
     }
 
     @Override
     public DeleteJobResponse deleteJob(DeleteJobRequest request) throws LogException {
-        Args.notNull(request, "request");
-        final String project = request.GetProject();
-        Map<String, String> headers = GetCommonHeadPara(project);
-        String uri = Consts.JOB_URI + "/" + request.getJobName();
-        ResponseMessage response = SendData(project, HttpMethod.DELETE, uri,
-                Collections.<String, String>emptyMap(), headers);
+        ResponseMessage response = send(request);
         return new DeleteJobResponse(response.getHeaders());
     }
 
     @Override
     public EnableJobResponse enableJob(EnableJobRequest request) throws LogException {
-        Args.notNull(request, "request");
-        final String project = request.GetProject();
-        Map<String, String> headers = GetCommonHeadPara(project);
-        Map<String, String> urlParameters = request.GetAllParams();
-        String uri = Consts.JOB_URI + "/" + request.getJobName();
-        ResponseMessage response = SendData(project, HttpMethod.PUT, uri, urlParameters, headers);
+        ResponseMessage response = send(request);
         return new EnableJobResponse(response.getHeaders());
     }
 
     @Override
     public DisableJobResponse disableJob(DisableJobRequest request) throws LogException {
-        Args.notNull(request, "request");
-        final String project = request.GetProject();
-        Map<String, String> headers = GetCommonHeadPara(project);
-        Map<String, String> urlParameters = request.GetAllParams();
-        String uri = Consts.JOB_URI + "/" + request.getJobName();
-        ResponseMessage response = SendData(project, HttpMethod.PUT, uri, urlParameters, headers);
+        ResponseMessage response = send(request);
         return new DisableJobResponse(response.getHeaders());
     }
 
     @Override
     public ListJobsResponse listJobs(ListJobsRequest request) throws LogException {
-        Args.notNull(request, "request");
-        final String project = request.GetProject();
-        Map<String, String> headers = GetCommonHeadPara(project);
-        Map<String, String> urlParameters = request.GetAllParams();
-        ResponseMessage response = SendData(project, HttpMethod.GET, Consts.JOB_URI, urlParameters, headers);
+        ResponseMessage response = send(request);
         JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
         try {
-            JobList jobList = new JobList();
-            jobList.deserialize(responseBody);
-            return new ListJobsResponse(response.getHeaders(), jobList);
+            ListJobsResponse jobsResponse = new ListJobsResponse(response.getHeaders());
+            jobsResponse.deserialize(responseBody);
+            return jobsResponse;
         } catch (Exception ex) {
             throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
         }
@@ -4131,19 +4151,36 @@ public class Client implements LogService {
 
     @Override
     public ListJobHistoryResponse listJobHistory(ListJobHistoryRequest request) throws LogException {
-        Args.notNull(request, "request");
-        final String project = request.GetProject();
-        Map<String, String> headers = GetCommonHeadPara(project);
-        String uri = Consts.JOB_URI + "/" + request.getJobName();
-        ResponseMessage response = SendData(project, HttpMethod.GET, uri,
-                request.GetAllParams(), headers);
+        ResponseMessage response = send(request);
         JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
         try {
-            JobHistoryList jobHistoryList = new JobHistoryList();
-            jobHistoryList.deserialize(responseBody);
-            return new ListJobHistoryResponse(response.getHeaders(), jobHistoryList);
+            ListJobHistoryResponse historyResponse = new ListJobHistoryResponse(response.getHeaders());
+            historyResponse.deserialize(responseBody);
+            return historyResponse;
         } catch (Exception ex) {
             throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
+    }
+
+    private ResponseMessage send(JobRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        final Map<String, String> headers = GetCommonHeadPara(project);
+        final Object body = request.getBody();
+        final byte[] requestBody = body == null ? new byte[0] : encodeToUtf8(JsonUtils.serialize(body));
+        return SendData(project, request.getMethod(), request.getUri(), request.GetAllParams(), headers, requestBody);
+    }
+
+    @Override
+    public ListAlertHistoryResponse listAlertHistory(ListAlertHistoryRequest request) throws LogException {
+        ResponseMessage responseMessage = send(request);
+        JSONObject responseBody = ParserResponseMessage(responseMessage, responseMessage.getRequestId());
+        try {
+            ListAlertHistoryResponse response = new ListAlertHistoryResponse(responseMessage.getHeaders());
+            response.deserialize(responseBody);
+            return response;
+        } catch (Exception ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), responseMessage.getRequestId());
         }
     }
 }
