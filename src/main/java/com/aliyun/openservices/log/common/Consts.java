@@ -370,8 +370,6 @@ public class Consts {
 	public static final String ETL_META_LAST_MODIFY_TIME = "lastModifyTime";
 	public static final String ETL_META_ENABLE = "enable";
     public static final String EMAIL_LIST = "emailList";
-    public static final String JOB_HISTORY_LIST = "jobHistoryList";
-    public static final String JOB_LIST = "jobList";
     public static final String JOB_NAME = "jobName";
     public static final String JOB_TYPE = "jobType";
     public static final String JOB_URI = "/jobs";

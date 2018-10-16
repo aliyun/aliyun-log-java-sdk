@@ -53,7 +53,9 @@ import com.aliyun.openservices.log.request.DeleteLoggingRequest;
 import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
 import com.aliyun.openservices.log.request.DeleteSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteShardRequest;
+import com.aliyun.openservices.log.request.DisableAlertRequest;
 import com.aliyun.openservices.log.request.DisableJobRequest;
+import com.aliyun.openservices.log.request.EnableAlertRequest;
 import com.aliyun.openservices.log.request.EnableJobRequest;
 import com.aliyun.openservices.log.request.GetAlertRequest;
 import com.aliyun.openservices.log.request.GetAlertRequestV2;
@@ -4127,10 +4129,22 @@ public class Client implements LogService {
     }
 
     @Override
+    public EnableAlertResponse enableAlert(EnableAlertRequest request) throws LogException {
+        ResponseMessage response = send(request);
+        return new EnableAlertResponse(response.getHeaders());
+    }
+
+    @Override
     public DisableJobResponse disableJob(DisableJobRequest request) throws LogException {
         ResponseMessage response = send(request);
         return new DisableJobResponse(response.getHeaders());
     }
+
+    @Override
+    public DisableAlertResponse disableAlert(DisableAlertRequest request) throws LogException {
+        ResponseMessage response = send(request);
+        return new DisableAlertResponse(response.getHeaders());
+	}
 
     @Override
     public ListJobsResponse listJobs(ListJobsRequest request) throws LogException {

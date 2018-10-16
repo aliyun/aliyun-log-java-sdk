@@ -35,7 +35,9 @@ import com.aliyun.openservices.log.request.DeleteLoggingRequest;
 import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
 import com.aliyun.openservices.log.request.DeleteSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteShardRequest;
+import com.aliyun.openservices.log.request.DisableAlertRequest;
 import com.aliyun.openservices.log.request.DisableJobRequest;
+import com.aliyun.openservices.log.request.EnableAlertRequest;
 import com.aliyun.openservices.log.request.EnableJobRequest;
 import com.aliyun.openservices.log.request.GetAlertRequest;
 import com.aliyun.openservices.log.request.GetAlertRequestV2;
@@ -3201,6 +3203,9 @@ public interface LogService {
 	 */
 	EnableJobResponse enableJob(EnableJobRequest request) throws LogException;
 
+
+    EnableAlertResponse enableAlert(EnableAlertRequest request) throws LogException;
+
 	/**
 	 * Disable a job.
 	 *
@@ -3209,6 +3214,9 @@ public interface LogService {
 	 * @throws LogException if any error occurs
 	 */
 	DisableJobResponse disableJob(DisableJobRequest request) throws LogException;
+
+
+	DisableAlertResponse disableAlert(DisableAlertRequest request) throws LogException;
 
 	/**
 	 * Get job list in project.
