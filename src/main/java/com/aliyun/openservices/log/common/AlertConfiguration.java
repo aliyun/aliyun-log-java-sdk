@@ -2,10 +2,10 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import net.sf.json.JSONArray;
+import com.aliyun.openservices.log.util.JsonUtils;
+import com.aliyun.openservices.log.util.Unmarshaller;
 import net.sf.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -132,29 +132,30 @@ public class AlertConfiguration extends JobConfiguration {
     public void deserialize(JSONObject value) {
         condition = value.getString("condition");
         dashboard = value.getString("dashboard");
-        final JSONArray queries = value.getJSONArray("queryList");
-        queryList = new ArrayList<Query>(queries.size());
-        for (int i = 0; i < queries.size(); i++) {
-            Query query = new Query();
-            query.deserialize(queries.getJSONObject(i));
-            queryList.add(query);
-        }
-        final JSONArray notifications = value.getJSONArray("notificationList");
-        notificationList = new ArrayList<Notification>(notifications.size());
-        for (int i = 0; i < notifications.size(); i++) {
-            JSONObject itemAsJson = notifications.getJSONObject(i);
-            NotificationType notificationType = NotificationType.fromString(itemAsJson.getString("type"));
-            Notification notification = createNotification(notificationType);
-            notification.deserialize(itemAsJson);
-            notificationList.add(notification);
-        }
+        queryList = JsonUtils.readList(value, "queryList", new Unmarshaller<Query>() {
+            @Override
+            public Query unmarshal(JSONObject value) {
+                Query query = new Query();
+                query.deserialize(value);
+                return query;
+            }
+        });
+        notificationList = JsonUtils.readList(value, "notificationList", new Unmarshaller<Notification>() {
+            @Override
+            public Notification unmarshal(JSONObject value) {
+                NotificationType notificationType = NotificationType.fromString(value.getString("type"));
+                Notification notification = createNotification(notificationType);
+                notification.deserialize(value);
+                return notification;
+            }
+        });
         if (value.containsKey("muteUntil")) {
             muteUntil = new Date(value.getLong("muteUntil"));
         }
-        if (value.containsKey("notifyThreshold")) {
+        if (value.has("notifyThreshold")) {
             notifyThreshold = value.getInt("notifyThreshold");
         }
-        if (value.containsKey("throttling")) {
+        if (value.has("throttling")) {
             throttling = value.getString("throttling");
         }
     }

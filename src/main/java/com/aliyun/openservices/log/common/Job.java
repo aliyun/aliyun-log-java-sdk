@@ -119,7 +119,7 @@ public class Job implements Serializable {
 
     private static JobConfiguration createConfiguration(JobType type) {
         switch (type) {
-            case Alert:
+            case ALERT:
                 return new AlertConfiguration();
             default:
                 throw new IllegalArgumentException("Unimplemented job type: " + type);

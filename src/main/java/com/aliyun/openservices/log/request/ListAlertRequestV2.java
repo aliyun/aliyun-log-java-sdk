@@ -11,7 +11,7 @@ public class ListAlertRequestV2 extends ListJobsRequest {
     private Boolean fired;
 
     public ListAlertRequestV2(String project) {
-        super(project, JobType.Alert);
+        super(project, JobType.ALERT);
     }
 
     public ListAlertRequestV2(String project, Boolean fired) {

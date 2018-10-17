@@ -88,7 +88,7 @@ public class ListJobsRequest extends JobRequest {
             SetParam(Consts.JOB_NAME, name);
         }
         if (type != null) {
-            SetParam(Consts.JOB_TYPE, type.name());
+            SetParam(Consts.JOB_TYPE, type.toString());
         }
         if (resourceProvider != null && !resourceProvider.isEmpty()) {
             SetParam(Consts.RESOURCE_PROVIDER, resourceProvider);

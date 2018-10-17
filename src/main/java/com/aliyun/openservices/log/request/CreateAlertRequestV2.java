@@ -3,8 +3,6 @@ package com.aliyun.openservices.log.request;
 
 import com.aliyun.openservices.log.common.AlertV2;
 import com.aliyun.openservices.log.common.Consts;
-import com.aliyun.openservices.log.common.Job;
-import com.aliyun.openservices.log.common.JobType;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.util.Args;
 
@@ -38,11 +36,6 @@ public class CreateAlertRequestV2 extends JobRequest {
 
     @Override
     public Object getBody() {
-        Job job = new Job();
-        job.setType(JobType.Alert);
-        job.setName(alert.getName());
-        job.setSchedule(alert.getSchedule());
-        job.setConfiguration(alert.getConfiguration());
-        return job;
+        return alert.convertToJob();
     }
 }

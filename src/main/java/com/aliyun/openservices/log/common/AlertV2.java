@@ -7,10 +7,19 @@ import java.io.Serializable;
 
 public class AlertV2 implements Serializable {
 
+    /**
+     * Alert rule name.
+     */
     private String name;
 
+    /**
+     * Alert configuration.
+     */
     private AlertConfiguration configuration;
 
+    /**
+     * How to trigger alert.
+     */
     private JobSchedule schedule;
 
     public String getName() {
@@ -42,5 +51,14 @@ public class AlertV2 implements Serializable {
         configuration = new AlertConfiguration();
         configuration.deserialize(value.getJSONObject("configuration"));
         schedule = JsonUtils.deserialize(value.getString("schedule"), JobSchedule.class);
+    }
+
+    public Job convertToJob() {
+        Job job = new Job();
+        job.setType(JobType.ALERT);
+        job.setName(getName());
+        job.setSchedule(getSchedule());
+        job.setConfiguration(getConfiguration());
+        return job;
     }
 }

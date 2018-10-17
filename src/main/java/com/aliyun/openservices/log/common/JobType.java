@@ -1,19 +1,28 @@
 package com.aliyun.openservices.log.common;
 
+/**
+ * Job type.
+ */
 public enum JobType {
-    Alert;
+    ALERT("Alert");
+
+    private final String value;
+
+    JobType(String value) {
+        this.value = value;
+    }
 
     @Override
     public String toString() {
-        return name();
+        return value;
     }
 
     public static JobType fromString(String value) {
         for (JobType type : JobType.values()) {
-            if (type.name().equals(value)) {
+            if (type.value.equals(value)) {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown job type: " + value);
+        throw new IllegalArgumentException("Illegal job type: " + value);
     }
 }

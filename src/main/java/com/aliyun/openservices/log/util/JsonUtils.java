@@ -39,6 +39,18 @@ public final class JsonUtils {
         return JSON.parseObject(text, clazz);
     }
 
+    public static <T> List<T> readList(JSONObject value, String key, Unmarshaller<T> unmarshaller) {
+        JSONArray list = value.getJSONArray(key);
+        if (list == null || list.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<T> values = new ArrayList<T>(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            values.add(unmarshaller.unmarshal(list.getJSONObject(i)));
+        }
+        return values;
+    }
+
     public static List<String> readList(JSONObject object, String key) {
         JSONArray list = object.getJSONArray(key);
         if (list == null || list.isEmpty()) {
