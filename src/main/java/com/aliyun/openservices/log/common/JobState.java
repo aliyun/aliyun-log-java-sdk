@@ -18,4 +18,9 @@ public enum JobState {
         }
         throw new IllegalArgumentException("Unknown job state: " + value);
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

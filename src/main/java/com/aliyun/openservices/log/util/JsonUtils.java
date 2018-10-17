@@ -7,6 +7,7 @@ import com.alibaba.fastjson.serializer.DateCodec;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.ObjectSerializer;
 import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -32,7 +33,7 @@ public final class JsonUtils {
     }
 
     public static String serialize(Object object) {
-        return JSON.toJSONString(object, SERIALIZE_CONFIG);
+        return JSON.toJSONString(object, SERIALIZE_CONFIG, SerializerFeature.WriteEnumUsingToString);
     }
 
     public static <T> T deserialize(String text, Class<T> clazz) {

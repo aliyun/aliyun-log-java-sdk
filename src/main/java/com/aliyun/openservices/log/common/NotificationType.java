@@ -4,30 +4,41 @@ public enum NotificationType {
     /**
      * Ding ding web hook.
      */
-    DingTalk,
+    DING_TALK("DingTalk"),
     /**
      * Send email
      */
-    Email,
+    EMAIL("Email"),
     /**
      * Private message
      */
-    Message,
+    MESSAGE("Message"),
     /**
      * Send SMS
      */
-    SMS,
+    SMS("SMS"),
     /**
      * Send HTTP request to target uri
      */
-    Webhook;
+    WEBHOOK("Webhook");
+
+    private final String value;
+
+    NotificationType(String value) {
+        this.value = value;
+    }
 
     public static NotificationType fromString(String value) {
         for (NotificationType type : NotificationType.values()) {
-            if (type.name().equals(value)) {
+            if (type.value.equals(value)) {
                 return type;
             }
         }
         throw new IllegalArgumentException("Unknown notification type: " + value);
+    }
+
+    @Override
+    public String toString() {
+        return value;
     }
 }

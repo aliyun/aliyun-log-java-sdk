@@ -6,9 +6,6 @@ import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONObject;
 
-/**
- * Type can be Webhook or DingTalk.
- */
 // TODO support authentication, custom headers
 public class WebhookNotification extends Notification {
 
@@ -19,12 +16,12 @@ public class WebhookNotification extends Notification {
     private String serviceUri;
 
     public WebhookNotification() {
-        super(NotificationType.Webhook);
+        super(NotificationType.WEBHOOK);
         method = HttpMethod.POST;
     }
 
     public WebhookNotification(String content, HttpMethod method, String serviceUri) {
-        super(NotificationType.Webhook, content);
+        super(NotificationType.WEBHOOK, content);
         Args.notNullOrEmpty(serviceUri, Consts.SERVICE_URI);
         Args.notNull(method, Consts.METHOD);
         this.method = method;

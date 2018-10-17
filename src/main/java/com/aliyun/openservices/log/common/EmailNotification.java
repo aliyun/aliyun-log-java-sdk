@@ -17,11 +17,11 @@ public class EmailNotification extends Notification {
     private List<String> emailList;
 
     public EmailNotification() {
-        super(NotificationType.Email);
+        super(NotificationType.EMAIL);
     }
 
     public EmailNotification(String content, List<String> emailList) {
-        super(NotificationType.Email, content);
+        super(NotificationType.EMAIL, content);
         Args.notNullOrEmpty(emailList, Consts.EMAIL_LIST);
         this.emailList = emailList;
     }

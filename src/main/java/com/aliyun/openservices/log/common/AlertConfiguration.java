@@ -162,15 +162,15 @@ public class AlertConfiguration extends JobConfiguration {
 
     private static Notification createNotification(NotificationType type) {
         switch (type) {
-            case DingTalk:
+            case DING_TALK:
                 return new DingTalkNotification();
-            case Email:
+            case EMAIL:
                 return new EmailNotification();
-            case Message:
+            case MESSAGE:
                 return new MessageNotification();
             case SMS:
                 return new SmsNotification();
-            case Webhook:
+            case WEBHOOK:
                 return new WebhookNotification();
             default:
                 throw new IllegalArgumentException("Unimplemented notification type: " + type);
