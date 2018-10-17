@@ -6,6 +6,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class AlertConfiguration extends JobConfiguration {
@@ -25,6 +26,18 @@ public class AlertConfiguration extends JobConfiguration {
 
     @JSONField
     private List<Notification> notificationList;
+
+    @JSONField
+    private Date muteUntil;
+
+    @JSONField
+    private int notifyThreshold = 1;
+
+    /**
+     * Duration with format '1h', '2s'
+     */
+    @JSONField
+    private String throttling;
 
     public String getCondition() {
         return condition;
@@ -58,6 +71,30 @@ public class AlertConfiguration extends JobConfiguration {
         this.notificationList = notificationList;
     }
 
+    public Date getMuteUntil() {
+        return muteUntil;
+    }
+
+    public void setMuteUntil(Date muteUntil) {
+        this.muteUntil = muteUntil;
+    }
+
+    public int getNotifyThreshold() {
+        return notifyThreshold;
+    }
+
+    public void setNotifyThreshold(int notifyThreshold) {
+        this.notifyThreshold = notifyThreshold;
+    }
+
+    public String getThrottling() {
+        return throttling;
+    }
+
+    public void setThrottling(String throttling) {
+        this.throttling = throttling;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,13 +102,18 @@ public class AlertConfiguration extends JobConfiguration {
 
         AlertConfiguration that = (AlertConfiguration) o;
 
+        if (getNotifyThreshold() != that.getNotifyThreshold()) return false;
         if (getCondition() != null ? !getCondition().equals(that.getCondition()) : that.getCondition() != null)
             return false;
         if (getDashboard() != null ? !getDashboard().equals(that.getDashboard()) : that.getDashboard() != null)
             return false;
         if (getQueryList() != null ? !getQueryList().equals(that.getQueryList()) : that.getQueryList() != null)
             return false;
-        return getNotificationList() != null ? getNotificationList().equals(that.getNotificationList()) : that.getNotificationList() == null;
+        if (getNotificationList() != null ? !getNotificationList().equals(that.getNotificationList()) : that.getNotificationList() != null)
+            return false;
+        if (getMuteUntil() != null ? !getMuteUntil().equals(that.getMuteUntil()) : that.getMuteUntil() != null)
+            return false;
+        return getThrottling() != null ? getThrottling().equals(that.getThrottling()) : that.getThrottling() == null;
     }
 
     @Override
@@ -80,6 +122,9 @@ public class AlertConfiguration extends JobConfiguration {
         result = 31 * result + (getDashboard() != null ? getDashboard().hashCode() : 0);
         result = 31 * result + (getQueryList() != null ? getQueryList().hashCode() : 0);
         result = 31 * result + (getNotificationList() != null ? getNotificationList().hashCode() : 0);
+        result = 31 * result + (getMuteUntil() != null ? getMuteUntil().hashCode() : 0);
+        result = 31 * result + getNotifyThreshold();
+        result = 31 * result + (getThrottling() != null ? getThrottling().hashCode() : 0);
         return result;
     }
 
@@ -102,6 +147,15 @@ public class AlertConfiguration extends JobConfiguration {
             Notification notification = createNotification(notificationType);
             notification.deserialize(itemAsJson);
             notificationList.add(notification);
+        }
+        if (value.containsKey("muteUntil")) {
+            muteUntil = new Date(value.getLong("muteUntil"));
+        }
+        if (value.containsKey("notifyThreshold")) {
+            notifyThreshold = value.getInt("notifyThreshold");
+        }
+        if (value.containsKey("throttling")) {
+            throttling = value.getString("throttling");
         }
     }
 

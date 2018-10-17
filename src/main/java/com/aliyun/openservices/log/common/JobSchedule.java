@@ -4,7 +4,6 @@ package com.aliyun.openservices.log.common;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.io.Serializable;
-import java.util.Date;
 
 
 /**
@@ -23,9 +22,6 @@ public class JobSchedule implements Serializable {
     private JobScheduleType type;
 
     @JSONField
-    private Date doNotRunUntil;
-
-    @JSONField
     private long interval;
 
     public JobScheduleType getType() {
@@ -34,14 +30,6 @@ public class JobSchedule implements Serializable {
 
     public void setType(JobScheduleType type) {
         this.type = type;
-    }
-
-    public Date getDoNotRunUntil() {
-        return doNotRunUntil;
-    }
-
-    public void setDoNotRunUntil(Date doNotRunUntil) {
-        this.doNotRunUntil = doNotRunUntil;
     }
 
     public long getInterval() {
@@ -61,13 +49,12 @@ public class JobSchedule implements Serializable {
 
         if (getInterval() != schedule.getInterval()) return false;
         if (getType() != schedule.getType()) return false;
-        return getDoNotRunUntil() != null ? getDoNotRunUntil().equals(schedule.getDoNotRunUntil()) : schedule.getDoNotRunUntil() == null;
+        return true;
     }
 
     @Override
     public int hashCode() {
         int result = getType() != null ? getType().hashCode() : 0;
-        result = 31 * result + (getDoNotRunUntil() != null ? getDoNotRunUntil().hashCode() : 0);
         result = 31 * result + (int) (getInterval() ^ (getInterval() >>> 32));
         return result;
     }

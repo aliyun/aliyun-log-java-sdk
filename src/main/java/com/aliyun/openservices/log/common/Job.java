@@ -53,18 +53,6 @@ public class Job implements Serializable {
     @JSONField
     private JobConfiguration configuration;
 
-    @JSONField
-    private LogSetting logSetting;
-
-    @JSONField
-    private long timeout;
-
-    @JSONField
-    private RetryPolicy retryPolicy;
-
-    @JSONField
-    private JobStatus status;
-
     public String getName() {
         return name;
     }
@@ -113,38 +101,6 @@ public class Job implements Serializable {
         this.description = description;
     }
 
-    public LogSetting getLogSetting() {
-        return logSetting;
-    }
-
-    public void setLogSetting(LogSetting logSetting) {
-        this.logSetting = logSetting;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
-
-    public RetryPolicy getRetryPolicy() {
-        return retryPolicy;
-    }
-
-    public void setRetryPolicy(RetryPolicy retryPolicy) {
-        this.retryPolicy = retryPolicy;
-    }
-
-    public JobStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(JobStatus status) {
-        this.status = status;
-    }
-
     public Date getCreateTime() {
         return createTime;
     }
@@ -161,20 +117,6 @@ public class Job implements Serializable {
         this.lastModifiedTime = lastModifiedTime;
     }
 
-    public enum JobState {
-        Enabled,
-        Disabled;
-
-        public static JobState fromString(String value) {
-            for (JobState state : JobState.values()) {
-                if (state.name().equals(value)) {
-                    return state;
-                }
-            }
-            throw new IllegalArgumentException("Unknown job state: " + value);
-        }
-    }
-
     private static JobConfiguration createConfiguration(JobType type) {
         switch (type) {
             case Alert:
@@ -188,22 +130,12 @@ public class Job implements Serializable {
         name = value.getString("name");
         type = JobType.fromString(value.getString("type"));
         state = JobState.fromString(value.getString("state"));
-        timeout = value.getLong("timeout");
         description = value.getString("description");
         createTime = new Date(value.getLong("createTime"));
         lastModifiedTime = new Date(value.getLong("lastModifiedTime"));
         schedule = JsonUtils.deserialize(value.getString("schedule"), JobSchedule.class);
         configuration = createConfiguration(type);
         configuration.deserialize(value.getJSONObject("configuration"));
-        if (value.containsKey("status")) {
-            status = JsonUtils.deserialize(value.getString("status"), JobStatus.class);
-        }
-        if (value.containsKey("logSetting")) {
-            logSetting = JsonUtils.deserialize(value.getString("logSetting"), LogSetting.class);
-        }
-        if (value.containsKey("retryPolicy")) {
-            retryPolicy = JsonUtils.deserialize(value.getString("retryPolicy"), RetryPolicy.class);
-        }
     }
 
     @Override
@@ -213,7 +145,6 @@ public class Job implements Serializable {
 
         Job job = (Job) o;
 
-        if (getTimeout() != job.getTimeout()) return false;
         if (getName() != null ? !getName().equals(job.getName()) : job.getName() != null) return false;
         if (getType() != job.getType()) return false;
         if (getDescription() != null ? !getDescription().equals(job.getDescription()) : job.getDescription() != null)
@@ -222,11 +153,6 @@ public class Job implements Serializable {
         if (getState() != job.getState()) return false;
         if (getConfiguration() != null ? !getConfiguration().equals(job.getConfiguration()) : job.getConfiguration() != null)
             return false;
-        if (getLogSetting() != null ? !getLogSetting().equals(job.getLogSetting()) : job.getLogSetting() != null)
-            return false;
-        if (getRetryPolicy() != null ? !getRetryPolicy().equals(job.getRetryPolicy()) : job.getRetryPolicy() != null)
-            return false;
-        if (getStatus() != null ? !getStatus().equals(job.getStatus()) : job.getStatus() != null) return false;
         if (getCreateTime() != null ? !getCreateTime().equals(job.getCreateTime()) : job.getCreateTime() != null)
             return false;
         return getLastModifiedTime() != null ? getLastModifiedTime().equals(job.getLastModifiedTime()) : job.getLastModifiedTime() == null;
@@ -240,10 +166,6 @@ public class Job implements Serializable {
         result = 31 * result + (getSchedule() != null ? getSchedule().hashCode() : 0);
         result = 31 * result + (getState() != null ? getState().hashCode() : 0);
         result = 31 * result + (getConfiguration() != null ? getConfiguration().hashCode() : 0);
-        result = 31 * result + (getLogSetting() != null ? getLogSetting().hashCode() : 0);
-        result = 31 * result + (int) (getTimeout() ^ (getTimeout() >>> 32));
-        result = 31 * result + (getRetryPolicy() != null ? getRetryPolicy().hashCode() : 0);
-        result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
         result = 31 * result + (getCreateTime() != null ? getCreateTime().hashCode() : 0);
         result = 31 * result + (getLastModifiedTime() != null ? getLastModifiedTime().hashCode() : 0);
         return result;

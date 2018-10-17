@@ -3226,16 +3226,4 @@ public interface LogService {
 	 * @throws LogException if any error occurs
 	 */
 	ListJobsResponse listJobs(ListJobsRequest request) throws LogException;
-
-	/**
-	 * Get job execution history list.
-	 *
-	 * @param request An instance of {@link ListJobHistoryRequest}
-	 * @return An instance of {@link ListJobHistoryResponse}
-	 * @throws LogException if any error occurs
-	 */
-	ListJobHistoryResponse listJobHistory(ListJobHistoryRequest request) throws LogException;
-
-
-    ListAlertHistoryResponse listAlertHistory(ListAlertHistoryRequest request) throws LogException;
 }

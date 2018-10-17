@@ -80,14 +80,12 @@ import com.aliyun.openservices.log.request.GetSavedSearchRequest;
 import com.aliyun.openservices.log.request.JobRequest;
 import com.aliyun.openservices.log.request.ListACLRequest;
 import com.aliyun.openservices.log.request.ListAlertFailRequest;
-import com.aliyun.openservices.log.request.ListAlertHistoryRequest;
 import com.aliyun.openservices.log.request.ListAlertRequest;
 import com.aliyun.openservices.log.request.ListAlertRequestV2;
 import com.aliyun.openservices.log.request.ListConfigRequest;
 import com.aliyun.openservices.log.request.ListDashboardRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
 import com.aliyun.openservices.log.request.ListEtlMetaRequest;
-import com.aliyun.openservices.log.request.ListJobHistoryRequest;
 import com.aliyun.openservices.log.request.ListJobsRequest;
 import com.aliyun.openservices.log.request.ListLogStoresRequest;
 import com.aliyun.openservices.log.request.ListMachineGroupRequest;
@@ -4159,19 +4157,6 @@ public class Client implements LogService {
         }
     }
 
-    @Override
-    public ListJobHistoryResponse listJobHistory(ListJobHistoryRequest request) throws LogException {
-        ResponseMessage response = send(request);
-        JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
-        try {
-            ListJobHistoryResponse historyResponse = new ListJobHistoryResponse(response.getHeaders());
-            historyResponse.deserialize(responseBody);
-            return historyResponse;
-        } catch (Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-        }
-    }
-
     private ResponseMessage send(JobRequest request) throws LogException {
         Args.notNull(request, "request");
         final String project = request.GetProject();
@@ -4179,18 +4164,5 @@ public class Client implements LogService {
         final Object body = request.getBody();
         final byte[] requestBody = body == null ? new byte[0] : encodeToUtf8(JsonUtils.serialize(body));
         return SendData(project, request.getMethod(), request.getUri(), request.GetAllParams(), headers, requestBody);
-    }
-
-    @Override
-    public ListAlertHistoryResponse listAlertHistory(ListAlertHistoryRequest request) throws LogException {
-        ResponseMessage responseMessage = send(request);
-        JSONObject responseBody = ParserResponseMessage(responseMessage, responseMessage.getRequestId());
-        try {
-            ListAlertHistoryResponse response = new ListAlertHistoryResponse(responseMessage.getHeaders());
-            response.deserialize(responseBody);
-            return response;
-        } catch (Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), responseMessage.getRequestId());
-        }
     }
 }
