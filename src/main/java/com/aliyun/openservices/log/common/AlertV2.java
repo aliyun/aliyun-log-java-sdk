@@ -1,5 +1,6 @@
 package com.aliyun.openservices.log.common;
 
+import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
@@ -54,6 +55,9 @@ public class AlertV2 implements Serializable {
     }
 
     public Job convertToJob() {
+        Args.notNullOrEmpty(name, "Alert name");
+        Args.notNull(configuration, "configuration");
+        Args.notNull(schedule, "schedule");
         Job job = new Job();
         job.setType(JobType.ALERT);
         job.setName(getName());

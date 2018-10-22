@@ -2708,7 +2708,15 @@ public interface LogService {
 	 */
 	CreateAlertResponse createAlert(CreateAlertRequest request) throws LogException;
 
-	/**
+    /**
+     * Create an alert rule.
+     * @param request An instance of {@link CreateAlertRequestV2}
+     * @return
+     * @throws LogException
+     */
+    CreateAlertResponse createAlert(CreateAlertRequestV2 request) throws LogException;
+
+    /**
 	 * update alert
 	 *
 	 * @param request
@@ -3172,14 +3180,6 @@ public interface LogService {
 	 * @throws LogException if any error occurs
 	 */
 	CreateJobResponse createJob(CreateJobRequest request) throws LogException;
-
-    /**
-     * Create an alert rule.
-     * @param request An instance of {@link CreateAlertRequestV2}
-     * @return
-     * @throws LogException
-     */
-    CreateAlertResponse createAlert(CreateAlertRequestV2 request) throws LogException;
 
 	/**
 	 * Get a job.
