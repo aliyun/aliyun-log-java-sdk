@@ -3,7 +3,7 @@ package com.aliyun.openservices.log.util;
 import java.util.Date;
 import java.util.Map;
 
-public class Utils {
+public final class Utils {
 
     private Utils() {
     }

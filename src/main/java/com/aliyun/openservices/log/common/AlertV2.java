@@ -5,6 +5,8 @@ import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.Date;
+
 
 public class AlertV2 implements Serializable {
 
@@ -12,6 +14,11 @@ public class AlertV2 implements Serializable {
      * Alert rule name.
      */
     private String name;
+
+    /**
+     * Alert rule state.
+     */
+    private JobState state;
 
     /**
      * Alert configuration.
@@ -22,6 +29,16 @@ public class AlertV2 implements Serializable {
      * How to trigger alert.
      */
     private JobSchedule schedule;
+
+    /**
+     * Alert rule create time.
+     */
+    private Date createTime;
+
+    /**
+     * Alert rule last modified time.
+     */
+    private Date lastModifiedTime;
 
     public String getName() {
         return name;
@@ -47,10 +64,37 @@ public class AlertV2 implements Serializable {
         this.schedule = schedule;
     }
 
+    public JobState getState() {
+        return state;
+    }
+
+    public void setState(JobState state) {
+        this.state = state;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastModifiedTime() {
+        return lastModifiedTime;
+    }
+
+    public void setLastModifiedTime(Date lastModifiedTime) {
+        this.lastModifiedTime = lastModifiedTime;
+    }
+
     public void deserialize(JSONObject value) {
         name = value.getString("name");
+        state = JobState.fromString(value.getString("state"));
         configuration = new AlertConfiguration();
         configuration.deserialize(value.getJSONObject("configuration"));
+        createTime = new Date(value.getLong("createTime") * 1000);
+        lastModifiedTime = new Date(value.getLong("lastModifiedTime") * 1000);
         schedule = JsonUtils.deserialize(value.getString("schedule"), JobSchedule.class);
     }
 
@@ -61,6 +105,7 @@ public class AlertV2 implements Serializable {
         Job job = new Job();
         job.setType(JobType.ALERT);
         job.setName(getName());
+        job.setState(getState());
         job.setSchedule(getSchedule());
         job.setConfiguration(getConfiguration());
         return job;

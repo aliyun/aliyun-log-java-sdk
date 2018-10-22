@@ -12,7 +12,7 @@ import java.util.Date;
 public class Job implements Serializable {
 
     /**
-     * The name of job
+     * The name of job.
      */
     @JSONField
     private String name;
@@ -29,9 +29,15 @@ public class Job implements Serializable {
     @JSONField
     private String description;
 
+    /**
+     * The time of job create time.
+     */
     @JSONField
     private Date createTime;
 
+    /**
+     * The time of last modified.
+     */
     @JSONField
     private Date lastModifiedTime;
 
@@ -131,8 +137,8 @@ public class Job implements Serializable {
         type = JobType.fromString(value.getString("type"));
         state = JobState.fromString(value.getString("state"));
         description = value.getString("description");
-        createTime = new Date(value.getLong("createTime"));
-        lastModifiedTime = new Date(value.getLong("lastModifiedTime"));
+        createTime = new Date(value.getLong("createTime") * 1000);
+        lastModifiedTime = new Date(value.getLong("lastModifiedTime") * 1000);
         schedule = JsonUtils.deserialize(value.getString("schedule"), JobSchedule.class);
         configuration = createConfiguration(type);
         configuration.deserialize(value.getJSONObject("configuration"));
