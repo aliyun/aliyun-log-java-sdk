@@ -11,19 +11,19 @@ import com.aliyun.openservices.log.common.Logs.LogGroup;
 import com.aliyun.openservices.log.common.Logs.LogGroupList;
 import com.aliyun.openservices.log.common.Logs.LogTag;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.response.BatchGetLogResponse;
 import com.aliyun.openservices.log.response.GetHistogramsResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
 import com.aliyun.openservices.log.response.ListLogStoresResponse;
 import com.aliyun.openservices.log.response.ListTopicsResponse;
+import com.aliyun.openservices.log.response.PullLogsResponse;
 import com.aliyun.openservices.log.response.PutLogsResponse;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -66,9 +66,8 @@ public class SlsPerformanceTest extends FunctionTest {
         int vTopicCount = 0;
         int vUuidCount = 0;
         for (int i = 0; i < testDataSet.length; ++i) {
-            BatchGetLogResponse bglResponse = new BatchGetLogResponse(new HashMap<String, String>());
-            bglResponse.ParseFastLogGroupList(testDataSet[i]);
-            List<LogGroupData> fastLogGroupDatas = bglResponse.GetLogGroups();
+            PullLogsResponse bglResponse = new PullLogsResponse(Collections.<String, String>emptyMap(), testDataSet[i]);
+            List<LogGroupData> fastLogGroupDatas = bglResponse.getLogGroups();
             LogGroupList logGroupList = LogGroupList.parseFrom(testDataSet[i]);
             assertEquals(fastLogGroupDatas.size(), logGroupList.getLogGroupListCount());
             for (int j = 0; j < logGroupList.getLogGroupListCount(); ++j) {
@@ -256,9 +255,8 @@ public class SlsPerformanceTest extends FunctionTest {
         int vTagCount = 0;
         long beginTime = System.currentTimeMillis();
         for (int i = 0; i < testDataSet.length; ++i) {
-            BatchGetLogResponse bglResponse = new BatchGetLogResponse(new HashMap<String, String>());
-            bglResponse.ParseFastLogGroupList(testDataSet[i]);
-            List<LogGroupData> logGroups = bglResponse.GetLogGroups();
+            PullLogsResponse bglResponse = new PullLogsResponse(Collections.<String, String>emptyMap(), testDataSet[i]);
+            List<LogGroupData> logGroups = bglResponse.getLogGroups();
             for (int j = 0; j < logGroups.size(); ++j) {
                 vLogGroupCount++;
                 FastLogGroup fastLogGroup = logGroups.get(j).GetFastLogGroup();
@@ -402,12 +400,8 @@ public class SlsPerformanceTest extends FunctionTest {
         for (int sampleId = 0; sampleId < SAMPLE_COUNT.length; ++sampleId) {
             int sampleCount = SAMPLE_COUNT[sampleId];
             for (int caseId = 0; caseId < TEST_ROUND * 4; ++caseId) {
-                try {
-                    System.gc();
-                    Thread.sleep(1000 * 10);
-                } catch (InterruptedException e) {
-                    System.err.println(e.getStackTrace());
-                }
+                System.gc();
+                waitForSeconds(10);
                 if (caseId % 4 == 0) {
                     int cost = BenchPbDeserialize(testDataSet, sampleCount, false, logGroupCount, logCount, tagCount, contentCount);
                     pbStringResult.add(String.format("| 1/%d | %d | %s | %d | %f |", sampleCount, pbStringResult.size(), "PB, getString", cost, testDataMegaBytes * 1.0 / cost * 1000));
@@ -710,7 +704,7 @@ public class SlsPerformanceTest extends FunctionTest {
             System.out.println("ave time: " + totalTime / runTimes);
         } catch (LogException e) {
             System.out.println(e.GetErrorCode() + ":" + e.GetErrorMessage());
-            assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+            fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
         }
         return -1;
     }

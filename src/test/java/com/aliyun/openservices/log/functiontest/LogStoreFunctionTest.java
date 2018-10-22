@@ -2,7 +2,6 @@ package com.aliyun.openservices.log.functiontest;
 
 
 import com.aliyun.openservices.log.common.LogStore;
-import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
 import org.junit.After;
 import org.junit.Before;
@@ -16,10 +15,8 @@ import static org.junit.Assert.assertTrue;
 public class LogStoreFunctionTest extends FunctionTest {
     private static final String TEST_PROJECT = "project1";
 
-    @Override
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    public void setUp() {
         if (safeDeleteLogStore(TEST_PROJECT, "logstore-for-testing1")
                 || safeDeleteLogStore(TEST_PROJECT, "logstore-for-testing2")
                 || safeDeleteLogStore(TEST_PROJECT, "logstore-for-testing3")) {
@@ -96,13 +93,8 @@ public class LogStoreFunctionTest extends FunctionTest {
         client.DeleteLogStore(TEST_PROJECT, "logstore-for-testing3");
     }
 
-
     @After
     public void tearDown() {
-        try {
-            client.DeleteProject(TEST_PROJECT);
-        } catch (LogException ex) {
-            // ignore it
-        }
+        safeDeleteProject(TEST_PROJECT);
     }
 }

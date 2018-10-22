@@ -6,9 +6,11 @@ import com.aliyun.openservices.log.common.LogGroupData;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.Logs;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.request.BatchGetLogRequest;
-import com.aliyun.openservices.log.response.BatchGetLogResponse;
+import com.aliyun.openservices.log.request.PullLogsRequest;
 import com.aliyun.openservices.log.response.GetCursorResponse;
+import com.aliyun.openservices.log.response.PullLogsResponse;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +18,14 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-class BaseMetadataTest extends FunctionTest {
+public class BaseMetadataTest extends FunctionTest {
 
+    static String TEST_PROJECT = "project-intg-test-" + getNowTimestamp();
+
+    @BeforeClass
+    public static void setUp() {
+        createProjectIfNotExist(TEST_PROJECT, "For Intg testing");
+    }
 
     void ensureLogStoreEnabled(String project, String logStoreName, boolean enabled) {
         LogStore logStore = new LogStore();
@@ -25,10 +33,10 @@ class BaseMetadataTest extends FunctionTest {
         logStore.SetTtl(1);
         logStore.SetShardCount(2);
         logStore.setAppendMeta(enabled);
-        reCreateLogStore(project, logStore);
+        createOrUpdateLogStore(project, logStore);
     }
 
-    List<Logs.LogGroup> pullAllLogGroups(String project, String logStore, int shardNum) throws LogException {
+    private List<Logs.LogGroup> pullAllLogGroups(String project, String logStore, int shardNum) throws LogException {
         List<Logs.LogGroup> groups = new ArrayList<Logs.LogGroup>();
         for (int i = 0; i < shardNum; i++) {
             pullForShard(project, logStore, i, groups);
@@ -40,15 +48,16 @@ class BaseMetadataTest extends FunctionTest {
         GetCursorResponse cursorResponse = client.GetCursor(project, logStore, shard, Consts.CursorMode.BEGIN);
         String cursor = cursorResponse.GetCursor();
         while (true) {
-            BatchGetLogRequest request = new BatchGetLogRequest(project, logStore, shard, 1000, cursor);
-            BatchGetLogResponse response1 = client.BatchGetLog(request);
-            for (LogGroupData data : response1.GetLogGroups()) {
+            PullLogsRequest request = new PullLogsRequest(project, logStore, shard, 1000, cursor);
+            PullLogsResponse response = client.pullLogs(request);
+            for (LogGroupData data : response.getLogGroups()) {
                 results.add(data.GetLogGroup());
             }
-            if (response1.GetNextCursor() == null || cursor.equals(response1.GetNextCursor())) {
+            final String nextCursor = response.getNextCursor();
+            if (nextCursor == null || nextCursor.equals(cursor)) {
                 break;
             }
-            cursor = response1.GetNextCursor();
+            cursor = nextCursor;
         }
     }
 
@@ -60,28 +69,47 @@ class BaseMetadataTest extends FunctionTest {
         }
     }
 
-    int countAppended(String project, String logStore, int numShard) throws LogException {
+    int countAppended(String project, String logStore, int numShard, Predicate predicate) throws LogException {
         List<Logs.LogGroup> logGroups = pullAllLogGroups(project, logStore, numShard);
         int n = 0;
         for (Logs.LogGroup group : logGroups) {
-            boolean hasClientIp = false;
-            boolean hasReceiveTime = false;
-            System.out.println("Tag count: " + group.getLogTagsCount());
-            for (Logs.LogTag tag : group.getLogTagsList()) {
-                System.out.println(tag);
-                if ("__client_ip__".equals(tag.getKey())) {
-                    hasClientIp = true;
-                }
-                if ("__receive_time__".equals(tag.getKey())) {
-                    hasReceiveTime = true;
-                }
-            }
-            if (hasClientIp && hasReceiveTime) {
-                n++;
+            if (predicate.test(group)) {
+                ++n;
             }
             checkLogGroup(group);
         }
         return n;
     }
 
+    int countLogGroupWithClientIpTag(String project, String logStore, int numShard) throws LogException {
+        Predicate predicate = new Predicate() {
+            @Override
+            public boolean test(Logs.LogGroup group) {
+                int clientIp = 0;
+                int receiveTime = 0;
+                System.out.println("Tag count: " + group.getLogTagsCount());
+                for (Logs.LogTag tag : group.getLogTagsList()) {
+                    System.out.println(tag);
+                    if ("__client_ip__".equals(tag.getKey())) {
+                        ++clientIp;
+                    }
+                    if ("__receive_time__".equals(tag.getKey())) {
+                        ++receiveTime;
+                    }
+                }
+                return clientIp == 1 && receiveTime == 1;
+            }
+        };
+        return countAppended(project, logStore, numShard, predicate);
+    }
+
+    public interface Predicate {
+
+        boolean test(Logs.LogGroup logGroup);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        safeDeleteProject(TEST_PROJECT);
+    }
 }
