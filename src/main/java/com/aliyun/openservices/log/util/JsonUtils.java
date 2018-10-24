@@ -36,10 +36,6 @@ public final class JsonUtils {
         return JSON.toJSONString(object, SERIALIZE_CONFIG, SerializerFeature.WriteEnumUsingToString);
     }
 
-    public static <T> T deserialize(String text, Class<T> clazz) {
-        return JSON.parseObject(text, clazz);
-    }
-
     public static <T> List<T> readList(JSONObject value, String key, Unmarshaller<T> unmarshaller) {
         JSONArray list = value.getJSONArray(key);
         if (list == null || list.isEmpty()) {

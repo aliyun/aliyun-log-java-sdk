@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.aliyun.openservices.log.exception.LogException;
 

@@ -95,7 +95,8 @@ public class AlertV2 implements Serializable {
         configuration.deserialize(value.getJSONObject("configuration"));
         createTime = new Date(value.getLong("createTime") * 1000);
         lastModifiedTime = new Date(value.getLong("lastModifiedTime") * 1000);
-        schedule = JsonUtils.deserialize(value.getString("schedule"), JobSchedule.class);
+        schedule = new JobSchedule();
+        schedule.deserialize(value.getJSONObject("schedule"));
     }
 
     public Job convertToJob() {

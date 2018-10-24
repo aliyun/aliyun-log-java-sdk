@@ -13,7 +13,9 @@ public class ListAlertResponseV2 extends ResponseList<AlertV2> {
 
     @Override
     public AlertV2 unmarshal(JSONObject value) {
-        return null;
+        AlertV2 alertV2 = new AlertV2();
+        alertV2.deserialize(value);
+        return alertV2;
     }
 
 }

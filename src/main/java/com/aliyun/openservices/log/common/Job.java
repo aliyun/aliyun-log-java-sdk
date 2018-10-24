@@ -139,7 +139,8 @@ public class Job implements Serializable {
         description = value.getString("description");
         createTime = new Date(value.getLong("createTime") * 1000);
         lastModifiedTime = new Date(value.getLong("lastModifiedTime") * 1000);
-        schedule = JsonUtils.deserialize(value.getString("schedule"), JobSchedule.class);
+        schedule = new JobSchedule();
+        schedule.deserialize(value.getJSONObject("schedule"));
         configuration = createConfiguration(type);
         configuration.deserialize(value.getJSONObject("configuration"));
     }

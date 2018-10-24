@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import net.sf.json.JSONObject;
 
 import java.io.Serializable;
 
@@ -15,7 +16,27 @@ public class JobSchedule implements Serializable {
         /**
          * Trigger in a fixed rate.
          */
-        FixedRate
+        FIXED_RATE("FixedRate");
+
+        private final String value;
+
+        JobScheduleType(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+
+        public static JobScheduleType fromString(String value) {
+            for (JobScheduleType type : JobScheduleType.values()) {
+                if (type.value.equals(value)) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException("Illegal schedule type: " + value);
+        }
     }
 
     @JSONField
@@ -57,5 +78,10 @@ public class JobSchedule implements Serializable {
         int result = getType() != null ? getType().hashCode() : 0;
         result = 31 * result + (int) (getInterval() ^ (getInterval() >>> 32));
         return result;
+    }
+
+    public void deserialize(JSONObject value) {
+        type = JobScheduleType.fromString(value.getString("type"));
+        interval = value.getLong("interval");
     }
 }
