@@ -1,7 +1,6 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.Args;
-import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;

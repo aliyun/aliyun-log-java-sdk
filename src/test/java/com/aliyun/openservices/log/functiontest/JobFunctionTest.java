@@ -2,6 +2,8 @@ package com.aliyun.openservices.log.functiontest;
 
 
 import com.aliyun.openservices.log.common.AlertConfiguration;
+import com.aliyun.openservices.log.common.Chart;
+import com.aliyun.openservices.log.common.Dashboard;
 import com.aliyun.openservices.log.common.EmailNotification;
 import com.aliyun.openservices.log.common.Job;
 import com.aliyun.openservices.log.common.JobSchedule;
@@ -9,7 +11,10 @@ import com.aliyun.openservices.log.common.JobState;
 import com.aliyun.openservices.log.common.JobType;
 import com.aliyun.openservices.log.common.Notification;
 import com.aliyun.openservices.log.common.Query;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.request.CreateDashboardRequest;
 import com.aliyun.openservices.log.request.CreateJobRequest;
+import com.aliyun.openservices.log.request.DeleteJobRequest;
 import com.aliyun.openservices.log.request.DisableJobRequest;
 import com.aliyun.openservices.log.request.EnableJobRequest;
 import com.aliyun.openservices.log.request.GetJobRequest;
@@ -25,15 +30,14 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class JobFunctionTest extends FunctionTest {
 
-    private static final String TEST_PROJECT = "project-job-" + getNowTimestamp();
+    private static final String TEST_PROJECT = "project-test-" + getNowTimestamp();
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         client.CreateProject(TEST_PROJECT, "");
     }
 
@@ -43,6 +47,13 @@ public class JobFunctionTest extends FunctionTest {
 
     @Test
     public void testCrud() throws Exception {
+        ListJobsRequest listReq = new ListJobsRequest(TEST_PROJECT);
+        listReq.setOffset(0);
+        listReq.setSize(100);
+        ListJobsResponse listJobsResponse = client.listJobs(listReq);
+        for (Job job : listJobsResponse.getResults()) {
+            client.deleteJob(new DeleteJobRequest(TEST_PROJECT, job.getName()));
+        }
         Job job = new Job();
         String jobName = getJobName();
         job.setName(jobName);
@@ -61,6 +72,7 @@ public class JobFunctionTest extends FunctionTest {
         query.setChart("chart1");
         queries.add(query);
         arguments.setQueryList(queries);
+        arguments.setThrottling("0s");
         EmailNotification notification = new EmailNotification();
         notification.setEmailList(Collections.singletonList("kel@test.com"));
         notification.setSubject("Alert fired");
@@ -71,14 +83,28 @@ public class JobFunctionTest extends FunctionTest {
         job.setConfiguration(arguments);
 
         JobSchedule schedule = new JobSchedule();
-        schedule.setType(JobSchedule.JobScheduleType.FixedRate);
+        schedule.setType(JobSchedule.JobScheduleType.FIXED_RATE);
         schedule.setInterval(60L);
         job.setSchedule(schedule);
 
         // create
         CreateJobRequest request = new CreateJobRequest(TEST_PROJECT, job);
-        client.createJob(request);
 
+        try {
+            client.createJob(request);
+            fail("Dashboard not exist");
+        } catch (LogException ex) {
+            assertEquals(ex.GetErrorMessage(), "Dashboard does not exist: dashboard1");
+        }
+        Dashboard dashboard = new Dashboard();
+        dashboard.setDashboardName("dashboard1");
+        dashboard.setDescription("Dashboard");
+        dashboard.setDisplayName("Dashboard");
+        dashboard.setChartList(new ArrayList<Chart>());
+        CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(TEST_PROJECT, dashboard);
+        client.createDashboard(createDashboardRequest);
+
+        client.createJob(request);
         GetJobResponse response = client.getJob(new GetJobRequest(TEST_PROJECT, jobName));
 
         Job created = response.getJob();
@@ -99,13 +125,11 @@ public class JobFunctionTest extends FunctionTest {
         Job job2 = response.getJob();
         assertEquals(job2.getState(), JobState.ENABLED);
 
-        // disable for a while
-        DisableJobRequest disableForAWhile = new DisableJobRequest(TEST_PROJECT, jobName);
-        client.disableJob(disableForAWhile);
+        DisableJobRequest disableJobRequest = new DisableJobRequest(TEST_PROJECT, jobName);
+        client.disableJob(disableJobRequest);
 
         response = client.getJob(new GetJobRequest(TEST_PROJECT, jobName));
         Job job3 = response.getJob();
-//        System.out.println(JsonUtils.serialize(job3));
         assertEquals(job3.getState(), JobState.DISABLED);
 
         JobSchedule schedule1 = job3.getSchedule();
@@ -118,10 +142,10 @@ public class JobFunctionTest extends FunctionTest {
         }
 
         // test list jobs
-        ListJobsRequest listReq = new ListJobsRequest(TEST_PROJECT);
+        listReq = new ListJobsRequest(TEST_PROJECT);
         listReq.setOffset(0);
         listReq.setSize(10);
-        ListJobsResponse listJobsResponse = client.listJobs(listReq);
+        listJobsResponse = client.listJobs(listReq);
         assertEquals(11, (int) listJobsResponse.getTotal());
         assertEquals(10, (int) listJobsResponse.getCount());
     }
