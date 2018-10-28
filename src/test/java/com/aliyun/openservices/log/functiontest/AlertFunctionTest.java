@@ -59,10 +59,10 @@ public class AlertFunctionTest extends FunctionTest {
         configuration.setDashboard("dashboard1");
         List<Query> queries = new ArrayList<Query>();
         Query query = new Query();
-        query.setPeriod(60);
+        query.setDuration("60s");
         query.setQuery("* | select count(1) as count");
         query.setLogStore("logStore1");
-        query.setChart("chart1");
+        query.setChartTitle("chart1");
         queries.add(query);
         configuration.setQueryList(queries);
         EmailNotification notification = new EmailNotification();
@@ -77,7 +77,7 @@ public class AlertFunctionTest extends FunctionTest {
 
         JobSchedule schedule = new JobSchedule();
         schedule.setType(JobSchedule.JobScheduleType.FIXED_RATE);
-        schedule.setInterval(60L);
+        schedule.setInterval("60s");
         alertV2.setSchedule(schedule);
 
         // create
