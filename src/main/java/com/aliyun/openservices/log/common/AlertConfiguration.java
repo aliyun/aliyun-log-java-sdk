@@ -151,8 +151,8 @@ public class AlertConfiguration extends JobConfiguration {
                 return notification;
             }
         });
-        if (value.containsKey("muteUntil")) {
-            muteUntil = new Date(value.getLong("muteUntil"));
+        if (value.has("muteUntil")) {
+            muteUntil = new Date(value.getLong("muteUntil") * 1000);
         }
         if (value.has("notifyThreshold")) {
             notifyThreshold = value.getInt("notifyThreshold");

@@ -1,9 +1,6 @@
 package com.aliyun.openservices.log.util;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.parser.DefaultJSONParser;
-import com.alibaba.fastjson.parser.ParserConfig;
-import com.alibaba.fastjson.serializer.DateCodec;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.ObjectSerializer;
 import com.alibaba.fastjson.serializer.SerializeConfig;
@@ -25,7 +22,6 @@ public final class JsonUtils {
     private static final SerializeConfig SERIALIZE_CONFIG = new SerializeConfig();
 
     static {
-        ParserConfig.getGlobalInstance().putDeserializer(Date.class, new UnixTimestampToDateDeserializer());
         SERIALIZE_CONFIG.put(Date.class, new DateToUnixTimestampSerializer());
     }
 
@@ -71,18 +67,6 @@ public final class JsonUtils {
             if (date != null) {
                 serializer.write(Utils.getTimestamp((Date) date));
             }
-        }
-    }
-
-    private static class UnixTimestampToDateDeserializer extends DateCodec {
-
-        @Override
-        public <T> T cast(DefaultJSONParser parser, Type clazz, Object fieldName, Object val) {
-            if (val instanceof Number) {
-                long value = ((Number) val).longValue() * 1000;
-                return super.cast(parser, clazz, fieldName, value);
-            }
-            return null;
         }
     }
 }
