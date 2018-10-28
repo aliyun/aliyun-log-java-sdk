@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Unmarshaller;
 import net.sf.json.JSONObject;
@@ -31,7 +32,7 @@ public class AlertConfiguration extends JobConfiguration {
     private Date muteUntil;
 
     @JSONField
-    private int notifyThreshold = 1;
+    private Integer notifyThreshold = 1;
 
     /**
      * Duration with format '1h', '2s'
@@ -92,6 +93,7 @@ public class AlertConfiguration extends JobConfiguration {
     }
 
     public void setThrottling(String throttling) {
+        Args.checkDuration(throttling);
         this.throttling = throttling;
     }
 

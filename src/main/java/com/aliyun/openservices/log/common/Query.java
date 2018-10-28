@@ -2,14 +2,18 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
 
 public class Query implements Serializable {
 
+    /**
+     * The unique title for chart in a dashboard.
+     */
     @JSONField
-    private String chart;
+    private String chartTitle;
 
     @JSONField
     private String query;
@@ -17,15 +21,23 @@ public class Query implements Serializable {
     @JSONField
     private String logStore;
 
+    /**
+     * Duration in range [60, 86400] seconds.
+     * Duration format e,g:
+     * "60s" => 60 seconds
+     * "1h" => 1 hour
+     * "2m" => 2 minutes
+     * "1d" => 1 day
+     */
     @JSONField
-    private long period;
+    private String duration;
 
-    public String getChart() {
-        return chart;
+    public String getChartTitle() {
+        return chartTitle;
     }
 
-    public void setChart(String chart) {
-        this.chart = chart;
+    public void setChartTitle(String chartTitle) {
+        this.chartTitle = chartTitle;
     }
 
     public String getQuery() {
@@ -44,17 +56,18 @@ public class Query implements Serializable {
         this.logStore = logStore;
     }
 
-    public long getPeriod() {
-        return period;
+    public String getDuration() {
+        return duration;
     }
 
-    public void setPeriod(long period) {
-        this.period = period;
+    public void setDuration(String duration) {
+        Args.checkDuration(duration);
+        this.duration = duration;
     }
 
     public void deserialize(JSONObject value) {
-        setChart(value.getString("chart"));
-        setPeriod(value.getLong("period"));
+        setChartTitle(value.getString("chartTitle"));
+        setDuration(value.getString("duration"));
         setLogStore(value.getString("logStore"));
         setQuery(value.getString("query"));
     }
@@ -66,21 +79,20 @@ public class Query implements Serializable {
 
         Query query1 = (Query) o;
 
-        if (getPeriod() != query1.getPeriod())
+        if (getChartTitle() != null ? !getChartTitle().equals(query1.getChartTitle()) : query1.getChartTitle() != null)
             return false;
-        if (getChart() != null ? !getChart().equals(query1.getChart()) : query1.getChart() != null) return false;
         if (getQuery() != null ? !getQuery().equals(query1.getQuery()) : query1.getQuery() != null) return false;
         if (getLogStore() != null ? !getLogStore().equals(query1.getLogStore()) : query1.getLogStore() != null)
             return false;
-        return true;
+        return getDuration() != null ? getDuration().equals(query1.getDuration()) : query1.getDuration() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getChart() != null ? getChart().hashCode() : 0;
+        int result = getChartTitle() != null ? getChartTitle().hashCode() : 0;
         result = 31 * result + (getQuery() != null ? getQuery().hashCode() : 0);
         result = 31 * result + (getLogStore() != null ? getLogStore().hashCode() : 0);
-        result = 31 * result + (int) (getPeriod() ^ (getPeriod() >>> 32));
+        result = 31 * result + (getDuration() != null ? getDuration().hashCode() : 0);
         return result;
     }
 }

@@ -29,4 +29,22 @@ public final class Args {
             throw new IllegalArgumentException(message);
         }
     }
+
+    public static void checkDuration(String duration) {
+        if (duration == null || duration.isEmpty()) {
+            throw new IllegalArgumentException("Illegal duration: " + duration);
+        }
+        final String suffix = duration.substring(duration.length() - 1);
+        if (!(suffix.equalsIgnoreCase("s")
+                || suffix.equalsIgnoreCase("m")
+                || suffix.equalsIgnoreCase("h")
+                || suffix.equalsIgnoreCase("d"))) {
+            throw new IllegalArgumentException("Illegal duration: " + duration);
+        }
+        for (int i = 0; i < duration.length() - 1; i++) {
+            if (!Character.isDigit(duration.charAt(i))) {
+                throw new IllegalArgumentException("Illegal duration: " + duration);
+            }
+        }
+    }
 }

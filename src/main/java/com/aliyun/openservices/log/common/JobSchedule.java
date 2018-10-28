@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
@@ -42,8 +43,11 @@ public class JobSchedule implements Serializable {
     @JSONField
     private JobScheduleType type;
 
+    /**
+     * Interval in duration format e,g "60s", "1h".
+     */
     @JSONField
-    private long interval;
+    private String interval;
 
     public JobScheduleType getType() {
         return type;
@@ -53,12 +57,18 @@ public class JobSchedule implements Serializable {
         this.type = type;
     }
 
-    public long getInterval() {
+    public String getInterval() {
         return interval;
     }
 
-    public void setInterval(long interval) {
+    public void setInterval(String interval) {
+        Args.checkDuration(interval);
         this.interval = interval;
+    }
+
+    public void deserialize(JSONObject value) {
+        type = JobScheduleType.fromString(value.getString("type"));
+        interval = value.getString("interval");
     }
 
     @Override
@@ -68,20 +78,14 @@ public class JobSchedule implements Serializable {
 
         JobSchedule schedule = (JobSchedule) o;
 
-        if (getInterval() != schedule.getInterval()) return false;
         if (getType() != schedule.getType()) return false;
-        return true;
+        return getInterval() != null ? getInterval().equals(schedule.getInterval()) : schedule.getInterval() == null;
     }
 
     @Override
     public int hashCode() {
         int result = getType() != null ? getType().hashCode() : 0;
-        result = 31 * result + (int) (getInterval() ^ (getInterval() >>> 32));
+        result = 31 * result + (getInterval() != null ? getInterval().hashCode() : 0);
         return result;
-    }
-
-    public void deserialize(JSONObject value) {
-        type = JobScheduleType.fromString(value.getString("type"));
-        interval = value.getLong("interval");
     }
 }
