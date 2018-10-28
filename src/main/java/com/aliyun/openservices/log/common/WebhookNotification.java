@@ -3,7 +3,6 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.http.client.HttpMethod;
-import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONObject;
 
 // TODO support authentication, custom headers
@@ -17,21 +16,10 @@ public class WebhookNotification extends Notification {
 
     public WebhookNotification() {
         super(NotificationType.WEBHOOK);
-        method = HttpMethod.POST;
     }
 
-    public WebhookNotification(String content, HttpMethod method, String serviceUri) {
-        super(NotificationType.WEBHOOK, content);
-        Args.notNullOrEmpty(serviceUri, Consts.SERVICE_URI);
-        Args.notNull(method, Consts.METHOD);
-        this.method = method;
-        this.serviceUri = serviceUri;
-    }
-
-    WebhookNotification(NotificationType type, String content, HttpMethod method, String serviceUri) {
-        super(type, content);
-        this.method = method;
-        this.serviceUri = serviceUri;
+    protected WebhookNotification(NotificationType type) {
+        super(type);
     }
 
     public HttpMethod getMethod() {

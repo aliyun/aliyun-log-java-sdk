@@ -2,7 +2,6 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
@@ -18,12 +17,6 @@ public class EmailNotification extends Notification {
 
     public EmailNotification() {
         super(NotificationType.EMAIL);
-    }
-
-    public EmailNotification(String content, List<String> emailList) {
-        super(NotificationType.EMAIL, content);
-        Args.notNullOrEmpty(emailList, Consts.EMAIL_LIST);
-        this.emailList = emailList;
     }
 
     public List<String> getEmailList() {

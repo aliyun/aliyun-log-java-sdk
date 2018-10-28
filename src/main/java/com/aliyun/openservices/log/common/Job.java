@@ -2,7 +2,6 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
@@ -136,7 +135,9 @@ public class Job implements Serializable {
         name = value.getString("name");
         type = JobType.fromString(value.getString("type"));
         state = JobState.fromString(value.getString("state"));
-        description = value.getString("description");
+        if (value.has("description")) {
+            description = value.getString("description");
+        }
         createTime = new Date(value.getLong("createTime") * 1000);
         lastModifiedTime = new Date(value.getLong("lastModifiedTime") * 1000);
         schedule = new JobSchedule();

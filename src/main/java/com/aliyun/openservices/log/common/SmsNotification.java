@@ -2,7 +2,6 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
@@ -18,13 +17,6 @@ public class SmsNotification extends Notification {
 
     public SmsNotification() {
         super(NotificationType.SMS);
-    }
-
-    public SmsNotification(String content, String countryCode, List<String> mobileList) {
-        super(NotificationType.SMS, content);
-        Args.notNullOrEmpty(countryCode, "countryCode");
-        Args.notNullOrEmpty(mobileList, Consts.MOBILE_LIST);
-        this.mobileList = mobileList;
     }
 
     public String getCountryCode() {
@@ -47,5 +39,24 @@ public class SmsNotification extends Notification {
     public void deserialize(final JSONObject value) {
         super.deserialize(value);
         mobileList = JsonUtils.readList(value, Consts.MOBILE_LIST);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SmsNotification that = (SmsNotification) o;
+
+        if (getCountryCode() != null ? !getCountryCode().equals(that.getCountryCode()) : that.getCountryCode() != null)
+            return false;
+        return getMobileList() != null ? getMobileList().equals(that.getMobileList()) : that.getMobileList() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getCountryCode() != null ? getCountryCode().hashCode() : 0;
+        result = 31 * result + (getMobileList() != null ? getMobileList().hashCode() : 0);
+        return result;
     }
 }

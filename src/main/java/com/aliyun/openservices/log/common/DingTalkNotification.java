@@ -9,10 +9,8 @@ import com.aliyun.openservices.log.http.client.HttpMethod;
 public class DingTalkNotification extends WebhookNotification {
 
     public DingTalkNotification() {
-        this(null, null);
+        super(NotificationType.DING_TALK);
+        setMethod(HttpMethod.POST);
     }
 
-    public DingTalkNotification(String content, String serviceUri) {
-        super(NotificationType.DING_TALK, content, HttpMethod.POST, serviceUri);
-    }
 }
