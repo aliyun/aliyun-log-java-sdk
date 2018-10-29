@@ -2,7 +2,8 @@ package com.aliyun.openservices.log.response;
 
 
 import com.aliyun.openservices.log.common.Job;
-import net.sf.json.JSONObject;
+import com.aliyun.openservices.log.util.Unmarshaller;
+import net.sf.json.JSONArray;
 
 import java.util.Map;
 
@@ -13,9 +14,14 @@ public class ListJobsResponse extends ResponseList<Job> {
     }
 
     @Override
-    public Job unmarshal(JSONObject value) {
-        Job job = new Job();
-        job.deserialize(value);
-        return job;
+    public Unmarshaller<Job> unmarshaller() {
+        return new Unmarshaller<Job>() {
+            @Override
+            public Job unmarshal(JSONArray value, int index) {
+                Job job = new Job();
+                job.deserialize(value.getJSONObject(index));
+                return job;
+            }
+        };
     }
 }

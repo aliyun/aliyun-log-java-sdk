@@ -1,10 +1,10 @@
 package com.aliyun.openservices.log.response;
 
 import com.aliyun.openservices.log.common.Consts;
-import net.sf.json.JSONArray;
+import com.aliyun.openservices.log.util.JsonUtils;
+import com.aliyun.openservices.log.util.Unmarshaller;
 import net.sf.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,16 +43,11 @@ public abstract class ResponseList<T> extends Response {
         this.results = results;
     }
 
-    public abstract T unmarshal(JSONObject value);
-
+    public abstract Unmarshaller<T> unmarshaller();
 
     public void deserialize(JSONObject value) {
         count = value.getInt(Consts.CONST_COUNT);
         total = value.getInt(Consts.CONST_TOTAL);
-        final JSONArray resultsAsJson = value.getJSONArray("results");
-        results = new ArrayList<T>(resultsAsJson.size());
-        for (int i = 0; i < resultsAsJson.size(); i++) {
-            results.add(unmarshal(resultsAsJson.getJSONObject(i)));
-        }
+        results = JsonUtils.readList(value, "results", unmarshaller());
     }
 }

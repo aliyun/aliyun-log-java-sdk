@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.response;
 
 import com.aliyun.openservices.log.common.AlertV2;
-import net.sf.json.JSONObject;
+import com.aliyun.openservices.log.util.Unmarshaller;
+import net.sf.json.JSONArray;
 
 import java.util.Map;
 
@@ -12,10 +13,14 @@ public class ListAlertResponseV2 extends ResponseList<AlertV2> {
     }
 
     @Override
-    public AlertV2 unmarshal(JSONObject value) {
-        AlertV2 alertV2 = new AlertV2();
-        alertV2.deserialize(value);
-        return alertV2;
+    public Unmarshaller<AlertV2> unmarshaller() {
+        return new Unmarshaller<AlertV2>() {
+            @Override
+            public AlertV2 unmarshal(JSONArray value, int index) {
+                AlertV2 alertV2 = new AlertV2();
+                alertV2.deserialize(value.getJSONObject(index));
+                return alertV2;
+            }
+        };
     }
-
 }

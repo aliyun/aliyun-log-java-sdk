@@ -39,7 +39,7 @@ public class EmailNotification extends Notification {
     public void deserialize(final JSONObject value) {
         super.deserialize(value);
         subject = value.getString("subject");
-        emailList = JsonUtils.readList(value, Consts.EMAIL_LIST);
+        emailList = JsonUtils.readStringList(value, Consts.EMAIL_LIST);
     }
 
     @Override

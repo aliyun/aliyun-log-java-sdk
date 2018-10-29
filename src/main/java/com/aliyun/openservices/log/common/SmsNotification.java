@@ -38,7 +38,7 @@ public class SmsNotification extends Notification {
     @Override
     public void deserialize(final JSONObject value) {
         super.deserialize(value);
-        mobileList = JsonUtils.readList(value, Consts.MOBILE_LIST);
+        mobileList = JsonUtils.readStringList(value, Consts.MOBILE_LIST);
     }
 
     @Override

@@ -16,6 +16,9 @@ public class Job implements Serializable {
     @JSONField
     private String name;
 
+    @JSONField
+    private String displayName;
+
     /**
      * The type of job. See {@link JobType}
      */
@@ -64,6 +67,14 @@ public class Job implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public JobType getType() {
@@ -133,6 +144,9 @@ public class Job implements Serializable {
 
     public void deserialize(JSONObject value) {
         name = value.getString("name");
+        if (value.has("displayName")) {
+            displayName = value.getString("displayName");
+        }
         type = JobType.fromString(value.getString("type"));
         state = JobState.fromString(value.getString("state"));
         if (value.has("description")) {
@@ -154,28 +168,31 @@ public class Job implements Serializable {
         Job job = (Job) o;
 
         if (getName() != null ? !getName().equals(job.getName()) : job.getName() != null) return false;
+        if (getDisplayName() != null ? !getDisplayName().equals(job.getDisplayName()) : job.getDisplayName() != null)
+            return false;
         if (getType() != job.getType()) return false;
         if (getDescription() != null ? !getDescription().equals(job.getDescription()) : job.getDescription() != null)
             return false;
-        if (getSchedule() != null ? !getSchedule().equals(job.getSchedule()) : job.getSchedule() != null) return false;
-        if (getState() != job.getState()) return false;
-        if (getConfiguration() != null ? !getConfiguration().equals(job.getConfiguration()) : job.getConfiguration() != null)
-            return false;
         if (getCreateTime() != null ? !getCreateTime().equals(job.getCreateTime()) : job.getCreateTime() != null)
             return false;
-        return getLastModifiedTime() != null ? getLastModifiedTime().equals(job.getLastModifiedTime()) : job.getLastModifiedTime() == null;
+        if (getLastModifiedTime() != null ? !getLastModifiedTime().equals(job.getLastModifiedTime()) : job.getLastModifiedTime() != null)
+            return false;
+        if (getSchedule() != null ? !getSchedule().equals(job.getSchedule()) : job.getSchedule() != null) return false;
+        if (getState() != job.getState()) return false;
+        return getConfiguration() != null ? getConfiguration().equals(job.getConfiguration()) : job.getConfiguration() == null;
     }
 
     @Override
     public int hashCode() {
         int result = getName() != null ? getName().hashCode() : 0;
+        result = 31 * result + (getDisplayName() != null ? getDisplayName().hashCode() : 0);
         result = 31 * result + (getType() != null ? getType().hashCode() : 0);
         result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+        result = 31 * result + (getCreateTime() != null ? getCreateTime().hashCode() : 0);
+        result = 31 * result + (getLastModifiedTime() != null ? getLastModifiedTime().hashCode() : 0);
         result = 31 * result + (getSchedule() != null ? getSchedule().hashCode() : 0);
         result = 31 * result + (getState() != null ? getState().hashCode() : 0);
         result = 31 * result + (getConfiguration() != null ? getConfiguration().hashCode() : 0);
-        result = 31 * result + (getCreateTime() != null ? getCreateTime().hashCode() : 0);
-        result = 31 * result + (getLastModifiedTime() != null ? getLastModifiedTime().hashCode() : 0);
         return result;
     }
 }

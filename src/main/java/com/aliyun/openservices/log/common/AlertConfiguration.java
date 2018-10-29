@@ -5,6 +5,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Unmarshaller;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import java.util.Date;
@@ -136,18 +137,19 @@ public class AlertConfiguration extends JobConfiguration {
         dashboard = value.getString("dashboard");
         queryList = JsonUtils.readList(value, "queryList", new Unmarshaller<Query>() {
             @Override
-            public Query unmarshal(JSONObject value) {
+            public Query unmarshal(JSONArray value, int index) {
                 Query query = new Query();
-                query.deserialize(value);
+                query.deserialize(value.getJSONObject(index));
                 return query;
             }
         });
         notificationList = JsonUtils.readList(value, "notificationList", new Unmarshaller<Notification>() {
             @Override
-            public Notification unmarshal(JSONObject value) {
-                NotificationType notificationType = NotificationType.fromString(value.getString("type"));
+            public Notification unmarshal(JSONArray value, int index) {
+                JSONObject item = value.getJSONObject(index);
+                NotificationType notificationType = NotificationType.fromString(item.getString("type"));
                 Notification notification = createNotification(notificationType);
-                notification.deserialize(value);
+                notification.deserialize(item);
                 return notification;
             }
         });

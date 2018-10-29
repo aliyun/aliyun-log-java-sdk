@@ -39,23 +39,23 @@ public final class JsonUtils {
         }
         List<T> values = new ArrayList<T>(list.size());
         for (int i = 0; i < list.size(); i++) {
-            values.add(unmarshaller.unmarshal(list.getJSONObject(i)));
+            values.add(unmarshaller.unmarshal(list, i));
         }
         return values;
     }
 
-    public static List<String> readList(JSONObject object, String key) {
-        JSONArray list = object.getJSONArray(key);
-        if (list == null || list.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<String> values = new ArrayList<String>(list.size());
-        for (int i = 0; i < list.size(); i++) {
-            values.add(list.getString(i));
-        }
-        return values;
+    public static List<String> readStringList(JSONObject object, String key) {
+        return readList(object, key, new Unmarshaller<String>() {
+            @Override
+            public String unmarshal(JSONArray value, int index) {
+                return value.getString(index);
+            }
+        });
     }
 
+    /**
+     * Serialize date to unix timestamp.
+     */
     private static class DateToUnixTimestampSerializer implements ObjectSerializer {
 
         @Override

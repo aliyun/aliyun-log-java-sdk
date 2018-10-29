@@ -448,7 +448,7 @@ public class Client implements LogService {
 		JSONObject object = ParserResponseMessage(response, requestId);
 		return ExtractLogtailProfile(resHeaders, object);
 	}
-	
+
 	public GetHistogramsResponse GetHistograms(String project, String logStore,
 			int from, int to, String topic, String query) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -4181,7 +4181,7 @@ public class Client implements LogService {
     public DisableAlertResponse disableAlert(DisableAlertRequest request) throws LogException {
         ResponseMessage response = send(request);
         return new DisableAlertResponse(response.getHeaders());
-	}
+    }
 
     @Override
     public ListJobsResponse listJobs(ListJobsRequest request) throws LogException {

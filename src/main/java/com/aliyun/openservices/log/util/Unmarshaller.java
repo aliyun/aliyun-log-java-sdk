@@ -1,10 +1,10 @@
 package com.aliyun.openservices.log.util;
 
 
-import net.sf.json.JSONObject;
+import net.sf.json.JSONArray;
 
 
 public interface Unmarshaller<T> {
 
-    T unmarshal(JSONObject value);
+    T unmarshal(JSONArray value, int index);
 }
