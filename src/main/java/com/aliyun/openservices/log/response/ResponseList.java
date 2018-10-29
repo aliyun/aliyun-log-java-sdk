@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.response;
 
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.aliyun.openservices.log.util.Unmarshaller;
+import com.aliyun.openservices.log.internal.Unmarshaller;
 import net.sf.json.JSONObject;
 
 import java.util.List;

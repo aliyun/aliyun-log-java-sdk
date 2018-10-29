@@ -329,7 +329,6 @@ public class Consts {
 
 	public static final String ENABLE = "enable";
 	public static final String DISABLE = "disable";
-	public static final String DISABLE_UNTIL = "disableUntil";
 	// ETL
 	public static final String CONST_ETLJOB_URI = "/etljobs";
 	public static final String FUNCTION_PROVIDER_FC = "FunctionCompute";
@@ -378,7 +377,5 @@ public class Consts {
     public static final String METHOD = "method";
     public static final String MOBILE_LIST = "mobileList";
     public static final String RESOURCE_PROVIDER = "resourceProvider";
-    public static final String START_TIME = "startTime";
-    public static final String END_TIME = "endTime";
     public static final String SERVICE_URI = "serviceUri";
 }

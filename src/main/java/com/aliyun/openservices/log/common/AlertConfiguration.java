@@ -4,7 +4,7 @@ package com.aliyun.openservices.log.common;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.aliyun.openservices.log.util.Unmarshaller;
+import com.aliyun.openservices.log.internal.Unmarshaller;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 

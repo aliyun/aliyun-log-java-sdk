@@ -1,4 +1,4 @@
-package com.aliyun.openservices.log.util;
+package com.aliyun.openservices.log.internal;
 
 
 import net.sf.json.JSONArray;

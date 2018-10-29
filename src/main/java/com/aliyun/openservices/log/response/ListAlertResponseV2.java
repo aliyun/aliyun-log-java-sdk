@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.response;
 
 import com.aliyun.openservices.log.common.AlertV2;
-import com.aliyun.openservices.log.util.Unmarshaller;
+import com.aliyun.openservices.log.internal.Unmarshaller;
 import net.sf.json.JSONArray;
 
 import java.util.Map;
