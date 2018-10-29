@@ -4202,7 +4202,6 @@ public class Client implements LogService {
         final Map<String, String> headers = GetCommonHeadPara(project);
         final Object body = request.getBody();
         final byte[] requestBody = body == null ? new byte[0] : encodeToUtf8(JsonUtils.serialize(body));
-        System.out.println(JsonUtils.serialize(body));
         return SendData(project, request.getMethod(), request.getUri(), request.GetAllParams(), headers, requestBody);
     }
 }
