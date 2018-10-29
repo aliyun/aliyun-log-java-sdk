@@ -82,7 +82,8 @@ public class Consts {
 	public static final int DEFAULT_SLS_OFFSET = 0;
 	public static final String DEFAULT_SLS_QUERY = "";
 	public static final String DEFAULT_API_VESION = "0.6.0";
-	
+
+
 	public static final String DEFAULT_REQUEST_PARAM_GROUPNAME = "";
 	public static final String DEFAULT_REQUEST_PARAM_CONFIGNAME = "";
 	public static final String DEFAULT_REQUEST_PARAM_LOGSTORENAME = "";
@@ -278,6 +279,7 @@ public class Consts {
 	// savedsearch api
 	public static final String CONST_SAVEDSEARCH_URI = "/savedsearches";
 	public static final String CONST_SAVEDSEARCH_NAME = "savedsearchName";
+	public static final String CONST_DISPLAY_NAME = "displayName";
 	public static final String CONST_SAVEDSEARCH_DISPLAYNAME = "displayName";
 	public static final String CONST_SAVEDSEARCH_QUERY = "searchQuery";
 	public static final String CONST_SAVEDSEARCH_LOGSTORE = "logstore";

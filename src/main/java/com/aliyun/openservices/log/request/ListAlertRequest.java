@@ -8,6 +8,7 @@ public class ListAlertRequest extends Request {
 
 	public ListAlertRequest(String project) {
 		super(project);
+		setDisplayName("");
 		setAlertName(Consts.DEFAULT_REQUEST_PARAM_ALERTNAME);
 		setOffset(Consts.DEFAULT_REQUEST_PARAM_OFFSET);
 		setSize(Consts.DEFAULT_REQUEST_PARAM_SIZE);
@@ -15,6 +16,7 @@ public class ListAlertRequest extends Request {
 	
 	public ListAlertRequest(String project, int offset, int size) {
 		super(project);
+		setDisplayName("");
 		setAlertName(Consts.DEFAULT_REQUEST_PARAM_ALERTNAME);
 		setOffset(offset);
 		setSize(size);
@@ -23,10 +25,27 @@ public class ListAlertRequest extends Request {
 	public ListAlertRequest(String project, String alertName, int offset, int size) {
 		super(project);
 		setAlertName(alertName);
+		setDisplayName("");
 		setOffset(offset);
 		setSize(size);
 	}
 
+	public ListAlertRequest(String project, String alertName, String displayName, int offset, int size) {
+		super(project);
+		setAlertName(alertName);
+		setDisplayName(displayName);
+		setOffset(offset);
+		setSize(size);
+	}
+	
+	public String getDisplayName() {
+		return GetParam(Consts.CONST_DISPLAY_NAME);
+	}
+	
+	public void setDisplayName(String displayName) {
+		SetParam(Consts.CONST_DISPLAY_NAME, displayName);
+	}
+	
 	public String getAlertName() {
 		return GetParam(Consts.CONST_ALERT_NAME);
 	}

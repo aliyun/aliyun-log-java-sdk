@@ -9,6 +9,7 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.ApplyConfigToMachineGroupRequest;
 import com.aliyun.openservices.log.request.ApproveMachineGroupRequest;
 import com.aliyun.openservices.log.request.BatchGetLogRequest;
+import com.aliyun.openservices.log.request.ClearLogStoreStorageRequest;
 import com.aliyun.openservices.log.request.CreateAlertRequest;
 import com.aliyun.openservices.log.request.CreateChartRequest;
 import com.aliyun.openservices.log.request.CreateConfigRequest;
@@ -3137,4 +3138,23 @@ public interface LogService {
      * @throws LogException if any error occurs
      */
 	DeleteLoggingResponse deleteLogging(DeleteLoggingRequest request) throws LogException;
+
+    /**
+     * clear an existing logstore storage.
+     *
+     * @param request An instance of {@link ClearLogStoreStorageRequest}
+     * @return An instance of {@link ClearLogStoreStorageResponse}
+     * @throws LogException if any error occurs
+     */
+	ClearLogStoreStorageResponse ClearLogStoreStorage(ClearLogStoreStorageRequest request) throws LogException;
+
+    /**
+     * clear an existing logstore storage.
+     *
+     * @param project name
+     * @param logstore name
+     * @return An instance of {@link ClearLogStoreStorageResponse}
+     * @throws LogException if any error occurs
+     */
+	ClearLogStoreStorageResponse ClearLogStoreStorage(String project, String logStoreName) throws LogException;
 }

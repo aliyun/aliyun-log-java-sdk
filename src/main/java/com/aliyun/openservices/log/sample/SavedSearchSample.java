@@ -49,8 +49,8 @@ public class SavedSearchSample {
 			// list 
 			ListSavedSearchRequest listReq = new ListSavedSearchRequest(project);
 			ListSavedSearchResponse listRes = client.listSavedSearch(listReq);
-			for (String returnSavedSearchName:listRes.getSavedSearches()) {
-				System.out.println(returnSavedSearchName);
+			for (SavedSearch returnSavedSearch:listRes.getSavedSearches()) {
+				System.out.println(returnSavedSearch.getSavedSearchName());
 			}
 			
 			// delete 

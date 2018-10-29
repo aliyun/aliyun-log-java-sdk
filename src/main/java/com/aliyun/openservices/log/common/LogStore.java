@@ -20,6 +20,8 @@ public class LogStore implements Serializable {
     private int mMaxSplitShard = -1;
     private int createTime = -1;
     private int lastModifyTime = -1;
+    private long preserveStorage = -1;
+    private long usedStorage = 0;
 
     public LogStore() {
         super();
@@ -52,9 +54,27 @@ public class LogStore implements Serializable {
         this.appendMeta = logStore.isAppendMeta();
         this.mAutoSplit = logStore.ismAutoSplit();
         this.mMaxSplitShard = logStore.getmMaxSplitShard();
+        this.preserveStorage = logStore.preserveStorage;
+        this.usedStorage = logStore.usedStorage;
     }
 
-    public int getmMaxSplitShard() {
+    public long getPreserveStorage() {
+		return preserveStorage;
+	}
+
+	public void setPreserveStorage(long preserveStorage) {
+		this.preserveStorage = preserveStorage;
+	}
+
+	public long getUsedStorage() {
+		return usedStorage;
+	}
+
+	public void setUsedStorage(long usedStorage) {
+		this.usedStorage = usedStorage;
+	}
+
+	public int getmMaxSplitShard() {
         return mMaxSplitShard;
     }
 
@@ -151,6 +171,11 @@ public class LogStore implements Serializable {
         logStoreDict.put("autoSplit", ismAutoSplit());
         logStoreDict.put("maxSplitShard", getmMaxSplitShard());
         logStoreDict.put("appendMeta", isAppendMeta());
+        JSONObject resourceQuota = new JSONObject();
+        JSONObject storage = new JSONObject();
+        storage.put("preserved", preserveStorage);
+        resourceQuota.put("storage", storage);
+        logStoreDict.put("resourceQuota", resourceQuota);
         return logStoreDict;
     }
 
@@ -192,6 +217,20 @@ public class LogStore implements Serializable {
                 mMaxSplitShard = dict.getInt("maxSplitShard");
             }
             appendMeta = dict.containsKey("appendMeta") && dict.getBoolean("appendMeta");
+            
+            // set resourceQuota
+            if (dict.containsKey("resourceQuota")) {
+            	JSONObject resourceQuotaJson = dict.getJSONObject("resourceQuota");
+            	if (resourceQuotaJson.containsKey("storage")) {
+            		JSONObject storageJson = resourceQuotaJson.getJSONObject("storage");
+            		if (storageJson.containsKey("preserved")) {
+            			preserveStorage = storageJson.getLong("preserved");
+            		}
+            		if (storageJson.containsKey("used")) {
+            			usedStorage = storageJson.getLong("used");
+            		}
+            	}
+            }
         } catch (JSONException e) {
             throw new LogException("FailToGenerateLogStore", e.getMessage(), e, "");
         }
