@@ -277,6 +277,7 @@ public class Consts {
 	// savedsearch api
 	public static final String CONST_SAVEDSEARCH_URI = "/savedsearches";
 	public static final String CONST_SAVEDSEARCH_NAME = "savedsearchName";
+	public static final String CONST_DISPLAY_NAME = "displayName";
 	public static final String CONST_SAVEDSEARCH_DISPLAYNAME = "displayName";
 	public static final String CONST_SAVEDSEARCH_QUERY = "searchQuery";
 	public static final String CONST_SAVEDSEARCH_LOGSTORE = "logstore";

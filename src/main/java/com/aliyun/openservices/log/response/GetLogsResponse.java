@@ -25,11 +25,14 @@ public class GetLogsResponse extends Response {
 
 	private boolean mIsCompleted = false;
 
+	private String mMarker = "";
 	private String mAggQuery = "";
 	private String mWhereQuery = "";
 	private boolean mHasSQL = false;
 	private long mProcessedRow = 0;
 	private long mElapsedMilliSecond = 0;
+	private long mLimited = 0;
+
 	private ArrayList<String> mKeys;
 	private ArrayList<ArrayList<String>> mTerms;
 
@@ -84,9 +87,33 @@ public class GetLogsResponse extends Response {
 					mTerms.add(list);
 				}
 			}
+			
+			if (object.containsKey("limited")) {
+				mLimited = Long.valueOf(object.getString("limited"));
+			}
+			
+			if (object.containsKey("marker")) {
+				mMarker = object.getString("marker");
+			}
 		}
 	}
+	
+	public String getmMarker() {
+		return mMarker;
+	}
 
+	public void setmMarker(String mMarker) {
+		this.mMarker = mMarker;
+	}
+
+	public long getmLimited() {
+		return mLimited;
+	}
+
+	public void setmLimited(long mLimited) {
+		this.mLimited = mLimited;
+	}
+	
 	public void setAggQuery(String mAggQuery) {
 		this.mAggQuery = mAggQuery;
 	}

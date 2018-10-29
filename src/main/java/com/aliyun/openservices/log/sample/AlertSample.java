@@ -64,8 +64,8 @@ public class AlertSample {
 			// list
 			ListAlertRequest listReq = new ListAlertRequest(project);
 			ListAlertResponse listRes = client.listAlert(listReq);
-			for (String returnAlertName:listRes.getAlerts()) {
-				System.out.println(returnAlertName);
+			for (Alert returnAlert:listRes.getAlerts()) {
+				System.out.println(returnAlert.getAlertName());
 			}
 			
 			// delete 

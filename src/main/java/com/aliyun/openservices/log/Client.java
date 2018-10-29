@@ -24,6 +24,7 @@ import com.aliyun.openservices.log.internal.ErrorCodes;
 import com.aliyun.openservices.log.request.ApplyConfigToMachineGroupRequest;
 import com.aliyun.openservices.log.request.ApproveMachineGroupRequest;
 import com.aliyun.openservices.log.request.BatchGetLogRequest;
+import com.aliyun.openservices.log.request.ClearLogStoreStorageRequest;
 import com.aliyun.openservices.log.request.ConsumerGroupGetCheckPointRequest;
 import com.aliyun.openservices.log.request.ConsumerGroupHeartBeatRequest;
 import com.aliyun.openservices.log.request.ConsumerGroupUpdateCheckPointRequest;
@@ -2392,6 +2393,36 @@ public class Client implements LogService {
 	}
 
 	@Override
+	public ClearLogStoreStorageResponse ClearLogStoreStorage(String project,
+			String logStoreName) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(logStoreName, "logStoreName");
+		return ClearLogStoreStorage(new ClearLogStoreStorageRequest(project, logStoreName));
+	}
+
+	@Override
+	public ClearLogStoreStorageResponse ClearLogStoreStorage(ClearLogStoreStorageRequest request)
+			throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		String logStoreName = request.GetLogStoreName();
+		CodingUtils.assertStringNotNullOrEmpty(logStoreName, "logStoreName");
+
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+        String resourceUri = "/logstores/" + logStoreName + "/storage";
+		Map<String, String> urlParameter = request.GetAllParams();
+
+		ResponseMessage response = SendData(project, HttpMethod.DELETE,
+				resourceUri, urlParameter, headParameter);
+
+		Map<String, String> resHeaders = response.getHeaders();
+
+		return new ClearLogStoreStorageResponse(resHeaders);
+
+	}
+
+	@Override
 	public UpdateLogStoreResponse UpdateLogStore(String project,
 			LogStore logStore) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -3418,14 +3449,17 @@ public class Client implements LogService {
         return new GetDashboardResponse(response.getHeaders(), dashboard);
 	}
 	
-	protected List<String> ExtractDashboards(JSONObject object, String requestId)
+	protected List<Dashboard> ExtractDashboards(JSONObject object, String requestId)
 			throws LogException {
-		List<String> dashboards = new ArrayList<String>();
+		List<Dashboard> dashboards = new ArrayList<Dashboard>();
 		JSONArray array = new JSONArray();
 		try {
-			array = object.getJSONArray("dashboards");
-			for (int i = 0; i < array.size(); i++) {
-				dashboards.add(array.getString(i));
+			array = object.getJSONArray("dashboardItems");
+			for (int index = 0; index < array.size(); index++) {
+				Dashboard dashboard = new Dashboard();
+				dashboard.setDashboardName(array.getJSONObject(index).getString("dashboardName"));
+				dashboard.setDisplayName(array.getJSONObject(index).getString("displayName"));
+				dashboards.add(dashboard);
 			}
 		} catch (JSONException e) {
 			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response is not valid config json array string : " + array.toString(), e, requestId);
@@ -3447,8 +3481,9 @@ public class Client implements LogService {
 		JSONObject object = ParserResponseMessage(response, requestId);
 		int total = object.getInt(Consts.CONST_TOTAL);
 		int count = object.getInt(Consts.CONST_COUNT);
-        List<String> dashboards = ExtractDashboards(object, requestId);
-        return new ListDashboardResponse(response.getHeaders(), count, total, dashboards);
+        List<Dashboard> dashboards = ExtractDashboards(object, requestId);
+		ListDashboardResponse listDashboardResponse = new ListDashboardResponse(response.getHeaders(), count, total, dashboards);
+		return listDashboardResponse;
 	}
 	
 	@Override
@@ -3517,14 +3552,17 @@ public class Client implements LogService {
         return new GetSavedSearchResponse(response.getHeaders(), savedSearch);
 	}
 	
-	protected List<String> ExtractSavedSearches(JSONObject object, String requestId)
+	protected List<SavedSearch> ExtractSavedSearches(JSONObject object, String requestId)
 			throws LogException {
-		List<String> savedSearches = new ArrayList<String>();
+		List<SavedSearch> savedSearches = new ArrayList<SavedSearch>();
 		JSONArray array = new JSONArray();
 		try {
-			array = object.getJSONArray("savedsearches");
-			for (int i = 0; i < array.size(); i++) {
-				savedSearches.add(array.getString(i));
+			array = object.getJSONArray("savedsearchItems");
+			for (int index = 0; index < array.size(); index++) {
+				SavedSearch savedSearch = new SavedSearch();
+				savedSearch.setSavedSearchName(array.getJSONObject(index).getString("savedsearchName"));
+				savedSearch.setDisplayName(array.getJSONObject(index).getString("displayName"));
+				savedSearches.add(savedSearch);
 			}
 		} catch (JSONException e) {
 			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response is not valid config json array string : " + array.toString(), e, requestId);
@@ -3546,8 +3584,9 @@ public class Client implements LogService {
 		JSONObject object = ParserResponseMessage(response, requestId);
 		int total = object.getInt(Consts.CONST_TOTAL);
 		int count = object.getInt(Consts.CONST_COUNT);
-        List<String> savedSearches = ExtractSavedSearches(object, requestId);
-        return new ListSavedSearchResponse(response.getHeaders(), count, total, savedSearches);
+        List<SavedSearch> savedSearches = ExtractSavedSearches(object, requestId);
+		ListSavedSearchResponse listSavedSearchResponse = new ListSavedSearchResponse(response.getHeaders(), count, total, savedSearches);
+		return listSavedSearchResponse;
 	}
 	
 	// alert api
@@ -3652,14 +3691,17 @@ public class Client implements LogService {
         }
     }
 
-    protected List<String> ExtractAlerts(JSONObject object, String requestId)
+	private List<Alert> ExtractAlerts(JSONObject object, String requestId)
 			throws LogException {
-		List<String> alerts = new ArrayList<String>();
+		List<Alert> alerts = new ArrayList<Alert>();
 		JSONArray array = new JSONArray();
 		try {
-			array = object.getJSONArray("alerts");
-			for (int i = 0; i < array.size(); i++) {
-				alerts.add(array.getString(i));
+			array = object.getJSONArray("alertItems");
+			for (int index = 0; index < array.size(); index++) {
+				Alert alert = new Alert();
+				alert.setAlertName(array.getJSONObject(index).getString("alertName"));
+				alert.setDisplayName(array.getJSONObject(index).getString("displayName"));
+				alerts.add(alert);
 			}
 		} catch (JSONException e) {
 			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response is not valid config json array string : " + array.toString(), e, requestId);
@@ -3681,7 +3723,7 @@ public class Client implements LogService {
 		JSONObject object = ParserResponseMessage(response, requestId);
 		int total = object.getInt(Consts.CONST_TOTAL);
 		int count = object.getInt(Consts.CONST_COUNT);
-        List<String> alerts = ExtractAlerts(object, requestId);
+        List<Alert> alerts = ExtractAlerts(object, requestId);
         return new ListAlertResponse(response.getHeaders(), count, total, alerts);
 	}
 

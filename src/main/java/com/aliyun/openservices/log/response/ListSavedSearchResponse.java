@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.aliyun.openservices.log.common.SavedSearch;
+
 public class ListSavedSearchResponse extends Response {
 
 	private static final long serialVersionUID = -6859512318225405051L;
 	protected int count = 0;
 	protected int total = 0;
-	protected List<String> savedSearches = new ArrayList<String>();
+	protected List<SavedSearch> savedSearches = new ArrayList<SavedSearch>();
 
-	public ListSavedSearchResponse(Map<String, String> headers, int count, int total, List<String> savedSearches) {
+	public ListSavedSearchResponse(Map<String, String> headers, int count, int total, List<SavedSearch> savedSearches) {
 		super(headers);
 		setCount(count);
 		setTotal(total);
@@ -34,13 +36,13 @@ public class ListSavedSearchResponse extends Response {
 		this.total = total;
 	}
 
-	public List<String> getSavedSearches() {
+	public List<SavedSearch> getSavedSearches() {
 		return savedSearches;
 	}
 
-	public void setSavedSearches(List<String> savedSearches) {
-		this.savedSearches = new ArrayList<String>();
-		for (String savedSearch : savedSearches) {
+	public void setSavedSearches(List<SavedSearch> savedSearches) {
+		this.savedSearches = new ArrayList<SavedSearch>();
+		for (SavedSearch savedSearch : savedSearches) {
 			savedSearches.add(savedSearch);
 		}
 	}
