@@ -1377,11 +1377,7 @@ public class SlsClientUnitTest {
 		group.SetGroupType(groupType);
 		group.SetExternalName(externalName);
 		group.SetGroupTopic(groupTopic);
-		try {
-			group.SetMachineList(machineList);
-		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
-		}
+		group.SetMachineList(machineList);
 		
 		int lastModifyTime = 12343513;
 		int createTime = 13135041;

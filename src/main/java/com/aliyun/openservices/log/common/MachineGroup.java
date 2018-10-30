@@ -126,7 +126,7 @@ public class MachineGroup implements Serializable {
 		}
 	}
 	
-	public void SetMachineList(JSONArray machineListJSONArray) throws LogException {
+	public void SetMachineList(JSONArray machineListJSONArray) {
 		machineList = new ArrayList<String>();
 		for(int i = 0;i < machineListJSONArray.size();i++) {
 			String machine = machineListJSONArray.getString(i);
