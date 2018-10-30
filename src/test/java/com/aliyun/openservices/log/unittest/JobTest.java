@@ -4,6 +4,7 @@ package com.aliyun.openservices.log.unittest;
 import com.aliyun.openservices.log.common.AlertConfiguration;
 import com.aliyun.openservices.log.common.Job;
 import com.aliyun.openservices.log.common.JobSchedule;
+import com.aliyun.openservices.log.common.JobScheduleType;
 import com.aliyun.openservices.log.common.JobState;
 import com.aliyun.openservices.log.common.JobType;
 import com.aliyun.openservices.log.common.Notification;
@@ -30,7 +31,7 @@ public class JobTest {
         job.setType(JobType.ALERT);
         JobSchedule schedule = new JobSchedule();
         schedule.setInterval("60s");
-        schedule.setType(JobSchedule.JobScheduleType.FIXED_RATE);
+        schedule.setType(JobScheduleType.FIXED_RATE);
         job.setSchedule(schedule);
 
         AlertConfiguration configuration = new AlertConfiguration();
@@ -82,7 +83,7 @@ public class JobTest {
 
         JobSchedule schedule = new JobSchedule();
         schedule.setInterval("60s");
-        schedule.setType(JobSchedule.JobScheduleType.FIXED_RATE);
+        schedule.setType(JobScheduleType.FIXED_RATE);
 
         assertEquals(schedule, job.getSchedule());
 
@@ -112,12 +113,12 @@ public class JobTest {
     @Test
     public void testScheduleSerializeAndDeserialize() {
         JobSchedule schedule = new JobSchedule();
-        schedule.setType(JobSchedule.JobScheduleType.FIXED_RATE);
+        schedule.setType(JobScheduleType.FIXED_RATE);
         schedule.setInterval("60s");
         assertEquals("{\"interval\":\"60s\",\"type\":\"FixedRate\"}", JsonUtils.serialize(schedule));
         JobSchedule schedule1 = new JobSchedule();
         schedule1.deserialize(JSONObject.fromObject("{\"interval\":\"60s\",\"type\":\"FixedRate\"}"));
         assertEquals("60s", schedule1.getInterval());
-        assertEquals(JobSchedule.JobScheduleType.FIXED_RATE, schedule1.getType());
+        assertEquals(JobScheduleType.FIXED_RATE, schedule1.getType());
     }
 }

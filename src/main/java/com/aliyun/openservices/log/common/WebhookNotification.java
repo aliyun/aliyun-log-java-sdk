@@ -18,7 +18,7 @@ public class WebhookNotification extends Notification {
         super(NotificationType.WEBHOOK);
     }
 
-    protected WebhookNotification(NotificationType type) {
+    WebhookNotification(NotificationType type) {
         super(type);
     }
 

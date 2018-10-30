@@ -1,6 +1,11 @@
 package com.aliyun.openservices.log.common;
 
-public enum JobState {
+import com.alibaba.fastjson.serializer.JSONSerializable;
+import com.alibaba.fastjson.serializer.JSONSerializer;
+
+import java.lang.reflect.Type;
+
+public enum JobState implements JSONSerializable {
     ENABLED("Enabled"),
     DISABLED("Disabled");
 
@@ -22,5 +27,10 @@ public enum JobState {
     @Override
     public String toString() {
         return value;
+    }
+
+    @Override
+    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
+        serializer.write(toString());
     }
 }

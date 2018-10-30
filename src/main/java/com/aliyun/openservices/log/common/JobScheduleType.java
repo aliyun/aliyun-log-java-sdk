@@ -5,15 +5,15 @@ import com.alibaba.fastjson.serializer.JSONSerializer;
 
 import java.lang.reflect.Type;
 
-/**
- * Job type.
- */
-public enum JobType implements JSONSerializable {
-    ALERT("Alert");
+public enum JobScheduleType implements JSONSerializable {
+    /**
+     * Trigger in a fixed rate.
+     */
+    FIXED_RATE("FixedRate");
 
     private final String value;
 
-    JobType(String value) {
+    JobScheduleType(String value) {
         this.value = value;
     }
 
@@ -22,13 +22,13 @@ public enum JobType implements JSONSerializable {
         return value;
     }
 
-    public static JobType fromString(String value) {
-        for (JobType type : JobType.values()) {
+    public static JobScheduleType fromString(String value) {
+        for (JobScheduleType type : JobScheduleType.values()) {
             if (type.value.equals(value)) {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Illegal job type: " + value);
+        throw new IllegalArgumentException("Illegal schedule type: " + value);
     }
 
     @Override

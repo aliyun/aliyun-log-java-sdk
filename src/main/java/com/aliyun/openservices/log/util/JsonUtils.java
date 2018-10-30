@@ -30,7 +30,8 @@ public final class JsonUtils {
     }
 
     public static String serialize(Object object) {
-        return JSON.toJSONString(object, SERIALIZE_CONFIG, SerializerFeature.WriteEnumUsingToString);
+//        return JSON.toJSONString(object, SERIALIZE_CONFIG, SerializerFeature.WriteEnumUsingToString);
+        return JSON.toJSONString(object);
     }
 
     public static <T> List<T> readList(JSONObject value, String key, Unmarshaller<T> unmarshaller) {

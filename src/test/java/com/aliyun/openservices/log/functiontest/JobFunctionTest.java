@@ -7,6 +7,7 @@ import com.aliyun.openservices.log.common.Dashboard;
 import com.aliyun.openservices.log.common.EmailNotification;
 import com.aliyun.openservices.log.common.Job;
 import com.aliyun.openservices.log.common.JobSchedule;
+import com.aliyun.openservices.log.common.JobScheduleType;
 import com.aliyun.openservices.log.common.JobState;
 import com.aliyun.openservices.log.common.JobType;
 import com.aliyun.openservices.log.common.Notification;
@@ -83,7 +84,7 @@ public class JobFunctionTest extends FunctionTest {
         job.setConfiguration(arguments);
 
         JobSchedule schedule = new JobSchedule();
-        schedule.setType(JobSchedule.JobScheduleType.FIXED_RATE);
+        schedule.setType(JobScheduleType.FIXED_RATE);
         schedule.setInterval("60s");
         job.setSchedule(schedule);
 
