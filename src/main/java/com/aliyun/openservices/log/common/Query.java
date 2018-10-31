@@ -24,10 +24,10 @@ public class Query implements Serializable {
     /**
      * Duration in range [60, 86400] seconds.
      * Duration format e,g:
-     * "60s" =&gt 60 seconds
-     * "1h" =&gt 1 hour
-     * "2m" =&gt 2 minutes
-     * "1d" =&gt 1 day
+     * "60s" = 60 seconds
+     * "1h" = 1 hour
+     * "2m" = 2 minutes
+     * "1d" = 1 day
      */
     @JSONField
     private String duration;

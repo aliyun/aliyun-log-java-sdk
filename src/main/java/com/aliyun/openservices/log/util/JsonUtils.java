@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.ObjectSerializer;
 import com.alibaba.fastjson.serializer.SerializeConfig;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -30,8 +29,7 @@ public final class JsonUtils {
     }
 
     public static String serialize(Object object) {
-//        return JSON.toJSONString(object, SERIALIZE_CONFIG, SerializerFeature.WriteEnumUsingToString);
-        return JSON.toJSONString(object);
+        return JSON.toJSONString(object, SERIALIZE_CONFIG);
     }
 
     public static <T> List<T> readList(JSONObject value, String key, Unmarshaller<T> unmarshaller) {
