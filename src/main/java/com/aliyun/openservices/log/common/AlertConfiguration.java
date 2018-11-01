@@ -170,8 +170,8 @@ public class AlertConfiguration extends JobConfiguration {
                 return new DingTalkNotification();
             case EMAIL:
                 return new EmailNotification();
-            case MESSAGE:
-                return new MessageNotification();
+            case MESSAGE_CENTER:
+                return new MessageCenterNotification();
             case SMS:
                 return new SmsNotification();
             case WEBHOOK:

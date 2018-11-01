@@ -2707,6 +2707,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
+	@Deprecated
 	CreateAlertResponse createAlert(CreateAlertRequest request) throws LogException;
 
     /**
@@ -2730,6 +2731,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
+    @Deprecated
 	UpdateAlertResponse updateAlert(UpdateAlertRequest request) throws LogException;
 
 
@@ -2748,6 +2750,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
+	@Deprecated
 	DeleteAlertResponse deleteAlert(DeleteAlertRequest request) throws LogException;
 
 
@@ -2766,6 +2769,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
+	@Deprecated
 	GetAlertResponse getAlert(GetAlertRequest request) throws LogException;
 
 
@@ -2802,6 +2806,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
+	@Deprecated
 	ListAlertFailResponse listAlertFail(ListAlertFailRequest request) throws LogException;
 
 	CreateDashboardResponse createDashboard(CreateDashboardRequest request) throws LogException;

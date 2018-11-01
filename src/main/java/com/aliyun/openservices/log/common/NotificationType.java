@@ -15,9 +15,9 @@ public enum NotificationType implements JSONSerializable {
      */
     EMAIL("Email"),
     /**
-     * Private message
+     * Send message to message center
      */
-    MESSAGE("Message"),
+    MESSAGE_CENTER("MessageCenter"),
     /**
      * Send SMS
      */
