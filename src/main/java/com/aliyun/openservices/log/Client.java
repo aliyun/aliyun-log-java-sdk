@@ -914,7 +914,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStream");
 		CodingUtils.assertParameterNotNull(fromTime, "fromTime");
-		long timeStamp = Utils.getTimestamp(fromTime);
+		long timeStamp = Utils.dateToTimestamp(fromTime);
 		GetCursorRequest request = new GetCursorRequest(project, logStore,
 				shardId, timeStamp);
 		return GetCursor(request);

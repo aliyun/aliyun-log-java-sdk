@@ -2,9 +2,10 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.Unmarshaller;
 import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.aliyun.openservices.log.internal.Unmarshaller;
+import com.aliyun.openservices.log.util.Utils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -154,7 +155,7 @@ public class AlertConfiguration extends JobConfiguration {
             }
         });
         if (value.has("muteUntil")) {
-            muteUntil = new Date(value.getLong("muteUntil") * 1000);
+            muteUntil = Utils.timestampToDate(value.getLong("muteUntil"));
         }
         if (value.has("notifyThreshold")) {
             notifyThreshold = value.getInt("notifyThreshold");

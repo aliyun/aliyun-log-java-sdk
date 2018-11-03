@@ -8,8 +8,12 @@ public final class Utils {
     private Utils() {
     }
 
-    public static long getTimestamp(final Date date) {
+    public static long dateToTimestamp(final Date date) {
         return date.getTime() / 1000;
+    }
+
+    public static Date timestampToDate(final long timestamp) {
+        return new Date(timestamp * 1000);
     }
 
     public static String getOrEmpty(Map<String, String> map, String key) {

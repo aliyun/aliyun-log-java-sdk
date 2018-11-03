@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.common;
 
-import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.util.Utils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
@@ -108,16 +108,13 @@ public class AlertV2 implements Serializable {
         state = JobState.fromString(value.getString("state"));
         configuration = new AlertConfiguration();
         configuration.deserialize(value.getJSONObject("configuration"));
-        createTime = new Date(value.getLong("createTime") * 1000);
-        lastModifiedTime = new Date(value.getLong("lastModifiedTime") * 1000);
+        createTime = Utils.timestampToDate(value.getLong("createTime"));
+        lastModifiedTime = Utils.timestampToDate(value.getLong("lastModifiedTime"));
         schedule = new JobSchedule();
         schedule.deserialize(value.getJSONObject("schedule"));
     }
 
     public Job convertToJob() {
-        Args.notNullOrEmpty(name, "Alert name");
-        Args.notNull(configuration, "configuration");
-        Args.notNull(schedule, "schedule");
         Job job = new Job();
         job.setType(JobType.ALERT);
         job.setName(getName());

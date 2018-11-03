@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.util.Utils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
@@ -152,8 +153,8 @@ public class Job implements Serializable {
         if (value.has("description")) {
             description = value.getString("description");
         }
-        createTime = new Date(value.getLong("createTime") * 1000);
-        lastModifiedTime = new Date(value.getLong("lastModifiedTime") * 1000);
+        createTime = Utils.timestampToDate(value.getLong("createTime"));
+        lastModifiedTime = Utils.timestampToDate(value.getLong("lastModifiedTime"));
         schedule = new JobSchedule();
         schedule.deserialize(value.getJSONObject("schedule"));
         configuration = createConfiguration(type);

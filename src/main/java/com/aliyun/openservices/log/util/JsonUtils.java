@@ -65,7 +65,7 @@ public final class JsonUtils {
                           Type fieldType,
                           int features) {
             if (date != null) {
-                serializer.write(Utils.getTimestamp((Date) date));
+                serializer.write(Utils.dateToTimestamp((Date) date));
             }
         }
     }
