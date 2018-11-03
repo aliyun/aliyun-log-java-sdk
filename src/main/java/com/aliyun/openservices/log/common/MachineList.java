@@ -18,7 +18,6 @@ public class MachineList implements Serializable {
 	
 	public MachineList()
 	{
-		
 	}
 	
 	public MachineList(ArrayList<String> machineList)
@@ -27,7 +26,7 @@ public class MachineList implements Serializable {
 		SetMachineList(machineList);
 	}
 	
-	public MachineList(MachineList machineList) throws LogException {
+	public MachineList(MachineList machineList) {
 		super();
 		SetMachineList(machineList.GetMachineList());
 	}
@@ -38,12 +37,10 @@ public class MachineList implements Serializable {
 	
 	public void SetMachineList(ArrayList<String> machineList) {
 		this.machineList = new ArrayList<String>();
-		for(String machine:machineList) {
-			this.machineList.add(machine);
-		}
+		this.machineList.addAll(machineList);
 	}
 	
-	public void SetMachineList(JSONArray machineListJSONArray) throws LogException {
+	public void SetMachineList(JSONArray machineListJSONArray) {
 		machineList = new ArrayList<String>();
 		for(int i = 0;i < machineListJSONArray.size();i++) {
 			String machine = machineListJSONArray.getString(i);
@@ -53,10 +50,7 @@ public class MachineList implements Serializable {
 	
 	private JSONArray ToRequestJson() {
 		JSONArray machineList = new JSONArray();
-		for (String machine : GetMachineList()) {
-			machineList.add(machine);
-		}
-		
+		machineList.addAll(GetMachineList());
 		return machineList;
 	}
 	
