@@ -11,13 +11,13 @@ import com.aliyun.openservices.log.http.utils.CaseInsensitiveMap;
  * @author xiaoming.yin
  *
  */
-public abstract class HttpMesssage {
+public abstract class HttpMessage {
 	
 	private Map<String, String> headers = new CaseInsensitiveMap<String>();
     private InputStream content;
     private long contentLength;
 
-    protected HttpMesssage() {
+    protected HttpMessage() {
         super();
     }
 

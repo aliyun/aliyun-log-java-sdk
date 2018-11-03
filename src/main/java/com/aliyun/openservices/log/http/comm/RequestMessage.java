@@ -1,11 +1,3 @@
-/**
- * filename: OpenTableServiceClient.java
- * 
- * Copyright (C) Alibaba Cloud Computing, 2012
- * All rights reserved.
- * 
- * 版权所有 （C）阿里巴巴云计算，2012
- */
 package com.aliyun.openservices.log.http.comm;
 
 import com.aliyun.openservices.log.http.client.HttpMethod;
@@ -16,34 +8,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-/**
- * 表示发送请求的信息。
- *
- */
-public class RequestMessage extends HttpMesssage {
+public class RequestMessage extends HttpMessage {
     private HttpMethod method = HttpMethod.GET; // HTTP Method. default GET.
     private URI endpoint;
     private String resourcePath;
     private Map<String, String> parameters = new HashMap<String, String>();
 
-    /**
-     * 构造函数。
-     */
-    public RequestMessage(){
+    public RequestMessage() {
     }
 
-    /**
-     * 获取HTTP的请求方法。
-     * @return HTTP的请求方法。
-     */
     public HttpMethod getMethod() {
         return method;
     }
 
-    /**
-     * 设置HTTP的请求方法。
-     * @param method HTTP的请求方法。
-     */
     public void setMethod(HttpMethod method) {
         this.method = method;
     }
@@ -89,13 +66,5 @@ public class RequestMessage extends HttpMesssage {
     public void setParameters(Map<String, String> parameters) {
         Args.notNull(parameters, "parameters");
         this.parameters = parameters;
-    }
-
-    /**
-     * Whether or not the request can be repeatedly sent. 
-     * @return is repeatable
-     */
-    public boolean isRepeatable(){
-        return this.getContent() == null || this.getContent().markSupported();
     }
 }

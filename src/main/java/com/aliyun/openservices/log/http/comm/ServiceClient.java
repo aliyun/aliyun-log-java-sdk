@@ -1,9 +1,3 @@
-/**
- * Copyright (C) Alibaba Cloud Computing
- * All rights reserved.
- * 
- * 版权所有 （C）阿里云计算有限公司
- */
 package com.aliyun.openservices.log.http.comm;
 
 import com.aliyun.openservices.log.http.client.ClientConfiguration;
@@ -32,7 +26,7 @@ public abstract class ServiceClient {
      * @author xiaoming.yin
      *
      */
-    public static class Request extends HttpMesssage{
+    public static class Request extends HttpMessage {
         private String uri;
         private HttpMethod method;
 
@@ -109,7 +103,7 @@ public abstract class ServiceClient {
         } catch (ClientException ex) {
             throw ex;
         } catch (Exception ex) {
-			throw new ClientException(ex.getMessage(), ex);
+            throw new ClientException(ex.getMessage(), ex);
         }
     }
 
