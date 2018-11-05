@@ -8,7 +8,7 @@ import com.aliyun.openservices.log.util.Utils;
 import java.lang.reflect.Type;
 
 public enum TimeSpanType implements JSONSerializable {
-    RELATIVE("relative") {
+    RELATIVE("Relative") {
         @Override
         public void validate(String start, String end, long max) {
             long d = parseStart(start);
@@ -17,7 +17,7 @@ public enum TimeSpanType implements JSONSerializable {
             }
         }
     },
-    TRUNCATED("truncated") {
+    TRUNCATED("Truncated") {
         @Override
         public void validate(String start, String end, long max) {
             long d = parseStart(start);
@@ -26,7 +26,7 @@ public enum TimeSpanType implements JSONSerializable {
             }
         }
     },
-    TIME_RANGE("timeRange") {
+    TIME_RANGE("TimeRange") {
         private long parseTimestamp(String s) {
             try {
                 return Long.parseLong(s);
@@ -44,12 +44,12 @@ public enum TimeSpanType implements JSONSerializable {
             }
         }
     },
-    TODAY("today") {
+    TODAY("Today") {
         @Override
         public void validate(String start, String end, long max) {
         }
     },
-    CUSTOM("custom") {
+    CUSTOM("Custom") {
         @Override
         public void validate(String start, String end, long max) {
             long d = parseStart(start);

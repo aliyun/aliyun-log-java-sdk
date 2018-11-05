@@ -123,9 +123,8 @@ public class AlertV2 implements Serializable {
         List<Query> queries = configuration.getQueryList();
         Args.notNullOrEmpty(queries, "Query list");
         for (Query query : queries) {
-            final TimeSpan timeSpan = query.getTimeSpan();
-            Args.notNull(timeSpan, "Timespan");
-            timeSpan.validate(Consts.MAX_TIME_SPAN_IN_QUERY);
+            Args.notNull(query, "query");
+            query.validate(Consts.MAX_TIME_SPAN_IN_QUERY);
         }
         Args.notNull(schedule, "schedule");
     }

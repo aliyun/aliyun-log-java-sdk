@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
@@ -22,7 +23,13 @@ public class Query implements Serializable {
     private String logStore;
 
     @JSONField
-    private TimeSpan timeSpan;
+    private TimeSpanType timeSpanType;
+
+    @JSONField
+    private String start;
+
+    @JSONField
+    private String end;
 
     public String getChartTitle() {
         return chartTitle;
@@ -48,20 +55,46 @@ public class Query implements Serializable {
         this.logStore = logStore;
     }
 
-    public TimeSpan getTimeSpan() {
-        return timeSpan;
+    public TimeSpanType getTimeSpanType() {
+        return timeSpanType;
     }
 
-    public void setTimeSpan(TimeSpan timeSpan) {
-        this.timeSpan = timeSpan;
+    public void setTimeSpanType(TimeSpanType timeSpanType) {
+        this.timeSpanType = timeSpanType;
+    }
+
+    public String getStart() {
+        return start;
+    }
+
+    public void setStart(String start) {
+        this.start = start;
+    }
+
+    public String getEnd() {
+        return end;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
     }
 
     public void deserialize(JSONObject value) {
         setChartTitle(value.getString("chartTitle"));
         setLogStore(value.getString("logStore"));
         setQuery(value.getString("query"));
-        timeSpan = new TimeSpan();
-        timeSpan.deserialize(value.getJSONObject("timeSpan"));
+        setTimeSpanType(TimeSpanType.fromString(value.getString("timeSpanType")));
+        if (value.has("start")) {
+            setStart(value.getString("start"));
+        }
+        if (value.has("end")) {
+            setEnd(value.getString("end"));
+        }
+    }
+
+    public void validate(long maxTimeSpan) {
+        Args.notNull(timeSpanType, "timeSpanType");
+        timeSpanType.validate(start, end, maxTimeSpan);
     }
 
     @Override
@@ -76,7 +109,9 @@ public class Query implements Serializable {
         if (getQuery() != null ? !getQuery().equals(query1.getQuery()) : query1.getQuery() != null) return false;
         if (getLogStore() != null ? !getLogStore().equals(query1.getLogStore()) : query1.getLogStore() != null)
             return false;
-        return getTimeSpan() != null ? getTimeSpan().equals(query1.getTimeSpan()) : query1.getTimeSpan() == null;
+        if (getTimeSpanType() != query1.getTimeSpanType()) return false;
+        if (getStart() != null ? !getStart().equals(query1.getStart()) : query1.getStart() != null) return false;
+        return getEnd() != null ? getEnd().equals(query1.getEnd()) : query1.getEnd() == null;
     }
 
     @Override
@@ -84,7 +119,9 @@ public class Query implements Serializable {
         int result = getChartTitle() != null ? getChartTitle().hashCode() : 0;
         result = 31 * result + (getQuery() != null ? getQuery().hashCode() : 0);
         result = 31 * result + (getLogStore() != null ? getLogStore().hashCode() : 0);
-        result = 31 * result + (getTimeSpan() != null ? getTimeSpan().hashCode() : 0);
+        result = 31 * result + (getTimeSpanType() != null ? getTimeSpanType().hashCode() : 0);
+        result = 31 * result + (getStart() != null ? getStart().hashCode() : 0);
+        result = 31 * result + (getEnd() != null ? getEnd().hashCode() : 0);
         return result;
     }
 }
