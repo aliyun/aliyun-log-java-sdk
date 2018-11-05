@@ -12,6 +12,7 @@ public class UpdateAlertRequestV2 extends JobRequest {
         super(project);
         Args.notNull(alert, "alert");
         this.alert = alert;
+        alert.validate();
         setName(alert.getName());
     }
 
@@ -30,6 +31,6 @@ public class UpdateAlertRequestV2 extends JobRequest {
 
     @Override
     public Object getBody() {
-        return alert.convertToJob();
+        return alert.makeJob();
     }
 }

@@ -2,10 +2,10 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
+
 
 public class Query implements Serializable {
 
@@ -21,16 +21,8 @@ public class Query implements Serializable {
     @JSONField
     private String logStore;
 
-    /**
-     * Duration in range [60, 86400] seconds.
-     * Duration format e,g:
-     * "60s" = 60 seconds
-     * "1h" = 1 hour
-     * "2m" = 2 minutes
-     * "1d" = 1 day
-     */
     @JSONField
-    private String duration;
+    private TimeSpan timeSpan;
 
     public String getChartTitle() {
         return chartTitle;
@@ -56,20 +48,20 @@ public class Query implements Serializable {
         this.logStore = logStore;
     }
 
-    public String getDuration() {
-        return duration;
+    public TimeSpan getTimeSpan() {
+        return timeSpan;
     }
 
-    public void setDuration(String duration) {
-        Args.checkDuration(duration);
-        this.duration = duration;
+    public void setTimeSpan(TimeSpan timeSpan) {
+        this.timeSpan = timeSpan;
     }
 
     public void deserialize(JSONObject value) {
         setChartTitle(value.getString("chartTitle"));
-        setDuration(value.getString("duration"));
         setLogStore(value.getString("logStore"));
         setQuery(value.getString("query"));
+        timeSpan = new TimeSpan();
+        timeSpan.deserialize(value.getJSONObject("timeSpan"));
     }
 
     @Override
@@ -84,7 +76,7 @@ public class Query implements Serializable {
         if (getQuery() != null ? !getQuery().equals(query1.getQuery()) : query1.getQuery() != null) return false;
         if (getLogStore() != null ? !getLogStore().equals(query1.getLogStore()) : query1.getLogStore() != null)
             return false;
-        return getDuration() != null ? getDuration().equals(query1.getDuration()) : query1.getDuration() == null;
+        return getTimeSpan() != null ? getTimeSpan().equals(query1.getTimeSpan()) : query1.getTimeSpan() == null;
     }
 
     @Override
@@ -92,7 +84,7 @@ public class Query implements Serializable {
         int result = getChartTitle() != null ? getChartTitle().hashCode() : 0;
         result = 31 * result + (getQuery() != null ? getQuery().hashCode() : 0);
         result = 31 * result + (getLogStore() != null ? getLogStore().hashCode() : 0);
-        result = 31 * result + (getDuration() != null ? getDuration().hashCode() : 0);
+        result = 31 * result + (getTimeSpan() != null ? getTimeSpan().hashCode() : 0);
         return result;
     }
 }

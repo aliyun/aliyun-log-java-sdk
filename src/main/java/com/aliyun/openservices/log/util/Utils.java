@@ -23,4 +23,25 @@ public final class Utils {
     public static String safeToString(final Object object) {
         return object == null ? null : object.toString();
     }
+
+    public static long parseDuration(String s) {
+        if (s == null || s.isEmpty()) {
+            throw new IllegalArgumentException("Duration could not be empty: " + s);
+        }
+        if (s.endsWith("s")) {
+            return Long.parseLong(s.substring(0, s.length() - 1).trim());
+        } else if (s.endsWith("m")) {
+            return 60L * Long.parseLong(s.substring(0, s.length() - 1).trim());
+        } else if (s.endsWith("h")) {
+            return 3600L * Long.parseLong(s.substring(0, s.length() - 1).trim());
+        } else if (s.endsWith("d")) {
+            return 86400L * Long.parseLong(s.substring(0, s.length() - 1).trim());
+        } else {
+            try {
+                return Long.parseLong(s);
+            } catch (NumberFormatException var2) {
+                throw new NumberFormatException("'" + s + "' is not a valid duration. Should be numeric value followed by a unit, i.e. 20s. Valid units are s, m, h and d.");
+            }
+        }
+    }
 }

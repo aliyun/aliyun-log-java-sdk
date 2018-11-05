@@ -1,10 +1,12 @@
 package com.aliyun.openservices.log.common;
 
+import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.Utils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 
 public class AlertV2 implements Serializable {
@@ -114,7 +116,21 @@ public class AlertV2 implements Serializable {
         schedule.deserialize(value.getJSONObject("schedule"));
     }
 
-    public Job convertToJob() {
+    public void validate() {
+        Args.notNullOrEmpty(name, "name");
+        Args.notNullOrEmpty(displayName, "displayName");
+        Args.notNull(configuration, "configuration");
+        List<Query> queries = configuration.getQueryList();
+        Args.notNullOrEmpty(queries, "Query list");
+        for (Query query : queries) {
+            final TimeSpan timeSpan = query.getTimeSpan();
+            Args.notNull(timeSpan, "Timespan");
+            timeSpan.validate(Consts.MAX_TIME_SPAN_IN_QUERY);
+        }
+        Args.notNull(schedule, "schedule");
+    }
+
+    public Job makeJob() {
         Job job = new Job();
         job.setType(JobType.ALERT);
         job.setName(getName());

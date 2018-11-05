@@ -100,39 +100,6 @@ public class AlertConfiguration extends JobConfiguration {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AlertConfiguration that = (AlertConfiguration) o;
-
-        if (getNotifyThreshold() != that.getNotifyThreshold()) return false;
-        if (getCondition() != null ? !getCondition().equals(that.getCondition()) : that.getCondition() != null)
-            return false;
-        if (getDashboard() != null ? !getDashboard().equals(that.getDashboard()) : that.getDashboard() != null)
-            return false;
-        if (getQueryList() != null ? !getQueryList().equals(that.getQueryList()) : that.getQueryList() != null)
-            return false;
-        if (getNotificationList() != null ? !getNotificationList().equals(that.getNotificationList()) : that.getNotificationList() != null)
-            return false;
-        if (getMuteUntil() != null ? !getMuteUntil().equals(that.getMuteUntil()) : that.getMuteUntil() != null)
-            return false;
-        return getThrottling() != null ? getThrottling().equals(that.getThrottling()) : that.getThrottling() == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = getCondition() != null ? getCondition().hashCode() : 0;
-        result = 31 * result + (getDashboard() != null ? getDashboard().hashCode() : 0);
-        result = 31 * result + (getQueryList() != null ? getQueryList().hashCode() : 0);
-        result = 31 * result + (getNotificationList() != null ? getNotificationList().hashCode() : 0);
-        result = 31 * result + (getMuteUntil() != null ? getMuteUntil().hashCode() : 0);
-        result = 31 * result + getNotifyThreshold();
-        result = 31 * result + (getThrottling() != null ? getThrottling().hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public void deserialize(JSONObject value) {
         condition = value.getString("condition");
         dashboard = value.getString("dashboard");
@@ -180,5 +147,38 @@ public class AlertConfiguration extends JobConfiguration {
             default:
                 throw new IllegalArgumentException("Unimplemented notification type: " + type);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AlertConfiguration that = (AlertConfiguration) o;
+
+        if (getNotifyThreshold() != that.getNotifyThreshold()) return false;
+        if (getCondition() != null ? !getCondition().equals(that.getCondition()) : that.getCondition() != null)
+            return false;
+        if (getDashboard() != null ? !getDashboard().equals(that.getDashboard()) : that.getDashboard() != null)
+            return false;
+        if (getQueryList() != null ? !getQueryList().equals(that.getQueryList()) : that.getQueryList() != null)
+            return false;
+        if (getNotificationList() != null ? !getNotificationList().equals(that.getNotificationList()) : that.getNotificationList() != null)
+            return false;
+        if (getMuteUntil() != null ? !getMuteUntil().equals(that.getMuteUntil()) : that.getMuteUntil() != null)
+            return false;
+        return getThrottling() != null ? getThrottling().equals(that.getThrottling()) : that.getThrottling() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getCondition() != null ? getCondition().hashCode() : 0;
+        result = 31 * result + (getDashboard() != null ? getDashboard().hashCode() : 0);
+        result = 31 * result + (getQueryList() != null ? getQueryList().hashCode() : 0);
+        result = 31 * result + (getNotificationList() != null ? getNotificationList().hashCode() : 0);
+        result = 31 * result + (getMuteUntil() != null ? getMuteUntil().hashCode() : 0);
+        result = 31 * result + getNotifyThreshold();
+        result = 31 * result + (getThrottling() != null ? getThrottling().hashCode() : 0);
+        return result;
     }
 }
