@@ -68,7 +68,7 @@ public enum TimeSpanType implements JSONSerializable {
     protected long parseStart(String start) {
         Args.notNullOrEmpty(start, "start");
         if (!start.startsWith("-")) {
-            throw new IllegalArgumentException("start must be start with -");
+            throw new IllegalArgumentException("Timespan start must be start with -");
         }
         return Utils.parseDuration(start.substring(1));
     }
