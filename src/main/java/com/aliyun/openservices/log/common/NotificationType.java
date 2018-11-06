@@ -11,19 +11,19 @@ public enum NotificationType implements JSONSerializable {
      */
     DING_TALK("DingTalk"),
     /**
-     * Send email
+     * Send email.
      */
     EMAIL("Email"),
     /**
-     * Send message to message center
+     * Send message to message center.
      */
     MESSAGE_CENTER("MessageCenter"),
     /**
-     * Send SMS
+     * Send SMS.
      */
     SMS("SMS"),
     /**
-     * Send HTTP request to target uri
+     * Send HTTP request to target uri.
      */
     WEBHOOK("Webhook");
 
@@ -48,7 +48,7 @@ public enum NotificationType implements JSONSerializable {
     }
 
     @Override
-    public void write(JSONSerializer jsonSerializer, Object o, Type type, int i) {
-        jsonSerializer.write(toString());
+    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
+        serializer.write(toString());
     }
 }

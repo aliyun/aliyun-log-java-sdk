@@ -32,7 +32,7 @@ public enum JobScheduleType implements JSONSerializable {
     }
 
     @Override
-    public void write(JSONSerializer jsonSerializer, Object o, Type type, int i) {
-        jsonSerializer.write(toString());
+    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
+        serializer.write(toString());
     }
 }
