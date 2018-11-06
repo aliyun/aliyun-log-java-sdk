@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.response;
 
 import com.aliyun.openservices.log.common.Job;
-import com.aliyun.openservices.log.util.Args;
+import net.sf.json.JSONObject;
 
 import java.util.Map;
 
@@ -9,10 +9,8 @@ public class GetJobResponse extends Response {
 
     private Job job;
 
-    public GetJobResponse(Map<String, String> headers, Job job) {
+    public GetJobResponse(Map<String, String> headers) {
         super(headers);
-        Args.notNull(job, "Job");
-        this.job = job;
     }
 
     public Job getJob() {
@@ -21,5 +19,10 @@ public class GetJobResponse extends Response {
 
     public void setJob(Job job) {
         this.job = job;
+    }
+
+    public void deserialize(JSONObject value) {
+        job = new Job();
+        job.deserialize(value);
     }
 }

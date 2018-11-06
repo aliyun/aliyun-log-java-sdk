@@ -2130,18 +2130,24 @@ public class Client implements LogService {
 		response.SetBody(bytestream.toByteArray());
 	}
 
-	protected JSONObject ParserResponseMessage(ResponseMessage response,
-			String requestId) throws LogException {
-		String res = encodeResponseBodyToUtf8String(response, requestId);
-		try {
-            return JSONObject.fromObject(res);
-		} catch (JSONException e) {
-			throw new LogException(ErrorCodes.BAD_RESPONSE,
-					"The response is not valid json string : " + res, e,
-					requestId);
-		}
-	}
-	
+    /**
+     * @deprecated Use parseResponseBody instead.
+     */
+    @Deprecated
+    protected JSONObject ParserResponseMessage(ResponseMessage response, String requestId) throws LogException {
+        return parseResponseBody(response, requestId);
+    }
+
+    private JSONObject parseResponseBody(ResponseMessage response, String requestId) throws LogException {
+        String body = encodeResponseBodyToUtf8String(response, requestId);
+        try {
+            return JSONObject.fromObject(body);
+        } catch (JSONException ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE,
+                    "The response is not valid json string : " + body, ex, requestId);
+        }
+    }
+
 	private com.alibaba.fastjson.JSONObject ParserResponseMessageWithFastJson(ResponseMessage response,
                                                                               String requestId) throws LogException {
 		String res = encodeResponseBodyToUtf8String(response, requestId);
@@ -4146,7 +4152,7 @@ public class Client implements LogService {
         Map<String, String> headers = GetCommonHeadPara(project);
         ResponseMessage response = SendData(project, HttpMethod.GET,
                 Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers);
-		JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
+		JSONObject responseBody = parseResponseBody(response, response.getRequestId());
 		try {
 			return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
 		} catch (JSONException ex) {
@@ -4179,11 +4185,11 @@ public class Client implements LogService {
     @Override
     public GetJobResponse getJob(GetJobRequest request) throws LogException {
         ResponseMessage response = send(request);
-        String responseBody = encodeResponseBodyToUtf8String(response, response.getRequestId());
+        JSONObject responseBody = parseResponseBody(response, response.getRequestId());
         try {
-            Job job = new Job();
-            job.deserialize(JSONObject.fromObject(responseBody));
-            return new GetJobResponse(response.getHeaders(), job);
+            GetJobResponse getJobResponse = new GetJobResponse(response.getHeaders());
+            getJobResponse.deserialize(responseBody);
+            return getJobResponse;
         } catch (Exception ex) {
             throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
         }
@@ -4228,7 +4234,7 @@ public class Client implements LogService {
     @Override
     public ListJobsResponse listJobs(ListJobsRequest request) throws LogException {
         ResponseMessage response = send(request);
-        JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
+        JSONObject responseBody = parseResponseBody(response, response.getRequestId());
         try {
             ListJobsResponse jobsResponse = new ListJobsResponse(response.getHeaders());
             jobsResponse.deserialize(responseBody);
