@@ -1,11 +1,10 @@
 package com.aliyun.openservices.log.common;
 
-import java.io.Serializable;
-
 import com.aliyun.openservices.log.exception.LogException;
-
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+
+import java.io.Serializable;
 
 public class SensitiveKey implements Serializable {
 	private static final long serialVersionUID = 5303674958351023026L;

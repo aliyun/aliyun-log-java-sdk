@@ -133,8 +133,7 @@ public class OdpsShipperConfig implements ShipperConfig {
 			this.mOdpsProject = obj.getString("odpsProject");
 			this.mOdpsTable = obj.getString("odpsTable");
 			this.mLogFieldsList = FromJsonArray(obj.getJSONArray("fields"));
-			this.mPartitionColumn = FromJsonArray(obj
-					.getJSONArray("partitionColumn"));
+			this.mPartitionColumn = FromJsonArray(obj.getJSONArray("partitionColumn"));
 			this.mPartitionTimeFormat = obj.getString("partitionTimeFormat");
 			this.mBufferInterval = obj.getInt("bufferInterval");
 		} catch (JSONException e) {

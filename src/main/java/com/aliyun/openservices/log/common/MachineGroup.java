@@ -46,9 +46,8 @@ public class MachineGroup implements Serializable {
 	/**
 	 * construct a machine group  
 	 * @param machineGroup the exist machine group
-	 * @throws LogException if any error happend
 	 */
-	public MachineGroup(MachineGroup machineGroup) throws LogException {
+	public MachineGroup(MachineGroup machineGroup) {
 		super();
 		this.groupName = machineGroup.GetGroupName();
 		this.groupType = machineGroup.GetGroupType();
