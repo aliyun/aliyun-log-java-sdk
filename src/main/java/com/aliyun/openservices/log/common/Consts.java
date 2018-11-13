@@ -75,8 +75,6 @@ public class Consts {
 		}
 	}
 
-	public static final boolean DEFAULT_SLS_COMPRESS_FLAG = true;
-	
 	public static final boolean DEFAULT_SLS_REVERSE = false;
 	public static final int DEFAULT_SLS_LINES = 20;
 	public static final int DEFAULT_SLS_OFFSET = 0;

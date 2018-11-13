@@ -139,7 +139,6 @@ public class Client implements LogService {
 	private String accessId;
 	private String accessKey;
 	private String sourceIp;
-	// private boolean compressFlag;
 	private ServiceClient serviceClient;
 	private String securityToken;
 	private String realIpForConsole;
@@ -192,13 +191,11 @@ public class Client implements LogService {
 		securityToken = null;
 	}
 
-	public void EnableDirectMode()
-	{
+	public void EnableDirectMode() {
 		mUseDirectMode = true;
 	}
 
-	public void DisableDirectMode()
-	{
+	public void DisableDirectMode() {
 		mUseDirectMode = false;
 	}
 
@@ -241,10 +238,11 @@ public class Client implements LogService {
 	 * @param SourceIp
 	 *            client ip address
 	 */
-	public Client(String endpoint, String accessId, String accessKey,
-			String SourceIp) {
+	public Client(String endpoint, String accessId, String accessKey, String SourceIp) {
 		this(endpoint, accessId, accessKey, SourceIp,
-				Consts.DEFAULT_SLS_COMPRESS_FLAG);
+                Consts.HTTP_CONNECT_MAX_COUNT,
+                Consts.HTTP_CONNECT_TIME_OUT,
+                Consts.HTTP_SEND_TIME_OUT);
 	}
 
 	/**
@@ -272,49 +270,56 @@ public class Client implements LogService {
 	 * 			  a flag to determine max connect timeout
 	 * @param sendTimeout
 	 * 			  a flag to determine max request timeout
+     * @deprecated Use Client(String endpoint, String accessId, String accessKey, String sourceIp,
+     *                   int connectMaxCount, int connectTimeout, int sendTimeout) instead.
 	 */
+	@Deprecated
 	public Client(String endpoint, String accessId, String accessKey,
 				  String sourceIp, boolean compressFlag,
 				  int connectMaxCount,
 				  int connectTimeout,
 				  int sendTimeout) {
-		CodingUtils.assertStringNotNullOrEmpty(endpoint, "endpoint");
-		CodingUtils.assertStringNotNullOrEmpty(accessId, "accessId");
-		CodingUtils.assertStringNotNullOrEmpty(accessKey, "accessKey");
-
-		if (endpoint.startsWith("http://")) {
-			this.hostName = endpoint.substring(7);
-			this.httpType = new String("http://");
-		} else if (endpoint.startsWith("https://")) {
-			this.hostName = endpoint.substring(8);
-			this.httpType = new String("https://");
-		} else {
-			this.hostName = endpoint;
-			this.httpType = new String("http://");
-		}
-		while (this.hostName.endsWith("/")) {
-			this.hostName = this.hostName.substring(0,
-					this.hostName.length() - 1);
-		}
-		if (NetworkUtils.isIPAddr(this.hostName)) {
-			throw new IllegalArgumentException("EndpointInvalid", new Exception(
-					"The ip address is not supported"));
-		}
-		this.accessId = accessId;
-		this.accessKey = accessKey;
-		this.sourceIp = sourceIp;
-		if (sourceIp == null || sourceIp.isEmpty()) {
-			this.sourceIp = NetworkUtils.getLocalMachineIP();
-		}
-		// this.compressFlag = compressFlag;
-		ClientConfiguration clientConfig = new ClientConfiguration();
-
-		clientConfig.setMaxConnections(connectMaxCount);
-		clientConfig.setConnectionTimeout(connectTimeout);
-		clientConfig.setSocketTimeout(sendTimeout);
-
-		this.serviceClient = new DefaultServiceClient(clientConfig);
+		this(endpoint, accessId, accessKey, sourceIp, connectMaxCount, connectTimeout, sendTimeout);
 	}
+
+    public Client(String endpoint, String accessId, String accessKey, String sourceIp,
+                  int connectMaxCount, int connectTimeout, int sendTimeout) {
+        CodingUtils.assertStringNotNullOrEmpty(endpoint, "endpoint");
+        CodingUtils.assertStringNotNullOrEmpty(accessId, "accessId");
+        CodingUtils.assertStringNotNullOrEmpty(accessKey, "accessKey");
+
+        if (endpoint.startsWith("http://")) {
+            this.hostName = endpoint.substring(7);
+            this.httpType = new String("http://");
+        } else if (endpoint.startsWith("https://")) {
+            this.hostName = endpoint.substring(8);
+            this.httpType = new String("https://");
+        } else {
+            this.hostName = endpoint;
+            this.httpType = new String("http://");
+        }
+        while (this.hostName.endsWith("/")) {
+            this.hostName = this.hostName.substring(0,
+                    this.hostName.length() - 1);
+        }
+        if (NetworkUtils.isIPAddr(this.hostName)) {
+            throw new IllegalArgumentException("EndpointInvalid", new Exception(
+                    "The ip address is not supported"));
+        }
+        this.accessId = accessId;
+        this.accessKey = accessKey;
+        this.sourceIp = sourceIp;
+        if (sourceIp == null || sourceIp.isEmpty()) {
+            this.sourceIp = NetworkUtils.getLocalMachineIP();
+        }
+        ClientConfiguration clientConfig = new ClientConfiguration();
+
+        clientConfig.setMaxConnections(connectMaxCount);
+        clientConfig.setConnectionTimeout(connectTimeout);
+        clientConfig.setSocketTimeout(sendTimeout);
+
+        this.serviceClient = new DefaultServiceClient(clientConfig);
+    }
 
 	/**
 	 * Construct sls client with full parameters
@@ -335,13 +340,12 @@ public class Client implements LogService {
 	 * @param compressFlag
 	 *            a flag to determine if the send data will compressed , default
 	 *            is true ( data compressed)
+     * @deprecated Use {@code Client(String endpoint, String accessId, String accessKey, String SourceIp)} instead.
 	 */
+	@Deprecated
 	public Client(String endpoint, String accessId, String accessKey,
 			String sourceIp, boolean compressFlag) {
-		this(endpoint, accessId, accessKey, sourceIp, compressFlag,
-				Consts.HTTP_CONNECT_MAX_COUNT,
-				Consts.HTTP_CONNECT_TIME_OUT,
-				Consts.HTTP_SEND_TIME_OUT);
+		this(endpoint, accessId, accessKey, sourceIp);
 	}
 
 	private URI GetHostURI(String project) {
