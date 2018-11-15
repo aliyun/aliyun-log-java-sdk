@@ -34,6 +34,9 @@ public enum TimeSpanType implements JSONSerializable {
     CUSTOM("Custom") {
         @Override
         public void validate(String start, String end, long max) {
+            if (!"now".equals(end) && !"absolute".equals(end)) {
+                throw new IllegalArgumentException("Invalid timespan end for custom type: " + end);
+            }
             long d = parseStart(start);
             if (d > max) {
                 throw new IllegalArgumentException("Timespan must be less than or equal to " + max);
