@@ -22,6 +22,11 @@ public class AlertV2 implements Serializable {
     private String displayName;
 
     /**
+     * Alert description.
+     */
+    private String description;
+
+    /**
      * Alert rule state.
      */
     private JobState state;
@@ -60,6 +65,14 @@ public class AlertV2 implements Serializable {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public AlertConfiguration getConfiguration() {
@@ -107,6 +120,9 @@ public class AlertV2 implements Serializable {
         if (value.has("displayName")) {
             displayName = value.getString("displayName");
         }
+        if (value.has("description")) {
+            description = value.getString("description");
+        }
         state = JobState.fromString(value.getString("state"));
         configuration = new AlertConfiguration();
         configuration.deserialize(value.getJSONObject("configuration"));
@@ -134,6 +150,7 @@ public class AlertV2 implements Serializable {
         job.setType(JobType.ALERT);
         job.setName(getName());
         job.setDisplayName(getDisplayName());
+        job.setDescription(getDescription());
         job.setState(getState());
         job.setSchedule(getSchedule());
         job.setConfiguration(getConfiguration());

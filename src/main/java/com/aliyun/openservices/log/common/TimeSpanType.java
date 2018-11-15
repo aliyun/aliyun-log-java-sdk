@@ -26,24 +26,6 @@ public enum TimeSpanType implements JSONSerializable {
             }
         }
     },
-    TIME_RANGE("TimeRange") {
-        private long parseTimestamp(String s) {
-            try {
-                return Long.parseLong(s);
-            } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("Invalid timestamp: " + s);
-            }
-        }
-
-        @Override
-        public void validate(String start, String end, long max) {
-            long s = parseTimestamp(start);
-            long e = parseTimestamp(end);
-            if (e - s > max) {
-                throw new IllegalArgumentException("Timespan must be less than or equal to " + max);
-            }
-        }
-    },
     TODAY("Today") {
         @Override
         public void validate(String start, String end, long max) {
