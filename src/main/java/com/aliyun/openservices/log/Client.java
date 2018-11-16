@@ -3689,7 +3689,7 @@ public class Client implements LogService {
     @Override
     public GetAlertResponseV2 getAlert(GetAlertRequestV2 request) throws LogException {
         ResponseMessage response = send(request);
-        JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
+        JSONObject responseBody = parseResponseBody(response, response.getRequestId());
         try {
             GetAlertResponseV2 alertResponse = new GetAlertResponseV2(response.getHeaders());
             alertResponse.deserialize(responseBody);
@@ -3738,7 +3738,7 @@ public class Client implements LogService {
     @Override
     public ListAlertResponseV2 listAlert(ListAlertRequestV2 request) throws LogException {
         ResponseMessage response = send(request);
-        JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
+        JSONObject responseBody = parseResponseBody(response, response.getRequestId());
         try {
             ListAlertResponseV2 alertResponse = new ListAlertResponseV2(response.getHeaders());
             alertResponse.deserialize(responseBody);
@@ -4136,8 +4136,8 @@ public class Client implements LogService {
 		return new CreateLoggingResponse(response.getHeaders());
 	}
 
-	@Override
-	public UpdateLoggingResponse updateLogging(final UpdateLoggingRequest request) throws LogException {
+    @Override
+    public UpdateLoggingResponse updateLogging(final UpdateLoggingRequest request) throws LogException {
         Args.notNull(request, "request");
         final String project = request.GetProject();
         Map<String, String> headers = GetCommonHeadPara(project);
@@ -4145,7 +4145,7 @@ public class Client implements LogService {
         ResponseMessage response = SendData(project, HttpMethod.PUT,
                 Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
         return new UpdateLoggingResponse(response.getHeaders());
-	}
+    }
 
     @Override
     public GetLoggingResponse getLogging(final GetLoggingRequest request) throws LogException {
@@ -4154,13 +4154,13 @@ public class Client implements LogService {
         Map<String, String> headers = GetCommonHeadPara(project);
         ResponseMessage response = SendData(project, HttpMethod.GET,
                 Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers);
-		JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-		try {
-			return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
-		} catch (JSONException ex) {
-			throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-		}
-	}
+        JSONObject responseBody = parseResponseBody(response, response.getRequestId());
+        try {
+            return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
+        } catch (JSONException ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
+    }
 
     @Override
     public DeleteLoggingResponse deleteLogging(final DeleteLoggingRequest request) throws LogException {
