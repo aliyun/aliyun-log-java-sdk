@@ -20,6 +20,7 @@ import com.aliyun.openservices.log.http.comm.ResponseMessage;
 import com.aliyun.openservices.log.http.comm.ServiceClient;
 import com.aliyun.openservices.log.http.utils.CodingUtils;
 import com.aliyun.openservices.log.http.utils.DateUtil;
+import com.aliyun.openservices.log.internal.ErrorCodes;
 import com.aliyun.openservices.log.request.ApplyConfigToMachineGroupRequest;
 import com.aliyun.openservices.log.request.ApproveMachineGroupRequest;
 import com.aliyun.openservices.log.request.BatchGetLogRequest;
@@ -28,28 +29,37 @@ import com.aliyun.openservices.log.request.ConsumerGroupGetCheckPointRequest;
 import com.aliyun.openservices.log.request.ConsumerGroupHeartBeatRequest;
 import com.aliyun.openservices.log.request.ConsumerGroupUpdateCheckPointRequest;
 import com.aliyun.openservices.log.request.CreateAlertRequest;
+import com.aliyun.openservices.log.request.CreateAlertRequestV2;
 import com.aliyun.openservices.log.request.CreateChartRequest;
 import com.aliyun.openservices.log.request.CreateConfigRequest;
 import com.aliyun.openservices.log.request.CreateConsumerGroupRequest;
 import com.aliyun.openservices.log.request.CreateDashboardRequest;
 import com.aliyun.openservices.log.request.CreateEtlJobRequest;
 import com.aliyun.openservices.log.request.CreateIndexRequest;
+import com.aliyun.openservices.log.request.CreateJobRequest;
 import com.aliyun.openservices.log.request.CreateLogStoreRequest;
 import com.aliyun.openservices.log.request.CreateLoggingRequest;
 import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
 import com.aliyun.openservices.log.request.CreateSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteAlertRequest;
+import com.aliyun.openservices.log.request.DeleteAlertRequestV2;
 import com.aliyun.openservices.log.request.DeleteChartRequest;
 import com.aliyun.openservices.log.request.DeleteConfigRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
 import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
 import com.aliyun.openservices.log.request.DeleteIndexRequest;
+import com.aliyun.openservices.log.request.DeleteJobRequest;
 import com.aliyun.openservices.log.request.DeleteLogStoreRequest;
 import com.aliyun.openservices.log.request.DeleteLoggingRequest;
 import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
 import com.aliyun.openservices.log.request.DeleteSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteShardRequest;
+import com.aliyun.openservices.log.request.DisableAlertRequest;
+import com.aliyun.openservices.log.request.DisableJobRequest;
+import com.aliyun.openservices.log.request.EnableAlertRequest;
+import com.aliyun.openservices.log.request.EnableJobRequest;
 import com.aliyun.openservices.log.request.GetAlertRequest;
+import com.aliyun.openservices.log.request.GetAlertRequestV2;
 import com.aliyun.openservices.log.request.GetAppliedConfigsRequest;
 import com.aliyun.openservices.log.request.GetAppliedMachineGroupRequest;
 import com.aliyun.openservices.log.request.GetChartRequest;
@@ -60,6 +70,7 @@ import com.aliyun.openservices.log.request.GetDashboardRequest;
 import com.aliyun.openservices.log.request.GetEtlJobRequest;
 import com.aliyun.openservices.log.request.GetHistogramsRequest;
 import com.aliyun.openservices.log.request.GetIndexRequest;
+import com.aliyun.openservices.log.request.GetJobRequest;
 import com.aliyun.openservices.log.request.GetLogStoreRequest;
 import com.aliyun.openservices.log.request.GetLoggingRequest;
 import com.aliyun.openservices.log.request.GetLogsRequest;
@@ -67,13 +78,16 @@ import com.aliyun.openservices.log.request.GetLogtailProfileRequest;
 import com.aliyun.openservices.log.request.GetMachineGroupRequest;
 import com.aliyun.openservices.log.request.GetProjectLogsRequest;
 import com.aliyun.openservices.log.request.GetSavedSearchRequest;
+import com.aliyun.openservices.log.request.JobRequest;
 import com.aliyun.openservices.log.request.ListACLRequest;
 import com.aliyun.openservices.log.request.ListAlertFailRequest;
 import com.aliyun.openservices.log.request.ListAlertRequest;
+import com.aliyun.openservices.log.request.ListAlertRequestV2;
 import com.aliyun.openservices.log.request.ListConfigRequest;
 import com.aliyun.openservices.log.request.ListDashboardRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
 import com.aliyun.openservices.log.request.ListEtlMetaRequest;
+import com.aliyun.openservices.log.request.ListJobsRequest;
 import com.aliyun.openservices.log.request.ListLogStoresRequest;
 import com.aliyun.openservices.log.request.ListMachineGroupRequest;
 import com.aliyun.openservices.log.request.ListProjectRequest;
@@ -87,11 +101,13 @@ import com.aliyun.openservices.log.request.RemoveConfigFromMachineGroupRequest;
 import com.aliyun.openservices.log.request.SplitShardRequest;
 import com.aliyun.openservices.log.request.UpdateACLRequest;
 import com.aliyun.openservices.log.request.UpdateAlertRequest;
+import com.aliyun.openservices.log.request.UpdateAlertRequestV2;
 import com.aliyun.openservices.log.request.UpdateChartRequest;
 import com.aliyun.openservices.log.request.UpdateConfigRequest;
 import com.aliyun.openservices.log.request.UpdateDashboardRequest;
 import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
 import com.aliyun.openservices.log.request.UpdateIndexRequest;
+import com.aliyun.openservices.log.request.UpdateJobRequest;
 import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
 import com.aliyun.openservices.log.request.UpdateLoggingRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
@@ -100,8 +116,10 @@ import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
 import com.aliyun.openservices.log.response.*;
 import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.DigestUtils;
 import com.aliyun.openservices.log.util.NetworkUtils;
+import com.aliyun.openservices.log.util.Utils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -284,19 +302,18 @@ public class Client implements LogService {
 
     public Client(String endpoint, String accessId, String accessKey, String sourceIp,
                   int connectMaxCount, int connectTimeout, int sendTimeout) {
-        CodingUtils.assertStringNotNullOrEmpty(endpoint, "endpoint");
-        CodingUtils.assertStringNotNullOrEmpty(accessId, "accessId");
-        CodingUtils.assertStringNotNullOrEmpty(accessKey, "accessKey");
-
+        Args.notNullOrEmpty(endpoint, "endpoint");
+        Args.notNullOrEmpty(accessId, "accessId");
+        Args.notNullOrEmpty(accessKey, "accessKey");
         if (endpoint.startsWith("http://")) {
             this.hostName = endpoint.substring(7);
-            this.httpType = new String("http://");
+            this.httpType = "http://";
         } else if (endpoint.startsWith("https://")) {
             this.hostName = endpoint.substring(8);
-            this.httpType = new String("https://");
+            this.httpType = "https://";
         } else {
             this.hostName = endpoint;
-            this.httpType = new String("http://");
+            this.httpType = "http://";
         }
         while (this.hostName.endsWith("/")) {
             this.hostName = this.hostName.substring(0,
@@ -313,7 +330,6 @@ public class Client implements LogService {
             this.sourceIp = NetworkUtils.getLocalMachineIP();
         }
         ClientConfiguration clientConfig = new ClientConfiguration();
-
         clientConfig.setMaxConnections(connectMaxCount);
         clientConfig.setConnectionTimeout(connectTimeout);
         clientConfig.setSocketTimeout(sendTimeout);
@@ -356,17 +372,16 @@ public class Client implements LogService {
 		try {
 			return new URI(endPointUrl);
 		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException("EndpointInvalid", e);
+			throw new IllegalArgumentException(ErrorCodes.ENDPOINT_INVALID, e);
 		}
-
 	}
-	private URI GetHostURIByIp(String ip_addr) throws LogException
-	{
+
+	private URI GetHostURIByIp(String ip_addr) throws LogException {
 		String endPointUrl = this.httpType + ip_addr;
 		try {
 			return new URI(endPointUrl);
 		} catch (URISyntaxException e) {
-			throw new LogException("EndpointInvalid", 
+			throw new LogException(ErrorCodes.ENDPOINT_INVALID,
 					"Failed to get real server ip when direct mode in enabled", "");
 		}
 	}
@@ -375,19 +390,19 @@ public class Client implements LogService {
 		try {
 			return source.getBytes(Consts.UTF_8_ENCODING);
 		} catch (UnsupportedEncodingException e) {
-			throw new LogException("EncodingException", e.getMessage(), "");
+			throw new LogException(ErrorCodes.ENCODING_EXCEPTION, e.getMessage(), "");
 		}
 	}
 
 	private static String encodeResponseBodyToUtf8String(ResponseMessage response, String requestId) throws LogException {
 		byte[] body = response.GetRawBody();
 		if (body == null) {
-			throw new LogException("BadResponse", "The response body is null", null, requestId);
+			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response body is null", null, requestId);
 		}
 		try {
 			return new String(body, Consts.UTF_8_ENCODING);
 		} catch (UnsupportedEncodingException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid utf-8 string: ", e, requestId);
 		}
 	}
@@ -421,15 +436,13 @@ public class Client implements LogService {
 		return GetLogtailProfile(request);
 	}
 	
-	public GetLogtailProfileResponse GetLogtailProfile(GetLogtailProfileRequest request) throws LogException
-	{
+	public GetLogtailProfileResponse GetLogtailProfile(GetLogtailProfileRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
 		String project = request.GetProject();
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
 		String resourceUri = "/logstores/" + request.getLogStore() + Consts.CONST_GETLOGTAILPROFILE_URI;
-
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
 
@@ -438,7 +451,7 @@ public class Client implements LogService {
 		JSONObject object = ParserResponseMessage(response, requestId);
 		return ExtractLogtailProfile(resHeaders, object);
 	}
-	
+
 	public GetHistogramsResponse GetHistograms(String project, String logStore,
 			int from, int to, String topic, String query) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -448,7 +461,6 @@ public class Client implements LogService {
 
 		GetHistogramsRequest request = new GetHistogramsRequest(project,
 				logStore, topic, query, from, to);
-
 		return GetHistograms(request);
 	}
 
@@ -499,7 +511,6 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
 		CodingUtils.assertParameterNotNull(logItems, "logGroup");
-		// CodingUtils.assertParameterNotNull(source, "source");
 		PutLogsRequest request = new PutLogsRequest(project, logStore, topic,
 				source, logItems, shardHash);
 		request.SetCompressType(CompressType.LZ4);
@@ -514,7 +525,6 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
 		CodingUtils.assertParameterNotNull(logItems, "logGroup");
-		// CodingUtils.assertParameterNotNull(source, "source");
 		PutLogsRequest request = new PutLogsRequest(project, logStore, topic,
 				source, logItems, null);
 		request.SetCompressType(CompressType.LZ4);
@@ -660,7 +670,6 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = request.GetAllParams();
 		long cmp_size = logBytes.length;
 
-
 		for (int i = 0; i < 2; i++) {
 			String server_ip = null;
 			ClientConnectionStatus connection_status = null;
@@ -702,7 +711,7 @@ public class Client implements LogService {
 			connection_status = connection_container.GetGlobalConnection();
 			if (connection_status == null || connection_status.GetIpAddress() == null
 					|| connection_status.GetIpAddress().isEmpty()) {
-				throw new LogException("EndpointInvalid", "Failed to get real server ip when direct mode is enabled",
+				throw new LogException(ErrorCodes.ENDPOINT_INVALID, "Failed to get real server ip when direct mode is enabled",
 						"");
 			}
 		}
@@ -743,28 +752,22 @@ public class Client implements LogService {
 		return GetLogs(request);
 	}
 
-	public GetLogsResponse GetProjectLogs(String project,String query) throws  LogException
-	{
+	public GetLogsResponse GetProjectLogs(String project,String query) throws  LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertParameterNotNull(query, "query");
 		GetProjectLogsRequest request = new GetProjectLogsRequest(project, query);
 		return GetProjectLogs(request);
 	}
 
-	public GetLogsResponse GetProjectLogs(GetProjectLogsRequest request) throws  LogException
-	{
+	public GetLogsResponse GetProjectLogs(GetProjectLogsRequest request) throws  LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
-
 		String project = request.GetProject();
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		String resourceUri = "/logs";
 
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 
@@ -773,15 +776,15 @@ public class Client implements LogService {
 		ExtractLogsWithFastJson(getLogsResponse, object);
 		return getLogsResponse;
 	}
+
 	private com.alibaba.fastjson.JSONArray ParseResponseMessageToArrayWithFastJson(ResponseMessage response,
 			String requestId) throws LogException {
 		String returnStr = encodeResponseBodyToUtf8String(response, requestId);
 
 		try {
-			com.alibaba.fastjson.JSONArray array = com.alibaba.fastjson.JSONArray.parseArray(returnStr);
-			return array;
+            return com.alibaba.fastjson.JSONArray.parseArray(returnStr);
 		} catch (com.alibaba.fastjson.JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid json string : " + returnStr, e,
 					requestId);
 		}
@@ -809,7 +812,6 @@ public class Client implements LogService {
 		} catch (JSONException e) {
 			// ignore;
 		}
-
 	}
 	
 	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException {
@@ -820,12 +822,10 @@ public class Client implements LogService {
 		String logStore = request.GetLogStore();
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		String resourceUri = "/logstores/" + logStore + "/index";
 
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 
@@ -833,7 +833,6 @@ public class Client implements LogService {
 		GetLogsResponse getLogsResponse = new GetLogsResponse(resHeaders);
 		ExtractLogsWithFastJson(getLogsResponse, object);
 		return getLogsResponse;
-
 	}
 
 	public ListLogStoresResponse ListLogStores(String project, int offset,
@@ -842,9 +841,7 @@ public class Client implements LogService {
 
 		ListLogStoresRequest request = new ListLogStoresRequest(project,
 				offset, size, logstoreName);
-
 		return ListLogStores(request);
-
 	}
 
 	public ListLogStoresResponse ListLogStores(ListLogStoresRequest request)
@@ -852,11 +849,8 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
 		String resourceUri = "/logstores";
-
 		String project = request.GetProject();
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
 
@@ -906,7 +900,6 @@ public class Client implements LogService {
 		}
 		listTopicResponse.SetTopics(string_array);
 		return listTopicResponse;
-
 	}
 
 	public GetCursorResponse GetCursor(String project, String logStore,
@@ -923,7 +916,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStream");
 		CodingUtils.assertParameterNotNull(fromTime, "fromTime");
-		long timeStamp = fromTime.getTime() / (long) 1000;
+		long timeStamp = Utils.dateToTimestamp(fromTime);
 		GetCursorRequest request = new GetCursorRequest(project, logStore,
 				shardId, timeStamp);
 		return GetCursor(request);
@@ -987,7 +980,6 @@ public class Client implements LogService {
         String resourceUri = "/logstores/" + logStore + "/shards/" + shardId;
 
 		headParameter.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(0));
-
 		Map<String, String> urlParameter = request.GetAllParams();
 
 		ResponseMessage response = new ResponseMessage();
@@ -1012,13 +1004,13 @@ public class Client implements LogService {
 	public GetCursorTimeResponse GetPrevCursorTime(String project, String logStore,int shardId, String cursor) throws LogException
 	{
 		if(cursor.isEmpty())
-			throw new LogException("InvalidCursor", "empty cursor string", "");
+			throw new LogException(ErrorCodes.INVALID_CURSOR, "empty cursor string", "");
 		Long prv = Long.parseLong(new String(Base64.decodeBase64(cursor))) - 1;
 		if(prv >= 0){
 			cursor = new String(Base64.encodeBase64(prv.toString().getBytes()));
 		}
 		else{
-			throw new LogException("InvalidCursor", "this cursor has no prev value", "");
+			throw new LogException(ErrorCodes.INVALID_CURSOR, "this cursor has no prev value", "");
 		}
 		GetCursorTimeRequest request = new GetCursorTimeRequest(project,
 				logStore, shardId, cursor);
@@ -1062,10 +1054,7 @@ public class Client implements LogService {
 
 		JSONArray array = ParseResponseMessageToArray(response, requestId);
 		ArrayList<Shard> shards = ExtractShards(array, requestId);
-
-        ListShardResponse listShardResponse = new ListShardResponse(resHeaders, shards);
-
-		return listShardResponse;
+        return new ListShardResponse(resHeaders, shards);
 	}
 
 	public ListShardResponse MergeShards(String prj, String logStore,
@@ -1096,10 +1085,7 @@ public class Client implements LogService {
 
         JSONArray array = ParseResponseMessageToArray(response, requestId);
         ArrayList<Shard> shards = ExtractShards(array, requestId);
-
-        ListShardResponse listShardResponse = new ListShardResponse(resHeaders, shards);
-
-		return listShardResponse;
+        return new ListShardResponse(resHeaders, shards);
 	}
 
 	public DeleteShardResponse DeleteShard(String project, String logStore,
@@ -1136,8 +1122,7 @@ public class Client implements LogService {
 		return ListShard(new ListShardRequest(prj, logStore));
 	}
 
-	public String GetServerIpAddress(String project)
-	{
+	public String GetServerIpAddress(String project) {
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		String resourceUri = "/direct_mode_ip";
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -1154,8 +1139,7 @@ public class Client implements LogService {
 		}
 		return "";
 	}
-	public ListShardResponse ListShard(ListShardRequest request)
-			throws LogException {
+	public ListShardResponse ListShard(ListShardRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -1178,11 +1162,7 @@ public class Client implements LogService {
 	}
 
 	protected String GetRequestId(Map<String, String> headers) {
-		if (headers.containsKey(Consts.CONST_X_SLS_REQUESTID)) {
-			return headers.get(Consts.CONST_X_SLS_REQUESTID);
-		} else {
-			return "";
-		}
+	    return Utils.getOrEmpty(headers, Consts.CONST_X_SLS_REQUESTID);
 	}
 
 	@Override
@@ -1376,8 +1356,7 @@ public class Client implements LogService {
 		return GetConfig(new GetConfigRequest(project, configName));
 	}
 
-	public GetConfigResponse GetConfig(GetConfigRequest request)
-			throws LogException {
+	public GetConfigResponse GetConfig(GetConfigRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -1421,9 +1400,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new DeleteConfigResponse(resHeaders);
-
 	}
 
 	protected List<String> ExtractConfigs(JSONObject object, String requestId)
@@ -1437,7 +1414,7 @@ public class Client implements LogService {
 				configs.add(configName);
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid config json array string : "
 							+ array.toString(), e, requestId);
 		}
@@ -1504,9 +1481,9 @@ public class Client implements LogService {
 			listConfigResponse = new ListConfigResponse(resHeaders, count,
 					total, configs);
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid list config json string : "
-							+ object.toString(), e,
+							+ Utils.safeToString(object), e,
 					GetRequestId(response.getHeaders()));
 		}
 		return listConfigResponse;
@@ -1657,9 +1634,7 @@ public class Client implements LogService {
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = ParserResponseMessage(response, requestId);
 		ArrayList<String> group = this.ExtractConfigMachineGroupFromResponse(object);
-
 		return new GetAppliedMachineGroupsResponse(resHeaders, group);
-
 	}
 
 	public GetMachineGroupResponse GetMachineGroup(String project,
@@ -1711,11 +1686,8 @@ public class Client implements LogService {
 
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-
 		JSONObject object = ParserResponseMessage(response, requestId);
-
 		return ExtractMachinesFromResponse(resHeaders, object);
-
 	}
 
 	private ListMachinesResponse ExtractMachinesFromResponse(
@@ -1763,11 +1735,8 @@ public class Client implements LogService {
 
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new ApproveMachineGroupResponse(resHeaders);
-
 	}
 	
 	public DeleteMachineGroupResponse DeleteMachineGroup(String project,
@@ -1792,11 +1761,8 @@ public class Client implements LogService {
 
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new DeleteMachineGroupResponse(resHeaders);
-
 	}
 
 	protected List<String> ExtractMachineGroups(JSONObject object,
@@ -1810,11 +1776,10 @@ public class Client implements LogService {
 				machineGroups.add(groupName);
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid machine group json array string : "
 							+ array.toString(), e, requestId);
 		}
-
 		return machineGroups;
 	}
 
@@ -1827,16 +1792,14 @@ public class Client implements LogService {
 	public ListMachineGroupResponse ListMachineGroup(String project,
 			int offSet, int size) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		return ListMachineGroup(new ListMachineGroupRequest(project, offSet,
-				size));
+		return ListMachineGroup(new ListMachineGroupRequest(project, offSet, size));
 	}
 
 	public ListMachineGroupResponse ListMachineGroup(String project,
 			String groupName, int offSet, int size) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(groupName, "groupName");
-		return ListMachineGroup(new ListMachineGroupRequest(project, groupName,
-				offSet, size));
+		return ListMachineGroup(new ListMachineGroupRequest(project, groupName, offSet, size));
 	}
 
 	public ListMachineGroupResponse ListMachineGroup(
@@ -1870,12 +1833,10 @@ public class Client implements LogService {
 
 			listMachineGroupResponse = new ListMachineGroupResponse(resHeaders,
 					count, total, groups);
-		} catch (LogException e) {
-			throw e;
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid config json string : "
-							+ object.toString(), e,
+							+ Utils.safeToString(object), e,
 					GetRequestId(response.getHeaders()));
 		}
 		return listMachineGroupResponse;
@@ -1907,11 +1868,8 @@ public class Client implements LogService {
 
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new ApplyConfigToMachineGroupResponse(resHeaders);
-
 	}
 
 	public RemoveConfigFromMachineGroupResponse RemoveConfigFromMachineGroup(
@@ -1940,11 +1898,8 @@ public class Client implements LogService {
 
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new RemoveConfigFromMachineGroupResponse(resHeaders);
-
 	}
 
 	public UpdateACLResponse UpdateACL(String project, ACL acl)
@@ -1973,25 +1928,18 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(acl, "acl");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		byte[] body = encodeToUtf8(acl.ToRequestString());
-
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		String resourceUri = "/";
 		if (!logStore.isEmpty()) {
 			resourceUri += "logstores/" + logStore;
 		}
-
 		Map<String, String> urlParameter = request.GetAllParams();
-
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new UpdateACLResponse(resHeaders);
-
 	}
 
 	public ListACLResponse ListACL(String project) throws LogException {
@@ -2044,7 +1992,7 @@ public class Client implements LogService {
 				acls.add(acl);
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid acl json array string : "
 							+ array.toString(), e, requestId);
 		}
@@ -2083,18 +2031,13 @@ public class Client implements LogService {
 			int total = object.getInt("total");
 			int count = object.getInt("count");
             List<ACL> acls = ExtractACLs(object, requestId);
-
-			listACLResponse = new ListACLResponse(resHeaders, count, total,
-					acls);
-
+			listACLResponse = new ListACLResponse(resHeaders, count, total, acls);
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid list acl json string : "
-							+ object.toString(), e,
+							+ Utils.safeToString(object), e,
 					GetRequestId(response.getHeaders()));
-
 		}
-
 		return listACLResponse;
 	}
 
@@ -2119,7 +2062,6 @@ public class Client implements LogService {
 	private List<String> ExtractJsonArray(JSONArray ojbect) {
 		ArrayList<String> result = new ArrayList<String>();
 		try {
-
 			for (int i = 0; i < ojbect.size(); i++) {
 				result.add(ojbect.getString(i));
 			}
@@ -2183,39 +2125,38 @@ public class Client implements LogService {
 				bytestream.write(cache, 0, ch);
 			}
 		} catch (IOException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"Io exception happened when parse the response data : ", e,
 					requestId);
 		}
-
 		response.SetBody(bytestream.toByteArray());
-
 	}
 
-	protected JSONObject ParserResponseMessage(ResponseMessage response,
-			String requestId) throws LogException {
+    /**
+     * @deprecated Use parseResponseBody instead.
+     */
+    @Deprecated
+    protected JSONObject ParserResponseMessage(ResponseMessage response, String requestId) throws LogException {
+        return parseResponseBody(response, requestId);
+    }
+
+    private JSONObject parseResponseBody(ResponseMessage response, String requestId) throws LogException {
+        String body = encodeResponseBodyToUtf8String(response, requestId);
+        try {
+            return JSONObject.fromObject(body);
+        } catch (JSONException ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE,
+                    "The response is not valid json string : " + body, ex, requestId);
+        }
+    }
+
+	private com.alibaba.fastjson.JSONObject ParserResponseMessageWithFastJson(ResponseMessage response,
+                                                                              String requestId) throws LogException {
 		String res = encodeResponseBodyToUtf8String(response, requestId);
 		try {
-			JSONObject object = JSONObject.fromObject(res);
-
-			return object;
-		} catch (JSONException e) {
-			throw new LogException("BadResponse",
-					"The response is not valid json string : " + res, e,
-					requestId);
-		}
-	}
-	
-	protected com.alibaba.fastjson.JSONObject ParserResponseMessageWithFastJson(ResponseMessage response,
-			String requestId) throws LogException {
-		String res = encodeResponseBodyToUtf8String(response, requestId);
-
-		try {
-			com.alibaba.fastjson.JSONObject object = com.alibaba.fastjson.JSONObject.parseObject(res);
-
-			return object;
+            return com.alibaba.fastjson.JSONObject.parseObject(res);
 		} catch (com.alibaba.fastjson.JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid json string : " + res, e,
 					requestId);
 		}
@@ -2229,7 +2170,7 @@ public class Client implements LogService {
 			jsonConfig.setIgnoreDefaultExcludes(true);
             return JSONArray.fromObject(returnStr, jsonConfig);
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid json string : " + returnStr, e,
 					requestId);
 		}
@@ -2268,8 +2209,7 @@ public class Client implements LogService {
 	private ResponseMessage SendData(String project, HttpMethod method,
 			String resourceUri, Map<String, String> urlParams,
 			Map<String, String> headParams) throws LogException {
-		return SendData(project, method, resourceUri, urlParams, headParams,
-				new byte[0]);
+		return SendData(project, method, resourceUri, urlParams, headParams, new byte[0]);
 	}
 
 	protected ResponseMessage SendData(String project, HttpMethod method,
@@ -2309,8 +2249,7 @@ public class Client implements LogService {
 			response = this.serviceClient.sendRequest(request,
 					Consts.UTF_8_ENCODING);
 			ExtractResponseBody(response);
-			if (output_header != null)
-			{
+			if (output_header != null) {
 				output_header.putAll(response.getHeaders());
 			}
 			int statusCode = response.getStatusCode();
@@ -2371,7 +2310,7 @@ public class Client implements LogService {
 				shards.add(shard);
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid shard json array string : "
 							+ array.toString() + e.getMessage(), e, requestId);
 		}
@@ -2383,22 +2322,14 @@ public class Client implements LogService {
     public UpdateLogStoreInternalResponse UpdateLogStoreInternal(String project, InternalLogStore internalLogStore) throws LogException {
         CodingUtils.assertStringNotNullOrEmpty(project, "project");
         CodingUtils.assertParameterNotNull(internalLogStore, "InternallogStore");
-
         Map<String, String> headParameter = GetCommonHeadPara(project);
-
         byte[] body = encodeToUtf8(internalLogStore.ToRequestString());
-
         headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
         String resourceUri = "/logstores/" + internalLogStore.GetLogStoreName() + "?type=inner";
-
         Map<String, String> urlParameter = new HashMap<String, String>();
-
         ResponseMessage response = SendData(project, HttpMethod.PUT,
                 resourceUri, urlParameter, headParameter, body);
-
         Map<String, String> resHeaders = response.getHeaders();
-
         return new UpdateLogStoreInternalResponse(resHeaders);
     }
 
@@ -2406,22 +2337,14 @@ public class Client implements LogService {
 	public CreateLogStoreInternalResponse CreateLogStoreInternal(String project, InternalLogStore internalLogStore) throws LogException {
         CodingUtils.assertStringNotNullOrEmpty(project, "project");
         CodingUtils.assertParameterNotNull(internalLogStore, "InternallogStore");
-
         Map<String, String> headParameter = GetCommonHeadPara(project);
-
         byte[] body = encodeToUtf8(internalLogStore.ToRequestString());
-
         headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
         String resourceUri = "/logstores?type=inner";
-
         Map<String, String> urlParameter = new HashMap<String, String>();
-
         ResponseMessage response = SendData(project, HttpMethod.POST,
                 resourceUri, urlParameter, headParameter, body);
-
         Map<String, String> resHeaders = response.getHeaders();
-
         return new CreateLogStoreInternalResponse(resHeaders);
 	}
 
@@ -2441,24 +2364,15 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		LogStore logStore = request.GetLogStore();
 		CodingUtils.assertParameterNotNull(logStore, "logStore");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		byte[] body = encodeToUtf8(logStore.ToRequestString());
-
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
 		String resourceUri = "/logstores";
-
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new CreateLogStoreResponse(resHeaders);
-
 	}
 
 	@Override
@@ -2477,18 +2391,13 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		String logStoreName = request.GetLogStoreName();
 		CodingUtils.assertStringNotNullOrEmpty(logStoreName, "logStoreName");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
         String resourceUri = "/logstores/" + logStoreName;
 		Map<String, String> urlParameter = request.GetAllParams();
-
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new DeleteLogStoreResponse(resHeaders);
-
 	}
 
 	@Override
@@ -2539,21 +2448,15 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(logStore, "logStore");
 		String logStoreName = logStore.GetLogStoreName();
 		CodingUtils.assertStringNotNullOrEmpty(logStoreName, "logStoreName");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		byte[] body = encodeToUtf8(logStore.ToRequestString());
-
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
         String resourceUri = "/logstores/" + logStoreName;
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		return new UpdateLogStoreResponse(resHeaders);
-
 	}
 
 	@Override
@@ -2584,22 +2487,16 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		String logStoreName = request.GetLogStore();
 		CodingUtils.assertStringNotNullOrEmpty(logStoreName, "logStoreName");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
         String resourceUri = "/logstores/" + logStoreName;
 		Map<String, String> urlParameter = request.GetAllParams();
-
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-
 		JSONObject object = ParserResponseMessage(response, requestId);
 		LogStore logStore = ExtractLogStoreFromResponse(object, requestId);
-
 		return new GetLogStoreResponse(resHeaders, logStore);
-
 	}
 
 	@Override
@@ -2608,19 +2505,14 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(indexJsonString, "indexJsonString");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		byte[] body = encodeToUtf8(indexJsonString);
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
         String resourceUri = "/logstores/" + logStore + "/index";
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new CreateIndexResponse(resHeaders);
 	}
 
@@ -2643,23 +2535,15 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		Index index = request.GetIndex();
 		CodingUtils.assertParameterNotNull(index, "index");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		byte[] body = encodeToUtf8(index.ToRequestString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
         String resourceUri = "/logstores/" + logStore + "/index";
-
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new CreateIndexResponse(resHeaders);
-
 	}
 
 	@Override
@@ -2668,20 +2552,14 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(indexJsonString, "indexJsonString");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		byte[] body = encodeToUtf8(indexJsonString);
-
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
         String resourceUri = "/logstores/" + logStore + "/index";
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new UpdateIndexResponse(resHeaders);
 	}
 
@@ -2706,7 +2584,6 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(index, "index");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		byte[] body = encodeToUtf8(index.ToRequestString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
         String resourceUri = "/logstores/" + logStore + "/index";
@@ -2714,9 +2591,7 @@ public class Client implements LogService {
 
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new UpdateIndexResponse(resHeaders);
 	}
 
@@ -2743,9 +2618,7 @@ public class Client implements LogService {
 
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new DeleteIndexResponse(resHeaders);
 	}
 
@@ -2760,9 +2633,9 @@ public class Client implements LogService {
     @Override
     public GetIndexStringResponse GetIndexString(String project, String logStore)
                     throws LogException {
-            CodingUtils.assertStringNotNullOrEmpty(project, "project");
-            CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-            return GetIndexString(new GetIndexRequest(project, logStore));
+	    CodingUtils.assertStringNotNullOrEmpty(project, "project");
+	    CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+	    return GetIndexString(new GetIndexRequest(project, logStore));
     }
 	
 	private Index ExtractIndexFromResponseWithFastJson(com.alibaba.fastjson.JSONObject dict, String requestId)
@@ -2795,10 +2668,8 @@ public class Client implements LogService {
 
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-
 		com.alibaba.fastjson.JSONObject object = ParserResponseMessageWithFastJson(response, requestId);
 		Index index = ExtractIndexFromResponseWithFastJson(object, requestId);
-
 		return new GetIndexResponse(resHeaders, index);
 	}
 
@@ -2812,16 +2683,12 @@ public class Client implements LogService {
 	    CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 
 	    Map<String, String> headParameter = GetCommonHeadPara(project);
-
         String resourceUri = "/logstores/" + logStore + "/index";
 
         Map<String, String> urlParameter = request.GetAllParams();
-
         ResponseMessage response = SendData(project, HttpMethod.GET,
                 resourceUri, urlParameter, headParameter);
-
         Map<String, String> resHeaders = response.getHeaders();
-
         return new GetIndexStringResponse(resHeaders, response.GetStringBody());
     }
 	
@@ -2872,10 +2739,8 @@ public class Client implements LogService {
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		return new UpdateShipperResponse(resHeaders);
 	}
@@ -2893,7 +2758,6 @@ public class Client implements LogService {
 
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		return new DeleteShipperResponse(resHeaders);
 	}
@@ -2996,7 +2860,6 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(taskList, "taskList");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
         String resourceUri = "/logstores/" + logStore + "/shipper/" + shipperName + "/tasks";
 
 		JSONArray array = new JSONArray();
@@ -3004,18 +2867,12 @@ public class Client implements LogService {
 			array.add(task);
 		}
 		byte[] body = encodeToUtf8(array.toString());
-
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new RetryShipperTasksResponse(resHeaders);
-
 	}
 
 	private ShipperTasksStatistic ExtractTasksStatisTic(JSONObject obj) {
@@ -3023,7 +2880,6 @@ public class Client implements LogService {
 
 		return new ShipperTasksStatistic(statistic_obj.getInt("running"),
 				statistic_obj.getInt("success"), statistic_obj.getInt("fail"));
-
 	}
 
 	private List<ShipperTask> ExtractShipperTask(JSONObject object) {
@@ -3067,7 +2923,6 @@ public class Client implements LogService {
 
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		return new CreateConsumerGroupResponse(resHeaders);
 	}
@@ -3092,10 +2947,8 @@ public class Client implements LogService {
 		String resourceUri = "/logstores/" + logStore + "/consumergroups/"
 				+ consumerGroup;
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		return new UpdateConsumerGroupResponse(resHeaders);
 	}
@@ -3132,10 +2985,8 @@ public class Client implements LogService {
 		headParameter.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(0));
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		return new DeleteConsumerGroupResponse(resHeaders);
 	}
@@ -3173,7 +3024,7 @@ public class Client implements LogService {
 						consumerGroup.getBoolean("order")));
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid consumer group json array string : "
 							+ array.toString(), e, requestId);
 		}
@@ -3219,9 +3070,7 @@ public class Client implements LogService {
 
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new ConsumerGroupUpdateCheckPointResponse(resHeaders);
 	}
 
@@ -3242,18 +3091,14 @@ public class Client implements LogService {
 
 		byte[] body = encodeToUtf8(request.GetRequestBody());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
 		ArrayList<Integer> responseShards = new ArrayList<Integer>();
-
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
 
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-
 		JSONArray array = ParseResponseMessageToArray(response, requestId);
 		ExtractShards(array, requestId, responseShards);
-
 		return new ConsumerGroupHeartBeatResponse(resHeaders, responseShards);
 	}
 
@@ -3264,7 +3109,7 @@ public class Client implements LogService {
 				shards.add(array.getInt(i));
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid shard json array string : "
 							+ array.toString(), e, requestId);
 		}
@@ -3291,10 +3136,8 @@ public class Client implements LogService {
 
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-
 		JSONArray array = ParseResponseMessageToArray(response, requestId);
         return new ConsumerGroupCheckPointResponse(resHeaders, array);
 	}
@@ -3306,23 +3149,16 @@ public class Client implements LogService {
 		if (projectDescription == null) {
 			projectDescription = "";
 		}
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		String resourceUri = "/";
-
 		JSONObject jsonBody = new JSONObject();
         jsonBody.put("projectName", project);
         jsonBody.put("description", projectDescription);
-
 		byte[] body = encodeToUtf8(jsonBody.toString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		return new CreateProjectResponse(resHeaders);
 	}
@@ -3415,11 +3251,8 @@ public class Client implements LogService {
         String resourceUri = "/machinegroups/" + groupName + "/machines";
 
 		Map<String, String> urlParameter = new HashMap<String, String>();
-		if (isDelete) // delete machine from machine group
-			urlParameter.put("action", "delete");
-		else
-			urlParameter.put("action", "add");
-
+        // delete machine from machine group
+        urlParameter.put(Consts.ACTION, isDelete ? "delete" : "add");
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter, body);
 		Map<String, String> resHeaders = response.getHeaders();
@@ -3451,7 +3284,7 @@ public class Client implements LogService {
 				projects.add(tempProject);
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid config json array string : "
 							+ array.toString(), e, requestId);
 		}
@@ -3486,9 +3319,9 @@ public class Client implements LogService {
 
 			listProjectResponse = new ListProjectResponse(resHeaders, total, count, projects);
 		} catch (JSONException e) {
-			throw new LogException("BadResponse",
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid list project json string : "
-							+ object.toString(), e,
+							+ Utils.safeToString(object), e,
 					GetRequestId(response.getHeaders()));
 		}
 		return listProjectResponse;
@@ -3559,8 +3392,7 @@ public class Client implements LogService {
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
 		Chart chart = ExtractChartFromResponse(object, requestId);
-		GetChartResponse getChartResponse = new GetChartResponse(response.getHeaders(), chart);	
-		return getChartResponse;
+        return new GetChartResponse(response.getHeaders(), chart);
 	}
 	
 	@Override
@@ -3622,8 +3454,7 @@ public class Client implements LogService {
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
 		Dashboard dashboard = ExtractDashboardFromResponse(object, requestId);
-		GetDashboardResponse getDashboardResponse = new GetDashboardResponse(response.getHeaders(), dashboard);	
-		return getDashboardResponse;
+        return new GetDashboardResponse(response.getHeaders(), dashboard);
 	}
 	
 	protected List<Dashboard> ExtractDashboards(JSONObject object, String requestId)
@@ -3639,7 +3470,7 @@ public class Client implements LogService {
 				dashboards.add(dashboard);
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse", "The response is not valid config json array string : " + array.toString(), e, requestId);
+			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response is not valid config json array string : " + array.toString(), e, requestId);
 		}
 
 		return dashboards;
@@ -3726,8 +3557,7 @@ public class Client implements LogService {
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
 		SavedSearch savedSearch = ExtractSavedSearchFromResponse(object, requestId);
-		GetSavedSearchResponse getSavedSearchResponse = new GetSavedSearchResponse(response.getHeaders(), savedSearch);	
-		return getSavedSearchResponse;
+        return new GetSavedSearchResponse(response.getHeaders(), savedSearch);
 	}
 	
 	protected List<SavedSearch> ExtractSavedSearches(JSONObject object, String requestId)
@@ -3743,7 +3573,7 @@ public class Client implements LogService {
 				savedSearches.add(savedSearch);
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse", "The response is not valid config json array string : " + array.toString(), e, requestId);
+			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response is not valid config json array string : " + array.toString(), e, requestId);
 		}
 
 		return savedSearches;
@@ -3802,8 +3632,14 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.PUT, resourceUri, urlParameter, headParameter, request.getAlert().ToJsonString());
 		return new UpdateAlertResponse(response.getHeaders());
 	}
-	
-	@Override
+
+    @Override
+    public UpdateAlertResponse updateAlert(UpdateAlertRequestV2 request) throws LogException {
+        ResponseMessage message = send(request);
+        return new UpdateAlertResponse(message.getHeaders());
+    }
+
+    @Override
 	public DeleteAlertResponse deleteAlert(DeleteAlertRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "projectName");
@@ -3815,8 +3651,14 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.DELETE, resourceUri, urlParameter, headParameter);
 		return new DeleteAlertResponse(response.getHeaders());
 	}
-	
-	protected Alert ExtractAlertFromResponse(JSONObject dict,
+
+    @Override
+    public DeleteAlertResponse deleteAlert(DeleteAlertRequestV2 request) throws LogException {
+        ResponseMessage responseMessage = send(request);
+        return new DeleteAlertResponse(responseMessage.getHeaders());
+    }
+
+    protected Alert ExtractAlertFromResponse(JSONObject dict,
 			String requestId) throws LogException {
 		Alert alert = new Alert();
 		try {
@@ -3841,11 +3683,23 @@ public class Client implements LogService {
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = ParserResponseMessage(response, requestId);
 		Alert alert = ExtractAlertFromResponse(object, requestId);
-		GetAlertResponse getAlertResponse = new GetAlertResponse(response.getHeaders(), alert);	
-		return getAlertResponse;
+        return new GetAlertResponse(response.getHeaders(), alert);
 	}
-	
-	protected List<Alert> ExtractAlerts(JSONObject object, String requestId)
+
+    @Override
+    public GetAlertResponseV2 getAlert(GetAlertRequestV2 request) throws LogException {
+        ResponseMessage response = send(request);
+        JSONObject responseBody = parseResponseBody(response, response.getRequestId());
+        try {
+            GetAlertResponseV2 alertResponse = new GetAlertResponseV2(response.getHeaders());
+            alertResponse.deserialize(responseBody);
+            return alertResponse;
+        } catch (Exception ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
+    }
+
+	private List<Alert> ExtractAlerts(JSONObject object, String requestId)
 			throws LogException {
 		List<Alert> alerts = new ArrayList<Alert>();
 		JSONArray array = new JSONArray();
@@ -3858,7 +3712,7 @@ public class Client implements LogService {
 				alerts.add(alert);
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse", "The response is not valid config json array string : " + array.toString(), e, requestId);
+			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response is not valid config json array string : " + array.toString(), e, requestId);
 		}
 
 		return alerts;
@@ -3880,8 +3734,21 @@ public class Client implements LogService {
         List<Alert> alerts = ExtractAlerts(object, requestId);
         return new ListAlertResponse(response.getHeaders(), count, total, alerts);
 	}
-	
-	protected List<AlertFail> ExtractAlertFails(JSONObject object, String requestId)
+
+    @Override
+    public ListAlertResponseV2 listAlert(ListAlertRequestV2 request) throws LogException {
+        ResponseMessage response = send(request);
+        JSONObject responseBody = parseResponseBody(response, response.getRequestId());
+        try {
+            ListAlertResponseV2 alertResponse = new ListAlertResponseV2(response.getHeaders());
+            alertResponse.deserialize(responseBody);
+            return alertResponse;
+        } catch (Exception ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
+    }
+
+    protected List<AlertFail> ExtractAlertFails(JSONObject object, String requestId)
 			throws LogException {
 		List<AlertFail> alerts = new ArrayList<AlertFail>();
 		JSONArray array = new JSONArray();
@@ -3894,7 +3761,7 @@ public class Client implements LogService {
 				alerts.add(alertFail);
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse", "The response is not valid config json array string : " + array.toString(), e, requestId);
+			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response is not valid config json array string : " + array.toString(), e, requestId);
 		}
 
 		return alerts;
@@ -4197,7 +4064,7 @@ public class Client implements LogService {
 				listResp.addEtlMeta(meta);
 			}
 		} catch (JSONException e) {
-			throw new LogException("BadResponse", e.getMessage(), listResp.GetRequestId());
+			throw new LogException(ErrorCodes.BAD_RESPONSE, e.getMessage(), listResp.GetRequestId());
 		}
 		return listResp;
 	}
@@ -4269,8 +4136,8 @@ public class Client implements LogService {
 		return new CreateLoggingResponse(response.getHeaders());
 	}
 
-	@Override
-	public UpdateLoggingResponse updateLogging(final UpdateLoggingRequest request) throws LogException {
+    @Override
+    public UpdateLoggingResponse updateLogging(final UpdateLoggingRequest request) throws LogException {
         Args.notNull(request, "request");
         final String project = request.GetProject();
         Map<String, String> headers = GetCommonHeadPara(project);
@@ -4278,7 +4145,7 @@ public class Client implements LogService {
         ResponseMessage response = SendData(project, HttpMethod.PUT,
                 Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
         return new UpdateLoggingResponse(response.getHeaders());
-	}
+    }
 
     @Override
     public GetLoggingResponse getLogging(final GetLoggingRequest request) throws LogException {
@@ -4287,13 +4154,13 @@ public class Client implements LogService {
         Map<String, String> headers = GetCommonHeadPara(project);
         ResponseMessage response = SendData(project, HttpMethod.GET,
                 Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers);
-		JSONObject responseBody = ParserResponseMessage(response, response.getRequestId());
-		try {
-			return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
-		} catch (JSONException ex) {
-			throw new LogException("BadResponse", ex.getMessage(), response.getRequestId());
-		}
-	}
+        JSONObject responseBody = parseResponseBody(response, response.getRequestId());
+        try {
+            return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
+        } catch (JSONException ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
+    }
 
     @Override
     public DeleteLoggingResponse deleteLogging(final DeleteLoggingRequest request) throws LogException {
@@ -4303,5 +4170,88 @@ public class Client implements LogService {
         ResponseMessage response = SendData(project, HttpMethod.DELETE,
                 Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers);
         return new DeleteLoggingResponse(response.getHeaders());
+    }
+
+    @Override
+    public CreateJobResponse createJob(CreateJobRequest request) throws LogException {
+        ResponseMessage response = send(request);
+        return new CreateJobResponse(response.getHeaders());
+    }
+
+    @Override
+    public CreateAlertResponse createAlert(CreateAlertRequestV2 request) throws LogException {
+        ResponseMessage responseMessage = send(request);
+        return new CreateAlertResponse(responseMessage.getHeaders());
+    }
+
+    @Override
+    public GetJobResponse getJob(GetJobRequest request) throws LogException {
+        ResponseMessage response = send(request);
+        JSONObject responseBody = parseResponseBody(response, response.getRequestId());
+        try {
+            GetJobResponse getJobResponse = new GetJobResponse(response.getHeaders());
+            getJobResponse.deserialize(responseBody);
+            return getJobResponse;
+        } catch (Exception ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
+    }
+
+    @Override
+    public UpdateJobResponse updateJob(UpdateJobRequest request) throws LogException {
+        ResponseMessage response = send(request);
+        return new UpdateJobResponse(response.getHeaders());
+    }
+
+    @Override
+    public DeleteJobResponse deleteJob(DeleteJobRequest request) throws LogException {
+        ResponseMessage response = send(request);
+        return new DeleteJobResponse(response.getHeaders());
+    }
+
+    @Override
+    public EnableJobResponse enableJob(EnableJobRequest request) throws LogException {
+        ResponseMessage response = send(request);
+        return new EnableJobResponse(response.getHeaders());
+    }
+
+    @Override
+    public EnableAlertResponse enableAlert(EnableAlertRequest request) throws LogException {
+        ResponseMessage response = send(request);
+        return new EnableAlertResponse(response.getHeaders());
+    }
+
+    @Override
+    public DisableJobResponse disableJob(DisableJobRequest request) throws LogException {
+        ResponseMessage response = send(request);
+        return new DisableJobResponse(response.getHeaders());
+    }
+
+    @Override
+    public DisableAlertResponse disableAlert(DisableAlertRequest request) throws LogException {
+        ResponseMessage response = send(request);
+        return new DisableAlertResponse(response.getHeaders());
+    }
+
+    @Override
+    public ListJobsResponse listJobs(ListJobsRequest request) throws LogException {
+        ResponseMessage response = send(request);
+        JSONObject responseBody = parseResponseBody(response, response.getRequestId());
+        try {
+            ListJobsResponse jobsResponse = new ListJobsResponse(response.getHeaders());
+            jobsResponse.deserialize(responseBody);
+            return jobsResponse;
+        } catch (Exception ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
+        }
+    }
+
+    private ResponseMessage send(JobRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        final Map<String, String> headers = GetCommonHeadPara(project);
+        final Object body = request.getBody();
+        final byte[] requestBody = body == null ? new byte[0] : encodeToUtf8(JsonUtils.serialize(body));
+        return SendData(project, request.getMethod(), request.getUri(), request.GetAllParams(), headers, requestBody);
     }
 }

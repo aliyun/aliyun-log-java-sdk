@@ -40,9 +40,9 @@ public final class DigestUtils {
                                     Map<String, String> urlParams) {
         StringBuilder builder = new StringBuilder();
         builder.append(verb).append("\n");
-        builder.append(getOrEmpty(headers, Consts.CONST_CONTENT_MD5)).append("\n");
-        builder.append(getOrEmpty(headers, Consts.CONST_CONTENT_TYPE)).append("\n");
-        builder.append(getOrEmpty(headers, Consts.CONST_DATE)).append("\n");
+        builder.append(Utils.getOrEmpty(headers, Consts.CONST_CONTENT_MD5)).append("\n");
+        builder.append(Utils.getOrEmpty(headers, Consts.CONST_CONTENT_TYPE)).append("\n");
+        builder.append(Utils.getOrEmpty(headers, Consts.CONST_DATE)).append("\n");
         builder.append(headersToString(headers)).append("\n");
         builder.append(resourceUri);
         if (!urlParams.isEmpty()) {
@@ -79,10 +79,6 @@ public final class DigestUtils {
             builder.append(entry.getKey()).append(":").append(entry.getValue());
         }
         return builder.toString();
-    }
-
-    private static String getOrEmpty(Map<String, String> map, String key) {
-        return map.containsKey(key) ? map.get(key) : "";
     }
 
     private static String encode(String accessKey, String data) {

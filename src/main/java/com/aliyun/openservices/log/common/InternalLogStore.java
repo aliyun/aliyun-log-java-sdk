@@ -107,7 +107,6 @@ public class InternalLogStore extends LogStore implements Serializable {
     }
 
     public String getPaidAccount() {
-
         return paidAccount;
     }
 

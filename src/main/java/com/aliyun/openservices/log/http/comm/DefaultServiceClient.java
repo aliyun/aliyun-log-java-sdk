@@ -29,7 +29,7 @@ import com.aliyun.openservices.log.http.client.ClientConfiguration;
 public class DefaultServiceClient extends ServiceClient {
 
     private HttpClient httpClient;
-    
+
     /**
      * 构造新实例。
      */

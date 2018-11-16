@@ -30,7 +30,7 @@ public class Chart implements Serializable {
 	private String rawDisplayAttr = "";
 	private String rawActionAttr = "";
 
-	
+
 	public String getRawSearchAttr() {
 		return rawSearchAttr;
 	}

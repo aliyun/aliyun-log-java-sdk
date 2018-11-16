@@ -29,4 +29,13 @@ public final class Args {
             throw new IllegalArgumentException(message);
         }
     }
+
+    public static void checkDuration(String duration) {
+        notNullOrEmpty(duration, "duration");
+        try {
+            Utils.parseDuration(duration);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Invalid duration: " + duration, ex);
+        }
+    }
 }

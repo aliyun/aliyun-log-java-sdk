@@ -36,11 +36,6 @@ public class Logging implements Serializable {
         this.loggingDetails = new ArrayList<LoggingDetail>(loggingDetails);
     }
 
-    public void addLoggingDetail(LoggingDetail loggingDetail) {
-        Args.notNull(loggingDetail, "loggingDetail");
-        this.loggingDetails.add(loggingDetail);
-    }
-
     public JSONObject marshal() {
         JSONObject object = new JSONObject();
         object.put("loggingProject", loggingProject);
