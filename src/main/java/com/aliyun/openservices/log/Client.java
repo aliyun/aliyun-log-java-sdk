@@ -2416,18 +2416,13 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		String logStoreName = request.GetLogStoreName();
 		CodingUtils.assertStringNotNullOrEmpty(logStoreName, "logStoreName");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
         String resourceUri = "/logstores/" + logStoreName + "/storage";
 		Map<String, String> urlParameter = request.GetAllParams();
-
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new ClearLogStoreStorageResponse(resHeaders);
-
 	}
 
 	@Override
@@ -2662,7 +2657,6 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(project);
         String resourceUri = "/logstores/" + logStore + "/index";
 		Map<String, String> urlParameter = request.GetAllParams();
-
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
 
@@ -2702,7 +2696,6 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
         headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
         String resourceUri = "/logstores/" + logStore + "/shipper";
 		JSONObject jsonBody = new JSONObject();
         jsonBody.put("shipperName", shipperName);
@@ -2710,11 +2703,9 @@ public class Client implements LogService {
         jsonBody.put("targetConfiguration", shipConfig.GetJsonObj());
 
 		byte[] body = encodeToUtf8(jsonBody.toString());
-
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		return new CreateShipperResponse(resHeaders);
 	}
@@ -2802,19 +2793,14 @@ public class Client implements LogService {
 			throws LogException {
 		CodingUtils.assertParameterNotNull(project, "project");
 		CodingUtils.assertParameterNotNull(logStore, "logStore");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
         String resourceUri = "/logstores/" + logStore + "/shipper";
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-
 		JSONObject object = ParserResponseMessage(response, requestId);
-
 		return new ListShipperResponse(resHeaders, ExtractJsonInteger("count",
 				object), ExtractJsonInteger("total", object), ExtractJsonArray(
 				"shipper", object));
@@ -2828,7 +2814,6 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(shipperName, "shipperName");
 		CodingUtils.assertParameterNotNull(statusType, "statusType");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 
         String resourceUri = "/logstores/" + logStore + "/shipper/" + shipperName + "/tasks";
@@ -2838,10 +2823,8 @@ public class Client implements LogService {
 		urlParameter.put("status", statusType);
 		urlParameter.put("offset", String.valueOf(offset));
 		urlParameter.put("size", String.valueOf(size));
-
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = ParserResponseMessage(response, requestId);
@@ -2863,9 +2846,7 @@ public class Client implements LogService {
         String resourceUri = "/logstores/" + logStore + "/shipper/" + shipperName + "/tasks";
 
 		JSONArray array = new JSONArray();
-		for (String task : taskList) {
-			array.add(task);
-		}
+        array.addAll(taskList);
 		byte[] body = encodeToUtf8(array.toString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -2877,7 +2858,6 @@ public class Client implements LogService {
 
 	private ShipperTasksStatistic ExtractTasksStatisTic(JSONObject obj) {
 		JSONObject statistic_obj = obj.getJSONObject("statistics");
-
 		return new ShipperTasksStatistic(statistic_obj.getInt("running"),
 				statistic_obj.getInt("success"), statistic_obj.getInt("fail"));
 	}
@@ -2911,16 +2891,11 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		ConsumerGroup consumerGroup = request.GetConsumerGroup();
 		CodingUtils.assertParameterNotNull(consumerGroup, "consumerGroup");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		byte[] body = encodeToUtf8(consumerGroup.ToRequestString());
-
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
-		String resourceUri = "/logstores/" + request.GetLogStore()
-				+ "/consumergroups";
+		String resourceUri = "/logstores/" + request.GetLogStore() + "/consumergroups";
 		Map<String, String> urlParameter = new HashMap<String, String>();
-
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
 		Map<String, String> resHeaders = response.getHeaders();
@@ -3187,11 +3162,9 @@ public class Client implements LogService {
 	public DeleteProjectResponse DeleteProject(String project)
 			throws LogException {
 		Args.notNullOrEmpty(project, "project");
-
 		String resourceUri = "/";
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
@@ -3242,21 +3215,16 @@ public class Client implements LogService {
 			boolean isDelete) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(groupName, "groupName");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		byte[] body = encodeToUtf8(machineList.ToRequestString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-
         String resourceUri = "/machinegroups/" + groupName + "/machines";
-
 		Map<String, String> urlParameter = new HashMap<String, String>();
         // delete machine from machine group
         urlParameter.put(Consts.ACTION, isDelete ? "delete" : "add");
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter, body);
 		Map<String, String> resHeaders = response.getHeaders();
-
 		return new UpdateMachineGroupMachineResponse(resHeaders);
 	}
 
@@ -3297,22 +3265,17 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		String resourceUri = "/";
 		Map<String, String> urlParameter = request.GetAllParams();
-
 		ResponseMessage response = new ResponseMessage();
 		ListProjectResponse listProjectResponse = null;
 		JSONObject object = null;
 		try {
 			response = SendData(project, HttpMethod.GET, resourceUri,
 					urlParameter, headParameter);
-
 			Map<String, String> resHeaders = response.getHeaders();
 			String requestId = GetRequestId(resHeaders);
-
 			object = ParserResponseMessage(response, requestId);
-
 			int total = object.getInt(Consts.CONST_TOTAL);
 			int count = object.getInt(Consts.CONST_COUNT);
             List<Project> projects = ExtractProjects(object, requestId);
@@ -3490,8 +3453,7 @@ public class Client implements LogService {
 		int total = object.getInt(Consts.CONST_TOTAL);
 		int count = object.getInt(Consts.CONST_COUNT);
         List<Dashboard> dashboards = ExtractDashboards(object, requestId);
-		ListDashboardResponse listDashboardResponse = new ListDashboardResponse(response.getHeaders(), count, total, dashboards);
-		return listDashboardResponse;
+        return new ListDashboardResponse(response.getHeaders(), count, total, dashboards);
 	}
 	
 	@Override
@@ -3506,6 +3468,7 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.POST, resourceUri, urlParameter, headParameter, request.getSavedSearch().ToJsonString());
 		return new CreateSavedSearchResponse(response.getHeaders());
 	}
+
 	@Override
 	public UpdateSavedSearchResponse updateSavedSearch(UpdateSavedSearchRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3593,8 +3556,7 @@ public class Client implements LogService {
 		int total = object.getInt(Consts.CONST_TOTAL);
 		int count = object.getInt(Consts.CONST_COUNT);
         List<SavedSearch> savedSearches = ExtractSavedSearches(object, requestId);
-		ListSavedSearchResponse listSavedSearchResponse = new ListSavedSearchResponse(response.getHeaders(), count, total, savedSearches);
-		return listSavedSearchResponse;
+        return new ListSavedSearchResponse(response.getHeaders(), count, total, savedSearches);
 	}
 	
 	// alert api
