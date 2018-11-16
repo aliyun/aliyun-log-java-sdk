@@ -3198,16 +3198,16 @@ public class Client implements LogService {
 		return new DeleteProjectResponse(resHeaders);
 	}
 
-	@Override
-	public UpdateProjectResponse updateProject(UpdateProjectRequest request) throws LogException {
-		Args.notNull(request, "request");
-		final String resourceUri = "/";
-		final String project = request.GetProject();
-		Map<String, String> headParameter = GetCommonHeadPara(project);
-		ResponseMessage response = SendData(project, HttpMethod.PUT, resourceUri,
-				Collections.<String, String>emptyMap(), headParameter, request.marshal().toString());
-		return new UpdateProjectResponse(response.getHeaders());
-	}
+    @Override
+    public UpdateProjectResponse updateProject(UpdateProjectRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String resourceUri = "/";
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        ResponseMessage response = SendData(project, HttpMethod.PUT, resourceUri,
+                Collections.<String, String>emptyMap(), headers, JsonUtils.serialize(request.getBody()));
+        return new UpdateProjectResponse(response.getHeaders());
+    }
 
 	@Override
 	public UpdateMachineGroupMachineResponse AddMachineIntoMahineGroup(
