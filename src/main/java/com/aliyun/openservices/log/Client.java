@@ -3932,16 +3932,17 @@ public class Client implements LogService {
 		return listEtlMeta(request);
 	}
 
-	@Override
-	public CreateLoggingResponse createLogging(final CreateLoggingRequest request) throws LogException {
-		Args.notNull(request, "request");
-		final String project = request.GetProject();
-		Map<String, String> headers = GetCommonHeadPara(project);
-		final Logging logging = request.getLogging();
-		ResponseMessage response = SendData(project, HttpMethod.POST,
-                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
-		return new CreateLoggingResponse(response.getHeaders());
-	}
+    @Override
+    public CreateLoggingResponse createLogging(final CreateLoggingRequest request) throws LogException {
+        Args.notNull(request, "request");
+        final String project = request.GetProject();
+        Map<String, String> headers = GetCommonHeadPara(project);
+        final Logging logging = request.getLogging();
+        ResponseMessage response = SendData(project, HttpMethod.POST,
+                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers,
+                encodeToUtf8(JsonUtils.serialize(logging)));
+        return new CreateLoggingResponse(response.getHeaders());
+    }
 
     @Override
     public UpdateLoggingResponse updateLogging(final UpdateLoggingRequest request) throws LogException {
@@ -3950,7 +3951,8 @@ public class Client implements LogService {
         Map<String, String> headers = GetCommonHeadPara(project);
         final Logging logging = request.getLogging();
         ResponseMessage response = SendData(project, HttpMethod.PUT,
-                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers, logging.marshal().toString());
+                Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers,
+                encodeToUtf8(JsonUtils.serialize(logging)));
         return new UpdateLoggingResponse(response.getHeaders());
     }
 
@@ -3963,7 +3965,9 @@ public class Client implements LogService {
                 Consts.LOGGING_URI, Collections.<String, String>emptyMap(), headers);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
         try {
-            return new GetLoggingResponse(response.getHeaders(), Logging.unmarshal(responseBody));
+            GetLoggingResponse getLoggingResponse = new GetLoggingResponse(response.getHeaders());
+            getLoggingResponse.deserialize(responseBody);
+            return getLoggingResponse;
         } catch (JSONException ex) {
             throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
         }

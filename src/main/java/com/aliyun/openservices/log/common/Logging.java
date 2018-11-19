@@ -1,6 +1,9 @@
 package com.aliyun.openservices.log.common;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.Unmarshaller;
 import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -10,8 +13,14 @@ import java.util.List;
 
 public class Logging implements Serializable {
 
+    @JSONField
     private String loggingProject;
+
+    @JSONField
     private List<LoggingDetail> loggingDetails;
+
+    public Logging() {
+    }
 
     public Logging(String loggingProject, List<LoggingDetail> loggingDetails) {
         setLoggingProject(loggingProject);
@@ -33,30 +42,19 @@ public class Logging implements Serializable {
 
     public void setLoggingDetails(List<LoggingDetail> loggingDetails) {
         Args.notNullOrEmpty(loggingDetails, "loggingDetails");
-        this.loggingDetails = new ArrayList<LoggingDetail>(loggingDetails);
+        this.loggingDetails = loggingDetails;
     }
 
-    public JSONObject marshal() {
-        JSONObject object = new JSONObject();
-        object.put("loggingProject", loggingProject);
-        JSONArray details = new JSONArray();
-        for (LoggingDetail detail : loggingDetails) {
-            details.add(detail.marshal());
-        }
-        object.put("loggingDetails", details);
-        return object;
-    }
-
-    public static Logging unmarshal(final JSONObject object) {
+    public void deserialize(final JSONObject object) {
         Args.notNull(object, "object");
-        final String project = object.getString("loggingProject");
-        Args.notNullOrEmpty(project, "loggingProject");
-        final JSONArray details = object.getJSONArray("loggingDetails");
-        Args.notNullOrEmpty(details, "loggingDetails");
-        List<LoggingDetail> loggingDetails = new ArrayList<LoggingDetail>(details.size());
-        for (int i = 0; i < details.size(); i++) {
-            loggingDetails.add(LoggingDetail.unmarshal(details.getJSONObject(i)));
-        }
-        return new Logging(project, loggingDetails);
+        loggingProject = object.getString("loggingProject");
+        loggingDetails = JsonUtils.readList(object, "loggingDetails", new Unmarshaller<LoggingDetail>() {
+            @Override
+            public LoggingDetail unmarshal(JSONArray value, int index) {
+                LoggingDetail detail = new LoggingDetail();
+                detail.deserialize(value.getJSONObject(index));
+                return detail;
+            }
+        });
     }
 }
