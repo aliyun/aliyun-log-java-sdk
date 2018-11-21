@@ -1365,25 +1365,25 @@ public class Client implements LogService {
 		return ListConfig(new ListConfigRequest(project));
 	}
 
-	public ListConfigResponse ListConfig(String project, int offSet, int size)
+	public ListConfigResponse ListConfig(String project, int offset, int size)
 			throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		return ListConfig(new ListConfigRequest(project, offSet, size));
+		return ListConfig(new ListConfigRequest(project, offset, size));
 	}
 
 	public ListConfigResponse ListConfig(String project, String configName,
-			int offSet, int size) throws LogException {
+			int offset, int size) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(configName, "configName");
-		return ListConfig(new ListConfigRequest(project, configName, offSet, size));
+		return ListConfig(new ListConfigRequest(project, configName, offset, size));
 	}
 
 	public ListConfigResponse ListConfig(String project, String configName,
-			String logstoreName, int offSet, int size) throws LogException {
+			String logstoreName, int offset, int size) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(configName, "configName");
 		CodingUtils.assertStringNotNullOrEmpty(logstoreName, "logstoreName");
-		return ListConfig(new ListConfigRequest(project, configName, logstoreName, offSet, size));
+		return ListConfig(new ListConfigRequest(project, configName, logstoreName, offset, size));
 	}
 
 	public ListConfigResponse ListConfig(ListConfigRequest request)
@@ -1682,23 +1682,21 @@ public class Client implements LogService {
 		return machineGroups;
 	}
 
-	public ListMachineGroupResponse ListMachineGroup(String project)
-			throws LogException {
+	public ListMachineGroupResponse ListMachineGroup(String project) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		return ListMachineGroup(new ListMachineGroupRequest(project));
 	}
 
-	public ListMachineGroupResponse ListMachineGroup(String project,
-			int offSet, int size) throws LogException {
+	public ListMachineGroupResponse ListMachineGroup(String project, int offset, int size) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		return ListMachineGroup(new ListMachineGroupRequest(project, offSet, size));
+		return ListMachineGroup(new ListMachineGroupRequest(project, offset, size));
 	}
 
 	public ListMachineGroupResponse ListMachineGroup(String project,
-			String groupName, int offSet, int size) throws LogException {
+			String groupName, int offset, int size) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(groupName, "groupName");
-		return ListMachineGroup(new ListMachineGroupRequest(project, groupName, offSet, size));
+		return ListMachineGroup(new ListMachineGroupRequest(project, groupName, offset, size));
 	}
 
 	public ListMachineGroupResponse ListMachineGroup(
@@ -1832,10 +1830,10 @@ public class Client implements LogService {
 		return ListACL(new ListACLRequest(project));
 	}
 
-	public ListACLResponse ListACL(String project, int offSet, int size)
+	public ListACLResponse ListACL(String project, int offset, int size)
 			throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		return ListACL(new ListACLRequest(project, offSet, size));
+		return ListACL(new ListACLRequest(project, offset, size));
 	}
 
 	public ListACLResponse ListACL(String project, String logStore)
@@ -1845,11 +1843,11 @@ public class Client implements LogService {
 		return ListACL(new ListACLRequest(project, logStore));
 	}
 
-	public ListACLResponse ListACL(String project, String logStore, int offSet,
+	public ListACLResponse ListACL(String project, String logStore, int offset,
 			int size) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertParameterNotNull(logStore, "logStore");
-		return ListACL(new ListACLRequest(project, logStore, offSet, size));
+		return ListACL(new ListACLRequest(project, logStore, offset, size));
 	}
 
 	protected ACL ExtractACLFromResponse(JSONObject dict, String requestId)
