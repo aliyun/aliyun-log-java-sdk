@@ -10,6 +10,7 @@ import com.aliyun.openservices.log.common.JobType;
 import com.aliyun.openservices.log.common.Notification;
 import com.aliyun.openservices.log.common.Query;
 import com.aliyun.openservices.log.common.SmsNotification;
+import com.aliyun.openservices.log.common.TimeSpanType;
 import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.junit.Test;
@@ -38,7 +39,9 @@ public class JobTest {
         configuration.setCondition("ID > 100");
         List<Query> queryList = new ArrayList<Query>();
         Query query = new Query();
-        query.setDuration("60s");
+        query.setStart("-60s");
+        query.setEnd("now");
+        query.setTimeSpanType(TimeSpanType.CUSTOM);
         query.setChartTitle("chart1");
         query.setLogStore("logstore-test");
         query.setQuery("*");
@@ -57,22 +60,20 @@ public class JobTest {
         String body = JsonUtils.serialize(job);
         assertEquals("{\"configuration\":{\"condition\":\"ID > 100\",\"dashboard\":\"dashboardtest\"," +
                 "\"notificationList\":[{\"content\":\"messagetest\",\"mobileList\":[\"86-13738162867\"]," +
-                "\"type\":\"SMS\"}],\"notifyThreshold\":1,\"queryList\":" +
-                "[{\"chartTitle\":\"chart1\",\"duration\":\"60s\",\"logStore\":" +
-                "\"logstore-test\",\"query\":\"*\"}]},\"name\":\"alertTest\"," +
-                "\"schedule\":{\"interval\":\"60s\",\"type\":\"FixedRate\"}," +
-                "\"state\":\"Enabled\",\"type\":\"Alert\"}", body);
+                "\"type\":\"SMS\"}],\"notifyThreshold\":1,\"queryList\":[{\"chartTitle\":\"chart1\",\"end\":\"now\"," +
+                "\"logStore\":\"logstore-test\",\"query\":\"*\",\"start\":\"-60s\",\"timeSpanType\":\"Custom\"}]}," +
+                "\"name\":\"alertTest\",\"schedule\":" +
+                "{\"interval\":\"60s\",\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Alert\"}", body);
     }
 
     @Test
     public void testDeserialize() {
         String body = "{\"configuration\":{\"condition\":\"ID > 100\",\"dashboard\":\"dashboardtest\"," +
                 "\"notificationList\":[{\"content\":\"messagetest\",\"mobileList\":[\"86-13738162867\"]," +
-                "\"type\":\"SMS\"}],\"notifyThreshold\":1,\"queryList\":" +
-                "[{\"chartTitle\":\"chart1\",\"duration\":\"60s\",\"logStore\":" +
-                "\"logstore-test\",\"query\":\"*\"}]},\"name\":\"alertTest\"," +
-                "\"schedule\":{\"interval\":\"60s\",\"type\":\"FixedRate\"}," +
-                "\"state\":\"Enabled\",\"type\":\"Alert\",\"createTime\":1540730629,\"lastModifiedTime\":1540730629}";
+                "\"type\":\"SMS\"}],\"notifyThreshold\":1,\"queryList\":[{\"chartTitle\":\"chart1\",\"end\":" +
+                "\"now\",\"logStore\":\"logstore-test\",\"query\":\"*\",\"start\":\"-60s\",\"timeSpanType\":" +
+                "\"Custom\"}]},\"name\":\"alertTest\",\"schedule\":{\"interval\":\"60s\"," +
+                "\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Alert\",\"createTime\":1542763714,\"lastModifiedTime\":1542763714}";
         Job job = new Job();
         job.deserialize(JSONObject.fromObject(body));
 
@@ -84,16 +85,16 @@ public class JobTest {
         JobSchedule schedule = new JobSchedule();
         schedule.setInterval("60s");
         schedule.setType(JobScheduleType.FIXED_RATE);
-
         assertEquals(schedule, job.getSchedule());
-
         AlertConfiguration configuration = new AlertConfiguration();
         configuration.setCondition("ID > 100");
         configuration.setDashboard("dashboardtest");
 
         List<Query> queryList = new ArrayList<Query>();
         Query query = new Query();
-        query.setDuration("60s");
+        query.setStart("-60s");
+        query.setEnd("now");
+        query.setTimeSpanType(TimeSpanType.CUSTOM);
         query.setChartTitle("chart1");
         query.setLogStore("logstore-test");
         query.setQuery("*");
@@ -106,7 +107,6 @@ public class JobTest {
         smsNotification.setContent("messagetest");
         notifications.add(smsNotification);
         configuration.setNotificationList(notifications);
-
         assertEquals(configuration, job.getConfiguration());
     }
 
