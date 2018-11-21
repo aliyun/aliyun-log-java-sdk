@@ -11,6 +11,7 @@ import com.aliyun.openservices.log.common.JobScheduleType;
 import com.aliyun.openservices.log.common.JobState;
 import com.aliyun.openservices.log.common.Notification;
 import com.aliyun.openservices.log.common.Query;
+import com.aliyun.openservices.log.common.TimeSpanType;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateAlertRequestV2;
 import com.aliyun.openservices.log.request.CreateDashboardRequest;
@@ -78,7 +79,9 @@ public class AlertFunctionTest extends FunctionTest {
         configuration.setDashboard("dashboardtest");
         List<Query> queries = new ArrayList<Query>();
         Query query = new Query();
-        query.setDuration("60s");
+        query.setStart("-60s");
+        query.setEnd("now");
+        query.setTimeSpanType(TimeSpanType.CUSTOM);
         query.setQuery("* | select count(1) as count");
         query.setLogStore("logStore1");
         query.setChartTitle("chart1");
@@ -86,7 +89,6 @@ public class AlertFunctionTest extends FunctionTest {
         configuration.setQueryList(queries);
         EmailNotification notification = new EmailNotification();
         notification.setEmailList(Collections.singletonList("kel@test.com"));
-        notification.setSubject("Alert fired");
         notification.setContent("Alerting");
         List<Notification> notifications = new ArrayList<Notification>();
         notifications.add(notification);
