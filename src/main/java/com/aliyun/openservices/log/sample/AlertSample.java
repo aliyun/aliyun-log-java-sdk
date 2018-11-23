@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.sample;
 
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.AlertConfiguration;
-import com.aliyun.openservices.log.common.AlertV2;
+import com.aliyun.openservices.log.common.Alert;
 import com.aliyun.openservices.log.common.Chart;
 import com.aliyun.openservices.log.common.Dashboard;
 import com.aliyun.openservices.log.common.EmailNotification;
@@ -23,8 +23,8 @@ import com.aliyun.openservices.log.request.GetAlertRequest;
 import com.aliyun.openservices.log.request.ListAlertRequest;
 import com.aliyun.openservices.log.request.ListDashboardRequest;
 import com.aliyun.openservices.log.request.UpdateAlertRequest;
-import com.aliyun.openservices.log.response.GetAlertResponseV2;
-import com.aliyun.openservices.log.response.ListAlertResponseV2;
+import com.aliyun.openservices.log.response.GetAlertResponse;
+import com.aliyun.openservices.log.response.ListAlertResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
 
 import java.util.ArrayList;
@@ -47,8 +47,8 @@ public class AlertSample {
             ListAlertRequest listReq = new ListAlertRequest(project);
             listReq.setOffset(0);
             listReq.setSize(100);
-            ListAlertResponseV2 listJobsResponse = client.listAlert(listReq);
-            for (AlertV2 item : listJobsResponse.getResults()) {
+            ListAlertResponse listJobsResponse = client.listAlert(listReq);
+            for (Alert item : listJobsResponse.getResults()) {
                 client.deleteAlert(new DeleteAlertRequest(project, item.getName()));
             }
             ListDashboardRequest listDashboardRequest = new ListDashboardRequest(project);
@@ -58,7 +58,7 @@ public class AlertSample {
             for (Dashboard dashboard : listDashboardResponse.getDashboards()) {
                 client.deleteDashboard(new DeleteDashboardRequest(project, dashboard.getDashboardName()));
             }
-            AlertV2 alertV2 = new AlertV2();
+            Alert alertV2 = new Alert();
             alertV2.setName(alertName);
             alertV2.setState(JobState.ENABLED);
             alertV2.setDisplayName("DisplayName");
@@ -103,28 +103,28 @@ public class AlertSample {
             CreateAlertRequest request = new CreateAlertRequest(project, alertV2);
             client.createAlert(request);
 
-            GetAlertResponseV2 response = client.getAlert(new GetAlertRequest(project, alertName));
+            GetAlertResponse response = client.getAlert(new GetAlertRequest(project, alertName));
 
-            AlertV2 created = response.getAlert();
+            Alert created = response.getAlert();
             System.out.println(created.getName());
             System.out.println(created.getDisplayName());
             System.out.println(created.getCreateTime());
 
             client.disableAlert(new DisableAlertRequest(project, alertName));
             response = client.getAlert(new GetAlertRequest(project, alertName));
-            AlertV2 alertV21 = response.getAlert();
+            Alert alertV21 = response.getAlert();
             System.out.println(alertV21.getState());
 
             client.enableAlert(new EnableAlertRequest(project, alertName));
             response = client.getAlert(new GetAlertRequest(project, alertName));
-            AlertV2 alertV22 = response.getAlert();
+            Alert alertV22 = response.getAlert();
             System.out.println(alertV22.getState());
 
             DisableAlertRequest disableAlertRequest = new DisableAlertRequest(project, alertName);
             client.disableJob(disableAlertRequest);
 
             response = client.getAlert(new GetAlertRequest(project, alertName));
-            AlertV2 alertV23 = response.getAlert();
+            Alert alertV23 = response.getAlert();
             System.out.println(alertV23.getState());
 
             JobSchedule schedule1 = alertV23.getSchedule();

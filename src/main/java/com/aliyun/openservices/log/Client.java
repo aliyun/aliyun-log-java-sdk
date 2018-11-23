@@ -3388,11 +3388,11 @@ public class Client implements LogService {
     }
 
     @Override
-    public GetAlertResponseV2 getAlert(GetAlertRequest request) throws LogException {
+    public GetAlertResponse getAlert(GetAlertRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
         try {
-            GetAlertResponseV2 alertResponse = new GetAlertResponseV2(response.getHeaders());
+            GetAlertResponse alertResponse = new GetAlertResponse(response.getHeaders());
             alertResponse.deserialize(responseBody);
             return alertResponse;
         } catch (Exception ex) {
@@ -3401,11 +3401,11 @@ public class Client implements LogService {
     }
 
     @Override
-    public ListAlertResponseV2 listAlert(ListAlertRequest request) throws LogException {
+    public ListAlertResponse listAlert(ListAlertRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
         try {
-            ListAlertResponseV2 alertResponse = new ListAlertResponseV2(response.getHeaders());
+            ListAlertResponse alertResponse = new ListAlertResponse(response.getHeaders());
             alertResponse.deserialize(responseBody);
             return alertResponse;
         } catch (Exception ex) {

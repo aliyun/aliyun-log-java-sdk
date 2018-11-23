@@ -1,27 +1,27 @@
 package com.aliyun.openservices.log.request;
 
 
-import com.aliyun.openservices.log.common.AlertV2;
+import com.aliyun.openservices.log.common.Alert;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.util.Args;
 
 public class CreateAlertRequest extends JobRequest {
 
-    private AlertV2 alert;
+    private Alert alert;
 
-    public CreateAlertRequest(String project, AlertV2 alert) {
+    public CreateAlertRequest(String project, Alert alert) {
         super(project);
         Args.notNull(alert, "alert");
         this.alert = alert;
         alert.validate();
     }
 
-    public AlertV2 getAlert() {
+    public Alert getAlert() {
         return alert;
     }
 
-    public void setAlert(AlertV2 alert) {
+    public void setAlert(Alert alert) {
         this.alert = alert;
     }
 

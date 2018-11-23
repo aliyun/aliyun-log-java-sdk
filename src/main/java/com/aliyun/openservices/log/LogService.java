@@ -142,7 +142,7 @@ import com.aliyun.openservices.log.response.DisableAlertResponse;
 import com.aliyun.openservices.log.response.DisableJobResponse;
 import com.aliyun.openservices.log.response.EnableAlertResponse;
 import com.aliyun.openservices.log.response.EnableJobResponse;
-import com.aliyun.openservices.log.response.GetAlertResponseV2;
+import com.aliyun.openservices.log.response.GetAlertResponse;
 import com.aliyun.openservices.log.response.GetAppliedConfigResponse;
 import com.aliyun.openservices.log.response.GetAppliedMachineGroupsResponse;
 import com.aliyun.openservices.log.response.GetChartResponse;
@@ -164,7 +164,7 @@ import com.aliyun.openservices.log.response.GetSavedSearchResponse;
 import com.aliyun.openservices.log.response.GetShipperResponse;
 import com.aliyun.openservices.log.response.GetShipperTasksResponse;
 import com.aliyun.openservices.log.response.ListACLResponse;
-import com.aliyun.openservices.log.response.ListAlertResponseV2;
+import com.aliyun.openservices.log.response.ListAlertResponse;
 import com.aliyun.openservices.log.response.ListConfigResponse;
 import com.aliyun.openservices.log.response.ListConsumerGroupResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
@@ -2853,7 +2853,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	GetAlertResponseV2 getAlert(GetAlertRequest request) throws LogException;
+	GetAlertResponse getAlert(GetAlertRequest request) throws LogException;
 
 	/**
 	 * list alert
@@ -2868,7 +2868,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	ListAlertResponseV2 listAlert(ListAlertRequest request) throws LogException;
+	ListAlertResponse listAlert(ListAlertRequest request) throws LogException;
 
 	CreateDashboardResponse createDashboard(CreateDashboardRequest request) throws LogException;
 	UpdateDashboardResponse updateDashboard(UpdateDashboardRequest request) throws LogException;
