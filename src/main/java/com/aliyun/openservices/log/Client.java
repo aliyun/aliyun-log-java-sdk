@@ -147,9 +147,9 @@ import java.util.zip.Deflater;
  * SlsClient class is the main class in the sdk, it implements the interfaces
  * defined in LogService. It can be used to send request to the log service
  * server to put/get data.
- * 
+ *
  * @author sls_dev
- * 
+ *
  */
 public class Client implements LogService {
 	private String httpType;
@@ -220,12 +220,12 @@ public class Client implements LogService {
 	/**
 	 * Construct the sls client with accessId, accessKey and server address, all
 	 * other parameters will be set to default value
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if the input parameter is null
 	 * @throws IllegalArgumentException
 	 *             if the input parameter is empty
-	 * 
+	 *
 	 * @param endpoint
 	 *            the log service server address
 	 * @param accessId
@@ -240,13 +240,13 @@ public class Client implements LogService {
 	/**
 	 * Construct the sls client with accessId, accessKey , server address and
 	 * client ip address, all other parameters will be set to default value
-	 * 
-	 * 
+	 *
+	 *
 	 * @throws NullPointerException
 	 *             if the input parameter is null
 	 * @throws IllegalArgumentException
 	 *             if the input parameter is empty
-	 * 
+	 *
 	 * @param endpoint
 	 *            the log service server address
 	 * @param accessId
@@ -339,12 +339,12 @@ public class Client implements LogService {
 
 	/**
 	 * Construct sls client with full parameters
-	 * 
+	 *
 	 * @throws NullPointerException
 	 *             if the input parameter is null
 	 * @throws IllegalArgumentException
 	 *             if the input parameter is empty
-	 * 
+	 *
 	 * @param endpoint
 	 *            the log service server address
 	 * @param accessId
@@ -420,35 +420,31 @@ public class Client implements LogService {
 				logtailProfiles.add(logtailProfile);
 			}
 			return new GetLogtailProfileResponse(resHeaders, count, total, logtailProfiles);
-
 		} catch (LogException e) {
 			throw new LogException(e.GetErrorCode(), e.GetErrorMessage(),
 					e.getCause(), GetRequestId(resHeaders));
 		}
 	}
-	
-	public GetLogtailProfileResponse GetLogtailProfile(String project, String logstore, String source, 
+
+	public GetLogtailProfileResponse GetLogtailProfile(String project, String logstore, String source,
 			int line, int offset) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logstore, "logstore");
-		
 		GetLogtailProfileRequest request = new GetLogtailProfileRequest(project, logstore, source, line, offset);
 		return GetLogtailProfile(request);
 	}
-	
+
 	public GetLogtailProfileResponse GetLogtailProfile(GetLogtailProfileRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
 		String project = request.GetProject();
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-
 		String resourceUri = "/logstores/" + request.getLogStore() + Consts.CONST_GETLOGTAILPROFILE_URI;
 		ResponseMessage response = SendData(project, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
-
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		return ExtractLogtailProfile(resHeaders, object);
 	}
 
@@ -458,7 +454,6 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
 		CodingUtils.assertParameterNotNull(query, "query");
-
 		GetHistogramsRequest request = new GetHistogramsRequest(project,
 				logStore, topic, query, from, to);
 		return GetHistograms(request);
@@ -637,16 +632,14 @@ public class Client implements LogService {
 			headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE,
 					compressType.toString());
 		} else if (compressType == CompressType.GZIP) {
-			ByteArrayOutputStream out = new ByteArrayOutputStream(
-					logBytes.length);
-
-			Deflater compresser = new Deflater();
-			compresser.setInput(logBytes);
-			compresser.finish();
+			ByteArrayOutputStream out = new ByteArrayOutputStream(logBytes.length);
+			Deflater compressor = new Deflater();
+            compressor.setInput(logBytes);
+            compressor.finish();
 
 			byte[] buf = new byte[10240];
-			while (!compresser.finished()) {
-				int count = compresser.deflate(buf);
+			while (!compressor.finished()) {
+				int count = compressor.deflate(buf);
 				out.write(buf, 0, count);
 			}
 
@@ -683,7 +676,7 @@ public class Client implements LogService {
 					connection_status.UpdateLastUsedTime(System.nanoTime());
 				}
 				return putLogsResponse;
-			} catch (LogException e) {			
+			} catch (LogException e) {
 				String request_id = e.GetRequestId();
 				if (i == 1 || request_id != null && !request_id.isEmpty())
 				{
@@ -697,7 +690,7 @@ public class Client implements LogService {
 		}
 		return null; // never happen
 	}
-	
+
 	private ClientConnectionStatus GetGlobalConnectionStatus() throws LogException {
 		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
 				.GetConnectionContainer(this.hostName, this.accessId, this.accessKey);
@@ -782,7 +775,7 @@ public class Client implements LogService {
 					requestId);
 		}
 	}
-	
+
 	private void ExtractLogsWithFastJson(GetLogsResponse response, com.alibaba.fastjson.JSONArray logs) {
 		try {
 			for (int i = 0; i < logs.size(); i++) {
@@ -806,7 +799,7 @@ public class Client implements LogService {
 			// ignore;
 		}
 	}
-	
+
 	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
@@ -843,9 +836,8 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
-		ListLogStoresResponse listLogStoresResponse = new ListLogStoresResponse(
-				resHeaders);
+		JSONObject object = parseResponseBody(response, requestId);
+		ListLogStoresResponse listLogStoresResponse = new ListLogStoresResponse(resHeaders);
 		listLogStoresResponse.SetLogStores(ExtractJsonArray(
 				Consts.CONST_RESULT_LOG_STORES, object));
 		listLogStoresResponse.SetTotal(this.ExtractJsonInteger(
@@ -888,8 +880,7 @@ public class Client implements LogService {
 			int shardId, long fromTime) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-		GetCursorRequest request = new GetCursorRequest(project, logStore,
-				shardId, fromTime);
+		GetCursorRequest request = new GetCursorRequest(project, logStore, shardId, fromTime);
 		return GetCursor(request);
 	}
 
@@ -899,8 +890,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStream");
 		CodingUtils.assertParameterNotNull(fromTime, "fromTime");
 		long timeStamp = Utils.dateToTimestamp(fromTime);
-		GetCursorRequest request = new GetCursorRequest(project, logStore,
-				shardId, timeStamp);
+		GetCursorRequest request = new GetCursorRequest(project, logStore, shardId, timeStamp);
 		return GetCursor(request);
 	}
 
@@ -908,8 +898,7 @@ public class Client implements LogService {
 			int shardId, CursorMode mode) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStream, "logStream");
-		GetCursorRequest request = new GetCursorRequest(project, logStream,
-				shardId, mode);
+		GetCursorRequest request = new GetCursorRequest(project, logStream, shardId, mode);
 		return GetCursor(request);
 	}
 
@@ -931,7 +920,7 @@ public class Client implements LogService {
 					urlParameter, headParameter);
 			Map<String, String> resHeaders = response.getHeaders();
 			String requestId = GetRequestId(resHeaders);
-			JSONObject object = ParserResponseMessage(response, requestId);
+			JSONObject object = parseResponseBody(response, requestId);
             return new GetCursorResponse(resHeaders, object.getString("cursor"));
 		} catch (JSONException e) {
 			throw new LogException("FailToCreateCursor", e.getMessage(), e,
@@ -958,7 +947,7 @@ public class Client implements LogService {
 					urlParameter, headParameter);
 			Map<String, String> resHeaders = response.getHeaders();
 			String requestId = GetRequestId(resHeaders);
-			JSONObject object = ParserResponseMessage(response, requestId);
+			JSONObject object = parseResponseBody(response, requestId);
 			getCursorTimeResponse = new GetCursorTimeResponse(resHeaders,
 					object.getInt("cursor_time"));
 		} catch (JSONException e) {
@@ -1233,7 +1222,7 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(config, "config");
 		return CreateConfig(new CreateConfigRequest(project, config));
 	}
-	
+
 	public CreateConfigResponse CreateConfig(CreateConfigRequest request)
 			throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -1312,7 +1301,7 @@ public class Client implements LogService {
 				headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
         Config config = ExtractConfigFromResponse(object, requestId);
         return new GetConfigResponse(resHeaders, config);
 	}
@@ -1402,7 +1391,7 @@ public class Client implements LogService {
 					urlParameter, headParameter);
 			Map<String, String> resHeaders = response.getHeaders();
 			String requestId = GetRequestId(resHeaders);
-			object = ParserResponseMessage(response, requestId);
+			object = parseResponseBody(response, requestId);
 			int total = object.getInt("total");
 			int count = object.getInt("count");
             List<String> configs = ExtractConfigs(object, requestId);
@@ -1520,7 +1509,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		ArrayList<String> group = ExtractConfigsFromResponse(object);
 		return new GetAppliedConfigResponse(resHeaders, group);
 	}
@@ -1547,7 +1536,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		ArrayList<String> group = this.ExtractConfigMachineGroupFromResponse(object);
 		return new GetAppliedMachineGroupsResponse(resHeaders, group);
 	}
@@ -1573,7 +1562,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		MachineGroup group = ExtractMachineGroupFromResponse(object, requestId);
         return new GetMachineGroupResponse(resHeaders, group);
 	}
@@ -1593,7 +1582,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		return ExtractMachinesFromResponse(resHeaders, object);
 	}
 
@@ -1624,7 +1613,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(groupName, "groupName");
 		return ApproveMachineGroup(new ApproveMachineGroupRequest(project, groupName));
 	}
-	
+
 	public ApproveMachineGroupResponse ApproveMachineGroup(
 			ApproveMachineGroupRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -1640,7 +1629,7 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
 		return new ApproveMachineGroupResponse(resHeaders);
 	}
-	
+
 	public DeleteMachineGroupResponse DeleteMachineGroup(String project,
 			String groupName) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -1715,7 +1704,7 @@ public class Client implements LogService {
 					urlParameter, headParameter);
 			Map<String, String> resHeaders = response.getHeaders();
 			String requestId = GetRequestId(resHeaders);
-			object = ParserResponseMessage(response, requestId);
+			object = parseResponseBody(response, requestId);
 			int total = object.getInt("total");
 			int count = object.getInt("count");
             List<String>  groups = ExtractMachineGroups(object, requestId);
@@ -1900,7 +1889,7 @@ public class Client implements LogService {
 					urlParameter, headParameter);
 			Map<String, String> resHeaders = response.getHeaders();
             String requestId = GetRequestId(resHeaders);
-			object = ParserResponseMessage(response, requestId);
+			object = parseResponseBody(response, requestId);
 			int total = object.getInt("total");
 			int count = object.getInt("count");
             List<ACL> acls = ExtractACLs(object, requestId);
@@ -1943,7 +1932,7 @@ public class Client implements LogService {
 		}
 		return result;
 	}
-	
+
 	private void ExtractHistograms(GetHistogramsResponse response,
 			JSONArray items) {
 		try {
@@ -2001,14 +1990,6 @@ public class Client implements LogService {
 		}
 		response.SetBody(bytestream.toByteArray());
 	}
-
-    /**
-     * @deprecated Use parseResponseBody instead.
-     */
-    @Deprecated
-    protected JSONObject ParserResponseMessage(ResponseMessage response, String requestId) throws LogException {
-        return parseResponseBody(response, requestId);
-    }
 
     private JSONObject parseResponseBody(ResponseMessage response, String requestId) throws LogException {
         String body = encodeResponseBodyToUtf8String(response, requestId);
@@ -2095,7 +2076,7 @@ public class Client implements LogService {
 	}
 
 	protected ResponseMessage SendData(String project, HttpMethod method, String resourceUri,
-			Map<String, String> parameters, Map<String, String> headers, byte[] body, 
+			Map<String, String> parameters, Map<String, String> headers, byte[] body,
 			Map<String, String> output_header, String serverIp)
 			throws LogException {
 		if (body.length > 0) {
@@ -2125,7 +2106,7 @@ public class Client implements LogService {
 			int statusCode = response.getStatusCode();
 			if (statusCode != Consts.CONST_HTTP_OK) {
 				String requestId = GetRequestId(response.getHeaders());
-				JSONObject object = ParserResponseMessage(response, requestId);
+				JSONObject object = parseResponseBody(response, requestId);
 				ErrorCheck(object, requestId);
 			}
 		} catch (ServiceException e) {
@@ -2359,7 +2340,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		LogStore logStore = ExtractLogStoreFromResponse(object, requestId);
 		return new GetLogStoreResponse(resHeaders, logStore);
 	}
@@ -2492,7 +2473,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		return GetIndex(new GetIndexRequest(project, logStore));
 	}
-	
+
     @Override
     public GetIndexStringResponse GetIndexString(String project, String logStore)
                     throws LogException {
@@ -2500,7 +2481,7 @@ public class Client implements LogService {
 	    CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 	    return GetIndexString(new GetIndexRequest(project, logStore));
     }
-	
+
 	private Index ExtractIndexFromResponseWithFastJson(com.alibaba.fastjson.JSONObject dict, String requestId)
 			throws LogException {
 		Index index = new Index();
@@ -2514,14 +2495,12 @@ public class Client implements LogService {
 	}
 
 	@Override
-	public GetIndexResponse GetIndex(GetIndexRequest request)
-			throws LogException {
+	public GetIndexResponse GetIndex(GetIndexRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		String logStore = request.GetLogStore();
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
         String resourceUri = "/logstores/" + logStore + "/index";
 		Map<String, String> urlParameter = request.GetAllParams();
@@ -2551,7 +2530,7 @@ public class Client implements LogService {
         Map<String, String> resHeaders = response.getHeaders();
         return new GetIndexStringResponse(resHeaders, response.GetStringBody());
     }
-	
+
 	@Override
 	public CreateShipperResponse CreateShipper(String project, String logStore,
 			String shipperName, ShipperConfig shipConfig) throws LogException {
@@ -2628,7 +2607,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 
 		ShipperConfig config;
 		if (object.containsKey("targetType")
@@ -2659,7 +2638,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		return new ListShipperResponse(resHeaders, ExtractJsonInteger("count", object),
                 ExtractJsonInteger("total", object), ExtractJsonArray("shipper", object));
 	}
@@ -2685,7 +2664,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		return new GetShipperTasksResponse(resHeaders, ExtractJsonInteger("count", object),
                 ExtractJsonInteger("total", object),
 				ExtractTasksStatisTic(object), ExtractShipperTask(object));
@@ -2998,7 +2977,7 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
 		GetProjectResponse getProjectResponse = new GetProjectResponse(resHeaders);
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		getProjectResponse.FromJsonObject(object);
 		return getProjectResponse;
 	}
@@ -3078,13 +3057,13 @@ public class Client implements LogService {
 		ListProjectRequest listProjectRequest = new ListProjectRequest("", 0, 500);
 		return ListProject(listProjectRequest);
 	}
-	
+
 	@Override
 	public ListProjectResponse ListProject(String projectName, int offset, int size) throws LogException {
 		ListProjectRequest listProjectRequest = new ListProjectRequest(projectName, offset, size);
 		return ListProject(listProjectRequest);
 	}
-	
+
 	protected List<Project> ExtractProjects(JSONObject object, String requestId)
 			throws LogException {
 		List<Project> projects = new ArrayList<Project>();
@@ -3104,7 +3083,7 @@ public class Client implements LogService {
 
 		return projects;
 	}
-	
+
 	@Override
 	public ListProjectResponse ListProject(ListProjectRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3120,7 +3099,7 @@ public class Client implements LogService {
 					urlParameter, headParameter);
 			Map<String, String> resHeaders = response.getHeaders();
 			String requestId = GetRequestId(resHeaders);
-			object = ParserResponseMessage(response, requestId);
+			object = parseResponseBody(response, requestId);
 			int total = object.getInt(Consts.CONST_TOTAL);
 			int count = object.getInt(Consts.CONST_COUNT);
             List<Project> projects = ExtractProjects(object, requestId);
@@ -3133,13 +3112,13 @@ public class Client implements LogService {
 		}
 		return listProjectResponse;
 	}
-		
+
 	// saved search api
 	private void checkSavedSearchResource(SavedSearch savedSearch) {
 		CodingUtils.assertStringNotNullOrEmpty(savedSearch.getSavedSearchName(), "savedsearchName");
 		CodingUtils.assertStringNotNullOrEmpty(savedSearch.getLogstore(), "logstore");
 	}
-	
+
 	@Override
 	public CreateChartResponse createChart(CreateChartRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3175,7 +3154,7 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.DELETE, resourceUri, urlParameter, headParameter);
 		return new DeleteChartResponse(response.getHeaders());
 	}
-	
+
 	protected Chart ExtractChartFromResponse(JSONObject dict,
 			String requestId) throws LogException {
 		Chart chart = new Chart();
@@ -3187,7 +3166,7 @@ public class Client implements LogService {
 		}
 		return chart;
 	}
-	
+
 	@Override
 	public GetChartResponse getChart(GetChartRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3197,11 +3176,11 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		Chart chart = ExtractChartFromResponse(object, requestId);
         return new GetChartResponse(response.getHeaders(), chart);
 	}
-	
+
 	@Override
 	public CreateDashboardResponse createDashboard(CreateDashboardRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3213,7 +3192,7 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.POST, resourceUri, urlParameter, headParameter, request.getDashboard().ToJsonString());
 		return new CreateDashboardResponse(response.getHeaders());
 	}
-	
+
 	@Override
 	public UpdateDashboardResponse updateDashboard(UpdateDashboardRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3237,7 +3216,7 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.DELETE, resourceUri, urlParameter, headParameter);
 		return new DeleteDashboardResponse(response.getHeaders());
 	}
-	
+
 	protected Dashboard ExtractDashboardFromResponse(JSONObject dict,
 			String requestId) throws LogException {
 		Dashboard dashboard = new Dashboard();
@@ -3249,7 +3228,7 @@ public class Client implements LogService {
 		}
 		return dashboard;
 	}
-	
+
 	@Override
 	public GetDashboardResponse getDashboard(GetDashboardRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3259,11 +3238,11 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		Dashboard dashboard = ExtractDashboardFromResponse(object, requestId);
         return new GetDashboardResponse(response.getHeaders(), dashboard);
 	}
-	
+
 	protected List<Dashboard> ExtractDashboards(JSONObject object, String requestId)
 			throws LogException {
 		List<Dashboard> dashboards = new ArrayList<Dashboard>();
@@ -3282,7 +3261,7 @@ public class Client implements LogService {
 
 		return dashboards;
 	}
-	
+
 	@Override
 	public ListDashboardResponse listDashboard(ListDashboardRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3293,13 +3272,13 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		int total = object.getInt(Consts.CONST_TOTAL);
 		int count = object.getInt(Consts.CONST_COUNT);
         List<Dashboard> dashboards = ExtractDashboards(object, requestId);
         return new ListDashboardResponse(response.getHeaders(), count, total, dashboards);
 	}
-	
+
 	@Override
 	public CreateSavedSearchResponse createSavedSearch(CreateSavedSearchRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3338,7 +3317,7 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.DELETE, resourceUri, urlParameter, headParameter);
 		return new DeleteSavedSearchResponse(response.getHeaders());
 	}
-	
+
 	protected SavedSearch ExtractSavedSearchFromResponse(JSONObject dict,
 			String requestId) throws LogException {
 		SavedSearch savedSearch = new SavedSearch();
@@ -3350,7 +3329,7 @@ public class Client implements LogService {
 		}
 		return savedSearch;
 	}
-	
+
 	@Override
 	public GetSavedSearchResponse getSavedSearch(GetSavedSearchRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3362,11 +3341,11 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		SavedSearch savedSearch = ExtractSavedSearchFromResponse(object, requestId);
         return new GetSavedSearchResponse(response.getHeaders(), savedSearch);
 	}
-	
+
 	protected List<SavedSearch> ExtractSavedSearches(JSONObject object, String requestId)
 			throws LogException {
 		List<SavedSearch> savedSearches = new ArrayList<SavedSearch>();
@@ -3385,7 +3364,7 @@ public class Client implements LogService {
 
 		return savedSearches;
 	}
-	
+
 	@Override
 	public ListSavedSearchResponse listSavedSearch(ListSavedSearchRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3396,13 +3375,13 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		int total = object.getInt(Consts.CONST_TOTAL);
 		int count = object.getInt(Consts.CONST_COUNT);
         List<SavedSearch> savedSearches = ExtractSavedSearches(object, requestId);
         return new ListSavedSearchResponse(response.getHeaders(), count, total, savedSearches);
 	}
-	
+
 	private void checkAlertResource(Alert alert) {
 		CodingUtils.assertStringNotNullOrEmpty(alert.getAlertName(), "alertName");
 		CodingUtils.assertStringNotNullOrEmpty(alert.getSavedSearchName(), "savedsearchName");
@@ -3411,7 +3390,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(alert.getComparator(), "comparator");
 		CodingUtils.assertStringNotNullOrEmpty(alert.getActionType(), "actionType");
 	}
-	
+
 	@Override
 	public CreateAlertResponse createAlert(CreateAlertRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3424,7 +3403,7 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.POST, resourceUri, urlParameter, headParameter, request.getAlert().ToJsonString());
 		return new CreateAlertResponse(response.getHeaders());
 	}
-	
+
 	@Override
 	public UpdateAlertResponse updateAlert(UpdateAlertRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3474,7 +3453,7 @@ public class Client implements LogService {
 		}
 		return alert;
 	}
-	
+
 	@Override
 	public GetAlertResponse getAlert(GetAlertRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3486,7 +3465,7 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		Alert alert = ExtractAlertFromResponse(object, requestId);
         return new GetAlertResponse(response.getHeaders(), alert);
 	}
@@ -3522,7 +3501,7 @@ public class Client implements LogService {
 
 		return alerts;
 	}
-	
+
 	@Override
 	public ListAlertResponse listAlert(ListAlertRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3533,7 +3512,7 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		int total = object.getInt(Consts.CONST_TOTAL);
 		int count = object.getInt(Consts.CONST_COUNT);
         List<Alert> alerts = ExtractAlerts(object, requestId);
@@ -3571,7 +3550,7 @@ public class Client implements LogService {
 
 		return alerts;
 	}
-	
+
 	@Override
 	public ListAlertFailResponse listAlertFail(ListAlertFailRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -3583,7 +3562,7 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
         int total = object.getInt(Consts.CONST_TOTAL);
         int count = object.getInt(Consts.CONST_COUNT);
         List<AlertFail> alertFails = ExtractAlertFails(object, requestId);
@@ -3656,7 +3635,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		EtlJob etlJob = new EtlJob();
 		etlJob.fromJsonObject(object);
 		return new GetEtlJobResponse(resHeaders, etlJob);
@@ -3672,7 +3651,7 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		ListEtlJobResponse listResp = new ListEtlJobResponse(response.getHeaders(), object.getInt(Consts.CONST_TOTAL));
 		listResp.setEtlJobNameList(ExtractJsonArray("etlJobNameList", object));
 		return listResp;
@@ -3847,7 +3826,7 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		ListEtlMetaNameResponse listResp = new ListEtlMetaNameResponse(response.getHeaders(), object.getInt(Consts.CONST_TOTAL));
 		listResp.setEtlMetaNameList(ExtractJsonArray("etlMetaNameList", object));
 		return listResp;
@@ -3859,7 +3838,7 @@ public class Client implements LogService {
 		String resourceUri = Consts.CONST_ETLMETA_URI;
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
-		JSONObject object = ParserResponseMessage(response, requestId);
+		JSONObject object = parseResponseBody(response, requestId);
 		ListEtlMetaResponse listResp = new ListEtlMetaResponse(response.getHeaders(), object.getInt(Consts.CONST_TOTAL));
 		try {
 			JSONArray items = object.getJSONArray("etlMetaList");
