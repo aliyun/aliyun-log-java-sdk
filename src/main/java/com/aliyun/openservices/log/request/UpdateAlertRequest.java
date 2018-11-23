@@ -1,23 +1,36 @@
 package com.aliyun.openservices.log.request;
 
-import com.aliyun.openservices.log.common.Alert;
+import com.aliyun.openservices.log.common.AlertV2;
+import com.aliyun.openservices.log.http.client.HttpMethod;
+import com.aliyun.openservices.log.util.Args;
 
-public class UpdateAlertRequest extends Request {
+public class UpdateAlertRequest extends JobRequest {
 
-	private static final long serialVersionUID = -6487921750926014144L;
-	protected Alert alert = new Alert();
+    private AlertV2 alert;
 
-	public UpdateAlertRequest(String project, Alert alert) {
-		super(project);
-		this.alert = alert;
-	}
+    public UpdateAlertRequest(String project, AlertV2 alert) {
+        super(project);
+        Args.notNull(alert, "alert");
+        this.alert = alert;
+        alert.validate();
+        setName(alert.getName());
+    }
 
-	public Alert getAlert() {
-		return alert;
-	}
+    public AlertV2 getAlert() {
+        return alert;
+    }
 
-	public void setAlert(Alert alert) {
-		this.alert = alert;
-	}
+    public void setAlert(AlertV2 alert) {
+        this.alert = alert;
+    }
 
+    @Override
+    public HttpMethod getMethod() {
+        return HttpMethod.PUT;
+    }
+
+    @Override
+    public Object getBody() {
+        return alert.makeJob();
+    }
 }

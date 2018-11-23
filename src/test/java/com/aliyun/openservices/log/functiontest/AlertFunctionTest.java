@@ -13,16 +13,16 @@ import com.aliyun.openservices.log.common.Notification;
 import com.aliyun.openservices.log.common.Query;
 import com.aliyun.openservices.log.common.TimeSpanType;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.request.CreateAlertRequestV2;
+import com.aliyun.openservices.log.request.CreateAlertRequest;
 import com.aliyun.openservices.log.request.CreateDashboardRequest;
-import com.aliyun.openservices.log.request.DeleteAlertRequestV2;
+import com.aliyun.openservices.log.request.DeleteAlertRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
 import com.aliyun.openservices.log.request.DisableAlertRequest;
 import com.aliyun.openservices.log.request.EnableAlertRequest;
-import com.aliyun.openservices.log.request.GetAlertRequestV2;
-import com.aliyun.openservices.log.request.ListAlertRequestV2;
+import com.aliyun.openservices.log.request.GetAlertRequest;
+import com.aliyun.openservices.log.request.ListAlertRequest;
 import com.aliyun.openservices.log.request.ListDashboardRequest;
-import com.aliyun.openservices.log.request.UpdateAlertRequestV2;
+import com.aliyun.openservices.log.request.UpdateAlertRequest;
 import com.aliyun.openservices.log.response.GetAlertResponseV2;
 import com.aliyun.openservices.log.response.ListAlertResponseV2;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
@@ -54,12 +54,12 @@ public class AlertFunctionTest extends FunctionTest {
     @Test
     public void testCrud() throws Exception {
         // test list jobs
-        ListAlertRequestV2 listReq = new ListAlertRequestV2(TEST_PROJECT);
+        ListAlertRequest listReq = new ListAlertRequest(TEST_PROJECT);
         listReq.setOffset(0);
         listReq.setSize(100);
         ListAlertResponseV2 listJobsResponse = client.listAlert(listReq);
         for (AlertV2 item : listJobsResponse.getResults()) {
-            client.deleteAlert(new DeleteAlertRequestV2(TEST_PROJECT, item.getName()));
+            client.deleteAlert(new DeleteAlertRequest(TEST_PROJECT, item.getName()));
         }
         ListDashboardRequest listDashboardRequest = new ListDashboardRequest(TEST_PROJECT);
         listDashboardRequest.setSize(100);
@@ -103,7 +103,7 @@ public class AlertFunctionTest extends FunctionTest {
         alertV2.setSchedule(schedule);
 
         // create
-        CreateAlertRequestV2 request = new CreateAlertRequestV2(TEST_PROJECT, alertV2);
+        CreateAlertRequest request = new CreateAlertRequest(TEST_PROJECT, alertV2);
         try {
             client.createAlert(request);
             fail("Dashboard not exist");
@@ -119,7 +119,7 @@ public class AlertFunctionTest extends FunctionTest {
 
         client.createAlert(request);
 
-        GetAlertResponseV2 response = client.getAlert(new GetAlertRequestV2(TEST_PROJECT, jobName));
+        GetAlertResponseV2 response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
 
         AlertV2 created = response.getAlert();
         assertEquals(created.getName(), alertV2.getName());
@@ -128,19 +128,19 @@ public class AlertFunctionTest extends FunctionTest {
         assertEquals(created.getSchedule(), alertV2.getSchedule());
 
         client.disableAlert(new DisableAlertRequest(TEST_PROJECT, jobName));
-        response = client.getAlert(new GetAlertRequestV2(TEST_PROJECT, jobName));
+        response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
         AlertV2 alertV21 = response.getAlert();
         assertEquals(alertV21.getState(), JobState.DISABLED);
 
         client.enableAlert(new EnableAlertRequest(TEST_PROJECT, jobName));
-        response = client.getAlert(new GetAlertRequestV2(TEST_PROJECT, jobName));
+        response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
         AlertV2 alertV22 = response.getAlert();
         assertEquals(alertV22.getState(), JobState.ENABLED);
 
         DisableAlertRequest disableAlertRequest = new DisableAlertRequest(TEST_PROJECT, jobName);
         client.disableJob(disableAlertRequest);
 
-        response = client.getAlert(new GetAlertRequestV2(TEST_PROJECT, jobName));
+        response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
         AlertV2 alertV23 = response.getAlert();
         assertEquals(alertV23.getState(), JobState.DISABLED);
 
@@ -150,18 +150,18 @@ public class AlertFunctionTest extends FunctionTest {
 
         Date muteTo = new Date(System.currentTimeMillis() + 60 * 1000);
         alertV23.getConfiguration().setMuteUntil(muteTo);
-        client.updateAlert(new UpdateAlertRequestV2(TEST_PROJECT, alertV23));
-        response = client.getAlert(new GetAlertRequestV2(TEST_PROJECT, jobName));
+        client.updateAlert(new UpdateAlertRequest(TEST_PROJECT, alertV23));
+        response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
         AlertV2 alertV24 = response.getAlert();
         assertEquals(muteTo.getTime() / 1000, alertV24.getConfiguration().getMuteUntil().getTime() / 1000);
 
         for (int i = 0; i < 10; i++) {
             alertV2.setName("alert-" + i);
-            client.createAlert(new CreateAlertRequestV2(TEST_PROJECT, alertV2));
+            client.createAlert(new CreateAlertRequest(TEST_PROJECT, alertV2));
         }
 
         // test list jobs
-        listReq = new ListAlertRequestV2(TEST_PROJECT);
+        listReq = new ListAlertRequest(TEST_PROJECT);
         listReq.setOffset(0);
         listReq.setSize(10);
         listJobsResponse = client.listAlert(listReq);
