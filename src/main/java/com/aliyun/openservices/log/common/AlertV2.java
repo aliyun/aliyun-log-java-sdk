@@ -140,7 +140,6 @@ public class AlertV2 implements Serializable {
         Args.notNullOrEmpty(queries, "Query list");
         for (Query query : queries) {
             Args.notNull(query, "query");
-            query.validate(Consts.MAX_TIME_SPAN_IN_QUERY);
         }
         Args.notNull(schedule, "schedule");
     }
