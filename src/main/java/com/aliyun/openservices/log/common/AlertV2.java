@@ -140,6 +140,8 @@ public class AlertV2 implements Serializable {
         Args.notNullOrEmpty(queries, "Query list");
         for (Query query : queries) {
             Args.notNull(query, "query");
+            String start = query.getStart();
+            Args.check(start != null && start.startsWith("-"), "Invalid timespan start: " + start);
         }
         Args.notNull(schedule, "schedule");
     }
