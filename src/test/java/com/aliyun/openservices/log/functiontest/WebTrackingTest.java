@@ -20,16 +20,13 @@ import static org.junit.Assert.fail;
 
 public class WebTrackingTest extends BaseMetadataTest {
 
-    private static final String TEST_PROJECT = "project-test-webtracking";
-    private static final String TEST_LOGSTORE = "logstore1";
-
-    private boolean testPutLogs() {
+    private boolean testPutLogs(String logStoreName) {
         HttpClient httpClient = HttpClientBuilder.create().build();
         StringBuilder params = new StringBuilder("APIVersion=0.6.0");
         for (int i = 0; i < 100; ++i) {
             params.append("&key").append(i).append("=").append("value").append(i);
         }
-        HttpGet httpGet = new HttpGet("http://" + TEST_PROJECT + "." + client.getEndpoint() + "/logstores/" + TEST_LOGSTORE + "/track?" + params);
+        HttpGet httpGet = new HttpGet("http://" + TEST_PROJECT + "." + credentials.getEndpoint() + "/logstores/" + logStoreName + "/track?" + params);
         try {
             HttpResponse res = httpClient.execute(httpGet);
             if (res.getStatusLine().getStatusCode() / 200 != 1) {
@@ -63,30 +60,31 @@ public class WebTrackingTest extends BaseMetadataTest {
 
     @Test
     public void testWebTracking() throws Exception {
+        String logStoreName = "logstore-" + getNowTimestamp();
         LogStore logStore = new LogStore();
         logStore.SetTtl(1);
         logStore.SetShardCount(2);
-        logStore.SetLogStoreName(TEST_LOGSTORE);
+        logStore.SetLogStoreName(logStoreName);
         logStore.setEnableWebTracking(true);
         logStore.setAppendMeta(true);
-        reCreateLogStore(TEST_PROJECT, logStore);
+        createOrUpdateLogStore(TEST_PROJECT, logStore);
 
-        assertTrue(testPutLogs());
+        assertTrue(testPutLogs(logStoreName));
         waitForSeconds(3);
-        assertEquals(1, countAppended(TEST_PROJECT, TEST_LOGSTORE, 2));
+        assertEquals(1, countLogGroupWithClientIpTag(TEST_PROJECT, logStoreName, 2));
 
         logStore.setEnableWebTracking(false);
         client.UpdateLogStore(TEST_PROJECT, logStore);
         waitOneMinutes();
-        assertFalse(testPutLogs());
+        assertFalse(testPutLogs(logStoreName));
         waitForSeconds(3);
-        assertEquals(1, countAppended(TEST_PROJECT, TEST_LOGSTORE, 2));
+        assertEquals(1, countLogGroupWithClientIpTag(TEST_PROJECT, logStoreName, 2));
 
         logStore.setEnableWebTracking(true);
         client.UpdateLogStore(TEST_PROJECT, logStore);
         waitOneMinutes();
-        assertTrue(testPutLogs());
+        assertTrue(testPutLogs(logStoreName));
         waitForSeconds(3);
-        assertEquals(2, countAppended(TEST_PROJECT, TEST_LOGSTORE, 2));
+        assertEquals(2, countLogGroupWithClientIpTag(TEST_PROJECT, logStoreName, 2));
     }
 }

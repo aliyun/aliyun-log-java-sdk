@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.request;
 
-import net.sf.json.JSONObject;
+import java.util.Collections;
 
 
 public class UpdateProjectRequest extends Request {
@@ -20,9 +20,7 @@ public class UpdateProjectRequest extends Request {
         this.description = description;
     }
 
-    public JSONObject marshal() {
-        JSONObject object = new JSONObject();
-        object.put("description", description);
-        return object;
+    public Object getBody() {
+        return Collections.singletonMap("description", description);
     }
 }

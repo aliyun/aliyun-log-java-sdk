@@ -8,6 +8,7 @@ import com.aliyun.openservices.log.response.ListEtlMetaResponse;
 import com.aliyun.openservices.log.response.UpdateEtlMetaResponse;
 import net.sf.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -15,18 +16,19 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class EtlMetaFunctionTest extends FunctionTest {
-    private static String project = "ali-slstest-trigger";
-    private static String etlMetaName_1 = "slb-user-logging-rule";
-    private static String etlMetaName_2 = "apigateway-user-logging-rule";
-    private static String etlMetaKeyPrefxi_1 = UUID.randomUUID().toString();
+    private static String project = "26";
+    private static String etlMetaName_1 = "java_sdk_test_1";
+    private static String etlMetaName_2 = "java_sdk_test_2";
+    private static String etlMetaKeyPrefxi_1 = UUID.randomUUID().toString() + "\"'";
     private static String etlMetaKeyPrefxi_2 = UUID.randomUUID().toString();
     private static int etlMetaCount_1 = 205;
     private static int etlMetaCount_2 = 5;
+    private String userAliuid = "1654218965343050";
+    private String userRegion = "cn-chengdu";
+    private String userProject = "flowlog-test";
 
     @Test
     public void testCreateEtlMeta() {
@@ -36,9 +38,9 @@ public class EtlMetaFunctionTest extends FunctionTest {
             String metaKey = etlMetaKeyPrefxi_1 + "_" + String.valueOf(i);
             EtlMeta meta = new EtlMeta(etlMetaName_1, metaKey, etlMetaKeyPrefxi_1);
             JSONObject metaValueObj = new JSONObject();
-            metaValueObj.put("aliuid", String.valueOf(i));
-            metaValueObj.put("region", "cn-hangzhou");
-            metaValueObj.put("project", "ali-log-test");
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
             metaValueObj.put("logstore", "slb-log");
             metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
             meta.setMetaValue(metaValueObj);
@@ -53,9 +55,9 @@ public class EtlMetaFunctionTest extends FunctionTest {
             String metaKey = etlMetaKeyPrefxi_2 + "_" + String.valueOf(i);
             EtlMeta meta = new EtlMeta(etlMetaName_2, metaKey, "");
             JSONObject metaValueObj = new JSONObject();
-            metaValueObj.put("aliuid", String.valueOf(i));
-            metaValueObj.put("region", "cn-hangzhou");
-            metaValueObj.put("project", "ali-log-test");
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
             metaValueObj.put("logstore", "apigateway-log");
             metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
             meta.setMetaValue(metaValueObj);
@@ -77,11 +79,12 @@ public class EtlMetaFunctionTest extends FunctionTest {
 
     @Test
     public void testListEtlMetaReverse() {
+        long curSecond = System.currentTimeMillis() / 1000;
         int offset = 0;
         ArrayList<EtlMeta> slbMetas = new ArrayList<EtlMeta>();
         try {
             while (true) {
-                ListEtlMetaResponse metas = client.listEtlMeta(project, etlMetaName_1,"ali-log-test", "slb-log", offset, 100);
+                ListEtlMetaResponse metas = client.listEtlMeta(project, etlMetaName_1, userProject, "slb-log", offset, 100);
                 offset += 100;
                 assertEquals(metas.getTotal(), etlMetaCount_1);
                 for (EtlMeta m : metas.getEtlMetaList()) {
@@ -98,10 +101,12 @@ public class EtlMetaFunctionTest extends FunctionTest {
         int i = 0;
         for (EtlMeta m : slbMetas) {
             assertEquals(m.getMetaKey(), etlMetaKeyPrefxi_1 + "_" + String.valueOf(i++));
+            assertTrue(m.getCreateTime() > curSecond - 300 && m.getCreateTime() < curSecond + 5);
+            assertTrue(m.getCreateTime() <= m.getLastModifyTime());
         }
 
         try {
-            ListEtlMetaResponse metas = client.listEtlMeta(project, etlMetaName_2,"ali-log-test", "apigateway-log", 0, 100);
+            ListEtlMetaResponse metas = client.listEtlMeta(project, etlMetaName_2, userProject,"apigateway-log", 0, 100);
             assertEquals(metas.getTotal(), etlMetaCount_2);
             assertEquals(metas.getCount(), etlMetaCount_2);
         } catch (LogException e) {
@@ -109,7 +114,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
         }
 
         try {
-            ListEtlMetaResponse metas = client.listEtlMeta(project, etlMetaName_1,"ali-log-test", "apigateway-log", 0, 100);
+            ListEtlMetaResponse metas = client.listEtlMeta(project, etlMetaName_1, userProject, "apigateway-log", 0, 100);
             assertEquals(metas.getTotal(), 0);
             assertEquals(metas.getCount(), 0);
         } catch (LogException e) {
@@ -117,7 +122,7 @@ public class EtlMetaFunctionTest extends FunctionTest {
         }
 
         try {
-            ListEtlMetaResponse metas = client.listEtlMeta(project, etlMetaName_2 + "xxx","ali-log-test", "apigateway-log", 0, 100);
+            ListEtlMetaResponse metas = client.listEtlMeta(project, etlMetaName_2 + "xxx", userProject, "apigateway-log", 0, 100);
             assertEquals(metas.getTotal(), 0);
             assertEquals(metas.getCount(), 0);
         } catch (LogException e) {
@@ -132,9 +137,9 @@ public class EtlMetaFunctionTest extends FunctionTest {
         String metaKey = etlMetaKeyPrefxi_1 + "_" + String.valueOf(0);
         EtlMeta meta = new EtlMeta(etlMetaName_1, metaKey, etlMetaKeyPrefxi_1);
         JSONObject metaValueObj = new JSONObject();
-        metaValueObj.put("aliuid", String.valueOf(0));
-        metaValueObj.put("region", "cn-hangzhou");
-        metaValueObj.put("project", "ali-log-test");
+        metaValueObj.put("aliuid", userAliuid);
+        metaValueObj.put("region", userRegion);
+        metaValueObj.put("project", userProject);
         metaValueObj.put("logstore", "slb-log");
         metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(0) + ":role/aliyunlogwriteonlyrole");
         meta.setMetaValue(metaValueObj);
@@ -149,9 +154,9 @@ public class EtlMetaFunctionTest extends FunctionTest {
         metaKey = etlMetaKeyPrefxi_1 + "_" + String.valueOf(500);
         meta = new EtlMeta(etlMetaName_1, metaKey, Consts.CONST_ETLMETA_ALL_TAG_MATCH);
         metaValueObj = new JSONObject();
-        metaValueObj.put("aliuid", String.valueOf(0));
-        metaValueObj.put("region", "cn-hangzhou");
-        metaValueObj.put("project", "ali-log-test");
+        metaValueObj.put("aliuid", userAliuid);
+        metaValueObj.put("region", userRegion);
+        metaValueObj.put("project", userProject);
         metaValueObj.put("logstore", "slb-log");
         metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(0) + ":role/aliyunlogwriteonlyrole");
         meta.setMetaValue(metaValueObj);
@@ -163,11 +168,11 @@ public class EtlMetaFunctionTest extends FunctionTest {
             assertEquals(e.GetErrorCode(), "PostBodyInvalid");
         }
 
-        meta = new EtlMeta(etlMetaName_2, "n", etlMetaKeyPrefxi_2);
+        meta = new EtlMeta(etlMetaName_2, "", etlMetaKeyPrefxi_2);
         metaValueObj = new JSONObject();
-        metaValueObj.put("aliuid", String.valueOf(0));
-        metaValueObj.put("region", "cn-hangzhou");
-        metaValueObj.put("project", "ali-log-test");
+        metaValueObj.put("aliuid", userAliuid);
+        metaValueObj.put("region", userRegion);
+        metaValueObj.put("project", userProject);
         metaValueObj.put("logstore", "apigateway-log");
         metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(0) + ":role/aliyunlogwriteonlyrole");
         meta.setMetaValue(metaValueObj);
@@ -181,9 +186,9 @@ public class EtlMetaFunctionTest extends FunctionTest {
 
         meta = new EtlMeta("x", metaKey, "");
         metaValueObj = new JSONObject();
-        metaValueObj.put("aliuid", String.valueOf(0));
-        metaValueObj.put("region", "cn-hangzhou");
-        metaValueObj.put("project", "ali-log-test");
+        metaValueObj.put("aliuid", userAliuid);
+        metaValueObj.put("region", userRegion);
+        metaValueObj.put("project", userProject);
         metaValueObj.put("logstore", "apigateway-log");
         metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(0) + ":role/aliyunlogwriteonlyrole");
         meta.setMetaValue(metaValueObj);
@@ -223,9 +228,9 @@ public class EtlMetaFunctionTest extends FunctionTest {
         String metaKey = etlMetaKeyPrefxi_1 + "_" + String.valueOf(0);
         EtlMeta meta = new EtlMeta(etlMetaName_1, metaKey, "");
         JSONObject metaValueObj = new JSONObject();
-        metaValueObj.put("aliuid", String.valueOf(0));
-        metaValueObj.put("region", "cn-hangzhou");
-        metaValueObj.put("project", "ali-log-test");
+        metaValueObj.put("aliuid", userAliuid);
+        metaValueObj.put("region", userRegion);
+        metaValueObj.put("project", userProject);
         metaValueObj.put("logstore", "slb-log");
         metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(0) + ":role/aliyunlogwriteonlyrole");
         meta.setMetaValue(metaValueObj);
@@ -252,9 +257,9 @@ public class EtlMetaFunctionTest extends FunctionTest {
 
         meta = new EtlMeta(etlMetaName_2, "notexitkey", etlMetaKeyPrefxi_2);
         metaValueObj = new JSONObject();
-        metaValueObj.put("aliuid", String.valueOf(0));
-        metaValueObj.put("region", "cn-hangzhou");
-        metaValueObj.put("project", "ali-log-test");
+        metaValueObj.put("aliuid", userAliuid);
+        metaValueObj.put("region", userRegion);
+        metaValueObj.put("project", userProject);
         metaValueObj.put("logstore", "apigateway-log");
         metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(0) + ":role/aliyunlogwriteonlyrole");
         meta.setMetaValue(metaValueObj);
@@ -368,4 +373,615 @@ public class EtlMetaFunctionTest extends FunctionTest {
         }
     }
 
+    @Test
+    public void testBatchEtlMetaApi() {
+
+        final String BATCH_META_NAME = "java_sdk_test_batch_meta";
+        final int TAG_1_COUNT = 50;
+        final int TAG_2_COUNT = 20;
+        System.out.println("testBatchCreateEtlMeta");
+        ArrayList<EtlMeta> failMetaList = new ArrayList<EtlMeta>();
+        try {
+            client.batchCreateEtlMeta(project, failMetaList);
+            fail();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            client.batchUpdateEtlMeta(project, failMetaList);
+            fail();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        for (int i = 0; i < 101; ++i) {
+            String metaKey = etlMetaKeyPrefxi_1 + "_" + String.valueOf(i);
+            EtlMeta meta = new EtlMeta(BATCH_META_NAME, metaKey, "");
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "slb-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            meta.setMetaValue(metaValueObj);
+            failMetaList.add(meta);
+        }
+        try {
+            client.batchCreateEtlMeta(project, failMetaList);
+            fail();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            client.batchUpdateEtlMeta(project, failMetaList);
+            fail();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        ArrayList<EtlMeta> successMetaList = new ArrayList<EtlMeta>();
+        /////////////////////////////////////
+        for (int i = 0; i < TAG_1_COUNT; ++i) {
+            String metaKey = etlMetaKeyPrefxi_1 + "_" + String.valueOf(i);
+            EtlMeta meta = new EtlMeta(BATCH_META_NAME, metaKey, "1");
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "slb-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            meta.setMetaValue(metaValueObj);
+            successMetaList.add(meta);
+        }
+        try {
+            client.batchCreateEtlMeta(project, successMetaList);
+        } catch (LogException e) {
+            System.err.println(e.GetErrorCode() + ", " + e.GetErrorMessage() + ", " + e.GetRequestId());
+            fail();
+        }
+
+        failMetaList.clear();
+        //have a meta alreay existed
+        for (int i = TAG_1_COUNT - 1; i < TAG_1_COUNT + 10; ++i) {
+            String metaKey = etlMetaKeyPrefxi_1 + "_" + String.valueOf(i);
+            EtlMeta meta = new EtlMeta(BATCH_META_NAME, metaKey, etlMetaKeyPrefxi_1);
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "slb-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            meta.setMetaValue(metaValueObj);
+            failMetaList.add(meta);
+        }
+        try {
+            client.batchCreateEtlMeta(project, failMetaList);
+            fail();
+        } catch (LogException e) {
+            System.err.println(e.GetErrorCode() + ", " + e.GetErrorMessage() + ", " + e.GetRequestId());
+            assertEquals(e.GetErrorCode(), "EtlMetaAlreadyExist");
+        }
+
+        successMetaList.clear();
+        /////////////////////////////////////
+        for (int i = 0; i < TAG_2_COUNT; ++i) {
+            String metaKey = etlMetaKeyPrefxi_2 + "_" + String.valueOf(i);
+            EtlMeta meta = new EtlMeta(BATCH_META_NAME, metaKey, "2");
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "apigateway-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            meta.setMetaValue(metaValueObj);
+            successMetaList.add(meta);
+        }
+        try {
+            client.batchCreateEtlMeta(project, successMetaList);
+        } catch (LogException e) {
+            System.err.println(e.GetErrorCode() + ", " + e.GetErrorMessage() + ", " + e.GetRequestId());
+            fail();
+        }
+
+        System.out.println("testBatchUpdateEtlMeta");
+        failMetaList.clear();
+        //have a meta not exist
+        for (int i = 0; i < TAG_2_COUNT + 1; ++i) {
+            String metaKey = etlMetaKeyPrefxi_2 + "_" + String.valueOf(i);
+            EtlMeta meta = new EtlMeta(BATCH_META_NAME, metaKey, "");
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "apigateway-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            meta.setMetaValue(metaValueObj);
+            failMetaList.add(meta);
+        }
+        try {
+            client.batchUpdateEtlMeta(project, failMetaList);
+            fail();
+        } catch (LogException e) {
+            System.err.println(e.GetErrorCode() + ", " + e.GetErrorMessage() + ", " + e.GetRequestId());
+            assertEquals(e.GetErrorCode(), "EtlMetaNotExist");
+        }
+
+        successMetaList.clear();
+        /////////////////////////////////////
+        for (int i = 10; i < 20; ++i) {
+            String metaKey = etlMetaKeyPrefxi_2 + "_" + String.valueOf(i);
+            EtlMeta meta = new EtlMeta(BATCH_META_NAME, metaKey, "");
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "apigateway-log-update");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            meta.setMetaValue(metaValueObj);
+            successMetaList.add(meta);
+        }
+        try {
+            client.batchUpdateEtlMeta(project, successMetaList);
+        } catch (LogException e) {
+            System.err.println(e.GetErrorCode() + ", " + e.GetErrorMessage() + ", " + e.GetRequestId());
+            fail();
+        }
+
+        ListEtlMetaResponse resp = null;
+        try {
+            resp = client.listEtlMeta(project, BATCH_META_NAME, "", 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), 10);
+        try {
+            resp = client.listEtlMeta(project, BATCH_META_NAME, "1", 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), TAG_1_COUNT);
+        try {
+            resp = client.listEtlMeta(project, BATCH_META_NAME, "2", 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), TAG_2_COUNT - 10);
+
+        try {
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, "", Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, BATCH_META_NAME, "", 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), 0);
+
+        ArrayList<String> delKeyList = new ArrayList<String>();
+        for (int i = 0; i < TAG_2_COUNT; ++i) {
+            delKeyList.add(etlMetaKeyPrefxi_2 + String.valueOf(i));
+        }
+        try {
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, "", Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, BATCH_META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), TAG_1_COUNT + TAG_2_COUNT - 10);
+
+        try {
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, "2", Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, BATCH_META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), TAG_1_COUNT);
+
+        delKeyList.clear();
+        try {
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, delKeyList, Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
+            fail();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        for (int i = 0; i < 1000; ++i) {
+            delKeyList.add(etlMetaKeyPrefxi_1 + "_" + String.valueOf(i));
+        }
+        try {
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, delKeyList, Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
+            fail();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        delKeyList.clear();
+        for (int i = 0; i < 2 * TAG_1_COUNT; ++i) {
+            delKeyList.add(etlMetaKeyPrefxi_1 + "_" + String.valueOf(i));
+        }
+        try {
+            client.batchModifyEtlMetaStatus(project, BATCH_META_NAME, delKeyList, Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, BATCH_META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), 0);
+        assertEquals(resp.getTotal(), 0);
+
+        System.out.println("testBatchDeleteEtlMeta");
+    }
+
+    @Test
+    public void testEnableDisableEtlMeta() {
+
+        final String META_NAME = "java_sdk_test_enable_disable_meta";
+        final int ENABLE_COUNT = 10;
+        final int DISABLE_COUNT = 10;
+        System.out.println("testEnableDisableEtlMeta");
+        ArrayList<String> totalMetaKeyList = new ArrayList<String>();
+        ArrayList<EtlMeta> enableMetaList = new ArrayList<EtlMeta>();
+        for (int i = 0; i < ENABLE_COUNT; ++i) {
+            String metaKey = "enable_" + String.valueOf(i);
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "slb-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            EtlMeta meta = new EtlMeta(META_NAME, metaKey, "", metaValueObj, true);
+            if (i == 0) {
+                try {
+                    client.createEtlMeta(project, meta);
+                } catch (LogException e) {
+                    e.printStackTrace();
+                    fail();
+                }
+            } else {
+                enableMetaList.add(meta);
+            }
+            totalMetaKeyList.add(metaKey);
+        }
+        try {
+            client.batchCreateEtlMeta(project, enableMetaList);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        ArrayList<EtlMeta> disableMetaList = new ArrayList<EtlMeta>();
+        for (int i = 0; i < DISABLE_COUNT; ++i) {
+            String metaKey = "disable_" + String.valueOf(i);
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "slb-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            EtlMeta meta = new EtlMeta(META_NAME, metaKey, "", metaValueObj, false);
+            if (i == 0) {
+                try {
+                    client.createEtlMeta(project, meta);
+                } catch (LogException e) {
+                    e.printStackTrace();
+                    fail();
+                }
+            } else {
+                disableMetaList.add(meta);
+            }
+            totalMetaKeyList.add(metaKey);
+        }
+        try {
+            client.batchCreateEtlMeta(project, disableMetaList);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        ListEtlMetaResponse resp = null;
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), ENABLE_COUNT + DISABLE_COUNT);
+        assertEquals(resp.getTotal(), ENABLE_COUNT + DISABLE_COUNT);
+        for (EtlMeta meta : resp.getEtlMetaList()) {
+            if (meta.getMetaKey().startsWith("enable_")) {
+                assertTrue(meta.isEnable());
+            } else if (meta.getMetaKey().startsWith("disable_")) {
+                assertTrue(!meta.isEnable());
+            } else {
+                fail();
+            }
+            assertEquals(meta.getMetaTag(), "");
+            assertTrue(meta.getMetaValue().toString().contains("aliyunlogwriteonlyrole"));
+        }
+
+        EtlMeta tmpMeta_1 = enableMetaList.get(0);
+        tmpMeta_1.setEnable(false);
+        try {
+            client.updateEtlMeta(project, tmpMeta_1);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        EtlMeta tmpMeta_2 = enableMetaList.get(1);
+        tmpMeta_2.setEnable(true);
+        try {
+            client.updateEtlMeta(project, tmpMeta_2);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        ArrayList<EtlMeta> tmpMetaList = new ArrayList<EtlMeta>();
+        tmpMetaList.add(new EtlMeta(disableMetaList.get(0).getMetaName(), disableMetaList.get(0).getMetaKey(), true));
+        tmpMetaList.add(new EtlMeta(disableMetaList.get(1).getMetaName(), disableMetaList.get(1).getMetaKey(), false));
+        try {
+            client.batchUpdateEtlMeta(project, tmpMetaList);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), ENABLE_COUNT + DISABLE_COUNT);
+        assertEquals(resp.getTotal(), ENABLE_COUNT + DISABLE_COUNT);
+        for (EtlMeta meta : resp.getEtlMetaList()) {
+            if (meta.getMetaKey().startsWith("enable_")) {
+                if (meta.getMetaKey().endsWith("_1")) {
+                    assertTrue(!meta.isEnable());
+                } else {
+                    assertTrue(meta.isEnable());
+                }
+            } else if (meta.getMetaKey().startsWith("disable_")) {
+                if (meta.getMetaKey().endsWith("_1")) {
+                    assertTrue(meta.isEnable());
+                } else {
+                    assertTrue(!meta.isEnable());
+                }
+            } else {
+                fail();
+            }
+            assertEquals(meta.getMetaTag(), "");
+            assertTrue(meta.getMetaValue().toString().contains("aliyunlogwriteonlyrole"));
+        }
+
+        try {
+            client.batchModifyEtlMetaStatus(project, META_NAME, totalMetaKeyList, Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), 0);
+        assertEquals(resp.getTotal(), 0);
+
+        System.out.println("testEnableDisableEtlMeta");
+    }
+
+    @Test
+    public void testBatchModifyEtlMetaStatus() {
+
+        final String META_NAME = "java_sdk_test_batch_modify_status_meta";
+        final int ENABLE_COUNT = 10;
+        final int DISABLE_COUNT = 10;
+        System.out.println("testBatchModifyEtlMetaStatus");
+        ArrayList<EtlMeta> enableMetaList = new ArrayList<EtlMeta>();
+        ArrayList<String> enableMetaKeyList = new ArrayList<String>();
+        for (int i = 0; i < ENABLE_COUNT; ++i) {
+            String metaKey = "enable_" + String.valueOf(i);
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "slb-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            EtlMeta meta = new EtlMeta(META_NAME, metaKey, "enable", metaValueObj, true);
+            enableMetaList.add(meta);
+            enableMetaKeyList.add(metaKey);
+        }
+        try {
+            client.batchCreateEtlMeta(project, enableMetaList);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        ArrayList<EtlMeta> disableMetaList = new ArrayList<EtlMeta>();
+        ArrayList<String> disableMetaKeyList = new ArrayList<String>();
+        for (int i = 0; i < DISABLE_COUNT; ++i) {
+            String metaKey = "disable_" + String.valueOf(i);
+            JSONObject metaValueObj = new JSONObject();
+            metaValueObj.put("aliuid", userAliuid);
+            metaValueObj.put("region", userRegion);
+            metaValueObj.put("project", userProject);
+            metaValueObj.put("logstore", "slb-log");
+            metaValueObj.put("roleArn", "acs:ram::" + String.valueOf(i) + ":role/aliyunlogwriteonlyrole");
+            EtlMeta meta = new EtlMeta(META_NAME, metaKey, "disable", metaValueObj, false);
+            disableMetaList.add(meta);
+            disableMetaKeyList.add(metaKey);
+        }
+        try {
+            client.batchCreateEtlMeta(project, disableMetaList);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        ListEtlMetaResponse resp = null;
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), ENABLE_COUNT + DISABLE_COUNT);
+        assertEquals(resp.getTotal(), ENABLE_COUNT + DISABLE_COUNT);
+        for (EtlMeta meta : resp.getEtlMetaList()) {
+            if (meta.getMetaKey().startsWith("enable_")) {
+                assertTrue(meta.isEnable());
+                assertEquals(meta.getMetaTag(), "enable");
+            } else if (meta.getMetaKey().startsWith("disable_")) {
+                assertTrue(!meta.isEnable());
+                assertEquals(meta.getMetaTag(), "disable");
+            } else {
+                fail();
+            }
+            assertTrue(meta.getMetaValue().toString().contains("aliyunlogwriteonlyrole"));
+        }
+
+        ArrayList<String> tmpMetaKeyList_1 = new ArrayList<String>();
+        tmpMetaKeyList_1.add(enableMetaKeyList.get(0));
+        tmpMetaKeyList_1.add(enableMetaKeyList.get(1));
+        try {
+            client.batchModifyEtlMetaStatus(project, META_NAME, tmpMetaKeyList_1, Consts.BatchModifyEtlMetaType.BATCH_DISABLE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        ArrayList<String> tmpMetaKeyList_2 = new ArrayList<String>();
+        tmpMetaKeyList_2.add(disableMetaKeyList.get(0));
+        tmpMetaKeyList_2.add(disableMetaKeyList.get(1));
+        try {
+            client.batchModifyEtlMetaStatus(project, META_NAME, tmpMetaKeyList_2, Consts.BatchModifyEtlMetaType.BATCH_ENABLE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        ArrayList<String> tmpMetaKeyList_3 = new ArrayList<String>();
+        tmpMetaKeyList_3.add(disableMetaKeyList.get(2));
+        tmpMetaKeyList_3.add(disableMetaKeyList.get(3));
+        try {
+            client.batchModifyEtlMetaStatus(project, META_NAME, tmpMetaKeyList_3, "xxxx", Consts.BatchModifyEtlMetaType.BATCH_ENABLE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), ENABLE_COUNT + DISABLE_COUNT);
+        assertEquals(resp.getTotal(), ENABLE_COUNT + DISABLE_COUNT);
+        for (EtlMeta meta : resp.getEtlMetaList()) {
+            if (meta.getMetaKey().startsWith("enable_")) {
+                assertEquals(meta.getMetaTag(), "enable");
+                if (meta.getMetaKey().endsWith("_0") || meta.getMetaKey().endsWith("_1")) {
+                    assertTrue(!meta.isEnable());
+                } else {
+                    assertTrue(meta.isEnable());
+                }
+            } else if (meta.getMetaKey().startsWith("disable_")) {
+                assertEquals(meta.getMetaTag(), "disable");
+                if (meta.getMetaKey().endsWith("_0") || meta.getMetaKey().endsWith("_1")) {
+                    assertTrue(meta.isEnable());
+                } else {
+                    assertTrue(!meta.isEnable());
+                }
+            } else {
+                fail();
+            }
+            assertTrue(meta.getMetaValue().toString().contains("aliyunlogwriteonlyrole"));
+        }
+
+        try {
+            client.batchModifyEtlMetaStatus(project, META_NAME, "enable", Consts.BatchModifyEtlMetaType.BATCH_DISABLE_ETL_META);
+            client.batchModifyEtlMetaStatus(project, META_NAME, "disable", Consts.BatchModifyEtlMetaType.BATCH_ENABLE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), ENABLE_COUNT + DISABLE_COUNT);
+        assertEquals(resp.getTotal(), ENABLE_COUNT + DISABLE_COUNT);
+        for (EtlMeta meta : resp.getEtlMetaList()) {
+            if (meta.getMetaKey().startsWith("enable_")) {
+                assertTrue(!meta.isEnable());
+                assertEquals(meta.getMetaTag(), "enable");
+            } else if (meta.getMetaKey().startsWith("disable_")) {
+                assertTrue(meta.isEnable());
+                assertEquals(meta.getMetaTag(), "disable");
+            } else {
+                fail();
+            }
+            assertTrue(meta.getMetaValue().toString().contains("aliyunlogwriteonlyrole"));
+        }
+
+        try {
+            client.batchModifyEtlMetaStatus(project, META_NAME, "enable", Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
+            client.batchModifyEtlMetaStatus(project, META_NAME, "disable", Consts.BatchModifyEtlMetaType.BATCH_DELETE_ETL_META);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        try {
+            resp = client.listEtlMeta(project, META_NAME, 0, 200);
+        } catch (LogException e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertEquals(resp.getCount(), 0);
+        assertEquals(resp.getTotal(), 0);
+
+        System.out.println("testBatchModifyEtlMetaStatus");
+    }
 }

@@ -3,21 +3,22 @@
  */
 package com.aliyun.openservices.log.sample;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Vector;
-
 import com.aliyun.openservices.log.Client;
+import com.aliyun.openservices.log.common.Consts.CursorMode;
 import com.aliyun.openservices.log.common.Histogram;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.common.QueriedLog;
-import com.aliyun.openservices.log.common.Consts.CursorMode;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.response.BatchGetLogResponse;
+import com.aliyun.openservices.log.request.PullLogsRequest;
 import com.aliyun.openservices.log.response.GetHistogramsResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
 import com.aliyun.openservices.log.response.ListTopicsResponse;
+import com.aliyun.openservices.log.response.PullLogsResponse;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Vector;
 
 public class SlsSample {
 
@@ -39,23 +40,22 @@ public class SlsSample {
 		 */
 		Client client = new Client(host, accessId, accessKey);
 
-		
 		String cursor = client.GetCursor(project, logStore, shardId, CursorMode.END).GetCursor();
 		System.out.println("cursor = " +cursor);
-		try
-		{
+		try {
 			while (true) {
-				BatchGetLogResponse r_res = client.BatchGetLog(project,
-						logStore, shardId, 1000, cursor);
-				System.out.println(r_res.GetCount());
-				System.out.println("cursor = " + cursor + " next_cursor = "
-						+ r_res.GetNextCursor());
-				cursor = r_res.GetNextCursor();
+				PullLogsRequest request = new PullLogsRequest(project, logStore, shardId, 1000, cursor);
+				PullLogsResponse response = client.pullLogs(request);
+				System.out.println(response.getCount());
+				System.out.println("cursor = " + cursor + " next_cursor = " + response.getNextCursor());
+				if (cursor.equals(response.getNextCursor())) {
+				    break;
+                }
+				cursor = response.getNextCursor();
 				Thread.sleep(200);
 			}
 		}
-		catch(LogException e)
-		{
+		catch(LogException e) {
 			System.out.println(e.GetRequestId() + e.GetErrorMessage());
 		}
 	
@@ -156,8 +156,7 @@ public class SlsSample {
 			int to = (int) (new Date().getTime() / 1000 + 10);
 			GetHistogramsResponse histogramsResponse = client.GetHistograms(
 					project, logStore, from, to, topic, query);
-			System.out
-					.println("histogram result: " + histogramsResponse.GetTotalCount());
+			System.out.println("histogram result: " + histogramsResponse.GetTotalCount());
 			System.out.println("is_completed : "
 					+ histogramsResponse.IsCompleted());
 			for (Histogram histogram : histogramsResponse.GetHistograms()) {

@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.aliyun.openservices.log.common.Alert;
+
 public class ListAlertResponse extends Response {
 
 	private static final long serialVersionUID = 167254009014902401L;
 	protected int total  = 0;
 	protected int count = 0;
-	protected List<String> alerts = new ArrayList<String>();
+	protected List<Alert> alerts = new ArrayList<Alert>();
 	
-	public ListAlertResponse(Map<String, String> headers, int count, int total, List<String> alerts) {
+	public ListAlertResponse(Map<String, String> headers, int count, int total, List<Alert> alerts) {
 		super(headers);
 		setCount(count);
 		setTotal(total);
@@ -34,13 +36,13 @@ public class ListAlertResponse extends Response {
 		this.count = count;
 	}
 
-	public List<String> getAlerts() {
+	public List<Alert> getAlerts() {
 		return alerts;
 	}
 
-	public void setAlerts(List<String> alerts) {
-		this.alerts = new ArrayList<String>();
-		for (String alert : alerts) {
+	public void setAlerts(List<Alert> alerts) {
+		this.alerts = new ArrayList<Alert>();
+		for (Alert alert : alerts) {
 			alerts.add(alert);
 		}
 	}

@@ -30,7 +30,7 @@ public class Chart implements Serializable {
 	private String rawDisplayAttr = "";
 	private String rawActionAttr = "";
 
-	
+
 	public String getRawSearchAttr() {
 		return rawSearchAttr;
 	}
@@ -227,7 +227,6 @@ public class Chart implements Serializable {
 			setType(dict.getString("type"));
 			JSONObject searchJson = dict.getJSONObject("search");
 			setRawSearchAttr(searchJson.toString());
-			System.out.println(getRawSearchAttr());
 			setLogstore(searchJson.getString("logstore"));
 			setTopic(searchJson.getString("topic"));
 			setQuery(searchJson.getString("query"));

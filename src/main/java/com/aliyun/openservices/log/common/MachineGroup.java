@@ -46,9 +46,8 @@ public class MachineGroup implements Serializable {
 	/**
 	 * construct a machine group  
 	 * @param machineGroup the exist machine group
-	 * @throws LogException if any error happend
 	 */
-	public MachineGroup(MachineGroup machineGroup) throws LogException {
+	public MachineGroup(MachineGroup machineGroup) {
 		super();
 		this.groupName = machineGroup.GetGroupName();
 		this.groupType = machineGroup.GetGroupType();
@@ -126,7 +125,7 @@ public class MachineGroup implements Serializable {
 		}
 	}
 	
-	public void SetMachineList(JSONArray machineListJSONArray) throws LogException {
+	public void SetMachineList(JSONArray machineListJSONArray) {
 		machineList = new ArrayList<String>();
 		for(int i = 0;i < machineListJSONArray.size();i++) {
 			String machine = machineListJSONArray.getString(i);

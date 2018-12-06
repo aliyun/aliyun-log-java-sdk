@@ -1,14 +1,12 @@
 package com.aliyun.openservices.log.common;
 
-import java.io.Serializable;
-
+import com.aliyun.openservices.log.common.Consts.ACLAction;
+import com.aliyun.openservices.log.exception.LogException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
-import com.aliyun.openservices.log.common.ACLPrivileges;
-import com.aliyun.openservices.log.common.Consts.ACLAction;
-import com.aliyun.openservices.log.exception.LogException;
+import java.io.Serializable;
 
 /**
  * The acl config used to grant/revoke project/logstore aclprivileges to/from a principle

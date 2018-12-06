@@ -2,12 +2,10 @@ package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
 import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class InternalLogStore extends LogStore implements Serializable {
 
@@ -22,17 +20,17 @@ public class InternalLogStore extends LogStore implements Serializable {
     private Long outflowSize = 0l;
     private Long indexSize = 0l;
     private Long shardSize = 0l;
-    private Long ttl = 0l;
+    private Long freeTtl = 0l;
 
-    public Long getTtl() {
-        return ttl;
-    }
+    public Long getFreeTtl() {
+		return freeTtl;
+	}
 
-    public void setTtl(Long ttl) {
-        this.ttl = ttl;
-    }
+	public void setFreeTtl(Long freeTtl) {
+		this.freeTtl = freeTtl;
+	}
 
-    public InternalLogStore() {
+	public InternalLogStore() {
         super();
     }
 
@@ -109,7 +107,6 @@ public class InternalLogStore extends LogStore implements Serializable {
     }
 
     public String getPaidAccount() {
-
         return paidAccount;
     }
 
@@ -143,7 +140,7 @@ public class InternalLogStore extends LogStore implements Serializable {
         freeCreditJson.put("outflowSize", getOutflowSize());
         freeCreditJson.put("indexSize", getIndexSize());
         freeCreditJson.put("shardSize", getShardSize());
-        freeCreditJson.put("ttl", getTtl());
+        freeCreditJson.put("ttl", getFreeTtl());
         jsonObj.put("freeCredit", freeCreditJson);
 
         return jsonObj;
@@ -179,7 +176,7 @@ public class InternalLogStore extends LogStore implements Serializable {
                 if (freeCredit.has("shardSize"))
                     setShardSize(freeCredit.getLong("shardSize"));
                 if (freeCredit.has("ttl"))
-                    setTtl(freeCredit.getLong("ttl"));
+                    setFreeTtl(freeCredit.getLong("ttl"));
             }
 
             if (dict.has("restrictedAction")) {

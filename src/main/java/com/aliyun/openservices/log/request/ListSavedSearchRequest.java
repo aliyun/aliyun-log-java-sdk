@@ -9,6 +9,7 @@ public class ListSavedSearchRequest extends Request {
 	public ListSavedSearchRequest(String project) {
 		super(project);
 		setSavedSearchName(Consts.DEFAULT_REQUEST_PARAM_SAVEDSEARCHNAME);
+		setDisplayName("");
 		setOffset(Consts.DEFAULT_REQUEST_PARAM_OFFSET);
 		setSize(Consts.DEFAULT_REQUEST_PARAM_SIZE);
 	}
@@ -16,6 +17,7 @@ public class ListSavedSearchRequest extends Request {
 	public ListSavedSearchRequest(String project, int offset, int size) {
 		super(project);
 		setSavedSearchName(Consts.DEFAULT_REQUEST_PARAM_SAVEDSEARCHNAME);
+		setDisplayName("");
 		setOffset(offset);
 		setSize(size);
 	}
@@ -27,6 +29,14 @@ public class ListSavedSearchRequest extends Request {
 		setSize(size);
 	}
 
+	public ListSavedSearchRequest(String project, String savedSearchName, String displayName, int offset, int size) {
+		super(project);
+		setSavedSearchName(savedSearchName);
+		setDisplayName(displayName);
+		setOffset(offset);
+		setSize(size);
+	}
+
 	public String getSavedSearchName() {
 		return GetParam(Consts.CONST_SAVEDSEARCH_NAME);
 	}
@@ -34,6 +44,10 @@ public class ListSavedSearchRequest extends Request {
 	public void setSavedSearchName(String savedSearchName) {
 		SetParam(Consts.CONST_SAVEDSEARCH_NAME, savedSearchName);
 	}
+
+	public String getDisplayName() { return GetParam(Consts.CONST_DISPLAY_NAME); }
+
+	public void setDisplayName(String displayName) { SetParam(Consts.CONST_DISPLAY_NAME, displayName); }
 
 	public int getOffset() {
 		return Integer.parseInt(GetParam(Consts.CONST_OFFSET));

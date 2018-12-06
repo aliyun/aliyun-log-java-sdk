@@ -6,17 +6,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
- * 表示返回结果的信息。
+ * Represents the response of a http request.
  */
-public class ResponseMessage extends HttpMesssage {
+public class ResponseMessage extends HttpMessage {
     private String uri;
     private int statusCode;
     private static final int HTTP_SUCCESS_STATUS_CODE = 200;
     private byte[] body = null;
 
-    /**
-     * 构造函数。
-     */
     public ResponseMessage() {
     }
 
