@@ -2,7 +2,6 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.aliyun.openservices.log.util.Args;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
@@ -90,11 +89,6 @@ public class Query implements Serializable {
         if (value.has("end")) {
             setEnd(value.getString("end"));
         }
-    }
-
-    public void validate(long maxTimeSpan) {
-        Args.notNull(timeSpanType, "timeSpanType");
-        timeSpanType.validate(start, end, maxTimeSpan);
     }
 
     @Override

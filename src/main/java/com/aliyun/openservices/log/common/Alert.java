@@ -12,7 +12,7 @@ import java.util.List;
 public class Alert implements Serializable {
 
     private static final long serialVersionUID = 9211926785430833230L;
-    
+
     /**
      * Alert rule name.
      */
@@ -142,7 +142,6 @@ public class Alert implements Serializable {
         Args.notNullOrEmpty(queries, "Query list");
         for (Query query : queries) {
             Args.notNull(query, "query");
-            query.validate(Consts.MAX_TIME_SPAN_IN_QUERY);
         }
         Args.notNull(schedule, "schedule");
     }
