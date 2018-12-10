@@ -10,7 +10,7 @@
 
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.28-SNAPSHOT</version>
+	<version>0.6.28-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Aliyun LOG Java SDK</name>
@@ -127,7 +127,7 @@
                 <configuration>
                     <forceCreation>true</forceCreation>
                     <excludes>
-                        <exclude>com/aliyun/openservices/</exclude>
+                        <exclude>com/aliyun/openservices/log/sample</exclude>
                     </excludes>
                 </configuration>
                 <executions>
