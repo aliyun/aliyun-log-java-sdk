@@ -9,6 +9,8 @@ import java.util.Map;
 
 public class ListJobsResponse extends ResponseList<Job> {
 
+    private static final long serialVersionUID = -1867693972138681156L;
+
     public ListJobsResponse(Map<String, String> headers) {
         super(headers);
     }

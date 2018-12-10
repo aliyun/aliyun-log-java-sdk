@@ -7,13 +7,13 @@ import com.aliyun.openservices.log.util.Args;
 
 public class UpdateJobRequest extends JobRequest {
 
+    private static final long serialVersionUID = -4557239895876051743L;
+
     private Job job;
 
     public UpdateJobRequest(String project, Job job) {
         super(project);
-        Args.notNull(job, "Job");
-        this.job = job;
-        setName(job.getName());
+        setJob(job);
     }
 
     public Job getJob() {
@@ -21,7 +21,9 @@ public class UpdateJobRequest extends JobRequest {
     }
 
     public void setJob(Job job) {
+        Args.notNull(job, "Job");
         this.job = job;
+        setName(job.getName());
     }
 
     @Override

@@ -8,12 +8,13 @@ import com.aliyun.openservices.log.util.Args;
 
 public class CreateJobRequest extends JobRequest {
 
+    private static final long serialVersionUID = -7991351821489008819L;
+
     private Job job;
 
     public CreateJobRequest(String project, Job job) {
         super(project);
-        Args.notNull(job, "Job");
-        this.job = job;
+        setJob(job);
     }
 
     public Job getJob() {
@@ -21,6 +22,7 @@ public class CreateJobRequest extends JobRequest {
     }
 
     public void setJob(Job job) {
+        Args.notNull(job, "Job");
         this.job = job;
     }
 

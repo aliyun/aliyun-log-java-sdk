@@ -3,15 +3,25 @@
  */
 package com.aliyun.openservices.log;
 
-import com.aliyun.openservices.log.common.*;
+import com.aliyun.openservices.log.common.ACL;
+import com.aliyun.openservices.log.common.Config;
+import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
+import com.aliyun.openservices.log.common.ConsumerGroup;
+import com.aliyun.openservices.log.common.EtlMeta;
+import com.aliyun.openservices.log.common.Index;
+import com.aliyun.openservices.log.common.InternalLogStore;
+import com.aliyun.openservices.log.common.LogItem;
+import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.MachineGroup;
+import com.aliyun.openservices.log.common.MachineList;
+import com.aliyun.openservices.log.common.ShipperConfig;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.ApplyConfigToMachineGroupRequest;
 import com.aliyun.openservices.log.request.ApproveMachineGroupRequest;
 import com.aliyun.openservices.log.request.BatchGetLogRequest;
 import com.aliyun.openservices.log.request.ClearLogStoreStorageRequest;
 import com.aliyun.openservices.log.request.CreateAlertRequest;
-import com.aliyun.openservices.log.request.CreateAlertRequestV2;
 import com.aliyun.openservices.log.request.CreateChartRequest;
 import com.aliyun.openservices.log.request.CreateConfigRequest;
 import com.aliyun.openservices.log.request.CreateConsumerGroupRequest;
@@ -24,7 +34,6 @@ import com.aliyun.openservices.log.request.CreateLoggingRequest;
 import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
 import com.aliyun.openservices.log.request.CreateSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteAlertRequest;
-import com.aliyun.openservices.log.request.DeleteAlertRequestV2;
 import com.aliyun.openservices.log.request.DeleteChartRequest;
 import com.aliyun.openservices.log.request.DeleteConfigRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
@@ -41,7 +50,6 @@ import com.aliyun.openservices.log.request.DisableJobRequest;
 import com.aliyun.openservices.log.request.EnableAlertRequest;
 import com.aliyun.openservices.log.request.EnableJobRequest;
 import com.aliyun.openservices.log.request.GetAlertRequest;
-import com.aliyun.openservices.log.request.GetAlertRequestV2;
 import com.aliyun.openservices.log.request.GetAppliedConfigsRequest;
 import com.aliyun.openservices.log.request.GetAppliedMachineGroupRequest;
 import com.aliyun.openservices.log.request.GetChartRequest;
@@ -60,9 +68,7 @@ import com.aliyun.openservices.log.request.GetMachineGroupRequest;
 import com.aliyun.openservices.log.request.GetProjectLogsRequest;
 import com.aliyun.openservices.log.request.GetSavedSearchRequest;
 import com.aliyun.openservices.log.request.ListACLRequest;
-import com.aliyun.openservices.log.request.ListAlertFailRequest;
 import com.aliyun.openservices.log.request.ListAlertRequest;
-import com.aliyun.openservices.log.request.ListAlertRequestV2;
 import com.aliyun.openservices.log.request.ListConfigRequest;
 import com.aliyun.openservices.log.request.ListDashboardRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
@@ -80,7 +86,6 @@ import com.aliyun.openservices.log.request.RemoveConfigFromMachineGroupRequest;
 import com.aliyun.openservices.log.request.SplitShardRequest;
 import com.aliyun.openservices.log.request.UpdateACLRequest;
 import com.aliyun.openservices.log.request.UpdateAlertRequest;
-import com.aliyun.openservices.log.request.UpdateAlertRequestV2;
 import com.aliyun.openservices.log.request.UpdateChartRequest;
 import com.aliyun.openservices.log.request.UpdateConfigRequest;
 import com.aliyun.openservices.log.request.UpdateDashboardRequest;
@@ -93,7 +98,110 @@ import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupRequest;
 import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
-import com.aliyun.openservices.log.response.*;
+import com.aliyun.openservices.log.response.ApplyConfigToMachineGroupResponse;
+import com.aliyun.openservices.log.response.ApproveMachineGroupResponse;
+import com.aliyun.openservices.log.response.BatchGetLogResponse;
+import com.aliyun.openservices.log.response.BatchModifyEtlMetaStatusResponse;
+import com.aliyun.openservices.log.response.ClearLogStoreStorageResponse;
+import com.aliyun.openservices.log.response.ConsumerGroupCheckPointResponse;
+import com.aliyun.openservices.log.response.ConsumerGroupHeartBeatResponse;
+import com.aliyun.openservices.log.response.ConsumerGroupUpdateCheckPointResponse;
+import com.aliyun.openservices.log.response.CreateAlertResponse;
+import com.aliyun.openservices.log.response.CreateChartResponse;
+import com.aliyun.openservices.log.response.CreateConfigResponse;
+import com.aliyun.openservices.log.response.CreateConsumerGroupResponse;
+import com.aliyun.openservices.log.response.CreateDashboardResponse;
+import com.aliyun.openservices.log.response.CreateEtlJobResponse;
+import com.aliyun.openservices.log.response.CreateEtlMetaResponse;
+import com.aliyun.openservices.log.response.CreateIndexResponse;
+import com.aliyun.openservices.log.response.CreateJobResponse;
+import com.aliyun.openservices.log.response.CreateLogStoreInternalResponse;
+import com.aliyun.openservices.log.response.CreateLogStoreResponse;
+import com.aliyun.openservices.log.response.CreateLoggingResponse;
+import com.aliyun.openservices.log.response.CreateMachineGroupResponse;
+import com.aliyun.openservices.log.response.CreateProjectResponse;
+import com.aliyun.openservices.log.response.CreateSavedSearchResponse;
+import com.aliyun.openservices.log.response.CreateShipperResponse;
+import com.aliyun.openservices.log.response.DeleteAlertResponse;
+import com.aliyun.openservices.log.response.DeleteChartResponse;
+import com.aliyun.openservices.log.response.DeleteConfigResponse;
+import com.aliyun.openservices.log.response.DeleteConsumerGroupResponse;
+import com.aliyun.openservices.log.response.DeleteDashboardResponse;
+import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
+import com.aliyun.openservices.log.response.DeleteEtlMetaResponse;
+import com.aliyun.openservices.log.response.DeleteIndexResponse;
+import com.aliyun.openservices.log.response.DeleteJobResponse;
+import com.aliyun.openservices.log.response.DeleteLogStoreResponse;
+import com.aliyun.openservices.log.response.DeleteLoggingResponse;
+import com.aliyun.openservices.log.response.DeleteMachineGroupResponse;
+import com.aliyun.openservices.log.response.DeleteProjectResponse;
+import com.aliyun.openservices.log.response.DeleteSavedSearchResponse;
+import com.aliyun.openservices.log.response.DeleteShardResponse;
+import com.aliyun.openservices.log.response.DeleteShipperResponse;
+import com.aliyun.openservices.log.response.DisableAlertResponse;
+import com.aliyun.openservices.log.response.DisableJobResponse;
+import com.aliyun.openservices.log.response.EnableAlertResponse;
+import com.aliyun.openservices.log.response.EnableJobResponse;
+import com.aliyun.openservices.log.response.GetAlertResponse;
+import com.aliyun.openservices.log.response.GetAppliedConfigResponse;
+import com.aliyun.openservices.log.response.GetAppliedMachineGroupsResponse;
+import com.aliyun.openservices.log.response.GetChartResponse;
+import com.aliyun.openservices.log.response.GetConfigResponse;
+import com.aliyun.openservices.log.response.GetCursorResponse;
+import com.aliyun.openservices.log.response.GetCursorTimeResponse;
+import com.aliyun.openservices.log.response.GetDashboardResponse;
+import com.aliyun.openservices.log.response.GetEtlJobResponse;
+import com.aliyun.openservices.log.response.GetHistogramsResponse;
+import com.aliyun.openservices.log.response.GetIndexResponse;
+import com.aliyun.openservices.log.response.GetIndexStringResponse;
+import com.aliyun.openservices.log.response.GetJobResponse;
+import com.aliyun.openservices.log.response.GetLogStoreResponse;
+import com.aliyun.openservices.log.response.GetLoggingResponse;
+import com.aliyun.openservices.log.response.GetLogsResponse;
+import com.aliyun.openservices.log.response.GetMachineGroupResponse;
+import com.aliyun.openservices.log.response.GetProjectResponse;
+import com.aliyun.openservices.log.response.GetSavedSearchResponse;
+import com.aliyun.openservices.log.response.GetShipperResponse;
+import com.aliyun.openservices.log.response.GetShipperTasksResponse;
+import com.aliyun.openservices.log.response.ListACLResponse;
+import com.aliyun.openservices.log.response.ListAlertResponse;
+import com.aliyun.openservices.log.response.ListConfigResponse;
+import com.aliyun.openservices.log.response.ListConsumerGroupResponse;
+import com.aliyun.openservices.log.response.ListDashboardResponse;
+import com.aliyun.openservices.log.response.ListEtlJobResponse;
+import com.aliyun.openservices.log.response.ListEtlMetaNameResponse;
+import com.aliyun.openservices.log.response.ListEtlMetaResponse;
+import com.aliyun.openservices.log.response.ListJobsResponse;
+import com.aliyun.openservices.log.response.ListLogStoresResponse;
+import com.aliyun.openservices.log.response.ListMachineGroupResponse;
+import com.aliyun.openservices.log.response.ListMachinesResponse;
+import com.aliyun.openservices.log.response.ListProjectResponse;
+import com.aliyun.openservices.log.response.ListSavedSearchResponse;
+import com.aliyun.openservices.log.response.ListShardResponse;
+import com.aliyun.openservices.log.response.ListShipperResponse;
+import com.aliyun.openservices.log.response.ListTopicsResponse;
+import com.aliyun.openservices.log.response.PullLogsResponse;
+import com.aliyun.openservices.log.response.PutLogsResponse;
+import com.aliyun.openservices.log.response.RemoveConfigFromMachineGroupResponse;
+import com.aliyun.openservices.log.response.RetryShipperTasksResponse;
+import com.aliyun.openservices.log.response.UpdateACLResponse;
+import com.aliyun.openservices.log.response.UpdateAlertResponse;
+import com.aliyun.openservices.log.response.UpdateChartResponse;
+import com.aliyun.openservices.log.response.UpdateConfigResponse;
+import com.aliyun.openservices.log.response.UpdateConsumerGroupResponse;
+import com.aliyun.openservices.log.response.UpdateDashboardResponse;
+import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
+import com.aliyun.openservices.log.response.UpdateEtlMetaResponse;
+import com.aliyun.openservices.log.response.UpdateIndexResponse;
+import com.aliyun.openservices.log.response.UpdateJobResponse;
+import com.aliyun.openservices.log.response.UpdateLogStoreInternalResponse;
+import com.aliyun.openservices.log.response.UpdateLogStoreResponse;
+import com.aliyun.openservices.log.response.UpdateLoggingResponse;
+import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
+import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
+import com.aliyun.openservices.log.response.UpdateProjectResponse;
+import com.aliyun.openservices.log.response.UpdateSavedSearchResponse;
+import com.aliyun.openservices.log.response.UpdateShipperResponse;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -2694,29 +2802,13 @@ public interface LogService {
 	 */
 	ListSavedSearchResponse listSavedSearch(ListSavedSearchRequest request) throws LogException;
 
-	/**
-	 * create alert
-	 *
-	 * @param request
-	 * 				request class
-	 * @return CreateAlertResponse
-	 * @throws LogException
-	 *             if any error happened
-	 * @throws NullPointerException
-	 *             if required parameter is null
-	 * @throws IllegalArgumentException
-	 *             if any required string parameter is empty
-	 */
-	@Deprecated
-	CreateAlertResponse createAlert(CreateAlertRequest request) throws LogException;
-
     /**
      * Create an alert rule.
-     * @param request An instance of {@link CreateAlertRequestV2}
+     * @param request An instance of {@link CreateAlertRequest}
      * @return
      * @throws LogException
      */
-    CreateAlertResponse createAlert(CreateAlertRequestV2 request) throws LogException;
+    CreateAlertResponse createAlert(CreateAlertRequest request) throws LogException;
 
     /**
 	 * update alert
@@ -2731,11 +2823,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-    @Deprecated
 	UpdateAlertResponse updateAlert(UpdateAlertRequest request) throws LogException;
-
-
-	UpdateAlertResponse updateAlert(UpdateAlertRequestV2 request) throws LogException;
 
 	/**
 	 * delete alert
@@ -2750,11 +2838,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	@Deprecated
 	DeleteAlertResponse deleteAlert(DeleteAlertRequest request) throws LogException;
-
-
-	DeleteAlertResponse deleteAlert(DeleteAlertRequestV2 request) throws LogException;
 
 	/**
 	 * get alert
@@ -2769,11 +2853,7 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-	@Deprecated
 	GetAlertResponse getAlert(GetAlertRequest request) throws LogException;
-
-
-	GetAlertResponseV2 getAlert(GetAlertRequestV2 request) throws LogException;
 
 	/**
 	 * list alert
@@ -2789,25 +2869,6 @@ public interface LogService {
 	 *             if any required string parameter is empty
 	 */
 	ListAlertResponse listAlert(ListAlertRequest request) throws LogException;
-
-
-	ListAlertResponseV2 listAlert(ListAlertRequestV2 request) throws LogException;
-
-	/**
-	 * list alert fail
-	 *
-	 * @param request
-	 * 				request class
-	 * @return GetAlertResponse
-	 * @throws LogException
-	 *             if any error happened
-	 * @throws NullPointerException
-	 *             if required parameter is null
-	 * @throws IllegalArgumentException
-	 *             if any required string parameter is empty
-	 */
-	@Deprecated
-	ListAlertFailResponse listAlertFail(ListAlertFailRequest request) throws LogException;
 
 	CreateDashboardResponse createDashboard(CreateDashboardRequest request) throws LogException;
 	UpdateDashboardResponse updateDashboard(UpdateDashboardRequest request) throws LogException;

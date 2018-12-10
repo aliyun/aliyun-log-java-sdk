@@ -1,26 +1,31 @@
 package com.aliyun.openservices.log.response;
 
-import java.util.Map;
 
 import com.aliyun.openservices.log.common.Alert;
-import com.aliyun.openservices.log.exception.LogException;
+import net.sf.json.JSONObject;
+
+import java.util.Map;
 
 public class GetAlertResponse extends Response {
 
-	private static final long serialVersionUID = -5912788622244096859L;
-	protected Alert alert = new Alert(); 
+    private static final long serialVersionUID = 889623903109968396L;
 
-	public GetAlertResponse(Map<String, String> headers, Alert alert) {
-		super(headers);
-		this.alert = alert;
-	}
+    private Alert alert;
 
-	public Alert getAlert() {
-		return alert;
-	}
+    public GetAlertResponse(Map<String, String> headers) {
+        super(headers);
+    }
 
-	public void setAlert(Alert alert) throws LogException {
-		this.alert = new Alert(alert);
-	}
+    public Alert getAlert() {
+        return alert;
+    }
 
+    public void setAlert(Alert alert) {
+        this.alert = alert;
+    }
+
+    public void deserialize(JSONObject value) {
+        alert = new Alert();
+        alert.deserialize(value);
+    }
 }

@@ -8,6 +8,9 @@ import com.aliyun.openservices.log.http.client.HttpMethod;
 import java.util.Map;
 
 public class ListJobsRequest extends JobRequest {
+
+    private static final long serialVersionUID = -8772042308666861845L;
+
     /**
      * Job name for fuzzy matching
      */

@@ -373,7 +373,6 @@ public class Consts {
     public static final String JOB_URI = "/jobs";
 
     public static final String LOGGING_URI = "/logging";
-    public static final int MAX_TIME_SPAN_IN_QUERY = 86400;
     public static final String METHOD = "method";
     public static final String MOBILE_LIST = "mobileList";
     public static final String RESOURCE_PROVIDER = "resourceProvider";
