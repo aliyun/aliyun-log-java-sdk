@@ -17,9 +17,9 @@ public class ListAlertResponse extends ResponseList<Alert> {
         return new Unmarshaller<Alert>() {
             @Override
             public Alert unmarshal(JSONArray value, int index) {
-                Alert alertV2 = new Alert();
-                alertV2.deserialize(value.getJSONObject(index));
-                return alertV2;
+                Alert alert = new Alert();
+                alert.deserialize(value.getJSONObject(index));
+                return alert;
             }
         };
     }

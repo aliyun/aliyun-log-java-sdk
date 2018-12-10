@@ -68,11 +68,11 @@ public class AlertFunctionTest extends FunctionTest {
         for (Dashboard dashboard : listDashboardResponse.getDashboards()) {
             client.deleteDashboard(new DeleteDashboardRequest(TEST_PROJECT, dashboard.getDashboardName()));
         }
-        Alert alertV2 = new Alert();
+        Alert alert = new Alert();
         String jobName = getAlertName();
-        alertV2.setName(jobName);
-        alertV2.setState(JobState.ENABLED);
-        alertV2.setDisplayName("DisplayName");
+        alert.setName(jobName);
+        alert.setState(JobState.ENABLED);
+        alert.setDisplayName("DisplayName");
 
         AlertConfiguration configuration = new AlertConfiguration();
         configuration.setCondition("$0.count > 1");
@@ -95,15 +95,15 @@ public class AlertFunctionTest extends FunctionTest {
         configuration.setNotificationList(notifications);
         configuration.setThrottling("0s");
         configuration.setNotifyThreshold(100);
-        alertV2.setConfiguration(configuration);
+        alert.setConfiguration(configuration);
 
         JobSchedule schedule = new JobSchedule();
         schedule.setType(JobScheduleType.FIXED_RATE);
         schedule.setInterval("60s");
-        alertV2.setSchedule(schedule);
+        alert.setSchedule(schedule);
 
         // create
-        CreateAlertRequest request = new CreateAlertRequest(TEST_PROJECT, alertV2);
+        CreateAlertRequest request = new CreateAlertRequest(TEST_PROJECT, alert);
         try {
             client.createAlert(request);
             fail("Dashboard not exist");
@@ -122,42 +122,42 @@ public class AlertFunctionTest extends FunctionTest {
         GetAlertResponse response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
 
         Alert created = response.getAlert();
-        assertEquals(created.getName(), alertV2.getName());
-        assertEquals(created.getState(), alertV2.getState());
-        assertEquals(created.getConfiguration(), alertV2.getConfiguration());
-        assertEquals(created.getSchedule(), alertV2.getSchedule());
+        assertEquals(created.getName(), alert.getName());
+        assertEquals(created.getState(), alert.getState());
+        assertEquals(created.getConfiguration(), alert.getConfiguration());
+        assertEquals(created.getSchedule(), alert.getSchedule());
 
         client.disableAlert(new DisableAlertRequest(TEST_PROJECT, jobName));
         response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
-        Alert alertV21 = response.getAlert();
-        assertEquals(alertV21.getState(), JobState.DISABLED);
+        Alert alert1 = response.getAlert();
+        assertEquals(alert1.getState(), JobState.DISABLED);
 
         client.enableAlert(new EnableAlertRequest(TEST_PROJECT, jobName));
         response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
-        Alert alertV22 = response.getAlert();
-        assertEquals(alertV22.getState(), JobState.ENABLED);
+        Alert alert2 = response.getAlert();
+        assertEquals(alert2.getState(), JobState.ENABLED);
 
         DisableAlertRequest disableAlertRequest = new DisableAlertRequest(TEST_PROJECT, jobName);
         client.disableJob(disableAlertRequest);
 
         response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
-        Alert alertV23 = response.getAlert();
-        assertEquals(alertV23.getState(), JobState.DISABLED);
+        Alert alert3 = response.getAlert();
+        assertEquals(alert3.getState(), JobState.DISABLED);
 
-        JobSchedule schedule1 = alertV23.getSchedule();
+        JobSchedule schedule1 = alert3.getSchedule();
         assertEquals(schedule1.getInterval(), schedule.getInterval());
         assertEquals(schedule1.getType(), schedule.getType());
 
         Date muteTo = new Date(System.currentTimeMillis() + 60 * 1000);
-        alertV23.getConfiguration().setMuteUntil(muteTo);
-        client.updateAlert(new UpdateAlertRequest(TEST_PROJECT, alertV23));
+        alert3.getConfiguration().setMuteUntil(muteTo);
+        client.updateAlert(new UpdateAlertRequest(TEST_PROJECT, alert3));
         response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
-        Alert alertV24 = response.getAlert();
-        assertEquals(muteTo.getTime() / 1000, alertV24.getConfiguration().getMuteUntil().getTime() / 1000);
+        Alert alert4 = response.getAlert();
+        assertEquals(muteTo.getTime() / 1000, alert4.getConfiguration().getMuteUntil().getTime() / 1000);
 
         for (int i = 0; i < 10; i++) {
-            alertV2.setName("alert-" + i);
-            client.createAlert(new CreateAlertRequest(TEST_PROJECT, alertV2));
+            alert.setName("alert-" + i);
+            client.createAlert(new CreateAlertRequest(TEST_PROJECT, alert));
         }
 
         // test list jobs

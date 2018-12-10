@@ -58,10 +58,10 @@ public class AlertSample {
             for (Dashboard dashboard : listDashboardResponse.getDashboards()) {
                 client.deleteDashboard(new DeleteDashboardRequest(project, dashboard.getDashboardName()));
             }
-            Alert alertV2 = new Alert();
-            alertV2.setName(alertName);
-            alertV2.setState(JobState.ENABLED);
-            alertV2.setDisplayName("DisplayName");
+            Alert alert = new Alert();
+            alert.setName(alertName);
+            alert.setState(JobState.ENABLED);
+            alert.setDisplayName("DisplayName");
 
             AlertConfiguration configuration = new AlertConfiguration();
             configuration.setCondition("$0.count > 1");
@@ -86,12 +86,12 @@ public class AlertSample {
             configuration.setNotificationList(notifications);
             configuration.setThrottling("0s");
             configuration.setNotifyThreshold(100);
-            alertV2.setConfiguration(configuration);
+            alert.setConfiguration(configuration);
 
             JobSchedule schedule = new JobSchedule();
             schedule.setType(JobScheduleType.FIXED_RATE);
             schedule.setInterval("60s");
-            alertV2.setSchedule(schedule);
+            alert.setSchedule(schedule);
 
             // create
             Dashboard dashboard = new Dashboard();
@@ -100,7 +100,7 @@ public class AlertSample {
             dashboard.setChartList(new ArrayList<Chart>());
             CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(project, dashboard);
             client.createDashboard(createDashboardRequest);
-            CreateAlertRequest request = new CreateAlertRequest(project, alertV2);
+            CreateAlertRequest request = new CreateAlertRequest(project, alert);
             client.createAlert(request);
 
             GetAlertResponse response = client.getAlert(new GetAlertRequest(project, alertName));
@@ -112,32 +112,32 @@ public class AlertSample {
 
             client.disableAlert(new DisableAlertRequest(project, alertName));
             response = client.getAlert(new GetAlertRequest(project, alertName));
-            Alert alertV21 = response.getAlert();
-            System.out.println(alertV21.getState());
+            Alert alert1 = response.getAlert();
+            System.out.println(alert1.getState());
 
             client.enableAlert(new EnableAlertRequest(project, alertName));
             response = client.getAlert(new GetAlertRequest(project, alertName));
-            Alert alertV22 = response.getAlert();
-            System.out.println(alertV22.getState());
+            Alert alert2 = response.getAlert();
+            System.out.println(alert2.getState());
 
             DisableAlertRequest disableAlertRequest = new DisableAlertRequest(project, alertName);
             client.disableJob(disableAlertRequest);
 
             response = client.getAlert(new GetAlertRequest(project, alertName));
-            Alert alertV23 = response.getAlert();
-            System.out.println(alertV23.getState());
+            Alert alert3 = response.getAlert();
+            System.out.println(alert3.getState());
 
-            JobSchedule schedule1 = alertV23.getSchedule();
+            JobSchedule schedule1 = alert3.getSchedule();
             System.out.println(schedule1.getInterval());
             System.out.println(schedule1.getType());
 
             Date muteTo = new Date(System.currentTimeMillis() + 60 * 1000);
-            alertV23.getConfiguration().setMuteUntil(muteTo);
-            client.updateAlert(new UpdateAlertRequest(project, alertV23));
+            alert3.getConfiguration().setMuteUntil(muteTo);
+            client.updateAlert(new UpdateAlertRequest(project, alert3));
             response = client.getAlert(new GetAlertRequest(project, alertName));
             for (int i = 0; i < 10; i++) {
-                alertV2.setName("alert-" + i);
-                client.createAlert(new CreateAlertRequest(project, alertV2));
+                alert.setName("alert-" + i);
+                client.createAlert(new CreateAlertRequest(project, alert));
             }
             // test list jobs
             listReq = new ListAlertRequest(project);
