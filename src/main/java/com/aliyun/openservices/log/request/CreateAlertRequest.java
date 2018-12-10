@@ -8,13 +8,13 @@ import com.aliyun.openservices.log.util.Args;
 
 public class CreateAlertRequest extends JobRequest {
 
+    private static final long serialVersionUID = 3346010323520068092L;
+
     private Alert alert;
 
     public CreateAlertRequest(String project, Alert alert) {
         super(project);
-        Args.notNull(alert, "alert");
-        this.alert = alert;
-        alert.validate();
+        setAlert(alert);
     }
 
     public Alert getAlert() {
@@ -22,6 +22,8 @@ public class CreateAlertRequest extends JobRequest {
     }
 
     public void setAlert(Alert alert) {
+        Args.notNull(alert, "alert");
+        alert.validate();
         this.alert = alert;
     }
 

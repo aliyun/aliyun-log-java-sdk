@@ -6,14 +6,13 @@ import com.aliyun.openservices.log.util.Args;
 
 public class UpdateAlertRequest extends JobRequest {
 
+    private static final long serialVersionUID = -4981510450288166817L;
+
     private Alert alert;
 
     public UpdateAlertRequest(String project, Alert alert) {
         super(project);
-        Args.notNull(alert, "alert");
-        this.alert = alert;
-        alert.validate();
-        setName(alert.getName());
+        setAlert(alert);
     }
 
     public Alert getAlert() {
@@ -21,7 +20,10 @@ public class UpdateAlertRequest extends JobRequest {
     }
 
     public void setAlert(Alert alert) {
+        Args.notNull(alert, "alert");
+        alert.validate();
         this.alert = alert;
+        setName(alert.getName());
     }
 
     @Override

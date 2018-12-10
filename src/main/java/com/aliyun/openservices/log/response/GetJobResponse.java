@@ -7,6 +7,8 @@ import java.util.Map;
 
 public class GetJobResponse extends Response {
 
+    private static final long serialVersionUID = 6142695979281167810L;
+
     private Job job;
 
     public GetJobResponse(Map<String, String> headers) {

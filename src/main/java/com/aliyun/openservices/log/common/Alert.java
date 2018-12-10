@@ -11,6 +11,8 @@ import java.util.List;
 
 public class Alert implements Serializable {
 
+    private static final long serialVersionUID = 9211926785430833230L;
+    
     /**
      * Alert rule name.
      */
