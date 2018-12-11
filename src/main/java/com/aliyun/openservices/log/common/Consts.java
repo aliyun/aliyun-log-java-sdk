@@ -281,39 +281,6 @@ public class Consts {
 	public static final String CONST_SAVEDSEARCH_LOGSTORE = "logstore";
 	public static final String CONST_SAVEDSEARCH_TOPIC = "topic";
 
-	// alert api
-	public static final String CONST_ALERT_URI = "/alerts";
-	public static final String CONST_ALERT_NAME = "alertName";
-	public static final String CONST_ALERT_DISPLAYNAME = "displayName";
-	public static final String CONST_ALERT_SAVEDSEARCHNAME = "savedsearchName";
-	public static final String CONST_ALERT_ROLEARN = "roleArn";
-	public static final String CONST_ALERT_FROM = "from";
-	public static final String CONST_ALERT_TO = "to";
-	public static final String CONST_ALERT_CHECKINTERVAL = "checkInterval";
-	public static final String CONST_ALERT_COUNT = "count";
-	public static final String CONST_ALERT_DETAIL = "alertDetail";
-	public static final String CONST_ALERT_KEY = "alertKey";
-	public static final String CONST_ALERT_VALUE = "alertValue";
-	public static final String CONST_ALERT_COMPARATOR = "comparator";
-	public static final String CONST_ALERT_MESSAGE = "alertMessage";
-	public static final String CONST_ALERT_ACTIONTYPE = "actionType";
-	public static final String CONST_ALERT_ACTIONTYPE_SMS = "sms";
-	public static final String CONST_ALERT_ACTIONTYPE_MNS = "mns";
-	public static final String CONST_ALERT_ACTIONTYPE_WEBHOOK = "webhook";
-	public static final String CONST_ALERT_ACTIONTYPE_DINGTALK = "dingtalk";
-	public static final String CONST_ALERT_ACTIONTYPE_NOTIFICATION = "notification";
-	public static final String CONST_ALERT_ACTIONDETAIL = "actionDetail";
-	public static final String CONST_ALERT_ACTIONDETAIL_PHONENUMBER = "phoneNumber";
-	public static final String CONST_ALERT_ACTIONDETAIL_MNS_PARAM = "param";
-	public static final String CONST_ALERT_ACTIONDETAIL_MESSAGE = "message";
-	public static final String CONST_ALERT_ACTIONDETAIL_WEBHOOK = "webhook";
-
-	public static final String CONST_ALERTTIME = "alertTime";
-	public static final String CONST_TRIGGERSTATUS = "triggerStatus";
-	public static final String CONST_TRIGGERMESSAGE = "triggerMessage";
-	public static final String CONST_ACTIONSTATUS = "actionStatus";
-	public static final String CONST_ACTIONMESSAGE = "actionMessage";
-
 	// logtail profile
 	public static final String CONST_GETLOGTAILPROFILE_URI = "/logtailprofile";
 	public static final String CONST_GETLOGTAILPROFILE_SOURCE = "source";
