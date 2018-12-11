@@ -10,10 +10,21 @@ import java.util.List;
 public class EmailNotification extends Notification {
 
     @JSONField
+    private String title;
+
+    @JSONField
     private List<String> emailList;
 
     public EmailNotification() {
         super(NotificationType.EMAIL);
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public List<String> getEmailList() {
