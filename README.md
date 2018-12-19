@@ -14,7 +14,7 @@ Client client = new Client(host, accessId, accessKey);
 
 ```
 
-### sample 2 : 创建logstore
+### sample 2 : 创建Logstore
 ```
 
 String project = "your_project_name";
@@ -97,7 +97,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.22</version>
+    <version>0.6.28</version>
 </dependency>
 ```
 
@@ -107,7 +107,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.22</version>
+    <version>0.6.28</version>
     <classifier>jar-with-dependencies</classifier>
     <exclusions>
         <exclusion>
