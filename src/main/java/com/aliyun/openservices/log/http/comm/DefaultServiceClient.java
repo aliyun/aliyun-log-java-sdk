@@ -60,7 +60,7 @@ public class DefaultServiceClient extends ServiceClient {
 
         // Build result
         ResponseMessage result = new ResponseMessage();
-        result.setUrl(request.getUri());
+        result.setUri(request.getUri());
         if (response.getStatusLine() != null){
             result.setStatusCode(response.getStatusLine().getStatusCode());
         }
