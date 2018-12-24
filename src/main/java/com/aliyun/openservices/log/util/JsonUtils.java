@@ -57,17 +57,11 @@ public final class JsonUtils {
     }
 
     public static String readOptionalString(JSONObject object, String key) {
-        if (object.has(key)) {
-            return object.getString(key);
-        }
-        return null;
+        return object.has(key) ? object.getString(key) : null;
     }
 
     public static boolean readBool(JSONObject object, String key, boolean defaultValue) {
-        if (object.containsKey(key)) {
-            return object.getBoolean(key);
-        }
-        return defaultValue;
+        return object.has(key) ? object.getBoolean(key) : defaultValue;
     }
 
     /**
