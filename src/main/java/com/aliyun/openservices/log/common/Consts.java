@@ -344,5 +344,9 @@ public class Consts {
     public static final String METHOD = "method";
     public static final String MOBILE_LIST = "mobileList";
     public static final String RESOURCE_PROVIDER = "resourceProvider";
-    public static final String SERVICE_URI = "serviceUri";
+    static final String SERVICE_URI = "serviceUri";
+    static final String SUBJECT = "subject";
+	static final String IS_AT_ALL = "isAtAll";
+	static final String TITLE = "title";
+	static final String AT_MOBILES = "atMobiles";
 }

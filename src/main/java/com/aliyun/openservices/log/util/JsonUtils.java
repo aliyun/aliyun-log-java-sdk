@@ -36,7 +36,7 @@ public final class JsonUtils {
         return readList(value.getJSONArray(key), unmarshaller);
     }
 
-    public static <T> List<T> readList(JSONArray list, Unmarshaller<T> unmarshaller) {
+    private static <T> List<T> readList(JSONArray list, Unmarshaller<T> unmarshaller) {
         if (list == null || list.isEmpty()) {
             return Collections.emptyList();
         }
@@ -54,6 +54,20 @@ public final class JsonUtils {
                 return value.getString(index);
             }
         });
+    }
+
+    public static String readOptionalString(JSONObject object, String key) {
+        if (object.has(key)) {
+            return object.getString(key);
+        }
+        return null;
+    }
+
+    public static boolean readBool(JSONObject object, String key, boolean defaultValue) {
+        if (object.containsKey(key)) {
+            return object.getBoolean(key);
+        }
+        return defaultValue;
     }
 
     /**

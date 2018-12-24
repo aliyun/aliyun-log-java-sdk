@@ -2,6 +2,8 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.util.JsonUtils;
+import net.sf.json.JSONObject;
 
 import java.util.List;
 
@@ -39,12 +41,20 @@ public class DingTalkNotification extends HttpNotification {
         this.atMobiles = atMobiles;
     }
 
-    public boolean isAtAll() {
+    public boolean getIsAtAll() {
         return isAtAll;
     }
 
-    public void setAtAll(boolean atAll) {
-        isAtAll = atAll;
+    public void setIsAtAll(boolean isAtAll) {
+        this.isAtAll = isAtAll;
+    }
+
+    @Override
+    public void deserialize(JSONObject value) {
+        super.deserialize(value);
+        atMobiles = JsonUtils.readStringList(value, "atMobiles");
+        isAtAll = JsonUtils.readBool(value, "isAtAll", false);
+        title = JsonUtils.readOptionalString(value, "title");
     }
 
     @Override
@@ -55,7 +65,7 @@ public class DingTalkNotification extends HttpNotification {
 
         DingTalkNotification that = (DingTalkNotification) o;
 
-        if (isAtAll() != that.isAtAll()) return false;
+        if (getIsAtAll() != that.getIsAtAll()) return false;
         if (getTitle() != null ? !getTitle().equals(that.getTitle()) : that.getTitle() != null) return false;
         return getAtMobiles() != null ? getAtMobiles().equals(that.getAtMobiles()) : that.getAtMobiles() == null;
     }
@@ -65,7 +75,7 @@ public class DingTalkNotification extends HttpNotification {
         int result = super.hashCode();
         result = 31 * result + (getTitle() != null ? getTitle().hashCode() : 0);
         result = 31 * result + (getAtMobiles() != null ? getAtMobiles().hashCode() : 0);
-        result = 31 * result + (isAtAll() ? 1 : 0);
+        result = 31 * result + (getIsAtAll() ? 1 : 0);
         return result;
     }
 }

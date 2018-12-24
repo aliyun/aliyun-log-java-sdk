@@ -10,7 +10,7 @@ import java.util.List;
 public class EmailNotification extends Notification {
 
     @JSONField
-    private String title;
+    private String subject;
 
     @JSONField
     private List<String> emailList;
@@ -19,12 +19,12 @@ public class EmailNotification extends Notification {
         super(NotificationType.EMAIL);
     }
 
-    public String getTitle() {
-        return title;
+    public String getSubject() {
+        return subject;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     public List<String> getEmailList() {
@@ -38,6 +38,7 @@ public class EmailNotification extends Notification {
     @Override
     public void deserialize(final JSONObject value) {
         super.deserialize(value);
+        subject = JsonUtils.readOptionalString(value, Consts.SUBJECT);
         emailList = JsonUtils.readStringList(value, Consts.EMAIL_LIST);
     }
 
@@ -48,11 +49,14 @@ public class EmailNotification extends Notification {
 
         EmailNotification that = (EmailNotification) o;
 
+        if (getSubject() != null ? !getSubject().equals(that.getSubject()) : that.getSubject() != null) return false;
         return getEmailList() != null ? getEmailList().equals(that.getEmailList()) : that.getEmailList() == null;
     }
 
     @Override
     public int hashCode() {
-        return getEmailList() != null ? getEmailList().hashCode() : 0;
+        int result = getSubject() != null ? getSubject().hashCode() : 0;
+        result = 31 * result + (getEmailList() != null ? getEmailList().hashCode() : 0);
+        return result;
     }
 }

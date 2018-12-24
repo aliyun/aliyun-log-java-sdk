@@ -9,7 +9,7 @@ abstract class HttpNotification extends Notification {
     @JSONField
     private String serviceUri;
 
-    public HttpNotification(NotificationType type) {
+    HttpNotification(NotificationType type) {
         super(type);
     }
 
