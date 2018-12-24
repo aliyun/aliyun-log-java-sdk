@@ -1076,11 +1076,7 @@ public class Client implements LogService {
 		} catch (LogException e) {
 			// ignore
 		}
-		if(out_header.containsKey(Consts.CONST_X_SLS_HOSTIP))
-		{
-			return out_header.get(Consts.CONST_X_SLS_HOSTIP);
-		}
-		return "";
+		return Utils.getOrEmpty(out_header, Consts.CONST_X_SLS_HOSTIP);
 	}
 	public ListShardResponse ListShard(ListShardRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
