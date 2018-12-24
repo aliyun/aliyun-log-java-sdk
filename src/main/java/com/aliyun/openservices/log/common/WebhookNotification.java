@@ -3,9 +3,12 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.http.client.HttpMethod;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
+
 
 public class WebhookNotification extends HttpNotification {
 
@@ -39,8 +42,14 @@ public class WebhookNotification extends HttpNotification {
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         method = HttpMethod.fromString(value.getString(Consts.METHOD));
-        if (value.has("headers")) {
-            JSONObject headers = value.getJSONObject("headers");
+        if (value.has(Consts.HEADERS)) {
+            JSONObject headers = value.getJSONObject(Consts.HEADERS);
+            JSONArray names = headers.names();
+            this.headers = new HashMap<String, String>(names.size());
+            for (int i = 0; i < names.size(); i++) {
+                String key = names.getString(i);
+                this.headers.put(key, headers.getString(key));
+            }
         }
     }
 

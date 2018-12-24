@@ -52,9 +52,9 @@ public class DingTalkNotification extends HttpNotification {
     @Override
     public void deserialize(JSONObject value) {
         super.deserialize(value);
-        atMobiles = JsonUtils.readStringList(value, "atMobiles");
-        isAtAll = JsonUtils.readBool(value, "isAtAll", false);
-        title = JsonUtils.readOptionalString(value, "title");
+        atMobiles = JsonUtils.readStringList(value, Consts.AT_MOBILES);
+        isAtAll = JsonUtils.readBool(value, Consts.IS_AT_ALL, false);
+        title = JsonUtils.readOptionalString(value, Consts.TITLE);
     }
 
     @Override
