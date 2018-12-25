@@ -12,6 +12,10 @@ public class SmsNotification extends Notification {
     @JSONField
     private List<String> mobileList;
 
+    SmsNotification(NotificationType type) {
+        super(type);
+    }
+
     public SmsNotification() {
         super(NotificationType.SMS);
     }
