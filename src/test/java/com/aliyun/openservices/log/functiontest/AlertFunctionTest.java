@@ -11,8 +11,10 @@ import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.common.JobScheduleType;
 import com.aliyun.openservices.log.common.JobState;
 import com.aliyun.openservices.log.common.Notification;
+import com.aliyun.openservices.log.common.NotificationType;
 import com.aliyun.openservices.log.common.Query;
 import com.aliyun.openservices.log.common.TimeSpanType;
+import com.aliyun.openservices.log.common.VoiceNotification;
 import com.aliyun.openservices.log.common.WebhookNotification;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.HttpMethod;
@@ -215,7 +217,6 @@ public class AlertFunctionTest extends FunctionTest {
         List<Notification> notifications = new ArrayList<Notification>();
         notifications.add(notification);
         configuration.setNotificationList(notifications);
-
         client.createAlert(new CreateAlertRequest(TEST_PROJECT, alert));
 
         GetAlertResponse response = client.getAlert(new GetAlertRequest(TEST_PROJECT, alert.getName()));
@@ -225,6 +226,29 @@ public class AlertFunctionTest extends FunctionTest {
         assertEquals(notification.getServiceUri(), notification1.getServiceUri());
         assertEquals(notification.getMethod(), notification1.getMethod());
         assertEquals(notification.getHeaders(), notification1.getHeaders());
+
+        client.deleteAlert(new DeleteAlertRequest(TEST_PROJECT, alert.getName()));
+    }
+
+    @Test
+    public void testCreateVoiceNotification() throws Exception {
+        Alert alert = createAlert();
+        AlertConfiguration configuration = alert.getConfiguration();
+        VoiceNotification notification = new VoiceNotification();
+        notification.setMobileList(Arrays.asList("123-4567-8901"));
+        notification.setContent("alert fired");
+        List<Notification> notifications = new ArrayList<Notification>();
+        notifications.add(notification);
+        configuration.setNotificationList(notifications);
+        client.createAlert(new CreateAlertRequest(TEST_PROJECT, alert));
+
+        GetAlertResponse response = client.getAlert(new GetAlertRequest(TEST_PROJECT, alert.getName()));
+        Alert alert2 = response.getAlert();
+        List<Notification> notifications2 = alert2.getConfiguration().getNotificationList();
+        VoiceNotification notification1 = (VoiceNotification) notifications2.get(0);
+        assertEquals(NotificationType.VOICE, notification1.getType());
+        assertEquals(notification.getMobileList(), notification1.getMobileList());
+        assertEquals(notification.getContent(), notification1.getContent());
 
         client.deleteAlert(new DeleteAlertRequest(TEST_PROJECT, alert.getName()));
     }
