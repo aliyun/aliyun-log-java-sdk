@@ -6,9 +6,6 @@ import com.alibaba.fastjson.serializer.JSONSerializer;
 import java.lang.reflect.Type;
 
 public enum TimeSpanType implements JSONSerializable {
-    /**
-     * Predefined relative timespan type. The end is fixed to now.
-     */
     RELATIVE("Relative"),
     TRUNCATED("Truncated"),
     TODAY("Today"),

@@ -2,29 +2,32 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
+
+import java.util.List;
 
 public class VoiceNotification extends Notification {
 
     @JSONField
-    private String mobile;
+    private List<String> mobileList;
 
     public VoiceNotification() {
         super(NotificationType.VOICE);
     }
 
-    public String getMobile() {
-        return mobile;
+    public List<String> getMobileList() {
+        return mobileList;
     }
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
+    public void setMobileList(List<String> mobileList) {
+        this.mobileList = mobileList;
     }
 
     @Override
     public void deserialize(JSONObject value) {
         super.deserialize(value);
-        mobile = value.getString("mobile");
+        mobileList = JsonUtils.readStringList(value, Consts.MOBILE_LIST);
     }
 
     @Override
@@ -34,11 +37,11 @@ public class VoiceNotification extends Notification {
 
         VoiceNotification that = (VoiceNotification) o;
 
-        return getMobile() != null ? getMobile().equals(that.getMobile()) : that.getMobile() == null;
+        return getMobileList() != null ? getMobileList().equals(that.getMobileList()) : that.getMobileList() == null;
     }
 
     @Override
     public int hashCode() {
-        return getMobile() != null ? getMobile().hashCode() : 0;
+        return getMobileList() != null ? getMobileList().hashCode() : 0;
     }
 }
