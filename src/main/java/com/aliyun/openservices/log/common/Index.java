@@ -17,6 +17,7 @@ public class Index {
 	
 	private boolean keysSet = false;
 	private boolean lineSet = false;
+	private boolean logReduceEnable = false;
 	
 	public Index() {
 	}
@@ -38,6 +39,7 @@ public class Index {
 	 */
 	public Index(Index other) {
 		this.ttl = other.GetTtl();
+		this.logReduceEnable = other.isLogReduceEnable();
 		if (other.isKeysSet()) {
 			SetKeys(other.GetKeys());
 		}
@@ -45,7 +47,14 @@ public class Index {
 			SetLine(other.GetLine());
 		}
 	}
-
+	
+	public boolean isLogReduceEnable() {
+		return logReduceEnable;
+	}
+	public void setLogReduceEnable(boolean logReduce) {
+		this.logReduceEnable = logReduce;
+	}
+	
 	/**
 	 * @return the keysSet
 	 */
@@ -116,7 +125,7 @@ public class Index {
 		JSONObject index = new JSONObject();
 		
 		index.put("ttl", ttl);
-		
+		index.put("log_reduce", logReduceEnable);
 		
 		if (lineSet) {
 			JSONObject lineDict = line.ToJsonObject();
@@ -158,6 +167,10 @@ public class Index {
 				JSONObject keysDict = dict.getJSONObject("keys");
 				keys.FromJsonObject(keysDict);
 				keysSet = true;
+			}
+			
+			if (dict.containsKey("log_reduce")) {
+				logReduceEnable = dict.getBooleanValue("log_reduce");
 			}
 			
 		} catch (JSONException e) {
