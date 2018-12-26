@@ -1,8 +1,8 @@
 # log service java sdk
 java sdk 是对所有log service 提供的API的封装，通过该sdk，可以调用所有log service。部分API文档请参考[文档中心](https://help.aliyun.com/document_detail/29007.html)。 
 ### 注意
-1. 为了提高您的系统的IO效率，请尽量不要直接使用SDK往日志服务中写数据，写数据标准做法参考文章[**Producer Library**](https://help.aliyun.com/document_detail/43758.html)。
-2. 要消费日志服务中的数据，请尽量不要直接使用SDK的拉数据接口，我们提供了一个高级消费库[**Consumer Library**](https://help.aliyun.com/document_detail/28998.html)，该库屏蔽了日志服务的实现细节，并且提供了负载均衡、按序消费等高级功能。
+1. 为了提高您系统的 IO 效率，请尽量不要直接使用 SDK 往日志服务中写数据，写数据标准做法参考文章 [**Aliyun LOG Java Producer 快速入门**](https://yq.aliyun.com/articles/682761)。
+2. 要消费日志服务中的数据，请尽量不要直接使用SDK的拉数据接口，我们提供了一个高级消费库 [**Consumer Library**](https://help.aliyun.com/document_detail/28998.html)，该库屏蔽了日志服务的实现细节，并且提供了负载均衡、按序消费等高级功能。
 
 ### sample 1 : 构建client
 ```
