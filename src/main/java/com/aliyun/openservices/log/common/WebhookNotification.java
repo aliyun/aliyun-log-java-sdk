@@ -3,18 +3,26 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.http.client.HttpMethod;
+import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class WebhookNotification extends HttpNotification {
 
+    /**
+     * Optional headers for http request.
+     */
     @JSONField
     private Map<String, String> headers;
 
+    /**
+     * Optional method, default to POST.
+     */
     @JSONField
     private HttpMethod method;
 
@@ -38,19 +46,31 @@ public class WebhookNotification extends HttpNotification {
         this.headers = headers;
     }
 
+    private static Map<String, String> parseHeaders(JSONObject object) {
+        if (!object.has(Consts.HEADERS)) {
+            return Collections.emptyMap();
+        }
+        JSONObject value = object.getJSONObject(Consts.HEADERS);
+        if (value.isNullObject()) {
+            return Collections.emptyMap();
+        }
+        JSONArray names = value.names();
+        Map<String, String> headers = new HashMap<String, String>(names.size());
+        for (int i = 0; i < names.size(); i++) {
+            String header = names.getString(i);
+            headers.put(header, value.getString(header));
+        }
+        return headers;
+    }
+
     @Override
     public void deserialize(JSONObject value) {
         super.deserialize(value);
-        method = HttpMethod.fromString(value.getString(Consts.METHOD));
-        if (value.has(Consts.HEADERS)) {
-            JSONObject headers = value.getJSONObject(Consts.HEADERS);
-            JSONArray names = headers.names();
-            this.headers = new HashMap<String, String>(names.size());
-            for (int i = 0; i < names.size(); i++) {
-                String key = names.getString(i);
-                this.headers.put(key, headers.getString(key));
-            }
+        String method = JsonUtils.readOptionalString(value, Consts.METHOD);
+        if (method != null) {
+            setMethod(HttpMethod.fromString(method));
         }
+        setHeaders(parseHeaders(value));
     }
 
     @Override
