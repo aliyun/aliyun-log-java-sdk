@@ -21,6 +21,13 @@ public class DingTalkNotification extends HttpNotification {
     @JSONField
     private boolean isAtAll;
 
+    /**
+     * Ding talk API support POST only.
+     */
+    @Deprecated
+    @JSONField
+    private String method;
+
     public DingTalkNotification() {
         super(NotificationType.DING_TALK);
     }
@@ -49,12 +56,23 @@ public class DingTalkNotification extends HttpNotification {
         this.isAtAll = isAtAll;
     }
 
+    @Deprecated
+    public String getMethod() {
+        return method;
+    }
+
+    @Deprecated
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
     @Override
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         atMobiles = JsonUtils.readStringList(value, Consts.AT_MOBILES);
         isAtAll = JsonUtils.readBool(value, Consts.IS_AT_ALL, false);
         title = JsonUtils.readOptionalString(value, Consts.TITLE);
+        method = JsonUtils.readOptionalString(value, Consts.METHOD);
     }
 
     @Override
@@ -65,9 +83,11 @@ public class DingTalkNotification extends HttpNotification {
 
         DingTalkNotification that = (DingTalkNotification) o;
 
-        if (getIsAtAll() != that.getIsAtAll()) return false;
+        if (isAtAll != that.isAtAll) return false;
         if (getTitle() != null ? !getTitle().equals(that.getTitle()) : that.getTitle() != null) return false;
-        return getAtMobiles() != null ? getAtMobiles().equals(that.getAtMobiles()) : that.getAtMobiles() == null;
+        if (getAtMobiles() != null ? !getAtMobiles().equals(that.getAtMobiles()) : that.getAtMobiles() != null)
+            return false;
+        return getMethod() != null ? getMethod().equals(that.getMethod()) : that.getMethod() == null;
     }
 
     @Override
@@ -75,7 +95,8 @@ public class DingTalkNotification extends HttpNotification {
         int result = super.hashCode();
         result = 31 * result + (getTitle() != null ? getTitle().hashCode() : 0);
         result = 31 * result + (getAtMobiles() != null ? getAtMobiles().hashCode() : 0);
-        result = 31 * result + (getIsAtAll() ? 1 : 0);
+        result = 31 * result + (isAtAll ? 1 : 0);
+        result = 31 * result + (getMethod() != null ? getMethod().hashCode() : 0);
         return result;
     }
 }

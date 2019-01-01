@@ -36,7 +36,7 @@ public final class JsonUtils {
         return readList(value.getJSONArray(key), unmarshaller);
     }
 
-    private static <T> List<T> readList(JSONArray list, Unmarshaller<T> unmarshaller) {
+    public static <T> List<T> readList(JSONArray list, Unmarshaller<T> unmarshaller) {
         if (list == null || list.isEmpty()) {
             return Collections.emptyList();
         }
