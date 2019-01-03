@@ -18,9 +18,6 @@ public class DingTalkNotification extends HttpNotification {
     @JSONField
     private List<String> atMobiles;
 
-    @JSONField
-    private boolean isAtAll;
-
     /**
      * Ding talk API support POST only.
      */
@@ -48,14 +45,6 @@ public class DingTalkNotification extends HttpNotification {
         this.atMobiles = atMobiles;
     }
 
-    public boolean getIsAtAll() {
-        return isAtAll;
-    }
-
-    public void setIsAtAll(boolean isAtAll) {
-        this.isAtAll = isAtAll;
-    }
-
     @Deprecated
     public String getMethod() {
         return method;
@@ -69,8 +58,7 @@ public class DingTalkNotification extends HttpNotification {
     @Override
     public void deserialize(JSONObject value) {
         super.deserialize(value);
-        atMobiles = JsonUtils.readStringList(value, Consts.AT_MOBILES);
-        isAtAll = JsonUtils.readBool(value, Consts.IS_AT_ALL, false);
+        atMobiles = JsonUtils.readOptionalStrings(value, Consts.AT_MOBILES);
         title = JsonUtils.readOptionalString(value, Consts.TITLE);
         method = JsonUtils.readOptionalString(value, Consts.METHOD);
     }
@@ -83,7 +71,6 @@ public class DingTalkNotification extends HttpNotification {
 
         DingTalkNotification that = (DingTalkNotification) o;
 
-        if (isAtAll != that.isAtAll) return false;
         if (getTitle() != null ? !getTitle().equals(that.getTitle()) : that.getTitle() != null) return false;
         if (getAtMobiles() != null ? !getAtMobiles().equals(that.getAtMobiles()) : that.getAtMobiles() != null)
             return false;
@@ -95,7 +82,6 @@ public class DingTalkNotification extends HttpNotification {
         int result = super.hashCode();
         result = 31 * result + (getTitle() != null ? getTitle().hashCode() : 0);
         result = 31 * result + (getAtMobiles() != null ? getAtMobiles().hashCode() : 0);
-        result = 31 * result + (isAtAll ? 1 : 0);
         result = 31 * result + (getMethod() != null ? getMethod().hashCode() : 0);
         return result;
     }
