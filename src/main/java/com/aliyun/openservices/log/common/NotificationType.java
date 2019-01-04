@@ -25,7 +25,11 @@ public enum NotificationType implements JSONSerializable {
     /**
      * Send HTTP request to target uri.
      */
-    WEBHOOK("Webhook");
+    WEBHOOK("Webhook"),
+    /**
+     * Send voice to phone number.
+     */
+    VOICE("Voice");
 
     private final String value;
 

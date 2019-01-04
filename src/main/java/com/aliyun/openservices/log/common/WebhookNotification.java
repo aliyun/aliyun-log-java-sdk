@@ -3,23 +3,31 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.http.client.HttpMethod;
+import com.aliyun.openservices.log.util.JsonUtils;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-// TODO support authentication, custom headers
-public class WebhookNotification extends Notification {
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
+
+public class WebhookNotification extends HttpNotification {
+
+    /**
+     * Optional headers for http request.
+     */
+    @JSONField
+    private Map<String, String> headers;
+
+    /**
+     * Optional method, default to POST.
+     */
     @JSONField
     private HttpMethod method;
 
-    @JSONField
-    private String serviceUri;
-
     public WebhookNotification() {
         super(NotificationType.WEBHOOK);
-    }
-
-    WebhookNotification(NotificationType type) {
-        super(type);
     }
 
     public HttpMethod getMethod() {
@@ -30,36 +38,58 @@ public class WebhookNotification extends Notification {
         this.method = method;
     }
 
-    public String getServiceUri() {
-        return serviceUri;
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 
-    public void setServiceUri(String serviceUri) {
-        this.serviceUri = serviceUri;
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    private static Map<String, String> parseHeaders(JSONObject object) {
+        if (!object.has(Consts.HEADERS)) {
+            return Collections.emptyMap();
+        }
+        JSONObject value = object.getJSONObject(Consts.HEADERS);
+        if (value.isNullObject()) {
+            return Collections.emptyMap();
+        }
+        JSONArray names = value.names();
+        Map<String, String> headers = new HashMap<String, String>(names.size());
+        for (int i = 0; i < names.size(); i++) {
+            String header = names.getString(i);
+            headers.put(header, value.getString(header));
+        }
+        return headers;
     }
 
     @Override
     public void deserialize(JSONObject value) {
         super.deserialize(value);
-        serviceUri = value.getString(Consts.SERVICE_URI);
-        method = HttpMethod.fromString(value.getString(Consts.METHOD));
+        String method = JsonUtils.readOptionalString(value, Consts.METHOD);
+        if (method != null) {
+            setMethod(HttpMethod.fromString(method));
+        }
+        setHeaders(parseHeaders(value));
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         WebhookNotification that = (WebhookNotification) o;
 
         if (getMethod() != that.getMethod()) return false;
-        return getServiceUri() != null ? getServiceUri().equals(that.getServiceUri()) : that.getServiceUri() == null;
+        return getHeaders() != null ? getHeaders().equals(that.getHeaders()) : that.getHeaders() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getMethod() != null ? getMethod().hashCode() : 0;
-        result = 31 * result + (getServiceUri() != null ? getServiceUri().hashCode() : 0);
+        int result = super.hashCode();
+        result = 31 * result + (getMethod() != null ? getMethod().hashCode() : 0);
+        result = 31 * result + (getHeaders() != null ? getHeaders().hashCode() : 0);
         return result;
     }
 }

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.serializer.ObjectSerializer;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import java.lang.reflect.Type;
@@ -47,6 +48,17 @@ public final class JsonUtils {
         return values;
     }
 
+    public static List<String> readOptionalStrings(JSONObject object, String key) {
+        if (!object.has(key)) {
+            return Collections.emptyList();
+        }
+        try {
+            return readStringList(object, key);
+        } catch (JSONException ex) {
+            return Collections.emptyList();
+        }
+    }
+
     public static List<String> readStringList(JSONObject object, String key) {
         return readList(object, key, new Unmarshaller<String>() {
             @Override
@@ -54,6 +66,10 @@ public final class JsonUtils {
                 return value.getString(index);
             }
         });
+    }
+
+    public static String readOptionalString(JSONObject object, String key) {
+        return object.has(key) ? object.getString(key) : null;
     }
 
     /**

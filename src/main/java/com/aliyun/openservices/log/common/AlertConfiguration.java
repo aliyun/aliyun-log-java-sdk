@@ -127,9 +127,7 @@ public class AlertConfiguration extends JobConfiguration {
         if (value.has("notifyThreshold")) {
             notifyThreshold = value.getInt("notifyThreshold");
         }
-        if (value.has("throttling")) {
-            throttling = value.getString("throttling");
-        }
+        throttling = JsonUtils.readOptionalString(value, "throttling");
     }
 
     private static Notification createNotification(NotificationType type) {
@@ -144,6 +142,8 @@ public class AlertConfiguration extends JobConfiguration {
                 return new SmsNotification();
             case WEBHOOK:
                 return new WebhookNotification();
+            case VOICE:
+                return new VoiceNotification();
             default:
                 throw new IllegalArgumentException("Unimplemented notification type: " + type);
         }

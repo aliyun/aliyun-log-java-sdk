@@ -338,10 +338,15 @@ public class Consts {
     public static final String JOB_NAME = "jobName";
     public static final String JOB_TYPE = "jobType";
     public static final String JOB_URI = "/jobs";
+    public static final String DISPLAY_NAME = "displayName";
 
     public static final String LOGGING_URI = "/logging";
     public static final String METHOD = "method";
     public static final String MOBILE_LIST = "mobileList";
     public static final String RESOURCE_PROVIDER = "resourceProvider";
-    public static final String SERVICE_URI = "serviceUri";
+    static final String SERVICE_URI = "serviceUri";
+    static final String SUBJECT = "subject";
+    static final String TITLE = "title";
+    static final String AT_MOBILES = "atMobiles";
+    static final String HEADERS = "headers";
 }
