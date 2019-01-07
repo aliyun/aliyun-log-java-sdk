@@ -136,10 +136,14 @@ public class Job implements Serializable {
     }
 
     private static JobConfiguration createConfiguration(JobType type) {
-        if (type == JobType.ALERT) {
-            return new AlertConfiguration();
+        switch (type) {
+            case ALERT:
+                return new AlertConfiguration();
+            case REPORT:
+                return new ReportConfiguration();
+            default:
+                throw new IllegalArgumentException("Unimplemented job type: " + type);
         }
-        throw new IllegalArgumentException("Unimplemented job type: " + type);
     }
 
     public void deserialize(JSONObject value) {
