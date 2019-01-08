@@ -32,7 +32,7 @@ public class ReportConfiguration extends JobConfiguration {
         this.notificationList = notificationList;
     }
 
-    private static Notification createNotification(NotificationType type) {
+    protected Notification createNotification(NotificationType type) {
         switch (type) {
             case DING_TALK:
                 return new DingTalkNotification();

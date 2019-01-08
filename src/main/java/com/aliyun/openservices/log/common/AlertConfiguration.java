@@ -12,7 +12,7 @@ import net.sf.json.JSONObject;
 import java.util.Date;
 import java.util.List;
 
-public class AlertConfiguration extends JobConfiguration {
+public class AlertConfiguration extends ReportConfiguration {
 
     /**
      * The trigger condition expression e.g $0.xx > 100 and $1.yy < 100.
@@ -22,13 +22,7 @@ public class AlertConfiguration extends JobConfiguration {
     private String condition;
 
     @JSONField
-    private String dashboard;
-
-    @JSONField
     private List<Query> queryList;
-
-    @JSONField
-    private List<Notification> notificationList;
 
     @JSONField
     private Date muteUntil;
@@ -50,28 +44,12 @@ public class AlertConfiguration extends JobConfiguration {
         this.condition = condition;
     }
 
-    public String getDashboard() {
-        return dashboard;
-    }
-
-    public void setDashboard(String dashboard) {
-        this.dashboard = dashboard;
-    }
-
     public List<Query> getQueryList() {
         return queryList;
     }
 
     public void setQueryList(List<Query> queryList) {
         this.queryList = queryList;
-    }
-
-    public List<Notification> getNotificationList() {
-        return notificationList;
-    }
-
-    public void setNotificationList(List<Notification> notificationList) {
-        this.notificationList = notificationList;
     }
 
     public Date getMuteUntil() {
@@ -82,11 +60,11 @@ public class AlertConfiguration extends JobConfiguration {
         this.muteUntil = muteUntil;
     }
 
-    public int getNotifyThreshold() {
+    public Integer getNotifyThreshold() {
         return notifyThreshold;
     }
 
-    public void setNotifyThreshold(int notifyThreshold) {
+    public void setNotifyThreshold(Integer notifyThreshold) {
         this.notifyThreshold = notifyThreshold;
     }
 
@@ -101,24 +79,14 @@ public class AlertConfiguration extends JobConfiguration {
 
     @Override
     public void deserialize(JSONObject value) {
+        super.deserialize(value);
         condition = value.getString("condition");
-        dashboard = value.getString("dashboard");
         queryList = JsonUtils.readList(value, "queryList", new Unmarshaller<Query>() {
             @Override
             public Query unmarshal(JSONArray value, int index) {
                 Query query = new Query();
                 query.deserialize(value.getJSONObject(index));
                 return query;
-            }
-        });
-        notificationList = JsonUtils.readList(value, "notificationList", new Unmarshaller<Notification>() {
-            @Override
-            public Notification unmarshal(JSONArray value, int index) {
-                JSONObject item = value.getJSONObject(index);
-                NotificationType notificationType = NotificationType.fromString(item.getString("type"));
-                Notification notification = createNotification(notificationType);
-                notification.deserialize(item);
-                return notification;
             }
         });
         if (value.has("muteUntil")) {
@@ -130,7 +98,8 @@ public class AlertConfiguration extends JobConfiguration {
         throttling = JsonUtils.readOptionalString(value, "throttling");
     }
 
-    private static Notification createNotification(NotificationType type) {
+    @Override
+    protected Notification createNotification(NotificationType type) {
         switch (type) {
             case DING_TALK:
                 return new DingTalkNotification();
@@ -156,16 +125,13 @@ public class AlertConfiguration extends JobConfiguration {
 
         AlertConfiguration that = (AlertConfiguration) o;
 
-        if (getNotifyThreshold() != that.getNotifyThreshold()) return false;
         if (getCondition() != null ? !getCondition().equals(that.getCondition()) : that.getCondition() != null)
-            return false;
-        if (getDashboard() != null ? !getDashboard().equals(that.getDashboard()) : that.getDashboard() != null)
             return false;
         if (getQueryList() != null ? !getQueryList().equals(that.getQueryList()) : that.getQueryList() != null)
             return false;
-        if (getNotificationList() != null ? !getNotificationList().equals(that.getNotificationList()) : that.getNotificationList() != null)
-            return false;
         if (getMuteUntil() != null ? !getMuteUntil().equals(that.getMuteUntil()) : that.getMuteUntil() != null)
+            return false;
+        if (getNotifyThreshold() != null ? !getNotifyThreshold().equals(that.getNotifyThreshold()) : that.getNotifyThreshold() != null)
             return false;
         return getThrottling() != null ? getThrottling().equals(that.getThrottling()) : that.getThrottling() == null;
     }
@@ -173,11 +139,9 @@ public class AlertConfiguration extends JobConfiguration {
     @Override
     public int hashCode() {
         int result = getCondition() != null ? getCondition().hashCode() : 0;
-        result = 31 * result + (getDashboard() != null ? getDashboard().hashCode() : 0);
         result = 31 * result + (getQueryList() != null ? getQueryList().hashCode() : 0);
-        result = 31 * result + (getNotificationList() != null ? getNotificationList().hashCode() : 0);
         result = 31 * result + (getMuteUntil() != null ? getMuteUntil().hashCode() : 0);
-        result = 31 * result + getNotifyThreshold();
+        result = 31 * result + (getNotifyThreshold() != null ? getNotifyThreshold().hashCode() : 0);
         result = 31 * result + (getThrottling() != null ? getThrottling().hashCode() : 0);
         return result;
     }
