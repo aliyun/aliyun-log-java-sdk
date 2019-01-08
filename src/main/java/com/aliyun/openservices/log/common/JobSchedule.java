@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
@@ -17,7 +18,7 @@ public class JobSchedule implements Serializable {
     private JobScheduleType type;
 
     /**
-     * Interval in duration format e,g "60s", "1h".
+     * Interval in duration format e,g "60s", "1h". Required for {@code JobScheduleType.FIXED_RATE} only.
      */
     @JSONField
     private String interval;
@@ -41,7 +42,7 @@ public class JobSchedule implements Serializable {
 
     public void deserialize(JSONObject value) {
         type = JobScheduleType.fromString(value.getString("type"));
-        interval = value.getString("interval");
+        interval = JsonUtils.readOptionalString(value, "interval");
     }
 
     @Override

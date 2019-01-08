@@ -9,7 +9,30 @@ public enum JobScheduleType implements JSONSerializable {
     /**
      * Trigger in a fixed rate.
      */
-    FIXED_RATE("FixedRate");
+    FIXED_RATE("FixedRate"),
+
+    /**
+     * Run each hour.
+     */
+    HOURLY("Hourly"),
+
+    /**
+     * Run each day
+     */
+    DAILY("Daily"),
+
+    /**
+     * Run each week.
+     */
+    WEEKLY("Weekly"),
+
+    /**
+     * Run each month.
+     */
+    MONTHLY("Monthly"),
+
+    // TODO support cron expression.
+    ;
 
     private final String value;
 
