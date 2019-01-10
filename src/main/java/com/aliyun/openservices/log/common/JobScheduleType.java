@@ -31,7 +31,10 @@ public enum JobScheduleType implements JSONSerializable {
      */
     MONTHLY("Monthly"),
 
-    // TODO support cron expression.
+    /**
+     * Custom cron expression.
+     */
+    CRON("Cron"),
     ;
 
     private final String value;

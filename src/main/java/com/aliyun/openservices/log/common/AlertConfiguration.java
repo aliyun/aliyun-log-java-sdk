@@ -16,7 +16,7 @@ public class AlertConfiguration extends ReportConfiguration {
 
     /**
      * The trigger condition expression e.g $0.xx > 100 and $1.yy < 100.
-     * Which depends on the order of queries in query context.
+     * Which depends on the order of queries in {@code queryList}.
      */
     @JSONField
     private String condition;

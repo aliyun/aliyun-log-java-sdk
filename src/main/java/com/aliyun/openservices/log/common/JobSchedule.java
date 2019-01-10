@@ -23,6 +23,12 @@ public class JobSchedule implements Serializable {
     @JSONField
     private String interval;
 
+    /**
+     * Cron expression for CRON type.
+     */
+    @JSONField
+    private String cronExpression;
+
     public JobScheduleType getType() {
         return type;
     }
@@ -40,9 +46,18 @@ public class JobSchedule implements Serializable {
         this.interval = interval;
     }
 
+    public String getCronExpression() {
+        return cronExpression;
+    }
+
+    public void setCronExpression(String cronExpression) {
+        this.cronExpression = cronExpression;
+    }
+
     public void deserialize(JSONObject value) {
         type = JobScheduleType.fromString(value.getString("type"));
         interval = JsonUtils.readOptionalString(value, "interval");
+        cronExpression = JsonUtils.readOptionalString(value, "cronExpression");
     }
 
     @Override
@@ -50,16 +65,19 @@ public class JobSchedule implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        JobSchedule schedule = (JobSchedule) o;
+        JobSchedule that = (JobSchedule) o;
 
-        if (getType() != schedule.getType()) return false;
-        return getInterval() != null ? getInterval().equals(schedule.getInterval()) : schedule.getInterval() == null;
+        if (getType() != that.getType()) return false;
+        if (getInterval() != null ? !getInterval().equals(that.getInterval()) : that.getInterval() != null)
+            return false;
+        return cronExpression != null ? cronExpression.equals(that.cronExpression) : that.cronExpression == null;
     }
 
     @Override
     public int hashCode() {
         int result = getType() != null ? getType().hashCode() : 0;
         result = 31 * result + (getInterval() != null ? getInterval().hashCode() : 0);
+        result = 31 * result + (cronExpression != null ? cronExpression.hashCode() : 0);
         return result;
     }
 }
