@@ -2805,7 +2805,7 @@ public interface LogService {
     /**
      * Create an alert rule.
      * @param request An instance of {@link CreateAlertRequest}
-     * @return
+     * @return CreateAlertResponse
      * @throws LogException
      */
     CreateAlertResponse createAlert(CreateAlertRequest request) throws LogException;

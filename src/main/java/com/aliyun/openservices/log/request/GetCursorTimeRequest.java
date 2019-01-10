@@ -48,7 +48,7 @@ public class GetCursorTimeRequest extends Request {
 
 	/**
 	 * 
-	 * @return
+	 * @return the cursor to query
 	 */
 	public String GetCursor() {
 		return GetParam(Consts.CONST_CURSOR);
