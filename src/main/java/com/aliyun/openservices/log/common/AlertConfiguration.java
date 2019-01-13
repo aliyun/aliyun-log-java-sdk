@@ -30,6 +30,9 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     @JSONField
     private Date muteUntil;
 
+    /**
+     * Optional notify threshold, defaults to 1.
+     */
     @JSONField
     private Integer notifyThreshold = 1;
 

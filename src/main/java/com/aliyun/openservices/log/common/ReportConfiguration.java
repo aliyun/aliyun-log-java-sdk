@@ -4,40 +4,16 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
-import java.util.List;
-
 /**
  * Configuration for report job.
  */
 public class ReportConfiguration extends DashboardBasedJobConfiguration {
 
     @JSONField
-    private String dashboard;
-
-    @JSONField
-    private List<Notification> notificationList;
-
-    @JSONField
     private boolean enableWatermark;
 
     @JSONField
-    private boolean generatePublicAccessUrl;
-
-    public String getDashboard() {
-        return dashboard;
-    }
-
-    public void setDashboard(String dashboard) {
-        this.dashboard = dashboard;
-    }
-
-    public List<Notification> getNotificationList() {
-        return notificationList;
-    }
-
-    public void setNotificationList(List<Notification> notificationList) {
-        this.notificationList = notificationList;
-    }
+    private boolean createPublicAccessUrl;
 
     public boolean getEnableWatermark() {
         return enableWatermark;
@@ -47,12 +23,12 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
         this.enableWatermark = enableWatermark;
     }
 
-    public boolean getGeneratePublicAccessUrl() {
-        return generatePublicAccessUrl;
+    public boolean getCreatePublicAccessUrl() {
+        return createPublicAccessUrl;
     }
 
-    public void setGeneratePublicAccessUrl(boolean generatePublicAccessUrl) {
-        this.generatePublicAccessUrl = generatePublicAccessUrl;
+    public void setCreatePublicAccessUrl(boolean createPublicAccessUrl) {
+        this.createPublicAccessUrl = createPublicAccessUrl;
     }
 
     @Override
@@ -71,6 +47,6 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         enableWatermark = JsonUtils.readBool(value, "enableWatermark", false);
-        generatePublicAccessUrl = JsonUtils.readBool(value, "generatePublicAccessUrl", false);
+        createPublicAccessUrl = JsonUtils.readBool(value, "createPublicAccessUrl", false);
     }
 }
