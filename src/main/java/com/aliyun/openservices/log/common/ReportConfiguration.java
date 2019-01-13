@@ -6,6 +6,9 @@ import net.sf.json.JSONObject;
 
 import java.util.List;
 
+/**
+ * Configuration for report job.
+ */
 public class ReportConfiguration extends DashboardBasedJobConfiguration {
 
     @JSONField
@@ -35,7 +38,6 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
     public void setNotificationList(List<Notification> notificationList) {
         this.notificationList = notificationList;
     }
-
 
     public boolean getEnableWatermark() {
         return enableWatermark;

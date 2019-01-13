@@ -12,6 +12,9 @@ import net.sf.json.JSONObject;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Configuration for alert job.
+ */
 public class AlertConfiguration extends DashboardBasedJobConfiguration {
 
     /**
