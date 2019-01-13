@@ -1,20 +1,24 @@
 package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.aliyun.openservices.log.internal.Unmarshaller;
 import com.aliyun.openservices.log.util.JsonUtils;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import java.util.List;
 
-public class ReportConfiguration extends JobConfiguration {
+public class ReportConfiguration extends DashboardBasedJobConfiguration {
 
     @JSONField
     private String dashboard;
 
     @JSONField
     private List<Notification> notificationList;
+
+    @JSONField
+    private boolean enableWatermark;
+
+    @JSONField
+    private boolean generatePublicAccessUrl;
 
     public String getDashboard() {
         return dashboard;
@@ -32,7 +36,25 @@ public class ReportConfiguration extends JobConfiguration {
         this.notificationList = notificationList;
     }
 
-    protected Notification createNotification(NotificationType type) {
+
+    public boolean getEnableWatermark() {
+        return enableWatermark;
+    }
+
+    public void setEnableWatermark(boolean enableWatermark) {
+        this.enableWatermark = enableWatermark;
+    }
+
+    public boolean getGeneratePublicAccessUrl() {
+        return generatePublicAccessUrl;
+    }
+
+    public void setGeneratePublicAccessUrl(boolean generatePublicAccessUrl) {
+        this.generatePublicAccessUrl = generatePublicAccessUrl;
+    }
+
+    @Override
+    Notification makeQualifiedNotification(NotificationType type) {
         switch (type) {
             case DING_TALK:
                 return new DingTalkNotification();
@@ -45,16 +67,8 @@ public class ReportConfiguration extends JobConfiguration {
 
     @Override
     public void deserialize(JSONObject value) {
-        dashboard = value.getString("dashboard");
-        notificationList = JsonUtils.readList(value, "notificationList", new Unmarshaller<Notification>() {
-            @Override
-            public Notification unmarshal(JSONArray value, int index) {
-                JSONObject item = value.getJSONObject(index);
-                NotificationType notificationType = NotificationType.fromString(item.getString("type"));
-                Notification notification = createNotification(notificationType);
-                notification.deserialize(item);
-                return notification;
-            }
-        });
+        super.deserialize(value);
+        enableWatermark = JsonUtils.readBool(value, "enableWatermark", false);
+        generatePublicAccessUrl = JsonUtils.readBool(value, "generatePublicAccessUrl", false);
     }
 }

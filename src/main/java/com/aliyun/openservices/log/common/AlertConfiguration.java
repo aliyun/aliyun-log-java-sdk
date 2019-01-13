@@ -12,7 +12,7 @@ import net.sf.json.JSONObject;
 import java.util.Date;
 import java.util.List;
 
-public class AlertConfiguration extends ReportConfiguration {
+public class AlertConfiguration extends DashboardBasedJobConfiguration {
 
     /**
      * The trigger condition expression e.g $0.xx > 100 and $1.yy < 100.
@@ -99,7 +99,7 @@ public class AlertConfiguration extends ReportConfiguration {
     }
 
     @Override
-    protected Notification createNotification(NotificationType type) {
+    Notification makeQualifiedNotification(NotificationType type) {
         switch (type) {
             case DING_TALK:
                 return new DingTalkNotification();
