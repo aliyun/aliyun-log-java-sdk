@@ -3394,26 +3394,18 @@ public class Client implements LogService {
     public GetAlertResponse getAlert(GetAlertRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-        try {
-            GetAlertResponse alertResponse = new GetAlertResponse(response.getHeaders());
-            alertResponse.deserialize(responseBody);
-            return alertResponse;
-        } catch (Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-        }
+        GetAlertResponse alertResponse = new GetAlertResponse(response.getHeaders());
+        alertResponse.deserialize(responseBody, response.getRequestId());
+        return alertResponse;
     }
 
     @Override
     public ListAlertResponse listAlert(ListAlertRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-        try {
-            ListAlertResponse alertResponse = new ListAlertResponse(response.getHeaders());
-            alertResponse.deserialize(responseBody);
-            return alertResponse;
-        } catch (Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-        }
+        ListAlertResponse alertResponse = new ListAlertResponse(response.getHeaders());
+        alertResponse.deserialize(responseBody, response.getRequestId());
+        return alertResponse;
     }
 
 	@Override
@@ -3866,13 +3858,9 @@ public class Client implements LogService {
     public GetJobResponse getJob(GetJobRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-        try {
-            GetJobResponse getJobResponse = new GetJobResponse(response.getHeaders());
-            getJobResponse.deserialize(responseBody);
-            return getJobResponse;
-        } catch (Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-        }
+        GetJobResponse getJobResponse = new GetJobResponse(response.getHeaders());
+        getJobResponse.deserialize(responseBody, response.getRequestId());
+        return getJobResponse;
     }
 
     @Override
@@ -3915,13 +3903,9 @@ public class Client implements LogService {
     public ListJobsResponse listJobs(ListJobsRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-        try {
-            ListJobsResponse jobsResponse = new ListJobsResponse(response.getHeaders());
-            jobsResponse.deserialize(responseBody);
-            return jobsResponse;
-        } catch (Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-        }
+        ListJobsResponse jobsResponse = new ListJobsResponse(response.getHeaders());
+        jobsResponse.deserialize(responseBody, response.getRequestId());
+        return jobsResponse;
     }
 
     private ResponseMessage send(JobRequest request) throws LogException {
