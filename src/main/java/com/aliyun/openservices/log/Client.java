@@ -3426,13 +3426,9 @@ public class Client implements LogService {
 	public GetReportResponse getReport(GetReportRequest request) throws LogException {
 		ResponseMessage response = send(request);
 		JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-		try {
-			GetReportResponse getReportResponse = new GetReportResponse(response.getHeaders());
-			getReportResponse.deserialize(responseBody);
-			return getReportResponse;
-		} catch (Exception ex) {
-			throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-		}
+        GetReportResponse getReportResponse = new GetReportResponse(response.getHeaders());
+        getReportResponse.deserialize(responseBody, response.getRequestId());
+        return getReportResponse;
 	}
 
 	@Override
@@ -3451,13 +3447,9 @@ public class Client implements LogService {
 	public ListReportResponse listReport(ListReportRequest request) throws LogException {
 		ResponseMessage response = send(request);
 		JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-		try {
-			ListReportResponse listReportResponse = new ListReportResponse(response.getHeaders());
-			listReportResponse.deserialize(responseBody);
-			return listReportResponse;
-		} catch (Exception ex) {
-			throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-		}
+		ListReportResponse listReportResponse = new ListReportResponse(response.getHeaders());
+		listReportResponse.deserialize(responseBody, response.getRequestId());
+		return listReportResponse;
 	}
 
 	@Override

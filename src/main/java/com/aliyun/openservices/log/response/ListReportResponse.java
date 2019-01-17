@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class ListReportResponse extends ResponseList<Report> implements Serializable {
-    
+
     private static final long serialVersionUID = 8292912274110714070L;
 
     public ListReportResponse(Map<String, String> headers) {

@@ -2,6 +2,9 @@ package com.aliyun.openservices.log.response;
 
 
 import com.aliyun.openservices.log.common.Report;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.ErrorCodes;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import java.util.Map;
@@ -20,8 +23,12 @@ public class GetReportResponse extends Response {
         return report;
     }
 
-    public void deserialize(JSONObject value) {
+    public void deserialize(JSONObject value, final String requestId) throws LogException {
         report = new Report();
-        report.deserialize(value);
+        try {
+            report.deserialize(value);
+        } catch (JSONException ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, "Unable to deserialize JSON to model: " + ex.getMessage(), ex, requestId);
+        }
     }
 }

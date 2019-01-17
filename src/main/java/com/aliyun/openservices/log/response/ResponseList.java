@@ -1,8 +1,11 @@
 package com.aliyun.openservices.log.response;
 
 import com.aliyun.openservices.log.common.Consts;
-import com.aliyun.openservices.log.util.JsonUtils;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.ErrorCodes;
 import com.aliyun.openservices.log.internal.Unmarshaller;
+import com.aliyun.openservices.log.util.JsonUtils;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import java.util.List;
@@ -45,9 +48,13 @@ public abstract class ResponseList<T> extends Response {
 
     public abstract Unmarshaller<T> unmarshaller();
 
-    public void deserialize(JSONObject value) {
-        count = value.getInt(Consts.CONST_COUNT);
-        total = value.getInt(Consts.CONST_TOTAL);
-        results = JsonUtils.readList(value, "results", unmarshaller());
+    public void deserialize(JSONObject value, String requestId) throws LogException {
+        try {
+            count = value.getInt(Consts.CONST_COUNT);
+            total = value.getInt(Consts.CONST_TOTAL);
+            results = JsonUtils.readList(value, "results", unmarshaller());
+        } catch (JSONException ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, "Unable to deserialize JSON to model: " + ex.getMessage(), ex, requestId);
+        }
     }
 }
