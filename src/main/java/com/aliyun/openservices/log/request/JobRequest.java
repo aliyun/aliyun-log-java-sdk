@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.request;
 
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.http.client.HttpMethod;
+import org.apache.http.util.Args;
 
 public abstract class JobRequest extends Request {
 
@@ -13,6 +14,7 @@ public abstract class JobRequest extends Request {
 
     public JobRequest(String project, String name) {
         super(project);
+        Args.notEmpty(name, "name");
         this.name = name;
     }
 
