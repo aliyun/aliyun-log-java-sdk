@@ -49,4 +49,22 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
         enableWatermark = JsonUtils.readBool(value, "enableWatermark", false);
         createPublicAccessUrl = JsonUtils.readBool(value, "createPublicAccessUrl", false);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ReportConfiguration that = (ReportConfiguration) o;
+
+        if (getEnableWatermark() != that.getEnableWatermark()) return false;
+        return getCreatePublicAccessUrl() == that.getCreatePublicAccessUrl();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (getEnableWatermark() ? 1 : 0);
+        result = 31 * result + (getCreatePublicAccessUrl() ? 1 : 0);
+        return result;
+    }
 }
