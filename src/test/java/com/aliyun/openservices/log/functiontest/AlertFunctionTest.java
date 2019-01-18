@@ -181,7 +181,6 @@ public class AlertFunctionTest extends FunctionTest {
         AlertConfiguration configuration = alert.getConfiguration();
         DingTalkNotification notification = new DingTalkNotification();
         notification.setTitle("Title-test");
-        notification.setIsAtAll(true);
         notification.setAtMobiles(Arrays.asList("123456"));
         notification.setServiceUri("https://testurl");
         configuration.getNotificationList().add(notification);
@@ -194,7 +193,6 @@ public class AlertFunctionTest extends FunctionTest {
             if (notification1 instanceof DingTalkNotification) {
                 DingTalkNotification dtk = (DingTalkNotification) notification1;
                 assertEquals(notification.getAtMobiles(), dtk.getAtMobiles());
-                assertEquals(notification.getIsAtAll(), dtk.getIsAtAll());
                 assertEquals(notification.getServiceUri(), dtk.getServiceUri());
                 assertEquals(notification.getTitle(), dtk.getTitle());
             }
