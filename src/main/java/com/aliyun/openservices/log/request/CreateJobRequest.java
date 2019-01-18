@@ -12,6 +12,10 @@ public class CreateJobRequest extends JobRequest {
 
     private Job job;
 
+    CreateJobRequest(String project) {
+        super(project);
+    }
+
     public CreateJobRequest(String project, Job job) {
         super(project);
         setJob(job);
