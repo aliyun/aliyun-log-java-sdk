@@ -28,6 +28,19 @@ public class JobSchedule implements Serializable {
     @JSONField
     private String cronExpression;
 
+    /**
+     * sunday, monday, tuesday, wednesday, thursday, friday and saturday
+     */
+    @JSONField
+    private Integer dayOfWeek;
+
+    /**
+     * hour at a day
+     */
+    @JSONField
+    private Integer hour;
+
+
     public JobScheduleType getType() {
         return type;
     }
@@ -53,12 +66,38 @@ public class JobSchedule implements Serializable {
         this.cronExpression = cronExpression;
     }
 
+    public Integer getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(Integer dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
+
+    public Integer getHour() {
+        return hour;
+    }
+
+    public void setHour(Integer hour) {
+        this.hour = hour;
+    }
+
     public void deserialize(JSONObject value) {
         type = JobScheduleType.fromString(value.getString("type"));
-        if (type == JobScheduleType.FIXED_RATE) {
-            interval = value.getString("interval");
-        } else if (type == JobScheduleType.CRON) {
-            cronExpression = value.getString("cronExpression");
+        switch (type) {
+            case CRON:
+                cronExpression = value.getString("cronExpression");
+                break;
+            case FIXED_RATE:
+                interval = value.getString("interval");
+                break;
+            case DAILY:
+                hour = value.getInt("hour");
+                break;
+            case WEEKLY:
+                dayOfWeek = value.getInt("dayOfWeek");
+                hour = value.getInt("hour");
+                break;
         }
     }
 
@@ -67,19 +106,25 @@ public class JobSchedule implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        JobSchedule that = (JobSchedule) o;
+        JobSchedule schedule = (JobSchedule) o;
 
-        if (getType() != that.getType()) return false;
-        if (getInterval() != null ? !getInterval().equals(that.getInterval()) : that.getInterval() != null)
+        if (getType() != schedule.getType()) return false;
+        if (getInterval() != null ? !getInterval().equals(schedule.getInterval()) : schedule.getInterval() != null)
             return false;
-        return cronExpression != null ? cronExpression.equals(that.cronExpression) : that.cronExpression == null;
+        if (getCronExpression() != null ? !getCronExpression().equals(schedule.getCronExpression()) : schedule.getCronExpression() != null)
+            return false;
+        if (getDayOfWeek() != null ? !getDayOfWeek().equals(schedule.getDayOfWeek()) : schedule.getDayOfWeek() != null)
+            return false;
+        return getHour() != null ? getHour().equals(schedule.getHour()) : schedule.getHour() == null;
     }
 
     @Override
     public int hashCode() {
         int result = getType() != null ? getType().hashCode() : 0;
         result = 31 * result + (getInterval() != null ? getInterval().hashCode() : 0);
-        result = 31 * result + (cronExpression != null ? cronExpression.hashCode() : 0);
+        result = 31 * result + (getCronExpression() != null ? getCronExpression().hashCode() : 0);
+        result = 31 * result + (getDayOfWeek() != null ? getDayOfWeek().hashCode() : 0);
+        result = 31 * result + (getHour() != null ? getHour().hashCode() : 0);
         return result;
     }
 }

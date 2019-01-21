@@ -27,11 +27,6 @@ public enum JobScheduleType implements JSONSerializable {
     WEEKLY("Weekly"),
 
     /**
-     * Run each month.
-     */
-    MONTHLY("Monthly"),
-
-    /**
      * Custom cron expression.
      */
     CRON("Cron"),
