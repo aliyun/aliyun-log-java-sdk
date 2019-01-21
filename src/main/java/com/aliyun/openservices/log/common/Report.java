@@ -1,5 +1,6 @@
 package com.aliyun.openservices.log.common;
 
+import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Utils;
 import net.sf.json.JSONObject;
 
@@ -117,12 +118,8 @@ public class Report implements Serializable {
 
     public void deserialize(JSONObject value) {
         name = value.getString("name");
-        if (value.has("displayName")) {
-            displayName = value.getString("displayName");
-        }
-        if (value.has("description")) {
-            description = value.getString("description");
-        }
+        displayName = JsonUtils.readOptionalString(value, "displayName");
+        description = JsonUtils.readOptionalString(value, "description");
         state = JobState.fromString(value.getString("state"));
         configuration = new ReportConfiguration();
         configuration.deserialize(value.getJSONObject("configuration"));
