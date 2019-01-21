@@ -3,7 +3,6 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.Args;
-import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
@@ -56,8 +55,11 @@ public class JobSchedule implements Serializable {
 
     public void deserialize(JSONObject value) {
         type = JobScheduleType.fromString(value.getString("type"));
-        interval = JsonUtils.readOptionalString(value, "interval");
-        cronExpression = JsonUtils.readOptionalString(value, "cronExpression");
+        if (type == JobScheduleType.FIXED_RATE) {
+            interval = value.getString("interval");
+        } else if (type == JobScheduleType.CRON) {
+            cronExpression = value.getString("cronExpression");
+        }
     }
 
     @Override
