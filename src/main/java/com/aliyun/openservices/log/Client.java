@@ -1938,11 +1938,11 @@ public class Client implements LogService {
 		}
 	}
 
-	private List<String> ExtractJsonArray(JSONArray ojbect) {
+	private List<String> ExtractJsonArray(JSONArray object) {
 		ArrayList<String> result = new ArrayList<String>();
 		try {
-			for (int i = 0; i < ojbect.size(); i++) {
-				result.add(ojbect.getString(i));
+			for (int i = 0; i < object.size(); i++) {
+				result.add(object.getString(i));
 			}
 		} catch (JSONException e) {
 			// ignore
