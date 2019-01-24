@@ -138,12 +138,9 @@ import java.util.UUID;
 import java.util.zip.Deflater;
 
 /**
- * SlsClient class is the main class in the sdk, it implements the interfaces
+ * Client class is the main class in the sdk, it implements the interfaces
  * defined in LogService. It can be used to send request to the log service
  * server to put/get data.
- *
- * @author sls_dev
- *
  */
 public class Client implements LogService {
 	private String httpType;
@@ -191,10 +188,17 @@ public class Client implements LogService {
 
 	public void DisableUUIDTag() { mUUIDTag = false; }
 
+	/**
+	 * @deprecated Use getSecurityToken instead.
+	 */
 	public String GetSecurityToken() {
 		return securityToken;
 	}
 
+	/**
+	 * @deprecated Use setSecurityToken instead.
+	 */
+	@Deprecated
 	public void SetSecurityToken(String securityToken) {
 		this.securityToken = securityToken;
 	}
@@ -327,7 +331,6 @@ public class Client implements LogService {
         clientConfig.setMaxConnections(connectMaxCount);
         clientConfig.setConnectionTimeout(connectTimeout);
         clientConfig.setSocketTimeout(sendTimeout);
-
         this.serviceClient = new DefaultServiceClient(clientConfig);
     }
 
@@ -356,6 +359,30 @@ public class Client implements LogService {
 	public Client(String endpoint, String accessId, String accessKey,
 			String sourceIp, boolean compressFlag) {
 		this(endpoint, accessId, accessKey, sourceIp);
+	}
+
+	public String getAccessId() {
+		return accessId;
+	}
+
+	public void setAccessId(String accessId) {
+		this.accessId = accessId;
+	}
+
+	public String getAccessKey() {
+		return accessKey;
+	}
+
+	public void setAccessKey(String accessKey) {
+		this.accessKey = accessKey;
+	}
+
+	public String getSecurityToken() {
+		return securityToken;
+	}
+
+	public void setSecurityToken(String securityToken) {
+		this.securityToken = securityToken;
 	}
 
 	private URI GetHostURI(String project) {
