@@ -2984,8 +2984,7 @@ public class Client implements LogService {
 
 	@Override
 	public GetProjectResponse GetProject(String project) throws LogException {
-
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		Args.notNullOrEmpty(project, "project");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		String resourceUri = "/";
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -3000,8 +2999,7 @@ public class Client implements LogService {
 	}
 
 	@Override
-	public DeleteProjectResponse DeleteProject(String project)
-			throws LogException {
+	public DeleteProjectResponse DeleteProject(String project) throws LogException {
 		Args.notNullOrEmpty(project, "project");
 		String resourceUri = "/";
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -3765,9 +3763,9 @@ public class Client implements LogService {
 
 	@Override
 	public ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException {
-        CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
-		CodingUtils.assertStringNotNullOrEmpty(etlMetaKey, "etlMetaKey");
+        Args.notNullOrEmpty(project, "project");
+        Args.notNullOrEmpty(etlMetaName, "etlMetaName");
+        Args.notNullOrEmpty(etlMetaKey, "etlMetaKey");
 		ListEtlMetaRequest request = new ListEtlMetaRequest(project, 0, 1);
 		request.setEtlMetaName(etlMetaName);
 		request.setEtlMetaKey(etlMetaKey);
