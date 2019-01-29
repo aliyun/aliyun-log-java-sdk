@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.Args;
+import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
@@ -27,6 +28,12 @@ public class JobSchedule implements Serializable {
      */
     @JSONField
     private String cronExpression;
+
+    /**
+     * An optional delay to avoid missing data.
+     */
+    @JSONField
+    private Integer delay;
 
     /**
      * sunday, monday, tuesday, wednesday, thursday, friday and saturday
@@ -66,6 +73,14 @@ public class JobSchedule implements Serializable {
         this.cronExpression = cronExpression;
     }
 
+    public Integer getDelay() {
+        return delay;
+    }
+
+    public void setDelay(Integer delay) {
+        this.delay = delay;
+    }
+
     public Integer getDayOfWeek() {
         return dayOfWeek;
     }
@@ -84,6 +99,7 @@ public class JobSchedule implements Serializable {
 
     public void deserialize(JSONObject value) {
         type = JobScheduleType.fromString(value.getString("type"));
+        delay = JsonUtils.readOptionalInt(value, "delay");
         switch (type) {
             case CRON:
                 cronExpression = value.getString("cronExpression");
@@ -113,6 +129,7 @@ public class JobSchedule implements Serializable {
             return false;
         if (getCronExpression() != null ? !getCronExpression().equals(schedule.getCronExpression()) : schedule.getCronExpression() != null)
             return false;
+        if (getDelay() != null ? !getDelay().equals(schedule.getDelay()) : schedule.getDelay() != null) return false;
         if (getDayOfWeek() != null ? !getDayOfWeek().equals(schedule.getDayOfWeek()) : schedule.getDayOfWeek() != null)
             return false;
         return getHour() != null ? getHour().equals(schedule.getHour()) : schedule.getHour() == null;
@@ -123,6 +140,7 @@ public class JobSchedule implements Serializable {
         int result = getType() != null ? getType().hashCode() : 0;
         result = 31 * result + (getInterval() != null ? getInterval().hashCode() : 0);
         result = 31 * result + (getCronExpression() != null ? getCronExpression().hashCode() : 0);
+        result = 31 * result + (getDelay() != null ? getDelay().hashCode() : 0);
         result = 31 * result + (getDayOfWeek() != null ? getDayOfWeek().hashCode() : 0);
         result = 31 * result + (getHour() != null ? getHour().hashCode() : 0);
         return result;

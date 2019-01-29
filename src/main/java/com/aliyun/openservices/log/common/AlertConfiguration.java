@@ -98,9 +98,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         if (value.has("muteUntil")) {
             muteUntil = Utils.timestampToDate(value.getLong("muteUntil"));
         }
-        if (value.has("notifyThreshold")) {
-            notifyThreshold = value.getInt("notifyThreshold");
-        }
+        notifyThreshold = JsonUtils.readOptionalInt(value, "notifyThreshold");
         throttling = JsonUtils.readOptionalString(value, "throttling");
     }
 
