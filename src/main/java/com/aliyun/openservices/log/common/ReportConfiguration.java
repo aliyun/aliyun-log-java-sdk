@@ -19,7 +19,7 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
      * Whether create a public access url for dashboard, default to false.
      */
     @JSONField
-    private boolean createPublicAccessUrl;
+    private boolean allowAnonymousAccess;
 
     /**
      * Optional language for internationalization. Defaults as zh.
@@ -35,12 +35,12 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
         this.enableWatermark = enableWatermark;
     }
 
-    public boolean getCreatePublicAccessUrl() {
-        return createPublicAccessUrl;
+    public boolean getAllowAnonymousAccess() {
+        return allowAnonymousAccess;
     }
 
-    public void setCreatePublicAccessUrl(boolean createPublicAccessUrl) {
-        this.createPublicAccessUrl = createPublicAccessUrl;
+    public void setAllowAnonymousAccess(boolean allowAnonymousAccess) {
+        this.allowAnonymousAccess = allowAnonymousAccess;
     }
 
     public String getLanguage() {
@@ -67,7 +67,7 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         enableWatermark = JsonUtils.readBool(value, "enableWatermark", false);
-        createPublicAccessUrl = JsonUtils.readBool(value, "createPublicAccessUrl", false);
+        allowAnonymousAccess = JsonUtils.readBool(value, "allowAnonymousAccess", false);
         language = JsonUtils.readOptionalString(value, "language");
     }
 
@@ -79,14 +79,14 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
         ReportConfiguration that = (ReportConfiguration) o;
 
         if (getEnableWatermark() != that.getEnableWatermark()) return false;
-        if (getCreatePublicAccessUrl() != that.getCreatePublicAccessUrl()) return false;
+        if (getAllowAnonymousAccess() != that.getAllowAnonymousAccess()) return false;
         return getLanguage() != null ? getLanguage().equals(that.getLanguage()) : that.getLanguage() == null;
     }
 
     @Override
     public int hashCode() {
         int result = (getEnableWatermark() ? 1 : 0);
-        result = 31 * result + (getCreatePublicAccessUrl() ? 1 : 0);
+        result = 31 * result + (getAllowAnonymousAccess() ? 1 : 0);
         result = 31 * result + (getLanguage() != null ? getLanguage().hashCode() : 0);
         return result;
     }

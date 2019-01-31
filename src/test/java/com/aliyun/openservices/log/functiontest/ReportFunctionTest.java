@@ -56,6 +56,7 @@ public class ReportFunctionTest extends FunctionTest {
         Report.setDisplayName("Report-test");
         ReportConfiguration configuration = new ReportConfiguration();
         configuration.setDashboard("dashboardtest");
+        configuration.setAllowAnonymousAccess(randomBoolean());
         EmailNotification notification = new EmailNotification();
         notification.setEmailList(Collections.singletonList("kel@test.com"));
         notification.setContent("Reporting");
