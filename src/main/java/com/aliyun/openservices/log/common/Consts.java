@@ -5,7 +5,9 @@ package com.aliyun.openservices.log.common;
 
 public class Consts {
 	public enum CompressType {
-		NONE(""), LZ4(Consts.CONST_LZ4), GZIP(Consts.CONST_GZIP_ENCODING);
+		NONE(""),
+		LZ4(Consts.CONST_LZ4),
+		GZIP(Consts.CONST_GZIP_ENCODING);
 
 		private String strValue;
 
@@ -15,6 +17,15 @@ public class Consts {
 
 		public String toString() {
 			return strValue;
+		}
+
+		public static CompressType fromString(final String compressType) {
+			for (CompressType type : values()) {
+				if (type.strValue.equals(compressType)) {
+					return type;
+				}
+			}
+			throw new IllegalArgumentException("invalid CompressType: " + compressType + ", should be (" + CompressType.NONE + ", " + CompressType.GZIP + ", " + CompressType.LZ4 + ")");
 		}
 	}
 

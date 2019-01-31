@@ -504,15 +504,7 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(logGroupBytes, "logGroupBytes");
 		PutLogsRequest request = new PutLogsRequest(project, logStore, null,
 				null, logGroupBytes, shardHash);
-		if (compressType.equals(Consts.CONST_LZ4)) {
-			request.SetCompressType(CompressType.LZ4);
-		} else if (compressType.equals(Consts.CONST_GZIP_ENCODING)) {
-			request.SetCompressType(CompressType.GZIP);
-		} else if (compressType.isEmpty()) {
-			request.SetCompressType(CompressType.NONE);
-		} else {
-			throw new IllegalArgumentException("invalid CompressType: " + compressType + ", should be (" + CompressType.NONE + ", " + CompressType.GZIP + ", " + CompressType.LZ4 + ")");
-		}
+		request.SetCompressType(CompressType.fromString(compressType));
 		return PutLogs(request);
 	}
 
@@ -559,7 +551,7 @@ public class Client implements LogService {
 			List<LogItem> logItems = request.GetLogItems();
 			if (logItems.size() > Consts.CONST_MAX_PUT_LINES) {
 				throw new LogException("InvalidLogSize",
-						"logItems' length exceeds maximum limitation : " + String.valueOf(Consts.CONST_MAX_PUT_LINES) + " lines", "");
+						"logItems' length exceeds maximum limitation : " + Consts.CONST_MAX_PUT_LINES + " lines", "");
 			}
 			String topic = request.GetTopic();
 			CodingUtils.assertParameterNotNull(topic, "topic");
@@ -640,7 +632,7 @@ public class Client implements LogService {
 		if (logBytes.length > Consts.CONST_MAX_PUT_SIZE) {
 			throw new LogException("InvalidLogSize",
 					"logItems' size exceeds maximum limitation : "
-							+ String.valueOf(Consts.CONST_MAX_PUT_SIZE)
+							+ Consts.CONST_MAX_PUT_SIZE
 							+ " bytes", "");
 		}
 
