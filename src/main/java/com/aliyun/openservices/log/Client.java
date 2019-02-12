@@ -155,6 +155,11 @@ public class Client implements LogService {
 	private String userAgent = Consts.CONST_USER_AGENT_VALUE;
 	private boolean mUUIDTag = false;
 	private Boolean mUseDirectMode = false;
+	/**
+	 * Real backend server's IP address. If not null, skip resolving DNS
+	 */
+	private String realServerIP = null;
+
 	public String getUserAgent() {
 		return userAgent;
 	}
@@ -673,7 +678,7 @@ public class Client implements LogService {
 		long cmp_size = logBytes.length;
 
 		for (int i = 0; i < 2; i++) {
-			String server_ip = null;
+			String server_ip = this.realServerIP;
 			ClientConnectionStatus connection_status = null;
 			if (this.mUseDirectMode) {
 				connection_status = GetGlobalConnectionStatus();
@@ -1156,7 +1161,7 @@ public class Client implements LogService {
 		ResponseMessage response;
 		BatchGetLogResponse batchGetLogResponse;
 		for (int i = 0; i < 2; i++) {
-			String server_ip = null;
+			String server_ip = this.realServerIP;
 			ClientConnectionStatus connection_status = null;
 			if (this.mUseDirectMode) {
 				connection_status = GetShardConnectionStatus(project, logStore, request.GetShardId());
@@ -1199,7 +1204,7 @@ public class Client implements LogService {
         Map<String, String> urlParameter = request.GetAllParams();
 
         for (int i = 0; i < 2; i++) {
-            String serverIp = null;
+            String serverIp = this.realServerIP;
             ClientConnectionStatus connectionStatus = null;
             if (mUseDirectMode) {
                 connectionStatus = GetShardConnectionStatus(project, logStore, request.getShardId());
@@ -1959,20 +1964,20 @@ public class Client implements LogService {
 		}
 	}
 
-	protected void ErrorCheck(JSONObject object, String requestId)
+	protected void ErrorCheck(JSONObject object, String requestId, int httpCode)
 			throws LogException {
 		if (object.containsKey(Consts.CONST_ERROR_CODE)) {
 			try {
 				String errorCode = object.getString(Consts.CONST_ERROR_CODE);
 				String errorMessage = object.getString(Consts.CONST_ERROR_MESSAGE);
-				throw new LogException(errorCode, errorMessage, requestId);
+				throw new LogException(httpCode, errorCode, errorMessage, requestId);
 			} catch (JSONException e) {
-				throw new LogException("InvalidErrorResponse",
+				throw new LogException(httpCode, "InvalidErrorResponse",
 						"Error response is not a valid error json : \n"
 								+ object.toString(), requestId);
 			}
 		} else {
-			throw new LogException("InvalidErrorResponse",
+			throw new LogException(httpCode, "InvalidErrorResponse",
 					"Error response is not a valid error json : \n"
 							+ object.toString(), requestId);
 		}
@@ -2116,7 +2121,7 @@ public class Client implements LogService {
 			if (statusCode != Consts.CONST_HTTP_OK) {
 				String requestId = GetRequestId(response.getHeaders());
 				JSONObject object = parseResponseBody(response, requestId);
-				ErrorCheck(object, requestId);
+				ErrorCheck(object, requestId, statusCode);
 			}
 		} catch (ServiceException e) {
 			throw new LogException("RequestError", "Web request failed: "
@@ -3894,4 +3899,12 @@ public class Client implements LogService {
         final byte[] requestBody = body == null ? new byte[0] : encodeToUtf8(JsonUtils.serialize(body));
         return SendData(project, request.getMethod(), request.getUri(), request.GetAllParams(), headers, requestBody);
     }
+
+	public String getRealServerIP() {
+		return realServerIP;
+	}
+
+	public void setRealServerIP(String realServerIP) {
+		this.realServerIP = realServerIP;
+	}
 }

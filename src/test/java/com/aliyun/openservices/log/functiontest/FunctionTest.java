@@ -74,11 +74,13 @@ public abstract class FunctionTest {
             return true;
         } catch (LogException ex) {
             System.out.println("ERROR: errorCode=" + ex.GetErrorCode()
+                    + ", httpCode=" + ex.GetHttpCode()
                     + ", errorMessage=" + ex.GetErrorMessage()
                     + ", requestId=" + ex.GetRequestId());
             if (!ex.GetErrorCode().equals("LogStoreNotExist")) {
                 fail("Delete logStore " + logStore + " failed");
             }
+            assertEquals(ex.GetHttpCode(), 404);
         }
         return false;
     }

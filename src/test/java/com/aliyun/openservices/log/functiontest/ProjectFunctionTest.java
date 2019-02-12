@@ -7,8 +7,7 @@ import com.aliyun.openservices.log.response.GetProjectResponse;
 import org.junit.After;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 
 public class ProjectFunctionTest extends FunctionTest {
@@ -24,12 +23,14 @@ public class ProjectFunctionTest extends FunctionTest {
         client.updateProject(request);
 
         GetProjectResponse response = client.GetProject(TEST_PROJECT);
-        assertEquals(expected, response.GetProjectDescription());
+        // description max length is 64
+        assertTrue(expected.startsWith(response.GetProjectDescription()));
     }
 
     private void shouldFails(final String description,
                              String errorMessage,
-                             String errorCode) {
+                             String errorCode,
+                             int httpCode) {
         UpdateProjectRequest request = new UpdateProjectRequest(TEST_PROJECT, description);
         try {
             client.updateProject(request);
@@ -37,6 +38,7 @@ public class ProjectFunctionTest extends FunctionTest {
         } catch (LogException ex) {
             assertEquals(errorMessage, ex.GetErrorMessage());
             assertEquals(errorCode, ex.GetErrorCode());
+            assertEquals(httpCode, ex.GetHttpCode());
         }
     }
 
@@ -69,7 +71,10 @@ public class ProjectFunctionTest extends FunctionTest {
                 "x@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@" +
                 "@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@" +
                 "@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxxx@@@@@111xx11xxxxxx@@@@@@";
-        shouldFails(tooLongDesc, "Invalid project description: '" + tooLongDesc + "'", "ParameterInvalid");
+        shouldFails(tooLongDesc,
+                "Invalid project description: '" + tooLongDesc + "'",
+                "ParameterInvalid",
+                400);
 
         StringBuilder chineseBuilder = new StringBuilder();
         for (int i = 0; i < 15; i++) {

@@ -3331,9 +3331,9 @@ class SlsClientMock {
 	public void ErrorCheck(JSONObject object) throws LogException {
 		try {
 			Method method = olsClient.getClass().getDeclaredMethod(
-					"ErrorCheck", JSONObject.class, String.class);
+					"ErrorCheck", JSONObject.class, String.class, int.class);
 			method.setAccessible(true);
-			method.invoke(olsClient, object, "");
+			method.invoke(olsClient, object, "", 404);
 		} catch (Exception e) {
 			if (e instanceof InvocationTargetException) {
 				Throwable ex = ((InvocationTargetException) e)
