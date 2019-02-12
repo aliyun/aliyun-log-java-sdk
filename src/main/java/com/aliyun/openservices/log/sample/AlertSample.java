@@ -5,6 +5,7 @@ import com.aliyun.openservices.log.common.AlertConfiguration;
 import com.aliyun.openservices.log.common.Alert;
 import com.aliyun.openservices.log.common.Chart;
 import com.aliyun.openservices.log.common.Dashboard;
+import com.aliyun.openservices.log.common.DingTalkNotification;
 import com.aliyun.openservices.log.common.EmailNotification;
 import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.common.JobScheduleType;
@@ -33,7 +34,8 @@ import java.util.Date;
 import java.util.List;
 
 public class AlertSample {
-    public static void main(String args[]) {
+
+    public static void main(String[] args) {
         String accessId = "";
         String accessKey = "";
 
@@ -61,10 +63,10 @@ public class AlertSample {
             Alert alert = new Alert();
             alert.setName(alertName);
             alert.setState(JobState.ENABLED);
-            alert.setDisplayName("DisplayName");
+            alert.setDisplayName("count monitoring");
 
             AlertConfiguration configuration = new AlertConfiguration();
-            configuration.setCondition("$0.count > 1");
+            configuration.setCondition("count > 1");
 
             // The name of dashboard this alert associated to
             configuration.setDashboard("dashboardtest");
@@ -78,11 +80,22 @@ public class AlertSample {
             query.setChartTitle("chart1");
             queries.add(query);
             configuration.setQueryList(queries);
+
+            // Send email if alert fired
             EmailNotification notification = new EmailNotification();
             notification.setEmailList(Collections.singletonList("kel@test.com"));
             notification.setContent("Alerting");
             List<Notification> notifications = new ArrayList<Notification>();
             notifications.add(notification);
+
+            // Send Ding Ding if alert fired
+            DingTalkNotification dingTalkNotification = new DingTalkNotification();
+            dingTalkNotification.setServiceUri("https://oapi.dingtalk.com/robot/send?access_token=xxx");
+            dingTalkNotification.setContent("Ding talk message");
+            notifications.add(dingTalkNotification);
+
+            // send voice, sms, webhook, etc
+
             configuration.setNotificationList(notifications);
             configuration.setThrottling("0s");
             configuration.setNotifyThreshold(100);
@@ -93,7 +106,7 @@ public class AlertSample {
             schedule.setInterval("60s");
             alert.setSchedule(schedule);
 
-            // create
+            // alert must be associated with a dashboard
             Dashboard dashboard = new Dashboard();
             dashboard.setDashboardName("dashboardtest");
             dashboard.setDescription("Dashboard");
