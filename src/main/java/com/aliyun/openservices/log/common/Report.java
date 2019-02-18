@@ -1,56 +1,54 @@
 package com.aliyun.openservices.log.common;
 
-import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Utils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 
-public class Alert implements Serializable {
+public class Report implements Serializable {
 
     private static final long serialVersionUID = 9211926785430833230L;
 
     /**
-     * Alert rule name.
+     * Report rule name.
      */
     private String name;
 
     /**
-     * Alert display name.
+     * Report display name.
      */
     private String displayName;
 
     /**
-     * Alert description.
+     * Report description.
      */
     private String description;
 
     /**
-     * Alert rule state.
+     * Report rule state.
      */
     private JobState state;
 
     /**
-     * Alert configuration.
+     * Report configuration.
      */
-    private AlertConfiguration configuration;
+    private ReportConfiguration configuration;
 
     /**
-     * How to trigger alert.
+     * How to trigger report.
      */
     private JobSchedule schedule;
 
     /**
-     * Alert rule create time.
+     * Report rule create time.
      */
     private Date createTime;
 
     /**
-     * Alert rule last modified time.
+     * Report rule last modified time.
      */
     private Date lastModifiedTime;
 
@@ -78,11 +76,11 @@ public class Alert implements Serializable {
         this.description = description;
     }
 
-    public AlertConfiguration getConfiguration() {
+    public ReportConfiguration getConfiguration() {
         return configuration;
     }
 
-    public void setConfiguration(AlertConfiguration configuration) {
+    public void setConfiguration(ReportConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -123,7 +121,7 @@ public class Alert implements Serializable {
         displayName = JsonUtils.readOptionalString(value, "displayName");
         description = JsonUtils.readOptionalString(value, "description");
         state = JobState.fromString(value.getString("state"));
-        configuration = new AlertConfiguration();
+        configuration = new ReportConfiguration();
         configuration.deserialize(value.getJSONObject("configuration"));
         createTime = Utils.timestampToDate(value.getLong("createTime"));
         lastModifiedTime = Utils.timestampToDate(value.getLong("lastModifiedTime"));
@@ -131,21 +129,9 @@ public class Alert implements Serializable {
         schedule.deserialize(value.getJSONObject("schedule"));
     }
 
-    public void validate() {
-        Args.notNullOrEmpty(name, "name");
-        Args.notNullOrEmpty(displayName, "displayName");
-        Args.notNull(configuration, "configuration");
-        List<Query> queries = configuration.getQueryList();
-        Args.notNullOrEmpty(queries, "Query list");
-        for (Query query : queries) {
-            Args.notNull(query, "query");
-        }
-        Args.notNull(schedule, "schedule");
-    }
-
     public Job makeJob() {
         Job job = new Job();
-        job.setType(JobType.ALERT);
+        job.setType(JobType.REPORT);
         job.setName(getName());
         job.setDisplayName(getDisplayName());
         job.setDescription(getDescription());

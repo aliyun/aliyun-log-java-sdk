@@ -11,6 +11,10 @@ public class UpdateJobRequest extends JobRequest {
 
     private Job job;
 
+    UpdateJobRequest(String project) {
+        super(project);
+    }
+
     public UpdateJobRequest(String project, Job job) {
         super(project);
         setJob(job);

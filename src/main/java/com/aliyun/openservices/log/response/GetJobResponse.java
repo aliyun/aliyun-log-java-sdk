@@ -1,6 +1,8 @@
 package com.aliyun.openservices.log.response;
 
 import com.aliyun.openservices.log.common.Job;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.ErrorCodes;
 import net.sf.json.JSONObject;
 
 import java.util.Map;
@@ -23,8 +25,12 @@ public class GetJobResponse extends Response {
         this.job = job;
     }
 
-    public void deserialize(JSONObject value) {
+    public void deserialize(JSONObject value, String requestId) throws LogException {
         job = new Job();
-        job.deserialize(value);
+        try {
+            job.deserialize(value);
+        } catch (final Exception ex) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE, "Unable to deserialize JSON to model: " + ex.getMessage(), ex, requestId);
+        }
     }
 }

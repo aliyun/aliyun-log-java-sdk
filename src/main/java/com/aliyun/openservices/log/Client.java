@@ -39,6 +39,7 @@ import com.aliyun.openservices.log.request.CreateJobRequest;
 import com.aliyun.openservices.log.request.CreateLogStoreRequest;
 import com.aliyun.openservices.log.request.CreateLoggingRequest;
 import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
+import com.aliyun.openservices.log.request.CreateReportRequest;
 import com.aliyun.openservices.log.request.CreateSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteAlertRequest;
 import com.aliyun.openservices.log.request.DeleteChartRequest;
@@ -50,12 +51,15 @@ import com.aliyun.openservices.log.request.DeleteJobRequest;
 import com.aliyun.openservices.log.request.DeleteLogStoreRequest;
 import com.aliyun.openservices.log.request.DeleteLoggingRequest;
 import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
+import com.aliyun.openservices.log.request.DeleteReportRequest;
 import com.aliyun.openservices.log.request.DeleteSavedSearchRequest;
 import com.aliyun.openservices.log.request.DeleteShardRequest;
 import com.aliyun.openservices.log.request.DisableAlertRequest;
 import com.aliyun.openservices.log.request.DisableJobRequest;
+import com.aliyun.openservices.log.request.DisableReportRequest;
 import com.aliyun.openservices.log.request.EnableAlertRequest;
 import com.aliyun.openservices.log.request.EnableJobRequest;
+import com.aliyun.openservices.log.request.EnableReportRequest;
 import com.aliyun.openservices.log.request.GetAlertRequest;
 import com.aliyun.openservices.log.request.GetAppliedConfigsRequest;
 import com.aliyun.openservices.log.request.GetAppliedMachineGroupRequest;
@@ -74,6 +78,7 @@ import com.aliyun.openservices.log.request.GetLogsRequest;
 import com.aliyun.openservices.log.request.GetLogtailProfileRequest;
 import com.aliyun.openservices.log.request.GetMachineGroupRequest;
 import com.aliyun.openservices.log.request.GetProjectLogsRequest;
+import com.aliyun.openservices.log.request.GetReportRequest;
 import com.aliyun.openservices.log.request.GetSavedSearchRequest;
 import com.aliyun.openservices.log.request.JobRequest;
 import com.aliyun.openservices.log.request.ListACLRequest;
@@ -86,6 +91,7 @@ import com.aliyun.openservices.log.request.ListJobsRequest;
 import com.aliyun.openservices.log.request.ListLogStoresRequest;
 import com.aliyun.openservices.log.request.ListMachineGroupRequest;
 import com.aliyun.openservices.log.request.ListProjectRequest;
+import com.aliyun.openservices.log.request.ListReportRequest;
 import com.aliyun.openservices.log.request.ListSavedSearchRequest;
 import com.aliyun.openservices.log.request.ListShardRequest;
 import com.aliyun.openservices.log.request.ListTopicsRequest;
@@ -107,6 +113,7 @@ import com.aliyun.openservices.log.request.UpdateLoggingRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupRequest;
 import com.aliyun.openservices.log.request.UpdateProjectRequest;
+import com.aliyun.openservices.log.request.UpdateReportRequest;
 import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
 import com.aliyun.openservices.log.response.*;
 import com.aliyun.openservices.log.util.Args;
@@ -3409,27 +3416,67 @@ public class Client implements LogService {
     public GetAlertResponse getAlert(GetAlertRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-        try {
-            GetAlertResponse alertResponse = new GetAlertResponse(response.getHeaders());
-            alertResponse.deserialize(responseBody);
-            return alertResponse;
-        } catch (Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-        }
+        GetAlertResponse alertResponse = new GetAlertResponse(response.getHeaders());
+        alertResponse.deserialize(responseBody, response.getRequestId());
+        return alertResponse;
     }
 
     @Override
     public ListAlertResponse listAlert(ListAlertRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-        try {
-            ListAlertResponse alertResponse = new ListAlertResponse(response.getHeaders());
-            alertResponse.deserialize(responseBody);
-            return alertResponse;
-        } catch (Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-        }
+        ListAlertResponse alertResponse = new ListAlertResponse(response.getHeaders());
+        alertResponse.deserialize(responseBody, response.getRequestId());
+        return alertResponse;
     }
+
+	@Override
+	public CreateReportResponse createReport(CreateReportRequest request) throws LogException {
+		ResponseMessage responseMessage = send(request);
+		return new CreateReportResponse(responseMessage.getHeaders());
+	}
+
+	@Override
+	public GetReportResponse getReport(GetReportRequest request) throws LogException {
+		ResponseMessage response = send(request);
+		JSONObject responseBody = parseResponseBody(response, response.getRequestId());
+        GetReportResponse getReportResponse = new GetReportResponse(response.getHeaders());
+        getReportResponse.deserialize(responseBody, response.getRequestId());
+        return getReportResponse;
+	}
+
+	@Override
+	public UpdateReportResponse updateReport(UpdateReportRequest request) throws LogException {
+		ResponseMessage message = send(request);
+		return new UpdateReportResponse(message.getHeaders());
+	}
+
+	@Override
+	public DeleteReportResponse deleteReport(DeleteReportRequest request) throws LogException {
+		ResponseMessage responseMessage = send(request);
+		return new DeleteReportResponse(responseMessage.getHeaders());
+	}
+
+	@Override
+	public ListReportResponse listReport(ListReportRequest request) throws LogException {
+		ResponseMessage response = send(request);
+		JSONObject responseBody = parseResponseBody(response, response.getRequestId());
+		ListReportResponse listReportResponse = new ListReportResponse(response.getHeaders());
+		listReportResponse.deserialize(responseBody, response.getRequestId());
+		return listReportResponse;
+	}
+
+	@Override
+	public EnableReportResponse enableReport(EnableReportRequest request) throws LogException {
+		ResponseMessage responseMessage = send(request);
+		return new EnableReportResponse(responseMessage.getHeaders());
+	}
+
+	@Override
+	public DisableReportResponse disableReport(DisableReportRequest request) throws LogException {
+		ResponseMessage responseMessage = send(request);
+		return new DisableReportResponse(responseMessage.getHeaders());
+	}
 
 	@Override
 	public CreateEtlJobResponse createEtlJob(CreateEtlJobRequest request) throws LogException {
@@ -3833,13 +3880,9 @@ public class Client implements LogService {
     public GetJobResponse getJob(GetJobRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-        try {
-            GetJobResponse getJobResponse = new GetJobResponse(response.getHeaders());
-            getJobResponse.deserialize(responseBody);
-            return getJobResponse;
-        } catch (Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-        }
+        GetJobResponse getJobResponse = new GetJobResponse(response.getHeaders());
+        getJobResponse.deserialize(responseBody, response.getRequestId());
+        return getJobResponse;
     }
 
     @Override
@@ -3882,13 +3925,9 @@ public class Client implements LogService {
     public ListJobsResponse listJobs(ListJobsRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-        try {
-            ListJobsResponse jobsResponse = new ListJobsResponse(response.getHeaders());
-            jobsResponse.deserialize(responseBody);
-            return jobsResponse;
-        } catch (Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, ex.getMessage(), response.getRequestId());
-        }
+        ListJobsResponse jobsResponse = new ListJobsResponse(response.getHeaders());
+        jobsResponse.deserialize(responseBody, response.getRequestId());
+        return jobsResponse;
     }
 
     private ResponseMessage send(JobRequest request) throws LogException {

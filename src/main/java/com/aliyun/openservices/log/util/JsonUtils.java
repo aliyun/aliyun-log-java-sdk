@@ -72,6 +72,14 @@ public final class JsonUtils {
         return object.has(key) ? object.getString(key) : null;
     }
 
+    public static boolean readBool(JSONObject object, String key, boolean defaultValue) {
+        return object.has(key) ? object.getBoolean(key) : defaultValue;
+    }
+
+    public static Integer readOptionalInt(JSONObject object, String key) {
+        return object.has(key) ? object.getInt(key) : null;
+    }
+
     /**
      * Serialize date to unix timestamp.
      */
