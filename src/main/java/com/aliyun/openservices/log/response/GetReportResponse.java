@@ -4,7 +4,6 @@ package com.aliyun.openservices.log.response;
 import com.aliyun.openservices.log.common.Report;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import java.util.Map;
@@ -27,7 +26,7 @@ public class GetReportResponse extends Response {
         report = new Report();
         try {
             report.deserialize(value);
-        } catch (JSONException ex) {
+        } catch (final Exception ex) {
             throw new LogException(ErrorCodes.BAD_RESPONSE, "Unable to deserialize JSON to model: " + ex.getMessage(), ex, requestId);
         }
     }

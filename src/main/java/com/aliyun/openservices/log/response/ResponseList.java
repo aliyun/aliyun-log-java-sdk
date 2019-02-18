@@ -5,7 +5,6 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 import com.aliyun.openservices.log.util.JsonUtils;
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import java.util.List;
@@ -53,7 +52,7 @@ public abstract class ResponseList<T> extends Response {
             count = value.getInt(Consts.CONST_COUNT);
             total = value.getInt(Consts.CONST_TOTAL);
             results = JsonUtils.readList(value, "results", unmarshaller());
-        } catch (JSONException ex) {
+        } catch (final Exception ex) {
             throw new LogException(ErrorCodes.BAD_RESPONSE, "Unable to deserialize JSON to model: " + ex.getMessage(), ex, requestId);
         }
     }

@@ -4,7 +4,6 @@ package com.aliyun.openservices.log.response;
 import com.aliyun.openservices.log.common.Alert;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import java.util.Map;
@@ -31,7 +30,7 @@ public class GetAlertResponse extends Response {
         alert = new Alert();
         try {
             alert.deserialize(value);
-        } catch (JSONException ex) {
+        } catch (final Exception ex) {
             throw new LogException(ErrorCodes.BAD_RESPONSE, "Unable to deserialize JSON to model: " + ex.getMessage(), ex, requestId);
         }
     }
