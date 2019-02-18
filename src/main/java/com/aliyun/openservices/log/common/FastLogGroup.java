@@ -42,7 +42,7 @@ public class FastLogGroup {
         int pos = this.beginOffset;
         int mode, index;
         while (pos < this.endOffset) {
-            int value[] = VarintUtil.DecodeVarInt32(this.rawBytes, pos, this.endOffset);
+            int[] value = VarintUtil.DecodeVarInt32(this.rawBytes, pos, this.endOffset);
             if (value[0] == 0) {
                 return false;
             }
