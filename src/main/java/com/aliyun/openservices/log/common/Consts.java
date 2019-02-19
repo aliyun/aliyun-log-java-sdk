@@ -316,6 +316,10 @@ public class Consts {
 	public static final String ETL_JOB_TRIGGER_INTERVAL = "triggerInterval";
 	public static final String ETL_JOB_TRIGGER_MAX_RETRY_TIME = "maxRetryTime";
 	public static final String ETL_JOB_TRIGGER_ROLEARN = "roleArn";
+	public static final String ETL_JOB_TRIGGER_STARTING_POSITION = "startingPosition";
+	public static final String ETL_JOB_TRIGGER_STARTING_UNIXTIME = "startingUnixtime";
+	public static final String ETL_JOB_TRIGGER_STARTING_POSITION_LATEST = "latest";
+	public static final String ETL_JOB_TRIGGER_STARTING_POSITION_AT_UNIXTIME = "at-unixtime";
 	public static final String ETL_JOB_FUNCTION_CONFIG = "functionConfig";
 	public static final String ETL_JOB_FUNCTION_PROVIDER = "functionProvider";
 	public static final String ETL_JOB_FUNCTION_PARAMETER = "functionParameter";

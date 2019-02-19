@@ -104,6 +104,13 @@ public class EtlJob implements Serializable {
         triggerConfigJson.put(Consts.ETL_JOB_TRIGGER_ROLEARN, this.triggerConfig.getRoleArn());
         triggerConfigJson.put(Consts.ETL_JOB_TRIGGER_INTERVAL, this.triggerConfig.getTriggerInterval());
         triggerConfigJson.put(Consts.ETL_JOB_TRIGGER_MAX_RETRY_TIME, this.triggerConfig.getMaxRetryTime());
+        String startingPosition = this.triggerConfig.getStartingPosition();
+        if (startingPosition != null) {
+            triggerConfigJson.put(Consts.ETL_JOB_TRIGGER_STARTING_POSITION, startingPosition);
+            if (startingPosition.equals(Consts.ETL_JOB_TRIGGER_STARTING_POSITION_AT_UNIXTIME)) {
+                triggerConfigJson.put(Consts.ETL_JOB_TRIGGER_STARTING_UNIXTIME, this.triggerConfig.getStartingUnixtime());
+            }
+        }
         etlJobJson.put(Consts.ETL_JOB_TRIGGER_CONFIG, triggerConfigJson);
 
         JSONObject functionConfigJson = new JSONObject();
@@ -150,6 +157,12 @@ public class EtlJob implements Serializable {
             JSONObject triggerConfigJson = etljobJson.getJSONObject(Consts.ETL_JOB_TRIGGER_CONFIG);
             EtlTriggerConfig triggerConfig = new EtlTriggerConfig(triggerConfigJson.getString(Consts.ETL_JOB_TRIGGER_ROLEARN),
                     triggerConfigJson.getInt(Consts.ETL_JOB_TRIGGER_INTERVAL), triggerConfigJson.getInt(Consts.ETL_JOB_TRIGGER_MAX_RETRY_TIME));
+            if (triggerConfigJson.containsKey(Consts.ETL_JOB_TRIGGER_STARTING_POSITION)) {
+                triggerConfig.setStartingPosition(triggerConfigJson.getString(Consts.ETL_JOB_TRIGGER_STARTING_POSITION));
+            }
+            if (triggerConfigJson.containsKey(Consts.ETL_JOB_TRIGGER_STARTING_UNIXTIME)) {
+                triggerConfig.setStartingPosition(triggerConfigJson.getString(Consts.ETL_JOB_TRIGGER_STARTING_UNIXTIME));
+            }
             setTriggerConfig(triggerConfig);
 
             JSONObject functionConfigJson = etljobJson.getJSONObject(Consts.ETL_JOB_FUNCTION_CONFIG);

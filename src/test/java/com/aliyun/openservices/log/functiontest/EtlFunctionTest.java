@@ -27,10 +27,10 @@ import static org.junit.Assert.fail;
 public class EtlFunctionTest extends FunctionTest {
 
     private static String project = "ali-slstest-trigger";
-    private static String roleArn = "";
     private static String fcEndpoint = "http://fc.cn-shanghai.aliyuncs.com";
     private static String fcRegion = "cn-shanghai";
     private static String fcAccountId = "";
+    private static String roleArn = "acs:ram::" + fcAccountId + ":role/aliyunlogetlrole";
     private static String fcService = "log_etl";
     private static String fcFunction = "logstore-replication";
     private static String etlJobName = "v2-test";
@@ -147,17 +147,6 @@ public class EtlFunctionTest extends FunctionTest {
             assertTrue(true);
         }
         try {
-            logConfig.setLogstoreName("");
-            CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            client.createEtlJob(req);
-            fail();
-        } catch (LogException e) {
-            System.out.println(e.GetErrorMessage());
-            logConfig.setLogstoreName(logLogstore);
-            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
-            assertTrue(true);
-        }
-        try {
             logConfig.setLogstoreName(logstore);
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
             client.createEtlJob(req);
@@ -257,20 +246,18 @@ public class EtlFunctionTest extends FunctionTest {
             System.out.print(e.GetErrorMessage());
             fail();
         }
-        /*
         try {
-            triggerConfig.setRoleArn("xx");
+            triggerConfig.setStarFromUnixtime(10000);
             UpdateEtlJobRequest req = new UpdateEtlJobRequest(this.project, job);
-            UpdateEtlJobResponse resp = this.logClient.updateEtlJob(req);
+            UpdateEtlJobResponse resp = client.updateEtlJob(req);
             System.out.println(resp.GetAllHeaders());
-            Assert.assertTrue(false);
+            assertTrue(false);
         } catch (LogException e) {
             System.out.print(e.GetErrorMessage());
-            Assert.assertEquals(e.GetErrorCode(), "Unauthorized");
-            Assert.assertTrue(true);
-            triggerConfig.setRoleArn(this.roleArn);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            assertTrue(true);
+            triggerConfig.setStartFromLastest();
         }
-        */
         try {
             logConfig.setLogstoreName(logstore);
             UpdateEtlJobRequest req = new UpdateEtlJobRequest(project, job);
