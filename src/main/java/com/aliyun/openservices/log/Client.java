@@ -1131,6 +1131,7 @@ public class Client implements LogService {
 	    return Utils.getOrEmpty(headers, Consts.CONST_X_SLS_REQUESTID);
 	}
 
+	@Deprecated
 	@Override
 	public BatchGetLogResponse BatchGetLog(String project, String logStore,
 			int shardId, int count, String cursor) throws LogException {
@@ -1139,6 +1140,7 @@ public class Client implements LogService {
 		return BatchGetLog(new BatchGetLogRequest(project, logStore, shardId, count, cursor));
 	}
 
+	@Deprecated
 	@Override
 	public BatchGetLogResponse BatchGetLog(String project, String logStore,
 			int shardId, int count, String cursor, String end_cursor)
@@ -1149,6 +1151,7 @@ public class Client implements LogService {
 				count, cursor, end_cursor));
 	}
 
+	@Deprecated
 	@Override
 	public BatchGetLogResponse BatchGetLog(BatchGetLogRequest request)
 			throws LogException {

@@ -14,6 +14,8 @@ import java.io.Serializable;
  */
 public class JobSchedule implements Serializable {
 
+    private static final long serialVersionUID = 8400426178465652937L;
+
     @JSONField
     private JobScheduleType type;
 

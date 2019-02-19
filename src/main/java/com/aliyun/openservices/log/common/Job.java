@@ -12,6 +12,8 @@ import java.util.Date;
 
 public class Job implements Serializable {
 
+    private static final long serialVersionUID = 6457720937101208563L;
+
     /**
      * The name of job.
      */
