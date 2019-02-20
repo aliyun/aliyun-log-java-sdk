@@ -24,6 +24,7 @@ import com.aliyun.openservices.log.request.ListReportRequest;
 import com.aliyun.openservices.log.response.GetReportResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
 import com.aliyun.openservices.log.response.ListReportResponse;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,7 +38,8 @@ import static org.junit.Assert.fail;
 
 public class ReportFunctionTest extends FunctionTest {
 
-    private static final String TEST_PROJECT = "project-to-test-report";
+    private static final String TEST_PROJECT = "project-report-" + getNowTimestamp();
+    private static final String TEST_DASHBOARD = "dashboardtest";
 
     private static String getReportName() {
         return "report-" + getNowTimestamp();
@@ -45,7 +47,7 @@ public class ReportFunctionTest extends FunctionTest {
 
     @Before
     public void setUp() throws Exception {
-//        client.CreateProject(TEST_PROJECT, "");
+        safeCreateProject(TEST_PROJECT, "");
     }
 
     private Report createReport() {
@@ -57,6 +59,8 @@ public class ReportFunctionTest extends FunctionTest {
         ReportConfiguration configuration = new ReportConfiguration();
         configuration.setDashboard("dashboardtest");
         configuration.setAllowAnonymousAccess(randomBoolean());
+        configuration.setEnableWatermark(randomBoolean());
+        configuration.setLanguage("zh");
         EmailNotification notification = new EmailNotification();
         notification.setEmailList(Collections.singletonList("kel@test.com"));
         notification.setContent("Reporting");
@@ -65,6 +69,7 @@ public class ReportFunctionTest extends FunctionTest {
         configuration.setNotificationList(notifications);
         Report.setConfiguration(configuration);
         JobSchedule schedule = new JobSchedule();
+        schedule.setDelay(0);
         schedule.setType(randomFrom(JobScheduleType.values()));
         if (schedule.getType() == JobScheduleType.FIXED_RATE) {
             schedule.setInterval("60s");
@@ -73,6 +78,21 @@ public class ReportFunctionTest extends FunctionTest {
         }
         Report.setSchedule(schedule);
         return Report;
+    }
+
+    private void createDashboard() throws LogException {
+        Dashboard dashboard = new Dashboard();
+        dashboard.setDashboardName(TEST_DASHBOARD);
+        dashboard.setDescription("Dashboard");
+        dashboard.setChartList(new ArrayList<Chart>());
+        CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(TEST_PROJECT, dashboard);
+        try {
+            client.createDashboard(createDashboardRequest);
+        } catch (LogException ex) {
+            if (!ex.GetErrorMessage().equals("specified dashboard already exists")) {
+                throw ex;
+            }
+        }
     }
 
     @Test
@@ -102,13 +122,7 @@ public class ReportFunctionTest extends FunctionTest {
         } catch (LogException ex) {
             assertEquals(ex.GetErrorMessage(), "Dashboard does not exist: " + report.getConfiguration().getDashboard());
         }
-        Dashboard dashboard = new Dashboard();
-        dashboard.setDashboardName("dashboardtest");
-        dashboard.setDescription("Dashboard");
-        dashboard.setChartList(new ArrayList<Chart>());
-        CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(TEST_PROJECT, dashboard);
-        client.createDashboard(createDashboardRequest);
-
+        createDashboard();
         client.createReport(request);
         GetReportResponse response = client.getReport(new GetReportRequest(TEST_PROJECT, jobName));
 
@@ -152,10 +166,13 @@ public class ReportFunctionTest extends FunctionTest {
         listJobsResponse = client.listReport(listReq);
         assertEquals(11, (int) listJobsResponse.getTotal());
         assertEquals(10, (int) listJobsResponse.getCount());
+
+        client.deleteDashboard(new DeleteDashboardRequest(TEST_PROJECT, TEST_DASHBOARD));
     }
 
     @Test
     public void testCreateDingTalkWithTitle() throws Exception {
+        createDashboard();
         Report report = createReport();
         ReportConfiguration configuration = report.getConfiguration();
         DingTalkNotification notification = new DingTalkNotification();
@@ -177,5 +194,35 @@ public class ReportFunctionTest extends FunctionTest {
             }
         }
         client.deleteReport(new DeleteReportRequest(TEST_PROJECT, report.getName()));
+    }
+
+    @Test
+    public void testCreateEmail() throws Exception {
+        createDashboard();
+        Report report = createReport();
+        ReportConfiguration configuration = report.getConfiguration();
+        EmailNotification notification = new EmailNotification();
+        notification.setSubject("Title-test");
+        notification.setEmailList(Arrays.asList("abc@abc.com"));
+        configuration.getNotificationList().clear();
+        configuration.getNotificationList().add(notification);
+        client.createReport(new CreateReportRequest(TEST_PROJECT, report));
+
+        GetReportResponse response = client.getReport(new GetReportRequest(TEST_PROJECT, report.getName()));
+        Report report2 = response.getReport();
+        List<Notification> notifications = report2.getConfiguration().getNotificationList();
+        for (Notification notification1 : notifications) {
+            if (notification1 instanceof EmailNotification) {
+                EmailNotification dtk = (EmailNotification) notification1;
+                assertEquals(notification.getSubject(), dtk.getSubject());
+                assertEquals(notification.getEmailList(), dtk.getEmailList());
+            }
+        }
+        client.deleteReport(new DeleteReportRequest(TEST_PROJECT, report.getName()));
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        client.DeleteProject(TEST_PROJECT);
     }
 }

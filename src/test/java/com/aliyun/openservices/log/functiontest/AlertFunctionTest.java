@@ -31,6 +31,8 @@ import com.aliyun.openservices.log.request.UpdateAlertRequest;
 import com.aliyun.openservices.log.response.GetAlertResponse;
 import com.aliyun.openservices.log.response.ListAlertResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -46,7 +48,13 @@ import static org.junit.Assert.fail;
 
 public class AlertFunctionTest extends FunctionTest {
 
-    private static final String TEST_PROJECT = "project-intg-1540362408";
+    private static final String TEST_PROJECT = "project-intg-" + getNowTimestamp();
+    private static final String TEST_DASHBOARD = "dashboardtest";
+
+    @Before
+    public void setUp() {
+        safeCreateProject(TEST_PROJECT, "");
+    }
 
     private static String getAlertName() {
         return "alert-" + getNowTimestamp();
@@ -60,7 +68,7 @@ public class AlertFunctionTest extends FunctionTest {
         alert.setDisplayName("Alert-test");
         AlertConfiguration configuration = new AlertConfiguration();
         configuration.setCondition("$0.count > 1");
-        configuration.setDashboard("dashboardtest");
+        configuration.setDashboard(TEST_DASHBOARD);
         List<Query> queries = new ArrayList<Query>();
         Query query = new Query();
         query.setStart("-60s");
@@ -84,6 +92,7 @@ public class AlertFunctionTest extends FunctionTest {
         JobSchedule schedule = new JobSchedule();
         schedule.setType(JobScheduleType.FIXED_RATE);
         schedule.setInterval("60s");
+        schedule.setDelay(0);
         alert.setSchedule(schedule);
         return alert;
     }
@@ -116,13 +125,7 @@ public class AlertFunctionTest extends FunctionTest {
         } catch (LogException ex) {
             assertEquals(ex.GetErrorMessage(), "Dashboard does not exist: " + alert.getConfiguration().getDashboard());
         }
-        Dashboard dashboard = new Dashboard();
-        dashboard.setDashboardName("dashboardtest");
-        dashboard.setDescription("Dashboard");
-        dashboard.setChartList(new ArrayList<Chart>());
-        CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(TEST_PROJECT, dashboard);
-        client.createDashboard(createDashboardRequest);
-
+        createDashboard();
         client.createAlert(request);
         GetAlertResponse response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
 
@@ -175,8 +178,24 @@ public class AlertFunctionTest extends FunctionTest {
         assertEquals(10, (int) listJobsResponse.getCount());
     }
 
+    private void createDashboard() throws LogException {
+        Dashboard dashboard = new Dashboard();
+        dashboard.setDashboardName(TEST_DASHBOARD);
+        dashboard.setDescription("Dashboard");
+        dashboard.setChartList(new ArrayList<Chart>());
+        CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(TEST_PROJECT, dashboard);
+        try {
+            client.createDashboard(createDashboardRequest);
+        } catch (LogException ex) {
+            if (!ex.GetErrorMessage().equals("specified dashboard already exists")) {
+                throw ex;
+            }
+        }
+    }
+
     @Test
     public void testCreateDingTalkWithTitle() throws Exception {
+        createDashboard();
         Alert alert = createAlert();
         AlertConfiguration configuration = alert.getConfiguration();
         DingTalkNotification notification = new DingTalkNotification();
@@ -201,7 +220,8 @@ public class AlertFunctionTest extends FunctionTest {
     }
 
     @Test
-    public void testCreateWebhookWithHeaders() throws Exception {
+    public void testCreateWebHookWithHeaders() throws Exception {
+        createDashboard();
         Alert alert = createAlert();
         AlertConfiguration configuration = alert.getConfiguration();
         WebhookNotification notification = new WebhookNotification();
@@ -230,6 +250,7 @@ public class AlertFunctionTest extends FunctionTest {
 
     @Test
     public void testCreateVoiceNotification() throws Exception {
+        createDashboard();
         Alert alert = createAlert();
         AlertConfiguration configuration = alert.getConfiguration();
         VoiceNotification notification = new VoiceNotification();
@@ -249,5 +270,35 @@ public class AlertFunctionTest extends FunctionTest {
         assertEquals(notification.getContent(), notification1.getContent());
 
         client.deleteAlert(new DeleteAlertRequest(TEST_PROJECT, alert.getName()));
+    }
+
+    @Test
+    public void testCreateEmail() throws Exception {
+        createDashboard();
+        Alert alert = createAlert();
+        AlertConfiguration configuration = alert.getConfiguration();
+        EmailNotification notification = new EmailNotification();
+        notification.setSubject("Title-test");
+        notification.setEmailList(Arrays.asList("abc@abc.com"));
+        configuration.getNotificationList().clear();
+        configuration.getNotificationList().add(notification);
+        client.createAlert(new CreateAlertRequest(TEST_PROJECT, alert));
+
+        GetAlertResponse response = client.getAlert(new GetAlertRequest(TEST_PROJECT, alert.getName()));
+        Alert alert1 = response.getAlert();
+        List<Notification> notifications = alert1.getConfiguration().getNotificationList();
+        for (Notification notification1 : notifications) {
+            if (notification1 instanceof EmailNotification) {
+                EmailNotification dtk = (EmailNotification) notification1;
+                assertEquals(notification.getSubject(), dtk.getSubject());
+                assertEquals(notification.getEmailList(), dtk.getEmailList());
+            }
+        }
+        client.deleteAlert(new DeleteAlertRequest(TEST_PROJECT, alert.getName()));
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        client.DeleteProject(TEST_PROJECT);
     }
 }

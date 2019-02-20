@@ -35,7 +35,7 @@ public class JobSchedule implements Serializable {
      * An optional delay to avoid missing data.
      */
     @JSONField
-    private Integer delay;
+    private Integer delay = 0;
 
     /**
      * sunday, monday, tuesday, wednesday, thursday, friday and saturday
@@ -146,5 +146,17 @@ public class JobSchedule implements Serializable {
         result = 31 * result + (getDayOfWeek() != null ? getDayOfWeek().hashCode() : 0);
         result = 31 * result + (getHour() != null ? getHour().hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "JobSchedule{" +
+                "type=" + type +
+                ", interval='" + interval + '\'' +
+                ", cronExpression='" + cronExpression + '\'' +
+                ", delay=" + delay +
+                ", dayOfWeek=" + dayOfWeek +
+                ", hour=" + hour +
+                '}';
     }
 }

@@ -90,4 +90,13 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
         result = 31 * result + (getLanguage() != null ? getLanguage().hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "ReportConfiguration{" +
+                "enableWatermark=" + enableWatermark +
+                ", allowAnonymousAccess=" + allowAnonymousAccess +
+                ", language='" + language + '\'' +
+                '}';
+    }
 }
