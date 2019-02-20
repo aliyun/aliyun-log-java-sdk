@@ -3,7 +3,6 @@ package com.aliyun.openservices.log.functiontest;
 
 import com.aliyun.openservices.log.common.Alert;
 import com.aliyun.openservices.log.common.AlertConfiguration;
-import com.aliyun.openservices.log.common.Chart;
 import com.aliyun.openservices.log.common.Dashboard;
 import com.aliyun.openservices.log.common.DingTalkNotification;
 import com.aliyun.openservices.log.common.EmailNotification;
@@ -19,7 +18,6 @@ import com.aliyun.openservices.log.common.WebhookNotification;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.request.CreateAlertRequest;
-import com.aliyun.openservices.log.request.CreateDashboardRequest;
 import com.aliyun.openservices.log.request.DeleteAlertRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
 import com.aliyun.openservices.log.request.DisableAlertRequest;
@@ -31,8 +29,6 @@ import com.aliyun.openservices.log.request.UpdateAlertRequest;
 import com.aliyun.openservices.log.response.GetAlertResponse;
 import com.aliyun.openservices.log.response.ListAlertResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -46,15 +42,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class AlertFunctionTest extends FunctionTest {
-
-    private static final String TEST_PROJECT = "project-intg-" + getNowTimestamp();
-    private static final String TEST_DASHBOARD = "dashboardtest";
-
-    @Before
-    public void setUp() {
-        safeCreateProject(TEST_PROJECT, "");
-    }
+public class AlertFunctionTest extends JobIntgTest {
 
     private static String getAlertName() {
         return "alert-" + getNowTimestamp();
@@ -88,12 +76,7 @@ public class AlertFunctionTest extends FunctionTest {
         configuration.setThrottling("0s");
         configuration.setNotifyThreshold(100);
         alert.setConfiguration(configuration);
-
-        JobSchedule schedule = new JobSchedule();
-        schedule.setType(JobScheduleType.FIXED_RATE);
-        schedule.setInterval("60s");
-        schedule.setDelay(0);
-        alert.setSchedule(schedule);
+        alert.setSchedule(createSchedule());
         return alert;
     }
 
@@ -176,21 +159,6 @@ public class AlertFunctionTest extends FunctionTest {
         listJobsResponse = client.listAlert(listReq);
         assertEquals(11, (int) listJobsResponse.getTotal());
         assertEquals(10, (int) listJobsResponse.getCount());
-    }
-
-    private void createDashboard() throws LogException {
-        Dashboard dashboard = new Dashboard();
-        dashboard.setDashboardName(TEST_DASHBOARD);
-        dashboard.setDescription("Dashboard");
-        dashboard.setChartList(new ArrayList<Chart>());
-        CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(TEST_PROJECT, dashboard);
-        try {
-            client.createDashboard(createDashboardRequest);
-        } catch (LogException ex) {
-            if (!ex.GetErrorMessage().equals("specified dashboard already exists")) {
-                throw ex;
-            }
-        }
     }
 
     @Test
@@ -295,10 +263,5 @@ public class AlertFunctionTest extends FunctionTest {
             }
         }
         client.deleteAlert(new DeleteAlertRequest(TEST_PROJECT, alert.getName()));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        client.DeleteProject(TEST_PROJECT);
     }
 }

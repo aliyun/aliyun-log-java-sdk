@@ -1,7 +1,6 @@
 package com.aliyun.openservices.log.functiontest;
 
 
-import com.aliyun.openservices.log.common.Chart;
 import com.aliyun.openservices.log.common.Dashboard;
 import com.aliyun.openservices.log.common.DingTalkNotification;
 import com.aliyun.openservices.log.common.EmailNotification;
@@ -12,7 +11,6 @@ import com.aliyun.openservices.log.common.Notification;
 import com.aliyun.openservices.log.common.Report;
 import com.aliyun.openservices.log.common.ReportConfiguration;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.request.CreateDashboardRequest;
 import com.aliyun.openservices.log.request.CreateReportRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
 import com.aliyun.openservices.log.request.DeleteReportRequest;
@@ -24,8 +22,6 @@ import com.aliyun.openservices.log.request.ListReportRequest;
 import com.aliyun.openservices.log.response.GetReportResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
 import com.aliyun.openservices.log.response.ListReportResponse;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -36,28 +32,20 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class ReportFunctionTest extends FunctionTest {
-
-    private static final String TEST_PROJECT = "project-report-" + getNowTimestamp();
-    private static final String TEST_DASHBOARD = "dashboardtest";
+public class ReportFunctionTest extends JobIntgTest {
 
     private static String getReportName() {
         return "report-" + getNowTimestamp();
     }
 
-    @Before
-    public void setUp() throws Exception {
-        safeCreateProject(TEST_PROJECT, "");
-    }
-
     private Report createReport() {
-        Report Report = new Report();
+        Report report = new Report();
         String jobName = getReportName();
-        Report.setName(jobName);
-        Report.setState(JobState.ENABLED);
-        Report.setDisplayName("Report-test");
+        report.setName(jobName);
+        report.setState(JobState.ENABLED);
+        report.setDisplayName("Report-test");
         ReportConfiguration configuration = new ReportConfiguration();
-        configuration.setDashboard("dashboardtest");
+        configuration.setDashboard(TEST_DASHBOARD);
         configuration.setAllowAnonymousAccess(randomBoolean());
         configuration.setEnableWatermark(randomBoolean());
         configuration.setLanguage("zh");
@@ -67,32 +55,9 @@ public class ReportFunctionTest extends FunctionTest {
         List<Notification> notifications = new ArrayList<Notification>();
         notifications.add(notification);
         configuration.setNotificationList(notifications);
-        Report.setConfiguration(configuration);
-        JobSchedule schedule = new JobSchedule();
-        schedule.setDelay(0);
-        schedule.setType(randomFrom(JobScheduleType.values()));
-        if (schedule.getType() == JobScheduleType.FIXED_RATE) {
-            schedule.setInterval("60s");
-        } else if (schedule.getType() == JobScheduleType.CRON) {
-            schedule.setCronExpression("0 0 12 * * ?");
-        }
-        Report.setSchedule(schedule);
-        return Report;
-    }
-
-    private void createDashboard() throws LogException {
-        Dashboard dashboard = new Dashboard();
-        dashboard.setDashboardName(TEST_DASHBOARD);
-        dashboard.setDescription("Dashboard");
-        dashboard.setChartList(new ArrayList<Chart>());
-        CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(TEST_PROJECT, dashboard);
-        try {
-            client.createDashboard(createDashboardRequest);
-        } catch (LogException ex) {
-            if (!ex.GetErrorMessage().equals("specified dashboard already exists")) {
-                throw ex;
-            }
-        }
+        report.setConfiguration(configuration);
+        report.setSchedule(createSchedule());
+        return report;
     }
 
     @Test
@@ -219,10 +184,5 @@ public class ReportFunctionTest extends FunctionTest {
             }
         }
         client.deleteReport(new DeleteReportRequest(TEST_PROJECT, report.getName()));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        client.DeleteProject(TEST_PROJECT);
     }
 }
