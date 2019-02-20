@@ -100,19 +100,18 @@ public class EtlFunctionTest extends FunctionTest {
             assertEquals(e.GetErrorCode(), "PostBodyInvalid");
             assertTrue(true);
         }
-        /*
         try {
-            triggerConfig.setRoleArn(roleArn + "x");
+            triggerConfig.setStartFromUnixtime(10000);
+            triggerConfig.setStartingUnixtime(-1);
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
-            CreateEtlJobResponse resp = this.logClient.createEtlJob(req);
-            Assert.assertTrue(false);
+            client.createEtlJob(req);
+            assertTrue(false);
         } catch (LogException e) {
             System.out.println(e.GetErrorMessage());
-            triggerConfig.setRoleArn(roleArn);
-            Assert.assertEquals(e.GetErrorCode(), "Unauthorized");
-            Assert.assertTrue(true);
+            assertEquals(e.GetErrorCode(), "PostBodyInvalid");
+            triggerConfig.setStartFromLastest();
+            assertTrue(true);
         }
-        */
         try {
             triggerConfig.setRoleArn(" ");
             CreateEtlJobRequest req = new CreateEtlJobRequest(project, job);
@@ -247,7 +246,7 @@ public class EtlFunctionTest extends FunctionTest {
             fail();
         }
         try {
-            triggerConfig.setStarFromUnixtime(10000);
+            triggerConfig.setStartFromUnixtime(10000);
             UpdateEtlJobRequest req = new UpdateEtlJobRequest(this.project, job);
             UpdateEtlJobResponse resp = client.updateEtlJob(req);
             System.out.println(resp.GetAllHeaders());

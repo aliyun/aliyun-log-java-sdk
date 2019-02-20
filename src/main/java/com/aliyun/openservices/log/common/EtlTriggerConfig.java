@@ -30,7 +30,7 @@ public class EtlTriggerConfig implements Serializable {
         this.startingUnixtime = -1;
     }
 
-    public void setStarFromUnixtime(long startingUnixtime) {
+    public void setStartFromUnixtime(long startingUnixtime) {
         this.startingPosition = Consts.ETL_JOB_TRIGGER_STARTING_POSITION_AT_UNIXTIME;
         this.startingUnixtime = startingUnixtime;
     }
