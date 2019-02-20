@@ -7,6 +7,7 @@ import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.common.JobScheduleType;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateDashboardRequest;
+import org.junit.After;
 import org.junit.Before;
 
 import java.util.ArrayList;
@@ -56,5 +57,10 @@ abstract class JobIntgTest extends FunctionTest {
         }
         schedule.setDelay(0);
         return schedule;
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        client.DeleteProject(TEST_PROJECT);
     }
 }
