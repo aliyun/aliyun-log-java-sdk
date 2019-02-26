@@ -2,11 +2,12 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
+
+import static com.aliyun.openservices.log.util.Args.checkDuration;
 
 
 /**
@@ -35,7 +36,7 @@ public class JobSchedule implements Serializable {
      * An optional delay to avoid missing data.
      */
     @JSONField
-    private Integer delay = 0;
+    private Integer delay;
 
     /**
      * sunday, monday, tuesday, wednesday, thursday, friday and saturday
@@ -63,7 +64,7 @@ public class JobSchedule implements Serializable {
     }
 
     public void setInterval(String interval) {
-        Args.checkDuration(interval);
+        checkDuration(interval);
         this.interval = interval;
     }
 
