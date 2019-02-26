@@ -49,7 +49,7 @@ public class SlsPerformanceTest extends FunctionTest {
         StringBuilder randString = new StringBuilder();
         int i = 0;
         while (i < length) {
-            randString.append(Character.toString((char) (randomBetween(33, 126))));
+            randString.append((char) (randomBetween(33, 126)));
             i++;
         }
         return " " + randString;
@@ -549,7 +549,7 @@ public class SlsPerformanceTest extends FunctionTest {
         for (int i = 0; i < logLine; i++) {
             LogItem logItem = new LogItem(fromTime);
             for (int j = 0; j < logItemLine; ++j) {
-                logItem.PushBack("ID", "id_" + String.valueOf(i * logItemLine + j));
+                logItem.PushBack("ID", "id_" + (i * logItemLine + j));
             }
             logGroup.add(logItem);
         }

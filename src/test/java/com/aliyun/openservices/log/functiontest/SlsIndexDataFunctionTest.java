@@ -1,14 +1,5 @@
 package com.aliyun.openservices.log.functiontest;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.Histogram;
 import com.aliyun.openservices.log.common.Index;
@@ -23,6 +14,20 @@ import com.aliyun.openservices.log.response.GetHistogramsResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
 import com.aliyun.openservices.log.response.ListLogStoresResponse;
 import com.aliyun.openservices.log.response.ListTopicsResponse;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class SlsIndexDataFunctionTest {
 
@@ -34,7 +39,7 @@ public class SlsIndexDataFunctionTest {
 	static private String logStore = "byls-one-3";
 
 	private int startTime = (int) (new Date().getTime() / 1000);
-	private String topic_prefix = "sls_java_topic_" + String.valueOf(startTime)
+	private String topic_prefix = "sls_java_topic_" + startTime
 			+ "_";
 
 	static private Client client = new Client(host, accessId, accessKey);
@@ -96,21 +101,21 @@ public class SlsIndexDataFunctionTest {
 			Thread.sleep(60 * 1000);
 			
 			Index res = client.GetIndex(project, logStore).GetIndex();
-			org.junit.Assert.assertEquals(index.GetTtl(), res.GetTtl());
+			assertEquals(index.GetTtl(), res.GetTtl());
 
-			org.junit.Assert.assertEquals(index.GetLine().GetCaseSensitive(), res.GetLine().GetCaseSensitive());
-			org.junit.Assert.assertEquals(index.GetLine().GetToken().size(), res.GetLine().GetToken().size());
+			assertEquals(index.GetLine().GetCaseSensitive(), res.GetLine().GetCaseSensitive());
+			assertEquals(index.GetLine().GetToken().size(), res.GetLine().GetToken().size());
 			for (int i = 0;i < index.GetLine().GetToken().size();i++) {
-				org.junit.Assert.assertEquals(index.GetLine().GetToken().get(i), res.GetLine().GetToken().get(i));
+				assertEquals(index.GetLine().GetToken().get(i), res.GetLine().GetToken().get(i));
 			}
 			
-			org.junit.Assert.assertEquals(index.GetLine().GetIncludeKeys().size(), res.GetLine().GetIncludeKeys().size());
+			assertEquals(index.GetLine().GetIncludeKeys().size(), res.GetLine().GetIncludeKeys().size());
 			for (int i = 0;i < index.GetLine().GetIncludeKeys().size();i++) {
-				org.junit.Assert.assertEquals(index.GetLine().GetIncludeKeys().get(i), res.GetLine().GetIncludeKeys().get(i));
+				assertEquals(index.GetLine().GetIncludeKeys().get(i), res.GetLine().GetIncludeKeys().get(i));
 			}
 			
 		} catch (LogException e) {
-			org.junit.Assert.assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+			fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -122,14 +127,14 @@ public class SlsIndexDataFunctionTest {
 			client.DeleteIndex(project, logStore);
 			
 		} catch (LogException e) {
-			org.junit.Assert.assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+			fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
 		}
 		
 		try {
 			client.GetIndex(project, logStore);
-			org.junit.Assert.assertTrue("should get index error", false);
+			fail("should get index error");
 		} catch (LogException e) {
-			org.junit.Assert.assertTrue("should get index error"+e.GetErrorCode(), e.GetErrorCode()!="IndexConfigNotExist");
+			assertNotSame("should get index error" + e.GetErrorCode(), "IndexConfigNotExist", e.GetErrorCode());
 		}
 	}
 	
@@ -150,19 +155,19 @@ public class SlsIndexDataFunctionTest {
 			client.UpdateIndex(project, logStore, index);
 			
 			Index res = client.GetIndex(project, logStore).GetIndex();
-			org.junit.Assert.assertEquals(index.GetTtl(), res.GetTtl());
+			assertEquals(index.GetTtl(), res.GetTtl());
 			IndexKeys resKeys = res.GetKeys();
-			org.junit.Assert.assertEquals(1, resKeys.GetKeys().size());
+			assertEquals(1, resKeys.GetKeys().size());
 			org.junit.Assert.assertTrue(resKeys.GetKeys().containsKey(keyName));
 			IndexKey resKey = resKeys.GetKeys().get(keyName);
-			org.junit.Assert.assertEquals(keyContent.GetCaseSensitive(), resKey.GetCaseSensitive());
-			org.junit.Assert.assertEquals(keyContent.GetToken().size(), resKey.GetToken().size());
+			assertEquals(keyContent.GetCaseSensitive(), resKey.GetCaseSensitive());
+			assertEquals(keyContent.GetToken().size(), resKey.GetToken().size());
 			for (int i = 0;i < keyContent.GetToken().size();i++) {
-				org.junit.Assert.assertEquals(keyContent.GetToken().get(i), resKey.GetToken().get(i));
+				assertEquals(keyContent.GetToken().get(i), resKey.GetToken().get(i));
 			}
 			
 		} catch (LogException e) {
-			org.junit.Assert.assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+			fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
 		}
 	}
 
@@ -172,14 +177,14 @@ public class SlsIndexDataFunctionTest {
 			for (int j = 0; j < 600; j++) {
 				LogItem logItem = new LogItem(
 						(int) (new Date().getTime() / 1000));
-				logItem.PushBack("ID", "id_" + String.valueOf(i * 600 + j));
+				logItem.PushBack("ID", "id_" + (i * 600 + j));
 				logGroup.add(logItem);
 			}
-			String topic = topic_prefix + String.valueOf(i);
+			String topic = topic_prefix + i;
 			try {
 				client.PutLogs(project, logStore, topic, logGroup, "");
 			} catch (LogException e) {
-				org.junit.Assert.assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+				fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
 			}
 		}
 		try {
@@ -194,7 +199,7 @@ public class SlsIndexDataFunctionTest {
 			ListLogStoresResponse res = client.ListLogStores(project,0,500,"");
 			org.junit.Assert.assertTrue(res.GetLogStores().contains(logStore));
 		} catch (LogException e) {
-			org.junit.Assert.assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+			fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
 		}
 	}
 
@@ -205,63 +210,60 @@ public class SlsIndexDataFunctionTest {
 			ListTopicsResponse res = client.ListTopics(project, logStore,
 					token, 5);
 			returnTopics.addAll(res.GetTopics());
-			org.junit.Assert.assertEquals(res.GetNextToken(), topic_prefix
-					+ String.valueOf(5));
+			assertEquals(res.GetNextToken(), topic_prefix
+					+ 5);
 			token = res.GetNextToken();
 			res = client.ListTopics(project, logStore, token, 5);
 			returnTopics.addAll(res.GetTopics());
-			org.junit.Assert.assertTrue(res.GetNextToken().startsWith(
-					topic_prefix) == false);
-			org.junit.Assert.assertEquals(returnTopics.size(), 10);
+			assertFalse(res.GetNextToken().startsWith(topic_prefix));
+			assertEquals(returnTopics.size(), 10);
 			for (int i = 0; i < returnTopics.size(); i++) {
-				org.junit.Assert.assertEquals(returnTopics.get(i), topic_prefix
-						+ String.valueOf(i));
+				assertEquals(returnTopics.get(i), topic_prefix + i);
 			}
 		} catch (LogException e) {
-			org.junit.Assert.assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+			fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
 		}
 	}
 
 	public void TestGetHistogram() {
 		try {
 			GetHistogramsResponse res = client.GetHistograms(project, logStore,
-					this.startTime, this.startTime + 3600, 
-					topic_prefix + String.valueOf(0), "ID");
-			org.junit.Assert.assertEquals(res.GetTotalCount(), 600);
+					this.startTime, this.startTime + 3600, topic_prefix + 0, "ID");
+			assertEquals(res.GetTotalCount(), 600);
 			ArrayList<Histogram> histograms = res.GetHistograms();
 			int total = 0;
 			for (Histogram histogram : histograms) {
-				org.junit.Assert.assertEquals(histogram.IsCompleted(), true);
+				assertTrue(histogram.IsCompleted());
 				total += histogram.GetCount();
 			}
-			org.junit.Assert.assertEquals(total, 600);
+			assertEquals(total, 600);
 		} catch (LogException e) {
-			org.junit.Assert.assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+			fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
 		}
 	}
 
 	public void TestGetLogs() {
 		int topic_index = 3;
-		String topic = topic_prefix + String.valueOf(topic_index);
+		String topic = topic_prefix + topic_index;
 		try {
 			GetLogsResponse res = client.GetLogs(project, logStore,
 					this.startTime, this.startTime + 3600, topic, "ID", 20, 0, false);
-			org.junit.Assert.assertEquals(res.GetCount(), 20);
+			assertEquals(res.GetCount(), 20);
 			res = client.GetLogs(project, logStore,
 					this.startTime, this.startTime + 3600, topic, "ID", 100, 50, false);
-			org.junit.Assert.assertEquals(res.GetCount(), 100);
-			org.junit.Assert.assertEquals(res.IsCompleted(), true);
+			assertEquals(res.GetCount(), 100);
+			assertTrue(res.IsCompleted());
 			ArrayList<QueriedLog> queriedLogs = res.GetLogs();
 			int index = 0;
 			for (QueriedLog log : queriedLogs) {
 				LogItem item = log.GetLogItem();
-				org.junit.Assert.assertEquals(item.GetLogContents().get(0)
+				assertEquals(item.GetLogContents().get(0)
 						.GetValue(),
-						"id_" + String.valueOf(topic_index * 600 + 50 + index));
+						"id_" + (topic_index * 600 + 50 + index));
 				index++;
 			}
 		} catch (LogException e) {
-			org.junit.Assert.assertTrue(e.GetErrorCode() + ":" + e.GetErrorMessage(), false);
+			fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
 		}
 	}
 
