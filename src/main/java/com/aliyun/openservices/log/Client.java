@@ -2920,7 +2920,7 @@ public class Client implements LogService {
 
 		byte[] body = encodeToUtf8(request.GetRequestBody());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-		ArrayList<Integer> responseShards = new ArrayList<Integer>();
+		List<Integer> responseShards = new ArrayList<Integer>();
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
 
@@ -2931,8 +2931,7 @@ public class Client implements LogService {
 		return new ConsumerGroupHeartBeatResponse(resHeaders, responseShards);
 	}
 
-	protected void ExtractShards(JSONArray array, String requestId,
-			ArrayList<Integer> shards) throws LogException {
+	protected void ExtractShards(JSONArray array, String requestId, List<Integer> shards) throws LogException {
 		try {
 			for (int i = 0; i < array.size(); i++) {
 				shards.add(array.getInt(i));
