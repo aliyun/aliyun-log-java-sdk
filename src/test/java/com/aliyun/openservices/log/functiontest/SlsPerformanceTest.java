@@ -73,8 +73,8 @@ public class SlsPerformanceTest extends FunctionTest {
             for (int j = 0; j < logGroupList.getLogGroupListCount(); ++j) {
                 vLogGroupCount++;
                 LogGroupData logGroupData = new LogGroupData(logGroupList.getLogGroupList(j));
-                LogGroup logGroup = logGroupData.GetLogGroup();
-                FastLogGroup fastLogGroup = fastLogGroupDatas.get(j).GetFastLogGroup();
+                LogGroup logGroup = logGroupData.getLogGroup();
+                FastLogGroup fastLogGroup = fastLogGroupDatas.get(j).getFastLogGroup();
                 LogGroup copyLogGroup = LogGroup.parseFrom(fastLogGroup.getBytes());
                 assertTrue(!copyLogGroup.hasCategory());
                 assertEquals(copyLogGroup.hasSource(), fastLogGroup.hasSource());
@@ -187,7 +187,7 @@ public class SlsPerformanceTest extends FunctionTest {
                 for (int j = 0; j < logGroupList.getLogGroupListCount(); ++j) {
                     vLogGroupCount++;
                     LogGroupData logGroupData = new LogGroupData(logGroupList.getLogGroupList(j));
-                    LogGroup logGroup = logGroupData.GetLogGroup();
+                    LogGroup logGroup = logGroupData.getLogGroup();
                     if (vLogGroupCount % sampleCount == 0) {
                         if (bytes) {
                             logGroup.getCategoryBytes();
@@ -259,7 +259,7 @@ public class SlsPerformanceTest extends FunctionTest {
             List<LogGroupData> logGroups = bglResponse.getLogGroups();
             for (int j = 0; j < logGroups.size(); ++j) {
                 vLogGroupCount++;
-                FastLogGroup fastLogGroup = logGroups.get(j).GetFastLogGroup();
+                FastLogGroup fastLogGroup = logGroups.get(j).getFastLogGroup();
                 if (vLogGroupCount % sampleCount == 0) {
                     if (bytes) {
                         fastLogGroup.getCategoryBytes();

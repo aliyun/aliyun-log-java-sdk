@@ -3,218 +3,155 @@
  */
 package com.aliyun.openservices.log.common;
 
+import com.aliyun.openservices.log.common.Logs.LogGroup;
+import com.aliyun.openservices.log.exception.LogException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.aliyun.openservices.log.common.Logs.Log;
-import com.aliyun.openservices.log.common.Logs.Log.Content;
-import com.aliyun.openservices.log.common.Logs.LogGroup;
-import com.aliyun.openservices.log.exception.LogException;
-
 /**
  * LogGroup is the basic data structure for send, contains meta and logs
- * 
+ *
  * @author sls_dev
- * 
  */
-
 public class LogGroupData implements Serializable {
 
-	private static final long serialVersionUID = -7939302281903476332L;
-	protected String mReserved = "";
-	protected String mTopic = "";
-	protected String mSource = "";
-	protected String mMachineUUID = "";
-	protected ArrayList<LogItem> mLogs;
-	protected LogGroup mLogGroup = null;
-	protected FastLogGroup mFastLogGroup = null;
-	protected byte[] rawBytes = null;
-	protected int offset;
-	protected int length;
-	protected String mRequestId = "";
+    private static final long serialVersionUID = -7939302281903476332L;
 
-	/**
-	 * Construct a empty LogGroup
-	 */
-	public LogGroupData() {
-	}
+    private LogGroup logGroup = null;
+    private FastLogGroup fastLogGroup = null;
+    private byte[] rawBytes = null;
+    private int offset;
+    private int length;
+    private String requestId = "";
+    private List<LogItem> logItems = null;
 
-	public LogGroupData(byte[] rawBytes, int offset, int length, String requestId) {
-		this.rawBytes = rawBytes;
-		this.offset = offset;
-		this.length = length;
-		mRequestId = requestId;
-	}
+    /**
+     * Construct a empty LogGroup
+     */
+    public LogGroupData() {
+    }
 
-	public LogGroupData(LogGroup logGroup) {
-		mLogGroup = logGroup;
-	}
+    public LogGroupData(byte[] rawBytes, int offset, int length, String requestId) {
+        this.rawBytes = rawBytes;
+        this.offset = offset;
+        this.length = length;
+        this.requestId = requestId;
+    }
 
-	public LogGroup GetLogGroup() throws LogException {
-		if (mLogGroup == null) {
-			ParseLogGroupPb();
-		}
-		return mLogGroup;
-	}
+    public LogGroupData(LogGroup logGroup) {
+        this.logGroup = logGroup;
+    }
 
-	public void SetLogGroup(LogGroup mLogGroup) {
-		this.mLogGroup = mLogGroup;
-	}
+    /**
+     * @deprecated Use {@link #getLogGroup()} instead.
+     */
+    @Deprecated
+    public LogGroup GetLogGroup() throws LogException {
+        return getLogGroup();
+    }
 
-	public FastLogGroup GetFastLogGroup() {
-	    if (mFastLogGroup == null) {
-			mFastLogGroup = new FastLogGroup(this.rawBytes, this.offset, this.length);
-		}
-		return mFastLogGroup;
-	}
+    /**
+     * @deprecated Use {@link #setLogGroup(LogGroup)} instead.
+     */
+    @Deprecated
+    public void SetLogGroup(LogGroup logGroup) {
+        setLogGroup(logGroup);
+    }
 
-	@Deprecated
-	public LogGroupData(LogGroupData logGroup) {
-		mReserved = logGroup.GetReserved();
-		mTopic = logGroup.GetTopic();
-		mSource = logGroup.GetSource();
-		mMachineUUID = logGroup.GetMachineUUID();
-		mLogs = logGroup.mLogs;
-		mLogGroup = logGroup.mLogGroup;
-	}
-	@Deprecated
-	public LogGroupData(String reserved, String topic, String source, String mMachineUUID, ArrayList<LogItem> logs) {
-		mReserved = reserved;
-		mTopic = topic;
-		mSource = source;
-		SetAllLogs(logs);
-	}
+    /**
+     * @deprecated Use {@link #getFastLogGroup()} instead.
+     */
+    @Deprecated
+    public FastLogGroup GetFastLogGroup() {
+        return getFastLogGroup();
+    }
 
-	private boolean ParseLogGroupPb() throws LogException {
-		ByteArrayInputStream inputStream = new ByteArrayInputStream(this.rawBytes, this.offset, this.length);
-		try {
-			mLogGroup = LogGroup.parseFrom(inputStream);
-		} catch (IOException e) {
-			throw new LogException("InitLogGroupsError", e.getMessage(), e, mRequestId);
-		}
-		return true;
-	}
+    private void parseLogGroup() throws LogException {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(this.rawBytes, this.offset, this.length);
+        try {
+            logGroup = LogGroup.parseFrom(inputStream);
+        } catch (IOException e) {
+            throw new LogException("InitLogGroupsError", e.getMessage(), e, requestId);
+        }
+    }
 
-	protected void AutoDeserilize() throws LogException {
-		if (mLogGroup == null) {
-			if (!ParseLogGroupPb()) {
-				return;
-			}
-		}
-		if(mLogs != null) {
-			return;
-		}
-		if (mLogGroup.hasCategory()) {
-			SetReserved(mLogGroup.getCategory());
-		}
-		if (mLogGroup.hasTopic()) {
-			SetTopic(mLogGroup.getTopic());
-		}
-		if (mLogGroup.hasSource()) {
-			SetSource(mLogGroup.getSource());
-		}
-		if (mLogGroup.hasMachineUUID())
-		{
-			SetMachineUUID(mLogGroup.getMachineUUID());
-		}
-		List<Log> logs = mLogGroup.getLogsList();
-		ArrayList<LogItem> logItems = new ArrayList<LogItem>();
-		for (Log log:logs) {
-			ArrayList<LogContent> logContents = new ArrayList<LogContent>();
-			for(Content content:log.getContentsList()) {
-				logContents.add(new LogContent(content.getKey(), content.getValue()));
-			}
-			logItems.add(new LogItem(log.getTime(), logContents));
-		}
-		
-		SetAllLogs(logItems);
-	}
-	/**
-	 * @return the logs
-	 */
-	@Deprecated
-	public ArrayList<LogItem> GetAllLogs() throws LogException {
-		AutoDeserilize();
-		return mLogs;
-	}
+    public LogGroup getLogGroup() throws LogException {
+        if (logGroup == null) {
+            parseLogGroup();
+        }
+        return logGroup;
+    }
 
-	/**
-	 * @param index the index of log array
-	 * @return the log
-	 */
-	@Deprecated
-	public LogItem GetLogByIndex(int index) throws LogException {
-		AutoDeserilize();
-		return mLogs.get(index);
-	}
-	
-	/**
-	 * @param logs the logs to set
-	 */
-	@Deprecated
-	public void SetAllLogs(ArrayList<LogItem> logs) {
-		mLogs = logs;
-	}
+    public void setLogGroup(LogGroup logGroup) {
+        this.logGroup = logGroup;
+    }
 
-	/**
-	 * @return the reserved
-	 */
-	@Deprecated
-	public String GetReserved() {
-		return mReserved;
-	}
+    public FastLogGroup getFastLogGroup() {
+        if (fastLogGroup == null) {
+            fastLogGroup = new FastLogGroup(this.rawBytes, this.offset, this.length);
+        }
+        return fastLogGroup;
+    }
 
-	/**
-	 * @param reserved the reserved to set
-	 */
-	@Deprecated
-	public void SetReserved(String reserved) {
-		mReserved = reserved;
-	}
+    public void setLogs(List<LogItem> logItems) {
+        this.logItems = logItems;
+    }
 
-	/**
-	 * @return the topic
-	 */
-	@Deprecated
-	public String GetTopic() {
-		return mLogGroup.getTopic();
-	}
+    public List<LogItem> getLogs() throws LogException {
+        if (logItems != null) {
+            return logItems;
+        }
+        LogGroup group = getLogGroup();
+        List<Logs.Log> logs = group.getLogsList();
+        List<LogItem> logItems = new ArrayList<LogItem>();
+        for (Logs.Log log : logs) {
+            ArrayList<LogContent> logContents = new ArrayList<LogContent>();
+            for (Logs.Log.Content content : log.getContentsList()) {
+                logContents.add(new LogContent(content.getKey(), content.getValue()));
+            }
+            logItems.add(new LogItem(log.getTime(), logContents));
+        }
+        return logItems;
+    }
 
-	/**
-	 * @param topic the topic to set
-	 */
-	@Deprecated
-	public void SetTopic(String topic) {
-		mTopic = topic;
-	}
 
-	/**
-	 * @return the source
-	 */
-	@Deprecated
-	public String GetSource() {
-		return mLogGroup.getSource();
-	}
+    public void setFastLogGroup(FastLogGroup fastLogGroup) {
+        this.fastLogGroup = fastLogGroup;
+    }
 
-	/**
-	 * @param source the source to set
-	 */
-	@Deprecated
-	public void SetSource(String source) {
-		mSource = source;
-	}
-	@Deprecated
-	public String GetMachineUUID()
-	{
-		return mLogGroup.getMachineUUID();
-	}
-	@Deprecated
-	public void SetMachineUUID(String machineUUID)
-	{
-		mMachineUUID = machineUUID;
-	}
-	
+    public byte[] getRawBytes() {
+        return rawBytes;
+    }
+
+    public void setRawBytes(byte[] rawBytes) {
+        this.rawBytes = rawBytes;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
 }

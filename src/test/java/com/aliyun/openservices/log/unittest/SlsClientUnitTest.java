@@ -1,7 +1,9 @@
 package com.aliyun.openservices.log.unittest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -229,7 +231,7 @@ public class SlsClientUnitTest {
 		logClientMock.ExtractLogs(response_1, jObj_1);
 		// assertEquals(100, meta.mTotalogNum);
 		assertEquals(response_1.GetCount(), 1);
-		assertEquals(response_1.IsCompleted(), false);
+		assertFalse(response_1.IsCompleted());
 		ArrayList<QueriedLog> logs_1 = response_1.GetLogs();
 		assertEquals(logs_1.size(), 1);
 		QueriedLog queriedLog = logs_1.get(0);
@@ -294,7 +296,7 @@ public class SlsClientUnitTest {
 			if (e instanceof LogException) {
 				assertEquals("BadResponse", ((LogException) e).GetErrorCode());
 			} else {
-				assertTrue(e.getMessage(), false);
+				fail(e.getMessage());
 			}
 		}
 
@@ -314,7 +316,7 @@ public class SlsClientUnitTest {
 						((LogException) e).GetErrorCode());
 				// assertTrue(((LogException)e).getMessage().contains("Io exception"));
 			} else {
-				assertTrue(e.getMessage(), false);
+				fail(e.getMessage());
 			}
 		}
 
@@ -329,7 +331,7 @@ public class SlsClientUnitTest {
 						((LogException) e).GetErrorCode());
 				// assertTrue(((LogException)e).getMessage().contains("not valid json string"));
 			} else {
-				assertTrue(e.getMessage(), false);
+				fail(e.getMessage());
 			}
 		}
 
@@ -342,7 +344,7 @@ public class SlsClientUnitTest {
 			assertEquals("{\"ListTopic\":[\"Topic1\",\"Topic2\"]}",
 					jObj.toString());
 		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 	}
 	
@@ -363,7 +365,7 @@ public class SlsClientUnitTest {
 			}
 			
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 	}
 
@@ -384,7 +386,7 @@ public class SlsClientUnitTest {
 			}
 			
 		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 	}
 	
@@ -408,7 +410,7 @@ public class SlsClientUnitTest {
 			}
 			
 		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 	}
 	
@@ -442,7 +444,7 @@ public class SlsClientUnitTest {
 			}
 			
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 	}
 	
@@ -2113,9 +2115,10 @@ public class SlsClientUnitTest {
 		logGroups.add(logItems01);
 		logGroups.add(logItems02);
 		
-		LogGroupData logGroupData1 = new LogGroupData(reserved, topic, source, "", logItems01);
-		LogGroupData logGroupData2 = new LogGroupData(logGroupData1);
-		logGroupData2.SetAllLogs(logItems02);
+		LogGroupData logGroupData1 = new LogGroupData();
+		logGroupData1.setLogs(logItems01);
+		LogGroupData logGroupData2 = new LogGroupData();
+		logGroupData2.setLogs(logItems02);
 		List<LogGroupData> logGroupDatas = new ArrayList<LogGroupData>();
 		logGroupDatas.add(logGroupData1);
 		logGroupDatas.add(logGroupData2);
@@ -2147,7 +2150,7 @@ public class SlsClientUnitTest {
 		try {
 			logBytes = LZ4Encoder.compressToLhLz4Chunk(logBytes.clone());
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		InputStream content = new ByteArrayInputStream(logBytes);
 		
@@ -2168,7 +2171,7 @@ public class SlsClientUnitTest {
 			mock.ChangeResponse(response);
 			res = mock.BatchGetLog("project", "logStore", 0, 0, "cursor");
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		
 		try {
@@ -2180,15 +2183,8 @@ public class SlsClientUnitTest {
 		
 		try {
 			LogGroupData resLogGroup = res.GetLogGroup(0);
-			assertEquals("reserved does not match", logGroupDatas.get(0).GetReserved(),
-					resLogGroup.GetReserved());
-			assertEquals("source does not match",  logGroupDatas.get(0).GetSource(),
-					resLogGroup.GetSource());
-			assertEquals("topic does not match",  logGroupDatas.get(0).GetTopic(),
-					resLogGroup.GetTopic());
-			
-			List<LogItem> logItemsOri = logGroupDatas.get(0).GetAllLogs();
-			List<LogItem> logItemsRes = resLogGroup.GetAllLogs();
+			List<LogItem> logItemsOri = logGroupDatas.get(0).getLogs();
+			List<LogItem> logItemsRes = resLogGroup.getLogs();
 			assertEquals("logItem num does not match", logItemsOri.size(), logItemsRes.size());
 			for(int j = 0;j < logItemsOri.size();j++) {
 				assertEquals("logTime does not match", logItemsOri.get(j).GetTime(), logItemsRes.get(j).GetTime());
@@ -2203,7 +2199,7 @@ public class SlsClientUnitTest {
 				}
 			}
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		
 		try {
@@ -2215,15 +2211,8 @@ public class SlsClientUnitTest {
 		
 		try {
 			List<LogGroupData> resLogGroups = res.GetLogGroups(1);
-			assertEquals("reserved does not match", logGroupDatas.get(1).GetReserved(),
-					resLogGroups.get(0).GetReserved());
-			assertEquals("source does not match",  logGroupDatas.get(1).GetSource(),
-					resLogGroups.get(0).GetSource());
-			assertEquals("topic does not match",  logGroupDatas.get(1).GetTopic(),
-					resLogGroups.get(0).GetTopic());
-			
-			List<LogItem> logItemsOri = logGroupDatas.get(1).GetAllLogs();
-			List<LogItem> logItemsRes = resLogGroups.get(0).GetAllLogs();
+			List<LogItem> logItemsOri = logGroupDatas.get(1).getLogs();
+			List<LogItem> logItemsRes = resLogGroups.get(0).getLogs();
 			assertEquals("logItem num does not match", logItemsOri.size(), logItemsRes.size());
 			for(int j = 0;j < logItemsOri.size();j++) {
 				assertEquals("logTime does not match", logItemsOri.get(j).GetTime(), logItemsRes.get(j).GetTime());
@@ -2238,7 +2227,7 @@ public class SlsClientUnitTest {
 				}
 			}
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		
 		try {
@@ -2249,15 +2238,15 @@ public class SlsClientUnitTest {
 			List<LogGroupData> resLogGroups = res.GetLogGroups();
 			assertEquals("log group num not match", logGroupDatas.size(), resLogGroups.size());	
 			for(int i = 0;i < logGroupDatas.size();i++) {
-				assertEquals("reserved does not match", logGroupDatas.get(i).GetReserved(),
-						resLogGroups.get(i).GetReserved());
-				assertEquals("source does not match",  logGroupDatas.get(i).GetSource(),
-						resLogGroups.get(i).GetSource());
-				assertEquals("topic does not match",  logGroupDatas.get(i).GetTopic(),
-						resLogGroups.get(i).GetTopic());
+
+				Logs.LogGroup logGroup1 = logGroupDatas.get(i).getLogGroup();
+				Logs.LogGroup logGroup2 = resLogGroups.get(i).getLogGroup();
+
+				assertEquals("source does not match",  logGroup1.getSource(), logGroup2.getSource());
+				assertEquals("topic does not match", logGroup1.getTopic(), logGroup2.getTopic());
 				
-				List<LogItem> logItemsOri = logGroupDatas.get(i).GetAllLogs();
-				List<LogItem> logItemsRes = resLogGroups.get(i).GetAllLogs();
+				List<LogItem> logItemsOri = logGroupDatas.get(i).getLogs();
+				List<LogItem> logItemsRes = resLogGroups.get(i).getLogs();
 				assertEquals("logItem num does not match", logItemsOri.size(), logItemsRes.size());
 				for(int j = 0;j < logItemsOri.size();j++) {
 					assertEquals("logTime does not match", logItemsOri.get(j).GetTime(), logItemsRes.get(j).GetTime());
@@ -2273,14 +2262,14 @@ public class SlsClientUnitTest {
 				}
 			}
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		
 		byte[] errorBody = null;
 		try {
 			errorBody = SlsClientTestData.TEST_STANDARD_ERROR.getBytes("utf-8");
 		} catch (UnsupportedEncodingException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		InputStream errorContent = new ByteArrayInputStream(errorBody);
 		response.setStatusCode(400);
@@ -2316,9 +2305,9 @@ public class SlsClientUnitTest {
 			rawInvalidSize = invalid.length;
 			invalidCompressedBody = LZ4Encoder.compressToLhLz4Chunk(invalid);
 		} catch (UnsupportedEncodingException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		
 		resHeaders.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(rawInvalidSize));	
@@ -2402,7 +2391,7 @@ public class SlsClientUnitTest {
 		try {
 			body = jsonStr.getBytes("utf-8");
 		} catch (UnsupportedEncodingException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		InputStream content = new ByteArrayInputStream(body);
 		
@@ -2437,7 +2426,7 @@ public class SlsClientUnitTest {
 			}
 			
 		} catch (LogException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		
 		
@@ -2445,7 +2434,7 @@ public class SlsClientUnitTest {
 		try {
 			errorBody = SlsClientTestData.TEST_STANDARD_ERROR.getBytes("utf-8");
 		} catch (UnsupportedEncodingException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		InputStream errorContent = new ByteArrayInputStream(errorBody);
 		response.setStatusCode(400);
@@ -2499,14 +2488,14 @@ public class SlsClientUnitTest {
 			
 		} catch (LogException e) {
 			System.out.println(e.getMessage());
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		
 		byte[] errorBody = null;
 		try {
 			errorBody = SlsClientTestData.TEST_STANDARD_ERROR.getBytes("utf-8");
 		} catch (UnsupportedEncodingException e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		InputStream errorContent = new ByteArrayInputStream(errorBody);
 		response.setStatusCode(400);
@@ -2976,9 +2965,10 @@ public class SlsClientUnitTest {
 		log.PushBack("key", "value");
 		ArrayList<LogItem> logs = new ArrayList<LogItem>();
 		logs.add(log);
-		LogGroupData logGroup = new LogGroupData("", "", "", "", logs);
+		LogGroupData logGroup = new LogGroupData();
+		logGroup.setLogs(logs);
 		try {
-			LogItem resLog = logGroup.GetLogByIndex(0);
+			LogItem resLog = logGroup.getLogs().get(0);
 			assertEquals(log.GetTime(), resLog.GetTime());
 
 			assertEquals(log.GetLogContents().size(), resLog.GetLogContents().size());
@@ -3241,17 +3231,6 @@ class SlsClientMock {
 			SlsClientTestData.TEST_ACCESS_KEY_ID,
 			SlsClientTestData.TEST_ACCESS_KEY);
 
-	public String GetSourceIp() {
-		try {
-			Field field = olsClient.getClass().getDeclaredField("sourceIp");
-			field.setAccessible(true);
-			return field.get(olsClient).toString();
-		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
-		}
-		return null;
-	}
-
 	public String GetMd5Value(byte[] bytes) {
 		try {
 			Method method = olsClient.getClass().getDeclaredMethod(
@@ -3259,7 +3238,7 @@ class SlsClientMock {
 			method.setAccessible(true);
 			return method.invoke(olsClient, bytes).toString();
 		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		return null;
 	}
@@ -3271,20 +3250,7 @@ class SlsClientMock {
 			method.setAccessible(true);
 			return method.invoke(olsClient, params).toString();
 		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
-		}
-		return null;
-	}
-
-	public String GetSignature(String accesskey, String verb, String urlParas) {
-		try {
-			Method method = olsClient.getClass().getDeclaredMethod(
-					"GetSignature", String.class, String.class, String.class);
-			method.setAccessible(true);
-			return method.invoke(olsClient, accesskey, verb, urlParas)
-					.toString();
-		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		return null;
 	}
@@ -3297,7 +3263,7 @@ class SlsClientMock {
 			method.setAccessible(true);
 			return (ArrayList<String>) method.invoke(olsClient, action, object);
 		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		return new ArrayList<String>();
 	}
@@ -3312,7 +3278,7 @@ class SlsClientMock {
 			method.invoke(olsClient, response, object);
 		} catch (Exception e) {
 			e.printStackTrace();
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 	}
 
@@ -3323,7 +3289,7 @@ class SlsClientMock {
 			method.setAccessible(true);
 			method.invoke(olsClient, response, object);
 		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 	}
 
@@ -3341,7 +3307,7 @@ class SlsClientMock {
 				if (ex instanceof LogException)
 					throw (LogException) ex;
 			}
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 	}
 
@@ -3359,7 +3325,7 @@ class SlsClientMock {
 				if (ex instanceof LogException)
 					throw (LogException) ex;
 			}
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		return null;
 	}
@@ -3372,7 +3338,7 @@ class SlsClientMock {
 			method.setAccessible(true);
 			return (List<String>) method.invoke(olsClient, object, requestId);
 		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		return null;
 	}
@@ -3385,7 +3351,7 @@ class SlsClientMock {
 			method.setAccessible(true);
 			return (List<String>) method.invoke(olsClient, object, requestId);
 		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		return null;
 	}
@@ -3398,7 +3364,7 @@ class SlsClientMock {
 			method.setAccessible(true);
 			return (Config) method.invoke(olsClient, dict, requestId);
 		} catch (Exception e) {
-			assertTrue(e.getMessage(), false);
+			fail(e.getMessage());
 		}
 		return null;
 	}

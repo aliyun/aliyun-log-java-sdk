@@ -5,6 +5,7 @@ import com.aliyun.openservices.log.common.Consts.CursorMode;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.LogGroupData;
 import com.aliyun.openservices.log.common.LogItem;
+import com.aliyun.openservices.log.common.Logs;
 import com.aliyun.openservices.log.common.Shard;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.PullLogsRequest;
@@ -58,10 +59,11 @@ class ClientSample {
 					System.out.print("The Next cursor:" + next_cursor);
 
 					List<LogGroupData> logGroups = response.getLogGroups();
-					for (LogGroupData logGroup : logGroups) {
-						System.out.println("Source:" + logGroup.GetSource());
-						System.out.println("Topic:" + logGroup.GetTopic());
-						for (LogItem log : logGroup.GetAllLogs()) {
+					for (LogGroupData item : logGroups) {
+						Logs.LogGroup logGroup = item.getLogGroup();
+						System.out.println("Source:" + logGroup.getSource());
+						System.out.println("Topic:" + logGroup.getTopic());
+						for (LogItem log : item.getLogs()) {
 							System.out.println("LogTime:" + log.GetTime());
 							List<LogContent> contents = log.GetLogContents();
 							for (LogContent content : contents) {

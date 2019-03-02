@@ -8,8 +8,8 @@ package com.aliyun.openservices.log.unittest;
  */
 public class SlsClientTestData {
 
-	public static final String TEST_ACCESS_KEY = "";
-	public static final String TEST_ACCESS_KEY_ID = "";
+	public static final String TEST_ACCESS_KEY = "test-ak";
+	public static final String TEST_ACCESS_KEY_ID = "test-ak-id";
 
 	public static final String TEST_CATEGORY = "mock%5Fcategory";
 	public static final String TEST_TOPIC = "mock";

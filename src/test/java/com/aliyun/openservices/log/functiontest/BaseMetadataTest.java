@@ -51,7 +51,7 @@ public class BaseMetadataTest extends FunctionTest {
             PullLogsRequest request = new PullLogsRequest(project, logStore, shard, 1000, cursor);
             PullLogsResponse response = client.pullLogs(request);
             for (LogGroupData data : response.getLogGroups()) {
-                results.add(data.GetLogGroup());
+                results.add(data.getLogGroup());
             }
             final String nextCursor = response.getNextCursor();
             if (nextCursor == null || nextCursor.equals(cursor)) {

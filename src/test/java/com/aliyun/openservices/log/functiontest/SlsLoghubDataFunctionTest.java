@@ -145,16 +145,15 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
                 if (logDataRes.GetCount() > 0) {
                     List<LogGroupData> logGroups = logDataRes.GetLogGroups();
 
-                    for (LogGroupData logGroup : logGroups) {
-                        Logs.LogGroup newLogGroup = logGroup.GetLogGroup();
-                        if (logGroup.GetAllLogs().size() == 1 && logGroup.GetTopic().equals(topic) &&
-                                newLogGroup.getLogsCount() == 1 && newLogGroup.getTopic().equals(topic)) {
+                    for (LogGroupData item : logGroups) {
+                        Logs.LogGroup logGroup = item.getLogGroup();
+                        if (logGroup.getLogsCount() == 1 && logGroup.getTopic().equals(topic)) {
                             ArrayList<LogContent> logContents = new ArrayList<LogContent>();
-                            for (Logs.Log.Content content : newLogGroup.getLogs(0).getContentsList()) {
+                            for (Logs.Log.Content content : logGroup.getLogs(0).getContentsList()) {
                                 logContents.add(new LogContent(content.getKey(), content.getValue()));
                             }
-                            LogItem newLogItem = new LogItem(newLogGroup.getLogs(0).getTime(), logContents);
-                            if (VerifyLogItem(logGroup.GetAllLogs().get(0), logItemSample) && VerifyLogItem(newLogItem, logItemSample)) {
+                            LogItem newLogItem = new LogItem(logGroup.getLogs(0).getTime(), logContents);
+                            if (VerifyLogItem(item.getLogs().get(0), logItemSample) && VerifyLogItem(newLogItem, logItemSample)) {
                                 verified = true;
                                 break;
                             }
@@ -229,7 +228,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
                 System.out.println("cursor:" + cursorRes.GetCursor());
                 BatchGetLogResponse logDataRes = client.BatchGetLog(project, logStore, i, 1, cursorRes.GetCursor());
                 for (int lgIdx = 0; lgIdx < logDataRes.GetCount(); ++lgIdx) {
-                    FastLogGroup logGroup = logDataRes.GetLogGroup(lgIdx).GetFastLogGroup();
+                    FastLogGroup logGroup = logDataRes.GetLogGroup(lgIdx).getFastLogGroup();
                     System.out.println("----------------\nlogGroup: " + lgIdx);
                     if (logGroup.hasCategory()) {
                         System.out.println("Category:");
@@ -318,7 +317,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
                 BatchGetLogResponse logDataRes = client.BatchGetLog(project, logStore, i, 1, cursorRes.GetCursor());
                 for (int lgIdx = 0; lgIdx < logDataRes.GetCount(); ++lgIdx) {
                     System.out.println("----------------\nlogGroup: " + lgIdx);
-                    FastLogGroup logGroup = logDataRes.GetLogGroup(lgIdx).GetFastLogGroup();
+                    FastLogGroup logGroup = logDataRes.GetLogGroup(lgIdx).getFastLogGroup();
                     System.out.println(String.format("\tcategory\t:\t%s\n\tsource\t:\t%s\n\ttopic\t:\t%s\n\tmachineUUID\t:\t%s",
                             logGroup.getCategory(), logGroup.getSource(), logGroup.getTopic(), logGroup.getMachineUUID()));
                     System.out.println("Tags");
@@ -541,7 +540,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
             BatchGetLogResponse logDataRes = client.BatchGetLog(project, logStore, 0, 10, cursorRes.GetCursor());
             assertEquals(logDataRes.GetCount(), 7);
             for (int lgIdx = 0; lgIdx < logDataRes.GetCount(); ++lgIdx) {
-                FastLogGroup logGroup = logDataRes.GetLogGroup(lgIdx).GetFastLogGroup();
+                FastLogGroup logGroup = logDataRes.GetLogGroup(lgIdx).getFastLogGroup();
                 System.out.println("----------------\nlogGroup: " + lgIdx);
                 if (logGroup.hasCategory()) {
                     System.out.println("category: " + logGroup.getCategory());
