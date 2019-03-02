@@ -2238,13 +2238,6 @@ public class SlsClientUnitTest {
 			List<LogGroupData> resLogGroups = res.GetLogGroups();
 			assertEquals("log group num not match", logGroupDatas.size(), resLogGroups.size());	
 			for(int i = 0;i < logGroupDatas.size();i++) {
-
-				Logs.LogGroup logGroup1 = logGroupDatas.get(i).getLogGroup();
-				Logs.LogGroup logGroup2 = resLogGroups.get(i).getLogGroup();
-
-				assertEquals("source does not match",  logGroup1.getSource(), logGroup2.getSource());
-				assertEquals("topic does not match", logGroup1.getTopic(), logGroup2.getTopic());
-				
 				List<LogItem> logItemsOri = logGroupDatas.get(i).getLogs();
 				List<LogItem> logItemsRes = resLogGroups.get(i).getLogs();
 				assertEquals("logItem num does not match", logItemsOri.size(), logItemsRes.size());
