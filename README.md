@@ -34,7 +34,7 @@ int numLogGroup = 10;
  * 向log service发送一个日志包，每个日志包中，有2行日志
  */
 for (int i = 0; i < numLogGroup; i++) {
-    Vector<LogItem> logGroup = new Vector<LogItem>();
+    List<LogItem> logGroup = new ArrayList<LogItem>();
     LogItem logItem = new LogItem((int) (new Date().getTime() / 1000));
     logItem.PushBack("level", "info");
     logItem.PushBack("name", String.valueOf(i));
