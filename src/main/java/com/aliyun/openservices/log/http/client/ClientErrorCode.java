@@ -4,22 +4,22 @@ package com.aliyun.openservices.log.http.client;
 public interface ClientErrorCode {
     
     /**
-     * 未知错误
+     * Unknown error
      */
-    static final String UNKNOWN = "Unknown"; 
+    String UNKNOWN = "Unknown";
     
     /**
      * 远程服务连接超时
      */
-    static final String CONNECTION_TIMEOUT = "ConnectionTimeout";
+    String CONNECTION_TIMEOUT = "ConnectionTimeout";
     
     /**
      * 远程服务socket读写超时
      */
-    static final String SOCKET_TIMEOUT = "SocketTimeout";
+    String SOCKET_TIMEOUT = "SocketTimeout";
     
     /**
-     * 返回结果无法解析
+     * The response is unrecognizable.
      */
-    static final String INVALID_RESPONSE = "InvalidResponse";
+    String INVALID_RESPONSE = "InvalidResponse";
 }
