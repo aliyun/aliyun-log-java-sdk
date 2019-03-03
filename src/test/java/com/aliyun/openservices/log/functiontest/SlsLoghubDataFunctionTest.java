@@ -392,7 +392,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
     private void shardAPI() {
         try {
             ListShardResponse listRes = client.ListShard(project, logStore);
-            assertEquals("ShardNum does not match", defaultShardNum + 1, listRes.GetShards().size());
+            assertEquals("ShardNum does not match", defaultShardNum + 1, listRes.getShards().size());
         } catch (LogException e) {
             fail(e.GetErrorMessage());
         }

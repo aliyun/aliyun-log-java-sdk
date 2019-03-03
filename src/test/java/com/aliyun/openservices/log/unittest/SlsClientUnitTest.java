@@ -1803,9 +1803,9 @@ public class SlsClientUnitTest {
 			mock.ChangeResponse(response);
 			ListShardResponse res = mock.ListShard("testProject", "testLogStore");
 			
-			assertEquals("shard num does not match", array.size(), res.GetShards().size());
+			assertEquals("shard num does not match", array.size(), res.getShards().size());
 			for (int i = 0;i < array.size();i++) {
-				assertEquals("shard does not match", array.getJSONObject(i).getInt("shardID"), res.GetShards().get(i).GetShardId());
+				assertEquals("shard does not match", array.getJSONObject(i).getInt("shardID"), res.getShards().get(i).GetShardId());
 			}
 			
 		} catch (LogException e) {

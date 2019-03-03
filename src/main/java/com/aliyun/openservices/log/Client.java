@@ -1032,7 +1032,7 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 		JSONArray array = ParseResponseMessageToArray(response, requestId);
-		ArrayList<Shard> shards = ExtractShards(array, requestId);
+		List<Shard> shards = ExtractShards(array, requestId);
         return new ListShardResponse(resHeaders, shards);
 	}
 
@@ -1060,7 +1060,7 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
         String requestId = GetRequestId(resHeaders);
         JSONArray array = ParseResponseMessageToArray(response, requestId);
-        ArrayList<Shard> shards = ExtractShards(array, requestId);
+        List<Shard> shards = ExtractShards(array, requestId);
         return new ListShardResponse(resHeaders, shards);
 	}
 
@@ -1123,7 +1123,7 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
         String requestId = GetRequestId(resHeaders);
         JSONArray array = ParseResponseMessageToArray(response, requestId);
-        ArrayList<Shard> shards = ExtractShards(array, requestId);
+        List<Shard> shards = ExtractShards(array, requestId);
         return new ListShardResponse(resHeaders, shards);
 	}
 
@@ -2166,9 +2166,9 @@ public class Client implements LogService {
 		return request;
 	}
 
-	protected ArrayList<Shard> ExtractShards(JSONArray array, String requestId)
+	protected List<Shard> ExtractShards(JSONArray array, String requestId)
 			throws LogException {
-		ArrayList<Shard> shards = new ArrayList<Shard>();
+		List<Shard> shards = new ArrayList<Shard>();
 		try {
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject shardDict = array.getJSONObject(i);

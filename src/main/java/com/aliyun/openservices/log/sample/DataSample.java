@@ -85,7 +85,7 @@ class ClientSample {
 		try {
 			ListShardResponse res = client.ListShard(project, logStore);
 			System.out.println("RequestId:" + res.GetRequestId());
-			Shard shard = res.GetShards().get(0);
+			Shard shard = res.getShards().get(0);
 			System.out.println("ShardId:" + shard.GetShardId());
 		} catch (LogException e) {
 			e.printStackTrace();

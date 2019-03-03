@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.http.client;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -108,7 +109,7 @@ public class ClientConnectionContainer {
 		{
 			try {
 				ListShardResponse res = mClient.ListShard(items[0], items[1]);
-				ArrayList<Shard> all_shards = res.GetShards();
+				List<Shard> all_shards = res.getShards();
 				for(Shard shard : all_shards)
 				{
 					String server_ip = shard.getServerIp();

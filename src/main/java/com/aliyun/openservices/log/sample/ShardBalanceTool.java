@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.sample;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.Shard;
@@ -48,7 +49,7 @@ public class ShardBalanceTool {
 		System.out.println(res);
 		Client client = new Client(endpoint, accesskeyId, accesskey);
 		while(res.size() > 0){
-			ArrayList<Shard> shards = client.ListShard(project, logstore).GetShards();
+			List<Shard> shards = client.ListShard(project, logstore).getShards();
 			System.out.println("list shards: " + shards);
 			HashSet<String> eraseHash = new HashSet<String>();
 			for(Shard shard: shards){
@@ -79,7 +80,7 @@ public class ShardBalanceTool {
 		boolean mloop = true;
 		while(mloop){
 			mloop = false;
-			ArrayList<Shard> shards = client.ListShard(project, logstore).GetShards();
+			List<Shard> shards = client.ListShard(project, logstore).getShards();
 			for(int i = 1; i < res.size(); ++i){
 				String bh = res.get(i - 1), eh = res.get(i);
 				ArrayList<Shard> rangeShards = new ArrayList<Shard>();
