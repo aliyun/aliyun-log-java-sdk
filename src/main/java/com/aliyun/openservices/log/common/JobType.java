@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
 public enum JobType implements JSONSerializable {
     ALERT("Alert"),
     REPORT("Report"),
+    ETL("ETL"),
     ;
 
     private final String value;

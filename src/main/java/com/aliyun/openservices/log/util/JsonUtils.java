@@ -80,6 +80,10 @@ public final class JsonUtils {
         return object.has(key) ? object.getInt(key) : null;
     }
 
+    public static Date readOptionalDate(JSONObject object, String key) {
+        return object.has(key) ? Utils.timestampToDate(object.getInt(key)) : null;
+    }
+
     /**
      * Serialize date to unix timestamp.
      */
