@@ -4,22 +4,24 @@ package com.aliyun.openservices.log.request;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 
-import java.io.Serializable;
 import java.util.Map;
 
-public class ListJobRunsRequest extends JobRequest implements Serializable {
+public class ListJobSchedulesRequest extends BasicRequest {
 
-    private static final long serialVersionUID = -8035604951210400793L;
+    private static final long serialVersionUID = 4603013398882684317L;
 
+    /**
+     * Optional job name used to filter job schedules.
+     */
     private String jobName;
     private Integer offset;
     private Integer size;
 
-    public ListJobRunsRequest(String project) {
+    public ListJobSchedulesRequest(String project) {
         super(project);
     }
 
-    public ListJobRunsRequest(String project, String jobName) {
+    public ListJobSchedulesRequest(String project, String jobName) {
         super(project);
         this.jobName = jobName;
     }
@@ -55,7 +57,7 @@ public class ListJobRunsRequest extends JobRequest implements Serializable {
 
     @Override
     public String getUri() {
-        return Consts.JOB_URI;
+        return Consts.JOB_SCHEDULE_URI;
     }
 
     @Override

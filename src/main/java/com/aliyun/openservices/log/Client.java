@@ -23,6 +23,7 @@ import com.aliyun.openservices.log.http.utils.DateUtil;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 import com.aliyun.openservices.log.request.ApplyConfigToMachineGroupRequest;
 import com.aliyun.openservices.log.request.ApproveMachineGroupRequest;
+import com.aliyun.openservices.log.request.BasicRequest;
 import com.aliyun.openservices.log.request.BatchGetLogRequest;
 import com.aliyun.openservices.log.request.ClearLogStoreStorageRequest;
 import com.aliyun.openservices.log.request.ConsumerGroupGetCheckPointRequest;
@@ -37,6 +38,7 @@ import com.aliyun.openservices.log.request.CreateETLRequest;
 import com.aliyun.openservices.log.request.CreateEtlJobRequest;
 import com.aliyun.openservices.log.request.CreateIndexRequest;
 import com.aliyun.openservices.log.request.CreateJobRequest;
+import com.aliyun.openservices.log.request.CreateJobScheduleRequest;
 import com.aliyun.openservices.log.request.CreateLogStoreRequest;
 import com.aliyun.openservices.log.request.CreateLoggingRequest;
 import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
@@ -50,6 +52,7 @@ import com.aliyun.openservices.log.request.DeleteETLRequest;
 import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
 import com.aliyun.openservices.log.request.DeleteIndexRequest;
 import com.aliyun.openservices.log.request.DeleteJobRequest;
+import com.aliyun.openservices.log.request.DeleteJobScheduleRequest;
 import com.aliyun.openservices.log.request.DeleteLogStoreRequest;
 import com.aliyun.openservices.log.request.DeleteLoggingRequest;
 import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
@@ -75,6 +78,7 @@ import com.aliyun.openservices.log.request.GetEtlJobRequest;
 import com.aliyun.openservices.log.request.GetHistogramsRequest;
 import com.aliyun.openservices.log.request.GetIndexRequest;
 import com.aliyun.openservices.log.request.GetJobRequest;
+import com.aliyun.openservices.log.request.GetJobScheduleRequest;
 import com.aliyun.openservices.log.request.GetLogStoreRequest;
 import com.aliyun.openservices.log.request.GetLoggingRequest;
 import com.aliyun.openservices.log.request.GetLogsRequest;
@@ -91,7 +95,7 @@ import com.aliyun.openservices.log.request.ListDashboardRequest;
 import com.aliyun.openservices.log.request.ListETLRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
 import com.aliyun.openservices.log.request.ListEtlMetaRequest;
-import com.aliyun.openservices.log.request.ListJobRunsRequest;
+import com.aliyun.openservices.log.request.ListJobSchedulesRequest;
 import com.aliyun.openservices.log.request.ListJobsRequest;
 import com.aliyun.openservices.log.request.ListLogStoresRequest;
 import com.aliyun.openservices.log.request.ListMachineGroupRequest;
@@ -2876,7 +2880,6 @@ public class Client implements LogService {
 	private void ExtractConsumerGroups(JSONArray array, String requestId,
 			ArrayList<ConsumerGroup> consumerGroups) throws LogException {
 		try {
-			System.out.println(array.toString());
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject consumerGroup = array.getJSONObject(i);
 				consumerGroups.add(new ConsumerGroup(consumerGroup.getString("name"),
@@ -3443,7 +3446,14 @@ public class Client implements LogService {
         return new DeleteAlertResponse(responseMessage.getHeaders());
     }
 
-    public DeleteETLResponse deleteETL(DeleteETLRequest request) throws LogException {
+	@Override
+	public DeleteJobScheduleResponse deleteJobSchedule(DeleteJobScheduleRequest request) throws LogException {
+		ResponseMessage message = send(request);
+		return new DeleteJobScheduleResponse(message.getHeaders());
+	}
+
+	@Override
+	public DeleteETLResponse deleteETL(DeleteETLRequest request) throws LogException {
         ResponseMessage responseMessage = send(request);
         return new DeleteETLResponse(responseMessage.getHeaders());
     }
@@ -3457,10 +3467,19 @@ public class Client implements LogService {
         return alertResponse;
     }
 
-    public GetETLResponse getETL(GetETLRequest request) throws LogException {
+	@Override
+	public GetJobScheduleResponse getJobSchedule(GetJobScheduleRequest request) throws LogException {
+		ResponseMessage message = send(request);
+		JSONObject responseBody = parseResponseBody(message, message.getRequestId());
+		GetJobScheduleResponse response = new GetJobScheduleResponse(message.getHeaders());
+		response.deserialize(responseBody, message.getRequestId());
+		return response;
+	}
+
+	@Override
+	public GetETLResponse getETL(GetETLRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
-        System.out.println(responseBody);
         GetETLResponse etlResponse = new GetETLResponse(response.getHeaders());
         etlResponse.deserialize(responseBody, response.getRequestId());
         return etlResponse;
@@ -3475,6 +3494,7 @@ public class Client implements LogService {
         return alertResponse;
     }
 
+    @Override
     public ListETLResponse listETL(ListETLRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
@@ -3504,6 +3524,7 @@ public class Client implements LogService {
 		return new UpdateReportResponse(message.getHeaders());
 	}
 
+	@Override
 	public UpdateETLResponse updateETL(UpdateETLRequest request) throws LogException {
 	    ResponseMessage message = send(request);
 	    return new UpdateETLResponse(message.getHeaders());
@@ -3934,14 +3955,16 @@ public class Client implements LogService {
         return new CreateAlertResponse(responseMessage.getHeaders());
     }
 
+    @Override
     public CreateETLResponse createETL(CreateETLRequest request) throws LogException {
 	    ResponseMessage responseMessage = send(request);
 	    return new CreateETLResponse(responseMessage.getHeaders());
     }
 
-    public CreateJobRunResponse createJobRun(CreateJobRequest request) throws LogException {
-	    ResponseMessage responseMessage = send(request);
-	    return new CreateJobRunResponse(responseMessage.getHeaders());
+    @Override
+    public CreateJobScheduleResponse createJobSchedule(CreateJobScheduleRequest request) throws LogException {
+		ResponseMessage responseMessage = send(request);
+        return new CreateJobScheduleResponse(responseMessage.getHeaders());
     }
 
     @Override
@@ -3998,15 +4021,16 @@ public class Client implements LogService {
         return jobsResponse;
     }
 
-    public ListJobRunsResponse listJobRuns(ListJobRunsRequest request) throws LogException {
+    @Override
+    public ListJobSchedulesResponse listJobSchedules(ListJobSchedulesRequest request) throws LogException {
         ResponseMessage message = send(request);
         JSONObject response = parseResponseBody(message, message.getRequestId());
-        ListJobRunsResponse jobRunsResponse = new ListJobRunsResponse(message.getHeaders());
+        ListJobSchedulesResponse jobRunsResponse = new ListJobSchedulesResponse(message.getHeaders());
         jobRunsResponse.deserialize(response, message.getRequestId());
         return jobRunsResponse;
     }
 
-    private ResponseMessage send(JobRequest request) throws LogException {
+    private ResponseMessage send(BasicRequest request) throws LogException {
         Args.notNull(request, "request");
         final String project = request.GetProject();
         final Map<String, String> headers = GetCommonHeadPara(project);

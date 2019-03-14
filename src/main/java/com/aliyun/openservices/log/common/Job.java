@@ -38,13 +38,11 @@ public class Job implements Serializable {
     /**
      * The time of job create time.
      */
-    @JSONField
     private Date createTime;
 
     /**
      * The time of last modified.
      */
-    @JSONField
     private Date lastModifiedTime;
 
     /**

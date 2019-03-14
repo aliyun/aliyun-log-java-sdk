@@ -353,7 +353,7 @@ public class Consts {
     public static final String JOB_NAME = "jobName";
     public static final String JOB_TYPE = "jobType";
     public static final String JOB_URI = "/jobs";
-	public static final String JOB_RUN_URI = "/jobruns";
+	public static final String JOB_SCHEDULE_URI = "/jobschedules";
     public static final String DISPLAY_NAME = "displayName";
 
     public static final String LOGGING_URI = "/logging";

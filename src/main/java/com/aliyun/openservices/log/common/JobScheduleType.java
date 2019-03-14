@@ -30,6 +30,16 @@ public enum JobScheduleType implements JSONSerializable {
      * Custom cron expression.
      */
     CRON("Cron"),
+
+    /**
+     * Only once.
+     */
+    ONCE("Once"),
+
+    /**
+     * Not scheduled.
+     */
+    NONE("None"),
     ;
 
     private final String value;

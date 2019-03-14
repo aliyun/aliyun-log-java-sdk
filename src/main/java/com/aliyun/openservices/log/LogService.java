@@ -26,9 +26,11 @@ import com.aliyun.openservices.log.request.CreateChartRequest;
 import com.aliyun.openservices.log.request.CreateConfigRequest;
 import com.aliyun.openservices.log.request.CreateConsumerGroupRequest;
 import com.aliyun.openservices.log.request.CreateDashboardRequest;
+import com.aliyun.openservices.log.request.CreateETLRequest;
 import com.aliyun.openservices.log.request.CreateEtlJobRequest;
 import com.aliyun.openservices.log.request.CreateIndexRequest;
 import com.aliyun.openservices.log.request.CreateJobRequest;
+import com.aliyun.openservices.log.request.CreateJobScheduleRequest;
 import com.aliyun.openservices.log.request.CreateLogStoreRequest;
 import com.aliyun.openservices.log.request.CreateLoggingRequest;
 import com.aliyun.openservices.log.request.CreateMachineGroupRequest;
@@ -38,9 +40,11 @@ import com.aliyun.openservices.log.request.DeleteAlertRequest;
 import com.aliyun.openservices.log.request.DeleteChartRequest;
 import com.aliyun.openservices.log.request.DeleteConfigRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
+import com.aliyun.openservices.log.request.DeleteETLRequest;
 import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
 import com.aliyun.openservices.log.request.DeleteIndexRequest;
 import com.aliyun.openservices.log.request.DeleteJobRequest;
+import com.aliyun.openservices.log.request.DeleteJobScheduleRequest;
 import com.aliyun.openservices.log.request.DeleteLogStoreRequest;
 import com.aliyun.openservices.log.request.DeleteLoggingRequest;
 import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
@@ -61,10 +65,12 @@ import com.aliyun.openservices.log.request.GetConfigRequest;
 import com.aliyun.openservices.log.request.GetCursorRequest;
 import com.aliyun.openservices.log.request.GetCursorTimeRequest;
 import com.aliyun.openservices.log.request.GetDashboardRequest;
+import com.aliyun.openservices.log.request.GetETLRequest;
 import com.aliyun.openservices.log.request.GetEtlJobRequest;
 import com.aliyun.openservices.log.request.GetHistogramsRequest;
 import com.aliyun.openservices.log.request.GetIndexRequest;
 import com.aliyun.openservices.log.request.GetJobRequest;
+import com.aliyun.openservices.log.request.GetJobScheduleRequest;
 import com.aliyun.openservices.log.request.GetLogStoreRequest;
 import com.aliyun.openservices.log.request.GetLoggingRequest;
 import com.aliyun.openservices.log.request.GetLogsRequest;
@@ -76,7 +82,9 @@ import com.aliyun.openservices.log.request.ListACLRequest;
 import com.aliyun.openservices.log.request.ListAlertRequest;
 import com.aliyun.openservices.log.request.ListConfigRequest;
 import com.aliyun.openservices.log.request.ListDashboardRequest;
+import com.aliyun.openservices.log.request.ListETLRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
+import com.aliyun.openservices.log.request.ListJobSchedulesRequest;
 import com.aliyun.openservices.log.request.ListJobsRequest;
 import com.aliyun.openservices.log.request.ListLogStoresRequest;
 import com.aliyun.openservices.log.request.ListMachineGroupRequest;
@@ -95,6 +103,7 @@ import com.aliyun.openservices.log.request.UpdateAlertRequest;
 import com.aliyun.openservices.log.request.UpdateChartRequest;
 import com.aliyun.openservices.log.request.UpdateConfigRequest;
 import com.aliyun.openservices.log.request.UpdateDashboardRequest;
+import com.aliyun.openservices.log.request.UpdateETLRequest;
 import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
 import com.aliyun.openservices.log.request.UpdateIndexRequest;
 import com.aliyun.openservices.log.request.UpdateJobRequest;
@@ -118,10 +127,12 @@ import com.aliyun.openservices.log.response.CreateChartResponse;
 import com.aliyun.openservices.log.response.CreateConfigResponse;
 import com.aliyun.openservices.log.response.CreateConsumerGroupResponse;
 import com.aliyun.openservices.log.response.CreateDashboardResponse;
+import com.aliyun.openservices.log.response.CreateETLResponse;
 import com.aliyun.openservices.log.response.CreateEtlJobResponse;
 import com.aliyun.openservices.log.response.CreateEtlMetaResponse;
 import com.aliyun.openservices.log.response.CreateIndexResponse;
 import com.aliyun.openservices.log.response.CreateJobResponse;
+import com.aliyun.openservices.log.response.CreateJobScheduleResponse;
 import com.aliyun.openservices.log.response.CreateLogStoreInternalResponse;
 import com.aliyun.openservices.log.response.CreateLogStoreResponse;
 import com.aliyun.openservices.log.response.CreateLoggingResponse;
@@ -135,10 +146,12 @@ import com.aliyun.openservices.log.response.DeleteChartResponse;
 import com.aliyun.openservices.log.response.DeleteConfigResponse;
 import com.aliyun.openservices.log.response.DeleteConsumerGroupResponse;
 import com.aliyun.openservices.log.response.DeleteDashboardResponse;
+import com.aliyun.openservices.log.response.DeleteETLResponse;
 import com.aliyun.openservices.log.response.DeleteEtlJobResponse;
 import com.aliyun.openservices.log.response.DeleteEtlMetaResponse;
 import com.aliyun.openservices.log.response.DeleteIndexResponse;
 import com.aliyun.openservices.log.response.DeleteJobResponse;
+import com.aliyun.openservices.log.response.DeleteJobScheduleResponse;
 import com.aliyun.openservices.log.response.DeleteLogStoreResponse;
 import com.aliyun.openservices.log.response.DeleteLoggingResponse;
 import com.aliyun.openservices.log.response.DeleteMachineGroupResponse;
@@ -161,11 +174,13 @@ import com.aliyun.openservices.log.response.GetConfigResponse;
 import com.aliyun.openservices.log.response.GetCursorResponse;
 import com.aliyun.openservices.log.response.GetCursorTimeResponse;
 import com.aliyun.openservices.log.response.GetDashboardResponse;
+import com.aliyun.openservices.log.response.GetETLResponse;
 import com.aliyun.openservices.log.response.GetEtlJobResponse;
 import com.aliyun.openservices.log.response.GetHistogramsResponse;
 import com.aliyun.openservices.log.response.GetIndexResponse;
 import com.aliyun.openservices.log.response.GetIndexStringResponse;
 import com.aliyun.openservices.log.response.GetJobResponse;
+import com.aliyun.openservices.log.response.GetJobScheduleResponse;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
 import com.aliyun.openservices.log.response.GetLoggingResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
@@ -180,9 +195,11 @@ import com.aliyun.openservices.log.response.ListAlertResponse;
 import com.aliyun.openservices.log.response.ListConfigResponse;
 import com.aliyun.openservices.log.response.ListConsumerGroupResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
+import com.aliyun.openservices.log.response.ListETLResponse;
 import com.aliyun.openservices.log.response.ListEtlJobResponse;
 import com.aliyun.openservices.log.response.ListEtlMetaNameResponse;
 import com.aliyun.openservices.log.response.ListEtlMetaResponse;
+import com.aliyun.openservices.log.response.ListJobSchedulesResponse;
 import com.aliyun.openservices.log.response.ListJobsResponse;
 import com.aliyun.openservices.log.response.ListLogStoresResponse;
 import com.aliyun.openservices.log.response.ListMachineGroupResponse;
@@ -203,6 +220,7 @@ import com.aliyun.openservices.log.response.UpdateChartResponse;
 import com.aliyun.openservices.log.response.UpdateConfigResponse;
 import com.aliyun.openservices.log.response.UpdateConsumerGroupResponse;
 import com.aliyun.openservices.log.response.UpdateDashboardResponse;
+import com.aliyun.openservices.log.response.UpdateETLResponse;
 import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
 import com.aliyun.openservices.log.response.UpdateEtlMetaResponse;
 import com.aliyun.openservices.log.response.UpdateIndexResponse;
@@ -2824,6 +2842,10 @@ public interface LogService {
      */
     CreateAlertResponse createAlert(CreateAlertRequest request) throws LogException;
 
+    CreateETLResponse createETL(CreateETLRequest request) throws LogException;
+
+    CreateJobScheduleResponse createJobSchedule(CreateJobScheduleRequest request) throws LogException;
+
     /**
 	 * update alert
 	 *
@@ -2854,6 +2876,7 @@ public interface LogService {
 	 */
 	DeleteAlertResponse deleteAlert(DeleteAlertRequest request) throws LogException;
 
+	DeleteJobScheduleResponse deleteJobSchedule(DeleteJobScheduleRequest request) throws LogException;
 	/**
 	 * get alert
 	 *
@@ -2868,6 +2891,15 @@ public interface LogService {
 	 *             if any required string parameter is empty
 	 */
 	GetAlertResponse getAlert(GetAlertRequest request) throws LogException;
+
+    /**
+     * Get job schedule.
+     *
+     * @param request
+     * @return
+     * @throws LogException
+     */
+	GetJobScheduleResponse getJobSchedule(GetJobScheduleRequest request) throws LogException;
 
 	/**
 	 * list alert
@@ -2884,15 +2916,32 @@ public interface LogService {
 	 */
 	ListAlertResponse listAlert(ListAlertRequest request) throws LogException;
 
+    /**
+     * Lists job schedules.
+     *
+     * @param request
+     * @return
+     * @throws LogException
+     */
+	ListJobSchedulesResponse listJobSchedules(ListJobSchedulesRequest request) throws LogException;
+
 	CreateReportResponse createReport(CreateReportRequest request) throws LogException;
 
 	GetReportResponse getReport(GetReportRequest request) throws LogException;
 
+    GetETLResponse getETL(GetETLRequest request) throws LogException;
+
 	UpdateReportResponse updateReport(UpdateReportRequest request) throws LogException;
 
-	DeleteReportResponse deleteReport(DeleteReportRequest request) throws LogException;
+    UpdateETLResponse updateETL(UpdateETLRequest request) throws LogException;
+
+    DeleteReportResponse deleteReport(DeleteReportRequest request) throws LogException;
+
+    DeleteETLResponse deleteETL(DeleteETLRequest request) throws LogException;
 
 	ListReportResponse listReport(ListReportRequest request) throws LogException;
+
+    ListETLResponse listETL(ListETLRequest request) throws LogException;
 
 	EnableReportResponse enableReport(EnableReportRequest request) throws LogException;
 
@@ -3274,6 +3323,7 @@ public interface LogService {
 	 * @return An instance of {@link CreateJobResponse} if success
 	 * @throws LogException if any error occurs
 	 */
+	@Deprecated
 	CreateJobResponse createJob(CreateJobRequest request) throws LogException;
 
 	/**
@@ -3283,6 +3333,7 @@ public interface LogService {
 	 * @return An instance of {@link GetJobResponse}
 	 * @throws LogException if any error occurs
 	 */
+	@Deprecated
 	GetJobResponse getJob(GetJobRequest request) throws LogException;
 
 	/**
@@ -3292,6 +3343,7 @@ public interface LogService {
 	 * @return An instance of {@link UpdateJobResponse}
 	 * @throws LogException if any error occurs
 	 */
+	@Deprecated
 	UpdateJobResponse updateJob(UpdateJobRequest request) throws LogException;
 
 	/**
@@ -3301,6 +3353,7 @@ public interface LogService {
 	 * @return An instance of {@link DeleteJobResponse}
 	 * @throws LogException if any error occurs
 	 */
+	@Deprecated
 	DeleteJobResponse deleteJob(DeleteJobRequest request) throws LogException;
 
 	/**
@@ -3310,9 +3363,11 @@ public interface LogService {
 	 * @return An instance of {@link EnableJobResponse}
 	 * @throws LogException if any error occurs
 	 */
+	@Deprecated
 	EnableJobResponse enableJob(EnableJobRequest request) throws LogException;
 
 
+	@Deprecated
     EnableAlertResponse enableAlert(EnableAlertRequest request) throws LogException;
 
 	/**
@@ -3322,6 +3377,7 @@ public interface LogService {
 	 * @return An instance of {@link DisableJobResponse}
 	 * @throws LogException if any error occurs
 	 */
+	@Deprecated
 	DisableJobResponse disableJob(DisableJobRequest request) throws LogException;
 
 
@@ -3334,6 +3390,7 @@ public interface LogService {
 	 * @return An instance of {@link ListJobsResponse}
 	 * @throws LogException if any error occurs
 	 */
+	@Deprecated
 	ListJobsResponse listJobs(ListJobsRequest request) throws LogException;
 
     /**

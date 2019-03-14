@@ -6,6 +6,8 @@ import com.aliyun.openservices.log.util.JsonUtils;
 import net.sf.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.Map;
 
 import static com.aliyun.openservices.log.util.Args.checkDuration;
 
@@ -17,8 +19,24 @@ public class JobSchedule implements Serializable {
 
     private static final long serialVersionUID = 8400426178465652937L;
 
+    /**
+     * The unique id of this schedule.
+     */
+    private String id;
+
+    /**
+     * The name of job to schedule.
+     */
+    @JSONField
+    private String jobName;
+
+    /**
+     * The schedule type.
+     */
     @JSONField
     private JobScheduleType type;
+
+    // TODO Move schedule info to a separate class
 
     /**
      * Interval in duration format e,g "60s", "1h". Required for {@code JobScheduleType.FIXED_RATE} only.
@@ -50,6 +68,34 @@ public class JobSchedule implements Serializable {
     @JSONField
     private Integer hour;
 
+    @JSONField
+    private Map<String, String> parameters;
+
+    private String status;
+
+    private Date createTime;
+
+    private Date lastModifiedTime;
+
+    private Date startTime;
+
+    private Date completeTime;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
 
     public JobScheduleType getType() {
         return type;
@@ -100,7 +146,57 @@ public class JobSchedule implements Serializable {
         this.hour = hour;
     }
 
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastModifiedTime() {
+        return lastModifiedTime;
+    }
+
+    public void setLastModifiedTime(Date lastModifiedTime) {
+        this.lastModifiedTime = lastModifiedTime;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
+    }
+
     public void deserialize(JSONObject value) {
+        id = value.getString("id");
+        jobName = value.getString("jobName");
         type = JobScheduleType.fromString(value.getString("type"));
         delay = JsonUtils.readOptionalInt(value, "delay");
         switch (type) {
@@ -118,6 +214,12 @@ public class JobSchedule implements Serializable {
                 hour = value.getInt("hour");
                 break;
         }
+        status = value.getString("status");
+        parameters = JsonUtils.readOptionalMap(value, "parameters");
+        startTime = JsonUtils.readOptionalDate(value, "startTime");
+        completeTime = JsonUtils.readOptionalDate(value, "completeTime");
+        createTime = JsonUtils.readDate(value, "startTime");
+        lastModifiedTime = JsonUtils.readDate(value, "lastModifiedTime");
     }
 
     @Override

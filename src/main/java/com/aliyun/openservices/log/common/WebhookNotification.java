@@ -46,23 +46,6 @@ public class WebhookNotification extends HttpNotification {
         this.headers = headers;
     }
 
-    private static Map<String, String> parseHeaders(JSONObject object) {
-        if (!object.has(Consts.HEADERS)) {
-            return Collections.emptyMap();
-        }
-        JSONObject value = object.getJSONObject(Consts.HEADERS);
-        if (value.isNullObject()) {
-            return Collections.emptyMap();
-        }
-        JSONArray names = value.names();
-        Map<String, String> headers = new HashMap<String, String>(names.size());
-        for (int i = 0; i < names.size(); i++) {
-            String header = names.getString(i);
-            headers.put(header, value.getString(header));
-        }
-        return headers;
-    }
-
     @Override
     public void deserialize(JSONObject value) {
         super.deserialize(value);
@@ -70,7 +53,7 @@ public class WebhookNotification extends HttpNotification {
         if (method != null) {
             setMethod(HttpMethod.fromString(method));
         }
-        setHeaders(parseHeaders(value));
+        setHeaders(JsonUtils.readOptionalMap(value, Consts.HEADERS));
     }
 
     @Override
