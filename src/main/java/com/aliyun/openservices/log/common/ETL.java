@@ -12,37 +12,32 @@ public class ETL implements Serializable {
     private static final long serialVersionUID = 949447748635414993L;
 
     /**
-     * ETL rule name.
+     * ETL job name.
      */
     private String name;
 
     /**
-     * Alert display name.
+     * ETL job display name.
      */
     private String displayName;
 
     /**
-     * Alert description.
+     * ETL job description.
      */
     private String description;
 
     /**
-     * Alert rule state.
-     */
-    private JobState state;
-
-    /**
-     * ETL configuration.
+     * ETL job configuration.
      */
     private ETLConfiguration configuration;
 
     /**
-     * Alert rule create time.
+     * ETL job create time.
      */
     private Date createTime;
 
     /**
-     * Alert rule last modified time.
+     * ETL job last modified time.
      */
     private Date lastModifiedTime;
 
@@ -68,14 +63,6 @@ public class ETL implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public JobState getState() {
-        return state;
-    }
-
-    public void setState(JobState state) {
-        this.state = state;
     }
 
     public ETLConfiguration getConfiguration() {
@@ -106,21 +93,9 @@ public class ETL implements Serializable {
         name = value.getString("name");
         displayName = JsonUtils.readOptionalString(value, "displayName");
         description = JsonUtils.readOptionalString(value, "description");
-        state = JobState.fromString(value.getString("state"));
         configuration = new ETLConfiguration();
         configuration.deserialize(value.getJSONObject("configuration"));
         createTime = Utils.timestampToDate(value.getLong("createTime"));
         lastModifiedTime = Utils.timestampToDate(value.getLong("lastModifiedTime"));
-    }
-
-    public Job makeJob() {
-        Job job = new Job();
-        job.setType(JobType.ETL);
-        job.setName(getName());
-        job.setDisplayName(getDisplayName());
-        job.setDescription(getDescription());
-        job.setState(getState());
-        job.setConfiguration(getConfiguration());
-        return job;
     }
 }

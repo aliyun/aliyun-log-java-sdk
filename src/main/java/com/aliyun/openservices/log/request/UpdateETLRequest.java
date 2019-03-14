@@ -32,6 +32,6 @@ public class UpdateETLRequest extends JobRequest {
 
     @Override
     public Object getBody() {
-        return etl.makeJob();
+        return etl;
     }
 }
