@@ -2855,28 +2855,6 @@ public class Client implements LogService {
 		return listConsumerGroupResponse;
 	}
 
-	public ListConsumerGroupResponse ListConsumerGroup(String project,
-	                                                   String logStore,
-	                                                   ConsumerGroup.ConsumerGroupType type) throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-		String resourceUri = "/logstores/" + logStore + "/consumergroups";
-		Map<String, String> headParameter = GetCommonHeadPara(project);
-		Map<String, String> urlParameter = new HashMap<String, String>();
-		urlParameter.put("type", type.name());
-		ResponseMessage response = SendData(project, HttpMethod.GET,
-				resourceUri, urlParameter, headParameter);
-		ArrayList<ConsumerGroup> consumerGroups = new ArrayList<ConsumerGroup>();
-		Map<String, String> resHeaders = response.getHeaders();
-		String requestId = GetRequestId(resHeaders);
-		JSONArray array = ParseResponseMessageToArray(response, requestId);
-		ExtractConsumerGroups(array, requestId, consumerGroups);
-		ListConsumerGroupResponse listConsumerGroupResponse = new ListConsumerGroupResponse(
-				resHeaders);
-		listConsumerGroupResponse.SetConsumerGroups(consumerGroups);
-		return listConsumerGroupResponse;
-	}
-
 	private void ExtractConsumerGroups(JSONArray array, String requestId,
 			ArrayList<ConsumerGroup> consumerGroups) throws LogException {
 		try {

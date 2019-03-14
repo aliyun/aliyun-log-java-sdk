@@ -3366,8 +3366,13 @@ public interface LogService {
 	@Deprecated
 	EnableJobResponse enableJob(EnableJobRequest request) throws LogException;
 
-
-	@Deprecated
+    /**
+     * Enables alert.
+     *
+     * @param request
+     * @return
+     * @throws LogException
+     */
     EnableAlertResponse enableAlert(EnableAlertRequest request) throws LogException;
 
 	/**
