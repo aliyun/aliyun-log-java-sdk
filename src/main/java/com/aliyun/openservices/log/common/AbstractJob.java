@@ -71,7 +71,7 @@ public abstract class AbstractJob {
         return type;
     }
 
-    public void setType(JobType type) {
+    protected void setType(JobType type) {
         this.type = type;
     }
 
@@ -95,6 +95,7 @@ public abstract class AbstractJob {
 
     public void deserialize(JSONObject value) {
         name = value.getString("name");
+        type = JobType.fromString(value.getString("type"));
         displayName = JsonUtils.readOptionalString(value, "displayName");
         description = JsonUtils.readOptionalString(value, "description");
         createTime = Utils.timestampToDate(value.getLong("createTime"));
