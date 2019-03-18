@@ -11,6 +11,7 @@ import com.aliyun.openservices.log.exception.LogException;
 public class IndexLine {
 	private List<String> token = new ArrayList<String>();
 	private boolean caseSensitive;
+	private boolean chn;
 	private List<String> includeKeys = new ArrayList<String>();
 	private List<String> excludeKeys = new ArrayList<String>();
 	
@@ -21,11 +22,13 @@ public class IndexLine {
 	public IndexLine(List<String> token, boolean caseSensitive) {
 		SetToken(token);
 		this.caseSensitive = caseSensitive;
+		this.chn = false;
 	}
 	
 	public IndexLine(IndexLine other) {
 		SetToken(other.GetToken());
 		this.caseSensitive = other.GetCaseSensitive();
+		this.chn = other.GetChn();
 		SetIncludeKeys(other.GetIncludeKeys());
 		SetExcludeKeys(other.GetExcludeKeys());
 	}
@@ -43,6 +46,12 @@ public class IndexLine {
 		return caseSensitive;
 	}
 	/**
+	 * @return chn
+	 */
+	public boolean GetChn() {
+		return chn;
+	}
+	/**
 	 * @param token the token to set
 	 */
 	public void SetToken(List<String> token) {
@@ -54,7 +63,13 @@ public class IndexLine {
 	public void SetCaseSensitive(boolean caseSensitive) {
 		this.caseSensitive = caseSensitive;
 	}
-	
+	/**
+	 * @param chn to set
+	 */
+	public void SetChn(boolean chn) {
+		this.chn = chn;
+	}
+		
 	/**
 	 * @return the includeKeys
 	 */
@@ -108,6 +123,7 @@ public class IndexLine {
 		}
 		
 		line.put("caseSensitive", GetCaseSensitive());
+		line.put("chn", GetChn());
 		
 		return line;
 	}
@@ -131,6 +147,11 @@ public class IndexLine {
 				SetCaseSensitive(dict.getBoolean("caseSensitive"));
 			} else {
 				SetCaseSensitive(false);
+			}
+			if (dict.containsKey("chn")) {
+				SetChn(dict.getBooleanValue("chn"));
+			} else {
+				SetChn(false);
 			}
 			
 			JSONArray tokenDict = dict.getJSONArray("token");

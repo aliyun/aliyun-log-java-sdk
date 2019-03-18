@@ -160,6 +160,7 @@ public class Consts {
 	public static final String CONST_PRINCIPLEID= "principleId";
 	public static final String CONST_LOGSTORE_NAME= "logstoreName";
 	public static final String CONST_SPLIT_MID_HASH="key";
+	public static final String CONST_SPLIT_SHARDCOUNT = "shardCount";
 	public static final String CONST_ACTION="action";
 	public static final String CONST_ACTION_SPLIT="split";
 	public static final String CONST_ACTION_MERGE="merge";
@@ -283,6 +284,10 @@ public class Consts {
 	public static final String CONST_PROJECTDESC = "description";
 	public static final String CONST_PROJECTREGION = "region";
 
+	// domain
+	public static final String CONST_DOMAIN_URI = "/domains";
+	public static final String CONST_DOMAIN_NAME = "domainName";
+	
 	// savedsearch api
 	public static final String CONST_SAVEDSEARCH_URI = "/savedsearches";
 	public static final String CONST_SAVEDSEARCH_NAME = "savedsearchName";

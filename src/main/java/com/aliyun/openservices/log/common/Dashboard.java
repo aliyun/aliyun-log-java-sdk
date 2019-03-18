@@ -15,10 +15,22 @@ public class Dashboard implements Serializable {
 	private String dashboardName = "";
     private String description = "";
     private String displayName = "";
+    private String attribute = "";
 	private ArrayList<Chart> chartList = new ArrayList<Chart>();
 
-	public String getDisplayName() { return displayName; }
-	public void setDisplayName(String displayName) { this.displayName = displayName; }
+	
+	public String getAttribute() {
+		return attribute;
+	}
+	public void setAttribute(String attribute) {
+		this.attribute = attribute;
+	}
+	public String getDisplayName() { 
+		return displayName; 
+	}
+	public void setDisplayName(String displayName) { 
+		this.displayName = displayName; 
+	}
 	public String getDashboardName() {
 		return dashboardName;
 	}
@@ -57,11 +69,27 @@ public class Dashboard implements Serializable {
 		this.displayName = displayName;
 	}
 	
+	public Dashboard(String dashboardName, String displayName, String description, String attribute, ArrayList<Chart> chartList) {
+		super();
+		this.dashboardName = dashboardName;
+		this.description = description;
+		this.chartList = chartList;
+		this.displayName = displayName;
+		this.attribute = attribute;
+	}
+	
 	public JSONObject ToJsonObject() {
 		JSONObject dashboardJson = new JSONObject();
 		dashboardJson.put("dashboardName", getDashboardName());
 		dashboardJson.put("description", getDescription());
 		dashboardJson.put("displayName", getDisplayName());
+		
+		if (getAttribute().length() > 0) {
+			dashboardJson.put("attribute", JSONObject.fromObject(getAttribute()));
+		} else {
+			dashboardJson.put("attribute", JSONObject.fromObject("{}"));
+		}
+		
 		JSONArray chartArray = new JSONArray();
 		for (Chart chart : getChartList()) {
 			chartArray.add(chart.ToJsonObject());
@@ -76,8 +104,15 @@ public class Dashboard implements Serializable {
 		try {
 			setDashboardName(dict.getString("dashboardName"));
 			setDescription(dict.getString("description"));
-			if (dict.has("displayName"))
+			// displayName
+			if (dict.has("displayName")) {
 				setDisplayName(dict.getString("displayName"));
+			}
+			// attribute
+			if (dict.containsKey("attribute")) {
+				JSONObject attributeJson = dict.getJSONObject("attribute");
+				setAttribute(attributeJson.toString());
+			}
 			ArrayList<Chart> chartList = new ArrayList<Chart>();
 			try {
 				JSONArray chartJsonArray = dict.getJSONArray("charts");

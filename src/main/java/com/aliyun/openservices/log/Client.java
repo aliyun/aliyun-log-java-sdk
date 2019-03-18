@@ -33,6 +33,7 @@ import com.aliyun.openservices.log.request.CreateChartRequest;
 import com.aliyun.openservices.log.request.CreateConfigRequest;
 import com.aliyun.openservices.log.request.CreateConsumerGroupRequest;
 import com.aliyun.openservices.log.request.CreateDashboardRequest;
+import com.aliyun.openservices.log.request.CreateDomainRequest;
 import com.aliyun.openservices.log.request.CreateEtlJobRequest;
 import com.aliyun.openservices.log.request.CreateIndexRequest;
 import com.aliyun.openservices.log.request.CreateJobRequest;
@@ -45,6 +46,7 @@ import com.aliyun.openservices.log.request.DeleteAlertRequest;
 import com.aliyun.openservices.log.request.DeleteChartRequest;
 import com.aliyun.openservices.log.request.DeleteConfigRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
+import com.aliyun.openservices.log.request.DeleteDomainRequest;
 import com.aliyun.openservices.log.request.DeleteEtlJobRequest;
 import com.aliyun.openservices.log.request.DeleteIndexRequest;
 import com.aliyun.openservices.log.request.DeleteJobRequest;
@@ -85,6 +87,7 @@ import com.aliyun.openservices.log.request.ListACLRequest;
 import com.aliyun.openservices.log.request.ListAlertRequest;
 import com.aliyun.openservices.log.request.ListConfigRequest;
 import com.aliyun.openservices.log.request.ListDashboardRequest;
+import com.aliyun.openservices.log.request.ListDomainsRequest;
 import com.aliyun.openservices.log.request.ListEtlJobRequest;
 import com.aliyun.openservices.log.request.ListEtlMetaRequest;
 import com.aliyun.openservices.log.request.ListJobsRequest;
@@ -1009,7 +1012,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(prj, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "shardId");
-		CodingUtils.assertStringNotNullOrEmpty(midHash, "midHash");
+		//CodingUtils.assertStringNotNullOrEmpty(midHash, "midHash");
 		return SplitShard(new SplitShardRequest(prj, logStore, shardId, midHash));
 	}
 
@@ -1021,8 +1024,8 @@ public class Client implements LogService {
 		String logStore = request.GetLogStore();
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		int shardId = request.GetShardId();
-		String midHash = request.GetMidHash();
-		CodingUtils.assertStringNotNullOrEmpty(midHash, "midHashKey");
+		//String midHash = request.GetMidHash();
+		//CodingUtils.assertStringNotNullOrEmpty(midHash, "midHashKey");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
         String resourceUri = "/logstores/" + logStore + "/shards/" + shardId;
@@ -3402,6 +3405,82 @@ public class Client implements LogService {
         return new ListSavedSearchResponse(response.getHeaders(), count, total, savedSearches);
 	}
 
+	@Override
+	public CreateDomainResponse createDomain(String project, Domain domain) throws LogException {
+		CreateDomainRequest request = new CreateDomainRequest(project, domain);
+		return createDomain(request);
+	}
+	
+	@Override
+	public CreateDomainResponse createDomain(CreateDomainRequest request) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "projectName");
+		CodingUtils.assertStringNotNullOrEmpty(request.getDomain().getDomainName(), "domainName");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		String resourceUri = Consts.CONST_DOMAIN_URI;
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.POST, resourceUri, urlParameter, headParameter, request.getDomain().toJsonString());
+		return new CreateDomainResponse(response.getHeaders());
+	}
+	
+	@Override
+	public DeleteDomainResponse deleteDomain(String project, String domainName) throws LogException {
+		DeleteDomainRequest request = new DeleteDomainRequest(project, domainName);
+		return deleteDomain(request);
+	}
+	
+	@Override
+	public DeleteDomainResponse deleteDomain(DeleteDomainRequest request) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "projectName");
+		CodingUtils.assertStringNotNullOrEmpty(request.getDomainName(), "domainName");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		String resourceUri = Consts.CONST_DOMAIN_URI + "/" + request.getDomainName();
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.DELETE, resourceUri, urlParameter, headParameter);
+		return new DeleteDomainResponse(response.getHeaders());
+	}
+	
+	@Override
+	public ListDomainsResponse listDomains(String project, String domainName, int offset, int size) throws LogException {
+		ListDomainsRequest request = new ListDomainsRequest(project, domainName, offset, size);
+		return listDomains(request);
+	}
+	
+	protected List<Domain> ExtractDomains(JSONObject object, String requestId)
+			throws LogException {
+		List<Domain> domains = new ArrayList<Domain>();
+		JSONArray array = new JSONArray();
+		try {
+			array = object.getJSONArray("domains");
+			for (int index = 0; index < array.size(); index++) {
+				Domain domain = new Domain();
+				domain.setDomainName(array.getString(index));
+				domains.add(domain);
+			}
+		} catch (JSONException e) {
+			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response is not valid config json array string : " + array.toString(), e, requestId);
+		}
+
+		return domains;
+	}
+	
+	@Override
+	public ListDomainsResponse listDomains(ListDomainsRequest request) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "projectName");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		String resourceUri = Consts.CONST_DOMAIN_URI;
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		Map<String, String> urlParameter = request.GetAllParams();
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = parseResponseBody(response, requestId);
+		int total = object.getInt(Consts.CONST_TOTAL);
+		int count = object.getInt(Consts.CONST_COUNT);
+        List<Domain> domains = ExtractDomains(object, requestId);
+        return new ListDomainsResponse(response.getHeaders(), count, total, domains);
+	}
+	
     @Override
     public UpdateAlertResponse updateAlert(UpdateAlertRequest request) throws LogException {
         ResponseMessage message = send(request);
