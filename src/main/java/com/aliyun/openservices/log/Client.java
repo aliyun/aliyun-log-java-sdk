@@ -87,7 +87,6 @@ import com.aliyun.openservices.log.request.GetMachineGroupRequest;
 import com.aliyun.openservices.log.request.GetProjectLogsRequest;
 import com.aliyun.openservices.log.request.GetReportRequest;
 import com.aliyun.openservices.log.request.GetSavedSearchRequest;
-import com.aliyun.openservices.log.request.JobRequest;
 import com.aliyun.openservices.log.request.ListACLRequest;
 import com.aliyun.openservices.log.request.ListAlertRequest;
 import com.aliyun.openservices.log.request.ListConfigRequest;
@@ -118,6 +117,7 @@ import com.aliyun.openservices.log.request.UpdateETLRequest;
 import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
 import com.aliyun.openservices.log.request.UpdateIndexRequest;
 import com.aliyun.openservices.log.request.UpdateJobRequest;
+import com.aliyun.openservices.log.request.UpdateJobScheduleRequest;
 import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
 import com.aliyun.openservices.log.request.UpdateLoggingRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
@@ -3445,17 +3445,17 @@ public class Client implements LogService {
         return alertResponse;
     }
 
-	@Override
-	public GetJobScheduleResponse getJobSchedule(GetJobScheduleRequest request) throws LogException {
-		ResponseMessage message = send(request);
-		JSONObject responseBody = parseResponseBody(message, message.getRequestId());
-		GetJobScheduleResponse response = new GetJobScheduleResponse(message.getHeaders());
-		response.deserialize(responseBody, message.getRequestId());
-		return response;
-	}
+    @Override
+    public GetJobScheduleResponse getJobSchedule(GetJobScheduleRequest request) throws LogException {
+        ResponseMessage message = send(request);
+        JSONObject responseBody = parseResponseBody(message, message.getRequestId());
+        GetJobScheduleResponse response = new GetJobScheduleResponse(message.getHeaders());
+        response.deserialize(responseBody, message.getRequestId());
+        return response;
+    }
 
-	@Override
-	public GetETLResponse getETL(GetETLRequest request) throws LogException {
+    @Override
+    public GetETLResponse getETL(GetETLRequest request) throws LogException {
         ResponseMessage response = send(request);
         JSONObject responseBody = parseResponseBody(response, response.getRequestId());
         GetETLResponse etlResponse = new GetETLResponse(response.getHeaders());
@@ -3502,10 +3502,10 @@ public class Client implements LogService {
 		return new UpdateReportResponse(message.getHeaders());
 	}
 
-	@Override
-	public UpdateETLResponse updateETL(UpdateETLRequest request) throws LogException {
-	    ResponseMessage message = send(request);
-	    return new UpdateETLResponse(message.getHeaders());
+    @Override
+    public UpdateETLResponse updateETL(UpdateETLRequest request) throws LogException {
+        ResponseMessage message = send(request);
+        return new UpdateETLResponse(message.getHeaders());
     }
 
 	@Override
@@ -3935,14 +3935,23 @@ public class Client implements LogService {
 
     @Override
     public CreateETLResponse createETL(CreateETLRequest request) throws LogException {
-	    ResponseMessage responseMessage = send(request);
-	    return new CreateETLResponse(responseMessage.getHeaders());
+        ResponseMessage responseMessage = send(request);
+        return new CreateETLResponse(responseMessage.getHeaders());
     }
 
     @Override
     public CreateJobScheduleResponse createJobSchedule(CreateJobScheduleRequest request) throws LogException {
-		ResponseMessage responseMessage = send(request);
-        return new CreateJobScheduleResponse(responseMessage.getHeaders());
+        ResponseMessage message = send(request);
+        CreateJobScheduleResponse response = new CreateJobScheduleResponse(message.getHeaders());
+        JSONObject responseBody = parseResponseBody(message, message.getRequestId());
+        response.deserialize(responseBody, message.getRequestId());
+        return response;
+    }
+
+    @Override
+    public UpdateJobScheduleResponse updateJobSchedule(UpdateJobScheduleRequest request) throws LogException {
+        ResponseMessage message = send(request);
+        return new UpdateJobScheduleResponse(message.getHeaders());
     }
 
     @Override

@@ -8,9 +8,20 @@ public class CreateReportRequest extends CreateJobRequest {
 
     private static final long serialVersionUID = -2062295245187846869L;
 
+    private Report report;
+
     public CreateReportRequest(String project, Report report) {
         super(project);
         Args.notNull(report, "report");
-        setJob(report.makeJob());
+        this.report = report;
+    }
+
+    public Report getReport() {
+        return report;
+    }
+
+    @Override
+    public Object getBody() {
+        return report;
     }
 }

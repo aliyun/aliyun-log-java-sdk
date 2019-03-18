@@ -218,48 +218,7 @@ public class JobSchedule implements Serializable {
         parameters = JsonUtils.readOptionalMap(value, "parameters");
         startTime = JsonUtils.readOptionalDate(value, "startTime");
         completeTime = JsonUtils.readOptionalDate(value, "completeTime");
-        createTime = JsonUtils.readDate(value, "startTime");
+        createTime = JsonUtils.readDate(value, "createTime");
         lastModifiedTime = JsonUtils.readDate(value, "lastModifiedTime");
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        JobSchedule schedule = (JobSchedule) o;
-
-        if (getType() != schedule.getType()) return false;
-        if (getInterval() != null ? !getInterval().equals(schedule.getInterval()) : schedule.getInterval() != null)
-            return false;
-        if (getCronExpression() != null ? !getCronExpression().equals(schedule.getCronExpression()) : schedule.getCronExpression() != null)
-            return false;
-        if (getDelay() != null ? !getDelay().equals(schedule.getDelay()) : schedule.getDelay() != null) return false;
-        if (getDayOfWeek() != null ? !getDayOfWeek().equals(schedule.getDayOfWeek()) : schedule.getDayOfWeek() != null)
-            return false;
-        return getHour() != null ? getHour().equals(schedule.getHour()) : schedule.getHour() == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = getType() != null ? getType().hashCode() : 0;
-        result = 31 * result + (getInterval() != null ? getInterval().hashCode() : 0);
-        result = 31 * result + (getCronExpression() != null ? getCronExpression().hashCode() : 0);
-        result = 31 * result + (getDelay() != null ? getDelay().hashCode() : 0);
-        result = 31 * result + (getDayOfWeek() != null ? getDayOfWeek().hashCode() : 0);
-        result = 31 * result + (getHour() != null ? getHour().hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "JobSchedule{" +
-                "type=" + type +
-                ", interval='" + interval + '\'' +
-                ", cronExpression='" + cronExpression + '\'' +
-                ", delay=" + delay +
-                ", dayOfWeek=" + dayOfWeek +
-                ", hour=" + hour +
-                '}';
     }
 }

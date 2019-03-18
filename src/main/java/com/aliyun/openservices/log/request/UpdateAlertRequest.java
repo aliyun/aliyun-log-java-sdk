@@ -33,6 +33,7 @@ public class UpdateAlertRequest extends JobRequest {
 
     @Override
     public Object getBody() {
-        return alert.makeJob();
+//        return alert.makeJob();
+        return alert;
     }
 }

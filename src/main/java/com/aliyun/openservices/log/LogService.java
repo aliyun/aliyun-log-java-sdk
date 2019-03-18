@@ -107,6 +107,7 @@ import com.aliyun.openservices.log.request.UpdateETLRequest;
 import com.aliyun.openservices.log.request.UpdateEtlJobRequest;
 import com.aliyun.openservices.log.request.UpdateIndexRequest;
 import com.aliyun.openservices.log.request.UpdateJobRequest;
+import com.aliyun.openservices.log.request.UpdateJobScheduleRequest;
 import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
 import com.aliyun.openservices.log.request.UpdateLoggingRequest;
 import com.aliyun.openservices.log.request.UpdateMachineGroupMachineRequest;
@@ -225,6 +226,7 @@ import com.aliyun.openservices.log.response.UpdateEtlJobResponse;
 import com.aliyun.openservices.log.response.UpdateEtlMetaResponse;
 import com.aliyun.openservices.log.response.UpdateIndexResponse;
 import com.aliyun.openservices.log.response.UpdateJobResponse;
+import com.aliyun.openservices.log.response.UpdateJobScheduleResponse;
 import com.aliyun.openservices.log.response.UpdateLogStoreInternalResponse;
 import com.aliyun.openservices.log.response.UpdateLogStoreResponse;
 import com.aliyun.openservices.log.response.UpdateLoggingResponse;
@@ -2845,6 +2847,8 @@ public interface LogService {
     CreateETLResponse createETL(CreateETLRequest request) throws LogException;
 
     CreateJobScheduleResponse createJobSchedule(CreateJobScheduleRequest request) throws LogException;
+
+	UpdateJobScheduleResponse updateJobSchedule(UpdateJobScheduleRequest request) throws LogException;
 
     /**
 	 * update alert

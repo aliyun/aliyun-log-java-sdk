@@ -39,6 +39,7 @@ public class CreateAlertRequest extends JobRequest {
 
     @Override
     public Object getBody() {
-        return alert.makeJob();
+//        return alert.makeJob();
+        return alert;
     }
 }
