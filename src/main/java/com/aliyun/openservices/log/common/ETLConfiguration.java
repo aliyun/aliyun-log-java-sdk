@@ -10,17 +10,20 @@ import net.sf.json.JSONObject;
 public class ETLConfiguration extends JobConfiguration {
 
     @JSONField
-    private String scriptLocation;
+    private String script;
 
     @JSONField
     private String logstore;
 
-    public String getScriptLocation() {
-        return scriptLocation;
+    @JSONField
+    private String version;
+
+    public String getScript() {
+        return script;
     }
 
-    public void setScriptLocation(String scriptLocation) {
-        this.scriptLocation = scriptLocation;
+    public void setScript(String script) {
+        this.script = script;
     }
 
     public String getLogstore() {
@@ -33,8 +36,9 @@ public class ETLConfiguration extends JobConfiguration {
 
     @Override
     public void deserialize(JSONObject value) {
-        scriptLocation = value.getString("scriptLocation");
+        script = value.getString("script");
         logstore = value.getString("logstore");
+        version = value.getString("version");
     }
 
     @Override
@@ -44,15 +48,17 @@ public class ETLConfiguration extends JobConfiguration {
 
         ETLConfiguration that = (ETLConfiguration) o;
 
-        if (getScriptLocation() != null ? !getScriptLocation().equals(that.getScriptLocation()) : that.getScriptLocation() != null)
+        if (getScript() != null ? !getScript().equals(that.getScript()) : that.getScript() != null) return false;
+        if (getLogstore() != null ? !getLogstore().equals(that.getLogstore()) : that.getLogstore() != null)
             return false;
-        return getLogstore() != null ? getLogstore().equals(that.getLogstore()) : that.getLogstore() == null;
+        return version != null ? version.equals(that.version) : that.version == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getScriptLocation() != null ? getScriptLocation().hashCode() : 0;
+        int result = getScript() != null ? getScript().hashCode() : 0;
         result = 31 * result + (getLogstore() != null ? getLogstore().hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }
 }

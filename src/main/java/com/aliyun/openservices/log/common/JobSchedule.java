@@ -68,6 +68,9 @@ public class JobSchedule implements Serializable {
     @JSONField
     private Integer hour;
 
+    /**
+     * The parameters for instantiate ETL job instance, for instance "from", "to", "limit", etc.
+     */
     @JSONField
     private Map<String, String> parameters;
 
@@ -195,8 +198,8 @@ public class JobSchedule implements Serializable {
     }
 
     public void deserialize(JSONObject value) {
-        id = value.getString("id");
-        jobName = value.getString("jobName");
+        id = JsonUtils.readOptionalString(value, "id");
+        jobName = JsonUtils.readOptionalString(value, "jobName");
         type = JobScheduleType.fromString(value.getString("type"));
         delay = JsonUtils.readOptionalInt(value, "delay");
         switch (type) {
@@ -214,11 +217,62 @@ public class JobSchedule implements Serializable {
                 hour = value.getInt("hour");
                 break;
         }
-        status = value.getString("status");
+        status = JsonUtils.readOptionalString(value, "status");
         parameters = JsonUtils.readOptionalMap(value, "parameters");
         startTime = JsonUtils.readOptionalDate(value, "startTime");
         completeTime = JsonUtils.readOptionalDate(value, "completeTime");
-        createTime = JsonUtils.readDate(value, "createTime");
-        lastModifiedTime = JsonUtils.readDate(value, "lastModifiedTime");
+        createTime = JsonUtils.readOptionalDate(value, "createTime");
+        lastModifiedTime = JsonUtils.readOptionalDate(value, "lastModifiedTime");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        JobSchedule schedule = (JobSchedule) o;
+
+        if (getId() != null ? !getId().equals(schedule.getId()) : schedule.getId() != null) return false;
+        if (getJobName() != null ? !getJobName().equals(schedule.getJobName()) : schedule.getJobName() != null)
+            return false;
+        if (getType() != schedule.getType()) return false;
+        if (getInterval() != null ? !getInterval().equals(schedule.getInterval()) : schedule.getInterval() != null)
+            return false;
+        if (getCronExpression() != null ? !getCronExpression().equals(schedule.getCronExpression()) : schedule.getCronExpression() != null)
+            return false;
+        if (getDelay() != null ? !getDelay().equals(schedule.getDelay()) : schedule.getDelay() != null) return false;
+        if (getDayOfWeek() != null ? !getDayOfWeek().equals(schedule.getDayOfWeek()) : schedule.getDayOfWeek() != null)
+            return false;
+        if (getHour() != null ? !getHour().equals(schedule.getHour()) : schedule.getHour() != null) return false;
+        if (getParameters() != null ? !getParameters().equals(schedule.getParameters()) : schedule.getParameters() != null)
+            return false;
+        if (getStatus() != null ? !getStatus().equals(schedule.getStatus()) : schedule.getStatus() != null)
+            return false;
+        if (getCreateTime() != null ? !getCreateTime().equals(schedule.getCreateTime()) : schedule.getCreateTime() != null)
+            return false;
+        if (getLastModifiedTime() != null ? !getLastModifiedTime().equals(schedule.getLastModifiedTime()) : schedule.getLastModifiedTime() != null)
+            return false;
+        if (getStartTime() != null ? !getStartTime().equals(schedule.getStartTime()) : schedule.getStartTime() != null)
+            return false;
+        return getCompleteTime() != null ? getCompleteTime().equals(schedule.getCompleteTime()) : schedule.getCompleteTime() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getJobName() != null ? getJobName().hashCode() : 0);
+        result = 31 * result + (getType() != null ? getType().hashCode() : 0);
+        result = 31 * result + (getInterval() != null ? getInterval().hashCode() : 0);
+        result = 31 * result + (getCronExpression() != null ? getCronExpression().hashCode() : 0);
+        result = 31 * result + (getDelay() != null ? getDelay().hashCode() : 0);
+        result = 31 * result + (getDayOfWeek() != null ? getDayOfWeek().hashCode() : 0);
+        result = 31 * result + (getHour() != null ? getHour().hashCode() : 0);
+        result = 31 * result + (getParameters() != null ? getParameters().hashCode() : 0);
+        result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
+        result = 31 * result + (getCreateTime() != null ? getCreateTime().hashCode() : 0);
+        result = 31 * result + (getLastModifiedTime() != null ? getLastModifiedTime().hashCode() : 0);
+        result = 31 * result + (getStartTime() != null ? getStartTime().hashCode() : 0);
+        result = 31 * result + (getCompleteTime() != null ? getCompleteTime().hashCode() : 0);
+        return result;
     }
 }

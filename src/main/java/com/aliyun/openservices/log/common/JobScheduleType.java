@@ -34,7 +34,7 @@ public enum JobScheduleType implements JSONSerializable {
     /**
      * Only once.
      */
-    ONCE("Once"),
+    DRY_RUN("DryRun"),
 
     /**
      * Not scheduled.
