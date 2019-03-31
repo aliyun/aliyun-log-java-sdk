@@ -1,7 +1,6 @@
 package com.aliyun.openservices.log.util;
 
 import com.aliyun.openservices.log.common.Consts;
-import org.apache.commons.validator.routines.InetAddressValidator;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -17,11 +16,28 @@ public final class NetworkUtils {
     /**
      * Checks if the specified string is a valid IP address.
      *
-     * @param str the string to check
+     * @param ipAddress the string to check
      * @return true if the string validates as an IP address
      */
-    public static boolean isIPAddr(String str) {
-        return InetAddressValidator.getInstance().isValid(str);
+    public static boolean isIPAddr(final String ipAddress) {
+        if (ipAddress == null || ipAddress.isEmpty()) {
+            return false;
+        }
+        try {
+            final String[] tokens = ipAddress.split("\\.");
+            if (tokens.length != 4) {
+                return false;
+            }
+            for (String token : tokens) {
+                int i = Integer.parseInt(token);
+                if (i < 0 || i > 255) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     /**
@@ -30,7 +46,6 @@ public final class NetworkUtils {
      * @return An IP address or {@code null} if unable to get the IP address
      */
     public static String getLocalMachineIP() {
-        final InetAddressValidator validator = InetAddressValidator.getInstance();
         try {
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
             while (networkInterfaces.hasMoreElements()) {
@@ -46,7 +61,7 @@ public final class NetworkUtils {
                         if (ipAddress.equals(Consts.CONST_LOCAL_IP)) {
                             continue;
                         }
-                        if (validator.isValidInet4Address(ipAddress)) {
+                        if (isIPAddr(ipAddress)) {
                             return ipAddress;
                         }
                     }
