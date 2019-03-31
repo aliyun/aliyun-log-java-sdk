@@ -1007,13 +1007,12 @@ public class Client implements LogService {
 		return GetCursorTime(request);
 	}
 
-	public ListShardResponse SplitShard(String prj, String logStore,
+	public ListShardResponse SplitShard(String project, String logStore,
 			int shardId, String midHash) throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(prj, "project");
-		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-		CodingUtils.assertStringNotNullOrEmpty(logStore, "shardId");
-		//CodingUtils.assertStringNotNullOrEmpty(midHash, "midHash");
-		return SplitShard(new SplitShardRequest(prj, logStore, shardId, midHash));
+		Args.notNullOrEmpty(project, "project");
+		Args.notNullOrEmpty(logStore, "logStore");
+		Args.notNullOrEmpty(logStore, "shardId");
+		return SplitShard(new SplitShardRequest(project, logStore, shardId, midHash));
 	}
 
 	public ListShardResponse SplitShard(SplitShardRequest request)
@@ -1039,12 +1038,12 @@ public class Client implements LogService {
         return new ListShardResponse(resHeaders, shards);
 	}
 
-	public ListShardResponse MergeShards(String prj, String logStore,
+	public ListShardResponse MergeShards(String project, String logStore,
 			int shardId) throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(prj, "project");
-		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-		CodingUtils.assertStringNotNullOrEmpty(logStore, "shardId");
-		return MergeShards(new MergeShardsRequest(prj, logStore, shardId));
+		Args.notNullOrEmpty(project, "project");
+		Args.notNullOrEmpty(logStore, "logStore");
+		Args.notNullOrEmpty(logStore, "shardId");
+		return MergeShards(new MergeShardsRequest(project, logStore, shardId));
 	}
 
 	public ListShardResponse MergeShards(MergeShardsRequest request)
@@ -1092,11 +1091,11 @@ public class Client implements LogService {
         return new DeleteShardResponse(resHeaders);
 	}
 
-	public ListShardResponse ListShard(String prj, String logStore)
+	public ListShardResponse ListShard(String project, String logStore)
 			throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(prj, "project");
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-		return ListShard(new ListShardRequest(prj, logStore));
+		return ListShard(new ListShardRequest(project, logStore));
 	}
 
 	public String GetServerIpAddress(String project) {
