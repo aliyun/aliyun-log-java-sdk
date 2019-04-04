@@ -18,7 +18,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class BaseMetadataTest extends FunctionTest {
+public class LogTest extends FunctionTest {
 
     static String TEST_PROJECT = "project-intg-test-" + getNowTimestamp();
 
@@ -36,7 +36,7 @@ public class BaseMetadataTest extends FunctionTest {
         createOrUpdateLogStore(project, logStore);
     }
 
-    private List<Logs.LogGroup> pullAllLogGroups(String project, String logStore, int shardNum) throws LogException {
+    protected List<Logs.LogGroup> pullAllLogGroups(String project, String logStore, int shardNum) throws LogException {
         List<Logs.LogGroup> groups = new ArrayList<Logs.LogGroup>();
         for (int i = 0; i < shardNum; i++) {
             pullForShard(project, logStore, i, groups);
