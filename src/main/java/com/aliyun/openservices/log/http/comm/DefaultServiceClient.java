@@ -67,16 +67,13 @@ public class DefaultServiceClient extends ServiceClient {
         if (response.getEntity() != null){
             result.setContent(response.getEntity().getContent());
         }
-        // fill in headers
         Header[] headers = response.getAllHeaders();
         Map<String, String> resultHeaders = new HashMap<String, String>();
-        for(int i = 0; i < headers.length; i++){
-            Header h = headers[i];
+        for (Header h : headers) {
             resultHeaders.put(h.getName(), h.getValue());
         }
         HttpUtil.convertHeaderCharsetFromIso88591(resultHeaders);
         result.setHeaders(resultHeaders);
-
         return result;
     }
 }
