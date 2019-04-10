@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 
 public final class Credentials {
-    private static final String CONFIG_FILE = "credentials.json";
+    private static final String CONFIG_FILE = "sh_stg.json";
 
     private String endpoint;
     private String accessKeyId;

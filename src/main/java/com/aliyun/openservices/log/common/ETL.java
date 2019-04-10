@@ -5,30 +5,30 @@ import net.sf.json.JSONObject;
 
 import java.io.Serializable;
 
+public class ETL extends AbstractJob implements Serializable {
 
-public class Report extends ScheduledJob implements Serializable {
-
-    private static final long serialVersionUID = 9211926785430833230L;
+    private static final long serialVersionUID = 949447748635414993L;
 
     @JSONField
-    private ReportConfiguration configuration;
+    private ETLConfiguration configuration;
 
-    public Report() {
-        setType(JobType.REPORT);
+    public ETL() {
+        setType(JobType.ETL);
     }
 
     @Override
-    public ReportConfiguration getConfiguration() {
+    public ETLConfiguration getConfiguration() {
         return configuration;
     }
 
-    public void setConfiguration(ReportConfiguration configuration) {
+    public void setConfiguration(ETLConfiguration configuration) {
         this.configuration = configuration;
     }
 
+    @Override
     public void deserialize(JSONObject value) {
         super.deserialize(value);
-        configuration = new ReportConfiguration();
+        configuration = new ETLConfiguration();
         configuration.deserialize(value.getJSONObject("configuration"));
     }
 }

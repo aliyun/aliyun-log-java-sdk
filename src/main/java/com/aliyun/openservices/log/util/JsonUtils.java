@@ -13,7 +13,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class JsonUtils {
 
@@ -78,6 +80,31 @@ public final class JsonUtils {
 
     public static Integer readOptionalInt(JSONObject object, String key) {
         return object.has(key) ? object.getInt(key) : null;
+    }
+
+    public static Date readOptionalDate(JSONObject object, String key) {
+        return object.has(key) ? readDate(object, key) : null;
+    }
+
+    public static Date readDate(JSONObject object, String key) {
+        return Utils.timestampToDate(object.getInt(key));
+    }
+
+    public static Map<String, String> readOptionalMap(JSONObject object, final String key) {
+        if (!object.has(key)) {
+            return Collections.emptyMap();
+        }
+        JSONObject value = object.getJSONObject(key);
+        if (value.isNullObject()) {
+            return Collections.emptyMap();
+        }
+        JSONArray names = value.names();
+        Map<String, String> map = new HashMap<String, String>(names.size());
+        for (int i = 0; i < names.size(); i++) {
+            String fieldName = names.getString(i);
+            map.put(fieldName, value.getString(fieldName));
+        }
+        return map;
     }
 
     /**

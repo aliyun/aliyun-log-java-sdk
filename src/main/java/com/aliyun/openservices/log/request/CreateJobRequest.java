@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.common.Job;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.util.Args;
 
+@Deprecated
 public class CreateJobRequest extends JobRequest {
 
     private static final long serialVersionUID = -7991351821489008819L;

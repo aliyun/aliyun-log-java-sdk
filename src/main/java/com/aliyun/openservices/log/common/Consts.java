@@ -288,7 +288,7 @@ public class Consts {
 	// domain
 	public static final String CONST_DOMAIN_URI = "/domains";
 	public static final String CONST_DOMAIN_NAME = "domainName";
-	
+
 	// savedsearch api
 	public static final String CONST_SAVEDSEARCH_URI = "/savedsearches";
 	public static final String CONST_SAVEDSEARCH_NAME = "savedsearchName";
@@ -312,6 +312,9 @@ public class Consts {
 
 	public static final String ENABLE = "enable";
 	public static final String DISABLE = "disable";
+	public static final String STOP = "STOP";
+	public static final String START = "START";
+	public static final String RELOAD = "RELOAD";
 	// ETL
 	public static final String CONST_ETLJOB_URI = "/etljobs";
 	public static final String FUNCTION_PROVIDER_FC = "FunctionCompute";
@@ -359,6 +362,7 @@ public class Consts {
     public static final String JOB_NAME = "jobName";
     public static final String JOB_TYPE = "jobType";
     public static final String JOB_URI = "/jobs";
+    public static final String JOB_SCHEDULE_URI = "/jobschedules";
     public static final String DISPLAY_NAME = "displayName";
 
     public static final String LOGGING_URI = "/logging";

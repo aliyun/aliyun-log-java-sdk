@@ -79,9 +79,6 @@ public class IndexKey implements Serializable {
 		this.alias = alias;
 	}
 
-	/**
-	 * @ return type
-	 */
 	public boolean IsChn() {
 		return chn;
 	}

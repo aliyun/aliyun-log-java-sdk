@@ -10,6 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 
+/**
+ * Will be removed in next release.
+ */
+@Deprecated
 public class Job implements Serializable {
 
     private static final long serialVersionUID = 6457720937101208563L;
@@ -38,13 +42,11 @@ public class Job implements Serializable {
     /**
      * The time of job create time.
      */
-    @JSONField
     private Date createTime;
 
     /**
      * The time of last modified.
      */
-    @JSONField
     private Date lastModifiedTime;
 
     /**

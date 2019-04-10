@@ -39,7 +39,7 @@ public class SplitShardRequest extends Request {
 		SetParam(Consts.CONST_ACTION, Consts.CONST_ACTION_SPLIT);
 	 
 	}
-	
+
 	public SplitShardRequest(String project, String logStore, int shardId, int shardCount) {
 		super(project);
 		this.mLogStore = logStore;
@@ -79,11 +79,11 @@ public class SplitShardRequest extends Request {
 	public String GetShardCount() {
 		return GetParam(Consts.CONST_SPLIT_SHARDCOUNT);
 	}
-	
+
 	public void SetShardCount(int shardCount) {
 		SetParam(Consts.CONST_SPLIT_SHARDCOUNT, String.valueOf(shardCount));
 	}
- 
+
 	public String GetMidHash() {
 		return GetParam(Consts.CONST_SPLIT_MID_HASH);
 	}

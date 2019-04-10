@@ -1,30 +1,29 @@
 package com.aliyun.openservices.log.request;
 
 
-import com.aliyun.openservices.log.common.Alert;
 import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.common.ETL;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.util.Args;
 
-public class CreateAlertRequest extends JobRequest {
+public class CreateETLRequest extends JobRequest {
 
     private static final long serialVersionUID = 3346010323520068092L;
 
-    private Alert alert;
+    private ETL etl;
 
-    public CreateAlertRequest(String project, Alert alert) {
+    public CreateETLRequest(String project, ETL etl) {
         super(project);
-        setAlert(alert);
+        Args.notNull(etl, "ETL");
+        this.etl = etl;
     }
 
-    public Alert getAlert() {
-        return alert;
+    public ETL getEtl() {
+        return etl;
     }
 
-    public void setAlert(Alert alert) {
-        Args.notNull(alert, "alert");
-        alert.validate();
-        this.alert = alert;
+    public void setEtl(ETL etl) {
+        this.etl = etl;
     }
 
     @Override
@@ -39,6 +38,6 @@ public class CreateAlertRequest extends JobRequest {
 
     @Override
     public Object getBody() {
-        return alert;
+        return etl;
     }
 }

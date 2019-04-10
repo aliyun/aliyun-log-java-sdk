@@ -5,12 +5,10 @@ import com.alibaba.fastjson.serializer.JSONSerializer;
 
 import java.lang.reflect.Type;
 
-/**
- * Job type.
- */
 public enum JobType implements JSONSerializable {
     ALERT("Alert"),
     REPORT("Report"),
+    ETL("ETL"),
     ;
 
     private final String value;

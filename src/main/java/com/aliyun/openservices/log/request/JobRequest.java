@@ -1,10 +1,9 @@
 package com.aliyun.openservices.log.request;
 
 import com.aliyun.openservices.log.common.Consts;
-import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.util.Args;
 
-public abstract class JobRequest extends Request {
+public abstract class JobRequest extends BasicRequest {
 
     private String name;
 
@@ -26,13 +25,7 @@ public abstract class JobRequest extends Request {
         this.name = name;
     }
 
-    public abstract HttpMethod getMethod();
-
     public String getUri() {
         return Consts.JOB_URI + "/" + name;
-    }
-
-    public Object getBody() {
-        return null;
     }
 }
