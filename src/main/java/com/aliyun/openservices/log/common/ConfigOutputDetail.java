@@ -2,10 +2,9 @@ package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
 
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
-
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
 
 /**
  * The output config of a logtail
@@ -36,7 +35,7 @@ public class ConfigOutputDetail implements Serializable {
 	
 	public void FromJsonObject(JSONObject outputDetail) throws LogException {
 		try {
-			if (outputDetail.has("endpoint")) {
+			if (outputDetail.containsKey("endpoint")) {
 				this.endpoint = outputDetail.getString("endpoint");
 			}
 			this.logstoreName = outputDetail.getString("logstoreName");
@@ -48,7 +47,7 @@ public class ConfigOutputDetail implements Serializable {
 	
 	public void FromJsonString(String outputDetailString) throws LogException {
 		try {
-			JSONObject outputDetail = JSONObject.fromObject(outputDetailString);
+			JSONObject outputDetail = JSONObject.parseObject(outputDetailString);
 			FromJsonObject(outputDetail);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateOutputDetail", e.getMessage(), e, "");

@@ -1,5 +1,7 @@
 package com.aliyun.openservices.log.sample;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.ACL;
 import com.aliyun.openservices.log.common.ACLPrivileges;
@@ -39,8 +41,6 @@ import com.aliyun.openservices.log.response.UpdateACLResponse;
 import com.aliyun.openservices.log.response.UpdateConfigResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;

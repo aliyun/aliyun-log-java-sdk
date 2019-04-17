@@ -3,11 +3,11 @@ package com.aliyun.openservices.log.common;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
 
 public abstract class CommonConfigInputDetail {
 	protected boolean localStorage = true;
@@ -208,55 +208,55 @@ public abstract class CommonConfigInputDetail {
 	
 	protected void CommonConfigFromJsonObject(JSONObject inputDetail) throws LogException {
 		try {
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_ADJUSTTIMEZONE)) {
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADJUSTTIMEZONE)) {
 				this.adjustTimezone = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ADJUSTTIMEZONE);
 			} else {
 				this.adjustTimezone = false;
 			}
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_LOGTIMEZONE)) {
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_LOGTIMEZONE)) {
 				this.logTimezone = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_LOGTIMEZONE);
 			} else {
 				this.logTimezone = "";
 			}	
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_PRIORITY))
-				this.priority = inputDetail.getInt(Consts.CONST_CONFIG_INPUTDETAIL_PRIORITY);
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_PRIORITY))
+				this.priority = inputDetail.getIntValue(Consts.CONST_CONFIG_INPUTDETAIL_PRIORITY);
 			else
 				this.priority = 0;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_MERGETYPE))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_MERGETYPE))
 				this.mergeType = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_MERGETYPE);
 			else
 				this.mergeType = "topic";
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE))
-				this.sendRateExpire = inputDetail.getInt(Consts.CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE);
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE))
+				this.sendRateExpire = inputDetail.getIntValue(Consts.CONST_CONFIG_INPUTDETAIL_SENDRATEEXPIRE);
 			else
 				this.sendRateExpire = 0;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_MAXSENDRATE))
-				this.maxSendRate = inputDetail.getInt(Consts.CONST_CONFIG_INPUTDETAIL_MAXSENDRATE);
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_MAXSENDRATE))
+				this.maxSendRate = inputDetail.getIntValue(Consts.CONST_CONFIG_INPUTDETAIL_MAXSENDRATE);
 			else
 				this.maxSendRate = -1;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_LOCALSTORAGE))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_LOCALSTORAGE))
 				this.localStorage = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_LOCALSTORAGE);
 			else
 				this.localStorage = true;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_ENABLETAG))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ENABLETAG))
 				this.enableTag = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ENABLETAG);
 			else
 				this.enableTag = false;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_ENABLERAWLOG))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ENABLERAWLOG))
 				this.enableRawLog = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ENABLERAWLOG);
 			else
 				this.enableRawLog = false;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DELAYALARMBYTES))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DELAYALARMBYTES))
 				this.delayAlarmBytes = inputDetail.getLong(Consts.CONST_CONFIG_INPUTDETAIL_DELAYALARMBYTES);
 			else 
 				this.delayAlarmBytes = 0;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_FILTERREGEX))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_FILTERREGEX))
 				SetFilterRegex(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_FILTERREGEX));
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_FILTERKEY))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_FILTERKEY))
 				SetFilterKey(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_FILTERKEY));
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY))
 				SetShardHashKey(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY));
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS)) {
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS)) {
 				JSONArray sensitiveKeysArray = inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS);
 				SensitiveKey sensitiveKey = new SensitiveKey();
 				for (int index = 0; index < sensitiveKeysArray.size(); index++) {
@@ -272,7 +272,7 @@ public abstract class CommonConfigInputDetail {
 	public static CommonConfigInputDetail FromJsonStringS(final String inputType, final String jsonString) throws LogException 
 	{
 		try {
-			JSONObject inputDetail = JSONObject.fromObject(jsonString);
+			JSONObject inputDetail = JSONObject.parseObject(jsonString);
 			return FromJsonObjectS(inputType, inputDetail);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateInputDetail", e.getMessage(),

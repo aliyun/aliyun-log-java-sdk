@@ -3,11 +3,10 @@ package com.aliyun.openservices.log.common;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
 
 public class DelimiterConfigInputDetail extends LocalFileConfigInputDetail implements Serializable {
 
@@ -132,7 +131,7 @@ public class DelimiterConfigInputDetail extends LocalFileConfigInputDetail imple
 		SetKey(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_KEY));
 		this.timeKey = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_TIMEKEY);
 		this.autoExtend = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_AUTOEXTEND);
-		if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_ACCEPTNOENOUGHKEYS))
+		if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ACCEPTNOENOUGHKEYS))
 			this.acceptNoEnoughKeys = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ACCEPTNOENOUGHKEYS);
 		else
 			this.acceptNoEnoughKeys = false;

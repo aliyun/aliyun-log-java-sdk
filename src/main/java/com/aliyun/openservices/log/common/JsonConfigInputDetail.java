@@ -2,9 +2,9 @@ package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
 
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONObject;
 
 public class JsonConfigInputDetail extends LocalFileConfigInputDetail implements Serializable {
 

@@ -5,10 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
-
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
 
 public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail implements Serializable {
 	
@@ -220,85 +219,77 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 			this.logPath = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_LOGPATH);
 			this.filePattern = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_FILEPATTERN);
 			this.logType = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_LOGTYPE);
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_TIMEFORMAT))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_TIMEFORMAT))
 				this.timeFormat = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_TIMEFORMAT);
 			else
 				this.timeFormat = "";
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_FILEENCODING))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_FILEENCODING))
 				this.fileEncoding = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_FILEENCODING);
 			else
 				this.fileEncoding = Consts.CONST_CONFIG_INPUTDETAIL_FILEENCODING_UTF8;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_PRESERVE))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_PRESERVE))
 				this.preserve = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_PRESERVE);
 			else
 				this.preserve = true;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_PRESERVERDEPTH))
-				this.preserveDepth = inputDetail.getInt(Consts.CONST_CONFIG_INPUTDETAIL_PRESERVERDEPTH);
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_PRESERVERDEPTH))
+				this.preserveDepth = inputDetail.getIntValue(Consts.CONST_CONFIG_INPUTDETAIL_PRESERVERDEPTH);
 			else
 				this.preserveDepth = 0;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DISCARDUNMATCH))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DISCARDUNMATCH))
 				this.discardUnmatch = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_DISCARDUNMATCH);
 			else
 				this.discardUnmatch = true;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_MAXDEPTH))
-				this.maxDepth = inputDetail.getInt(Consts.CONST_CONFIG_INPUTDETAIL_MAXDEPTH);
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_MAXDEPTH))
+				this.maxDepth = inputDetail.getIntValue(Consts.CONST_CONFIG_INPUTDETAIL_MAXDEPTH);
 			else
 				this.maxDepth = Consts.CONST_CONFIG_INPUTDETAUL_DEFAULTMAXDEPTH;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_TOPICFORMAT))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_TOPICFORMAT))
 				this.topicFormat = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_TOPICFORMAT);
 			else
 				this.topicFormat = Consts.CONST_CONFIG_DEFAULT_TOPICFORMAT;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DISCARDNONUTF8))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DISCARDNONUTF8))
 				this.discardNonUtf8 = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_DISCARDNONUTF8);
 			else
 				this.discardNonUtf8 = false;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_TAILEXISTED))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_TAILEXISTED))
 				this.tailExisted = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_TAILEXISTED);
 			else
 				this.tailExisted = false;
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE))
 				this.isDockerFile = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE);
 			else 
 				this.isDockerFile = false;
 			
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES))
 				this.delaySkipBytes = inputDetail.getLong(Consts.CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES);
 			else 
 				this.delaySkipBytes = 0;
 
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV)) {
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV)) {
 				JSONObject dockerIncludeEnvJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV);
-				Iterator sIterator = dockerIncludeEnvJson.keys();
-				while (sIterator.hasNext()) {
-					String key = sIterator.next().toString();
-					dockerIncludeEnv.put(key, dockerIncludeEnvJson.getString(key));
+				for(Map.Entry<String, Object> entry : dockerIncludeEnvJson.entrySet()) {
+					dockerIncludeEnv.put(entry.getKey(), entry.getValue().toString());
 				}
 			}
 
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_ENV)) {
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_ENV)) {
 				JSONObject dockerExcludeEnvJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_ENV);
-				Iterator sIterator = dockerExcludeEnvJson.keys();
-				while (sIterator.hasNext()) {
-					String key = sIterator.next().toString();
-					dockerExcludeEnv.put(key, dockerExcludeEnvJson.getString(key));
+				for(Map.Entry<String, Object> entry : dockerExcludeEnvJson.entrySet()) {
+					dockerExcludeEnv.put(entry.getKey(), entry.getValue().toString());
 				}
 			}
 
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL)) {
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL)) {
 				JSONObject dockerIncludeLabelJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL);
-				Iterator sIterator = dockerIncludeLabelJson.keys();
-				while (sIterator.hasNext()) {
-					String key = sIterator.next().toString();
-					dockerIncludeLabel.put(key, dockerIncludeLabelJson.getString(key));
+				for(Map.Entry<String, Object> entry : dockerIncludeLabelJson.entrySet()) {
+					dockerIncludeLabel.put(entry.getKey(), entry.getValue().toString());
 				}
 			}
 			
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL)) {
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL)) {
 				JSONObject dockerExcludeLabelJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL);
-				Iterator sIterator = dockerExcludeLabelJson.keys();  
-				while (sIterator.hasNext()) {
-					String key = sIterator.next().toString();
-					dockerExcludeLabel.put(key, dockerExcludeLabelJson.getString(key));
+				for(Map.Entry<String, Object> entry : dockerExcludeLabelJson.entrySet()) {
+					dockerExcludeLabel.put(entry.getKey(), entry.getValue().toString());
 				}
 			}
 

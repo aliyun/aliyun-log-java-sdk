@@ -2,11 +2,11 @@ package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.exception.LogException;
 
 /**
  * The input config of a logtail config
@@ -115,7 +115,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_REGEX, regex);
 		if (customizedFields != null && !customizedFields.isEmpty()) {
 			try {
-				JSONObject toObject = JSONObject.fromObject(customizedFields);
+				JSONObject toObject = JSONObject.parseObject(customizedFields);
 				jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS, toObject);
 			} catch (Exception ex) {
 				throw new IllegalArgumentException("Unable to read object from string: " + customizedFields, ex);
@@ -131,13 +131,13 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 	public void FromJsonObject(JSONObject inputDetail) throws LogException {
 		try {
 			LocalFileConfigFromJsonObject(inputDetail);
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX))
 				this.logBeginRegex = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX);
 			else
 				this.logBeginRegex = ".*";
 			this.regex = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_REGEX);
 			SetKey(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_KEY));
-			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS))
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS))
 				this.customizedFields = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateInputDetail", e.getMessage(),
@@ -147,7 +147,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 
 	public void FromJsonString(String inputDetailString) throws LogException {
 		try {
-			JSONObject inputDetail = JSONObject.fromObject(inputDetailString);
+			JSONObject inputDetail = JSONObject.parseObject(inputDetailString);
 			FromJsonObject(inputDetail);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateInputDetail", e.getMessage(),
