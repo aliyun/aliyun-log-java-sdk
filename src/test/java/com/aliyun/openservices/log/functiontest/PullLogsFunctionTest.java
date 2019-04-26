@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 
-public class PullLogsFunctionTest extends BaseMetadataTest {
+public class PullLogsFunctionTest extends LogTest {
 
     private int writeData(String logStore) {
         int round = randomBetween(1, 10);

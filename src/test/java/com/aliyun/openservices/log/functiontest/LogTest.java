@@ -18,7 +18,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class BaseMetadataTest extends FunctionTest {
+public class LogTest extends FunctionTest {
 
     static String TEST_PROJECT = "project-intg-test-" + getNowTimestamp();
 
@@ -36,7 +36,7 @@ public class BaseMetadataTest extends FunctionTest {
         createOrUpdateLogStore(project, logStore);
     }
 
-    private List<Logs.LogGroup> pullAllLogGroups(String project, String logStore, int shardNum) throws LogException {
+    protected List<Logs.LogGroup> pullAllLogGroups(String project, String logStore, int shardNum) throws LogException {
         List<Logs.LogGroup> groups = new ArrayList<Logs.LogGroup>();
         for (int i = 0; i < shardNum; i++) {
             pullForShard(project, logStore, i, groups);
@@ -47,6 +47,7 @@ public class BaseMetadataTest extends FunctionTest {
     private void pullForShard(String project, String logStore, int shard, List<Logs.LogGroup> results) throws LogException {
         GetCursorResponse cursorResponse = client.GetCursor(project, logStore, shard, Consts.CursorMode.BEGIN);
         String cursor = cursorResponse.GetCursor();
+        System.out.println(cursor);
         while (true) {
             PullLogsRequest request = new PullLogsRequest(project, logStore, shard, 1000, cursor);
             PullLogsResponse response = client.pullLogs(request);
@@ -110,6 +111,6 @@ public class BaseMetadataTest extends FunctionTest {
 
     @AfterClass
     public static void tearDown() {
-        safeDeleteProject(TEST_PROJECT);
+//        safeDeleteProject(TEST_PROJECT);
     }
 }
