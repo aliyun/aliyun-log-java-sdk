@@ -8,10 +8,14 @@ import com.aliyun.openservices.log.http.client.HttpMethod;
 import java.util.Map;
 
 public class ListJobsRequest extends JobRequest {
+
+    private static final long serialVersionUID = -8772042308666861845L;
+
     /**
-     * Job name for fuzzy matching
+     * Display name for fuzzy matching.
      */
-    private String name;
+    private String displayName;
+
     /**
      * Job type for filtering
      */
@@ -32,38 +36,12 @@ public class ListJobsRequest extends JobRequest {
         this.type = type;
     }
 
-    public Integer getOffset() {
-        return offset;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setOffset(Integer offset) {
-        this.offset = offset;
-    }
-
-    public Integer getSize() {
-        return size;
-    }
-
-    public void setSize(Integer size) {
-        this.size = size;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public HttpMethod getMethod() {
-        return HttpMethod.GET;
-    }
-
-    @Override
-    public String getUri() {
-        return Consts.JOB_URI;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public JobType getType() {
@@ -82,10 +60,40 @@ public class ListJobsRequest extends JobRequest {
         this.resourceProvider = resourceProvider;
     }
 
+    public Integer getOffset() {
+        return offset;
+    }
+
+    public void setOffset(Integer offset) {
+        this.offset = offset;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    @Override
+    public HttpMethod getMethod() {
+        return HttpMethod.GET;
+    }
+
+    @Override
+    public String getUri() {
+        return Consts.JOB_URI;
+    }
+
     @Override
     public Map<String, String> GetAllParams() {
+        final String name = getName();
         if (name != null && !name.isEmpty()) {
             SetParam(Consts.JOB_NAME, name);
+        }
+        if (displayName != null && !displayName.isEmpty()) {
+            SetParam(Consts.DISPLAY_NAME, displayName);
         }
         if (type != null) {
             SetParam(Consts.JOB_TYPE, type.toString());

@@ -19,7 +19,7 @@ public class ClientConnectionContainer {
 	private long mShardConnectionUpdateInterval = 300L * 1000 * 1000 * 1000;
 	private long mGlobalConnectionValidInterval = 60L * 1000 * 1000 * 1000;
 	private long mGlobalConnectionUpdateSendSize = 100 * 1024 * 1024;
-	
+
 	public ClientConnectionContainer()
 	{
 		mClient = null;
@@ -32,19 +32,19 @@ public class ClientConnectionContainer {
 		mClient = new Client(endpoint, accessId, accessKey);
 	}
 
-	public ClientConnectionStatus GetShardConnection(String project, String logstore, int shard_id) {
-		String key =  project + "#" + logstore;
+	public ClientConnectionStatus GetShardConnection(String project, String logstore, int shardId) {
+		String key = project + "#" + logstore;
 		if (mShardLastUpdateTime.containsKey(key) == false)
 		{
 			mShardLastUpdateTime.put(key, (long)0);
 		}
-		String key_shard = project + "#" + logstore + "#" + String.valueOf(shard_id);
-		if (mShardConnections.containsKey(key_shard) == false) {
+		String keyShard = project + "#" + logstore + "#" + shardId;
+		if (mShardConnections.containsKey(keyShard) == false) {
 			UpdateShardConnection(key);
 		}
-		if (mShardConnections.containsKey(key_shard))
+		if (mShardConnections.containsKey(keyShard))
 		{
-			return mShardConnections.get(key_shard);
+			return mShardConnections.get(keyShard);
 		}
 		return null;
 	}
@@ -53,7 +53,7 @@ public class ClientConnectionContainer {
 		mGlobalConnection = null;
 	}
 
-	
+
 	public ClientConnectionStatus GetGlobalConnection()
 	{
 		return mGlobalConnection;
@@ -66,20 +66,20 @@ public class ClientConnectionContainer {
 	}
 
 	public void UpdateGlobalConnection() {
-		long cur_time = System.nanoTime();
-		boolean to_update = false;
+		long curTime = System.nanoTime();
+		boolean toUpdate = false;
 		if (mGlobalConnection == null || mGlobalConnection.IsValidConnection() == false) {
-			to_update = true;
-		} else if (cur_time - mGlobalConnection.GetLastUsedTime() < mGlobalConnectionValidInterval
-				&& (cur_time - mGlobalConnection.GetCreateTime() > mGlobalConnectionUpdateInterval
+            toUpdate = true;
+		} else if (curTime - mGlobalConnection.GetLastUsedTime() < mGlobalConnectionValidInterval
+				&& (curTime - mGlobalConnection.GetCreateTime() > mGlobalConnectionUpdateInterval
 						|| mGlobalConnection.GetSendDataSize() > mGlobalConnectionUpdateSendSize
 						|| mGlobalConnection.GetPullDataSize() > mGlobalConnectionUpdateSendSize)) {
-			to_update = true;
+            toUpdate = true;
 		}
-		if (to_update) {
-			String ip_address = mClient.GetServerIpAddress("");
-			if (ip_address != null && ip_address.isEmpty() == false) {
-				mGlobalConnection = new ClientConnectionStatus(ip_address);
+		if (toUpdate) {
+			String ipAddress = mClient.GetServerIpAddress("");
+			if (ipAddress != null && ipAddress.isEmpty() == false) {
+				mGlobalConnection = new ClientConnectionStatus(ipAddress);
 			}
 		}
 	}
@@ -91,37 +91,37 @@ public class ClientConnectionContainer {
 		}
 	}
 
-	private void UpdateShardConnection(String project_logstore)
+	private void UpdateShardConnection(String projectLogstore)
 	{
-		if (mShardLastUpdateTime.containsKey(project_logstore) == false)
+		if (mShardLastUpdateTime.containsKey(projectLogstore) == false)
 		{
 			return ;
 		}
-		Long last_update_time = mShardLastUpdateTime.get(project_logstore);
-		long cur_time = System.nanoTime();
-		if (cur_time - last_update_time < mShardConnectionUpdateInterval)
+		Long lastUpdateTime = mShardLastUpdateTime.get(projectLogstore);
+		long curTime = System.nanoTime();
+		if (curTime - lastUpdateTime < mShardConnectionUpdateInterval)
 		{
 			return;
 		}
-		String[] items = project_logstore.split("#");
+		String[] items = projectLogstore.split("#");
 		if (items.length == 2)
 		{
 			try {
 				ListShardResponse res = mClient.ListShard(items[0], items[1]);
-				ArrayList<Shard> all_shards = res.GetShards();
-				for(Shard shard : all_shards)
+				ArrayList<Shard> allShards = res.GetShards();
+				for(Shard shard : allShards)
 				{
-					String server_ip = shard.getServerIp();
-					if (server_ip != null && server_ip.isEmpty() == false) {
-						int shard_id = shard.GetShardId();
-						String key = project_logstore + "#" + String.valueOf(shard_id);
-						mShardConnections.put(key, new ClientConnectionStatus(server_ip));
+					String serverIp = shard.getServerIp();
+					if (serverIp != null && serverIp.isEmpty() == false) {
+						int shardId = shard.GetShardId();
+						String key = projectLogstore + "#" + shardId;
+						mShardConnections.put(key, new ClientConnectionStatus(serverIp));
 					}
 				}
 			} catch (LogException e) {
 			}
 		}
-		mShardLastUpdateTime.put(project_logstore, cur_time);
+		mShardLastUpdateTime.put(projectLogstore, curTime);
 	}
 
 }

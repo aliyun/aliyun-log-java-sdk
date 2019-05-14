@@ -1,50 +1,29 @@
 package com.aliyun.openservices.log.response;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.aliyun.openservices.log.common.Alert;
+import com.aliyun.openservices.log.internal.Unmarshaller;
+import net.sf.json.JSONArray;
+
+import java.io.Serializable;
 import java.util.Map;
 
-import com.aliyun.openservices.log.common.Alert;
+public class ListAlertResponse extends ResponseList<Alert> implements Serializable {
+    
+    private static final long serialVersionUID = 5068019621076631746L;
 
-public class ListAlertResponse extends Response {
+    public ListAlertResponse(Map<String, String> headers) {
+        super(headers);
+    }
 
-	private static final long serialVersionUID = 167254009014902401L;
-	protected int total  = 0;
-	protected int count = 0;
-	protected List<Alert> alerts = new ArrayList<Alert>();
-	
-	public ListAlertResponse(Map<String, String> headers, int count, int total, List<Alert> alerts) {
-		super(headers);
-		setCount(count);
-		setTotal(total);
-		this.alerts = alerts;
-	}
-
-	public int getTotal() {
-		return total;
-	}
-
-	public void setTotal(int total) {
-		this.total = total;
-	}
-
-	public int getCount() {
-		return count;
-	}
-
-	public void setCount(int count) {
-		this.count = count;
-	}
-
-	public List<Alert> getAlerts() {
-		return alerts;
-	}
-
-	public void setAlerts(List<Alert> alerts) {
-		this.alerts = new ArrayList<Alert>();
-		for (Alert alert : alerts) {
-			alerts.add(alert);
-		}
-	}
-
+    @Override
+    public Unmarshaller<Alert> unmarshaller() {
+        return new Unmarshaller<Alert>() {
+            @Override
+            public Alert unmarshal(JSONArray value, int index) {
+                Alert alert = new Alert();
+                alert.deserialize(value.getJSONObject(index));
+                return alert;
+            }
+        };
+    }
 }

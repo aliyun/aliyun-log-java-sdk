@@ -20,6 +20,7 @@ public class IndexKey implements Serializable {
 	private List<String> token = new ArrayList<String>();
 	private boolean caseSensitive;
 	private boolean docValue;
+	private boolean chn;
 	private String alias = "";
 	private String type;
 	
@@ -36,6 +37,7 @@ public class IndexKey implements Serializable {
 		this.caseSensitive = caseSensitive;
 		this.type = "text";
 		this.docValue = true;
+		this.chn = false;
 	}
 	
 	public IndexKey(List<String> token, boolean caseSensitive, String type) {
@@ -43,6 +45,7 @@ public class IndexKey implements Serializable {
 		this.caseSensitive = caseSensitive;
 		this.type = type;
 		this.docValue = true;
+		this.chn = false;
 	}
 
 	public IndexKey(List<String> token, boolean caseSensitive, String type, String alias) {
@@ -51,7 +54,7 @@ public class IndexKey implements Serializable {
 		this.type = type;
 		this.docValue = true;
 		this.alias = alias;
-
+		this.chn = false;
 	}
 	
 	/**
@@ -64,6 +67,7 @@ public class IndexKey implements Serializable {
 		this.type = other.GetType();
 		this.docValue = other.IsDocValue();
 		this.alias = other.alias;
+		this.chn = other.chn;
 	}
 
 
@@ -75,6 +79,20 @@ public class IndexKey implements Serializable {
 		this.alias = alias;
 	}
 
+	/**
+	 * @ return type
+	 */
+	public boolean IsChn() {
+		return chn;
+	}
+	
+	/*
+	 * @param chn to be set
+	 */
+	public void SetChn(boolean chn) {
+		this.chn = chn;
+	}
+	
 	/**
 	 * @return type
 	 */
@@ -88,6 +106,7 @@ public class IndexKey implements Serializable {
 	public void SetDocValue(boolean docValue) {
 		this.docValue = docValue;
 	}
+	
 	/**
 	 * @return type
 	 */
@@ -138,6 +157,7 @@ public class IndexKey implements Serializable {
 		if (GetType().equals("text")) {
 			allKeys.put("token", tokenDict);
 			allKeys.put("caseSensitive", GetCaseSensitive());
+			allKeys.put("chn", IsChn());
 		}
 		
 		allKeys.put("doc_value", IsDocValue());
@@ -161,6 +181,13 @@ public class IndexKey implements Serializable {
 	
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {
+			
+			if (dict.containsKey("chn")) {
+				SetChn(dict.getBooleanValue("chn"));
+			} else {
+				SetChn(false);
+			}
+			
 			if (dict.containsKey("alias"))
 				setAlias(dict.getString("alias"));
 			if (!dict.containsKey("doc_value"))

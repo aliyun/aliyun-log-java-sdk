@@ -1,8 +1,8 @@
 # log service java sdk
 java sdk 是对所有log service 提供的API的封装，通过该sdk，可以调用所有log service。部分API文档请参考[文档中心](https://help.aliyun.com/document_detail/29007.html)。 
 ### 注意
-1. 为了提高您的系统的IO效率，请尽量不要直接使用SDK往日志服务中写数据，写数据标准做法参考文章[**Producer Library**](https://help.aliyun.com/document_detail/43758.html)。
-2. 要消费日志服务中的数据，请尽量不要直接使用SDK的拉数据接口，我们提供了一个高级消费库[**Consumer Library**](https://help.aliyun.com/document_detail/28998.html)，该库屏蔽了日志服务的实现细节，并且提供了负载均衡、按序消费等高级功能。
+1. 为了提高您系统的 IO 效率，请尽量不要直接使用 SDK 往日志服务中写数据，写数据标准做法参考文章 [**Aliyun LOG Java Producer 快速入门**](https://yq.aliyun.com/articles/682761)。
+2. 要消费日志服务中的数据，请尽量不要直接使用SDK的拉数据接口，我们提供了一个高级消费库 [**Consumer Library**](https://help.aliyun.com/document_detail/28998.html)，该库屏蔽了日志服务的实现细节，并且提供了负载均衡、按序消费等高级功能。
 
 ### sample 1 : 构建client
 ```
@@ -14,7 +14,7 @@ Client client = new Client(host, accessId, accessKey);
 
 ```
 
-### sample 2 : 创建logstore
+### sample 2 : 创建Logstore
 ```
 
 String project = "your_project_name";
@@ -34,7 +34,7 @@ int numLogGroup = 10;
  * 向log service发送一个日志包，每个日志包中，有2行日志
  */
 for (int i = 0; i < numLogGroup; i++) {
-    Vector<LogItem> logGroup = new Vector<LogItem>();
+    List<LogItem> logGroup = new ArrayList<LogItem>();
     LogItem logItem = new LogItem((int) (new Date().getTime() / 1000));
     logItem.PushBack("level", "info");
     logItem.PushBack("name", String.valueOf(i));
@@ -97,7 +97,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.22</version>
+    <version>0.6.28</version>
 </dependency>
 ```
 
@@ -107,7 +107,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.22</version>
+    <version>0.6.28</version>
     <classifier>jar-with-dependencies</classifier>
     <exclusions>
         <exclusion>

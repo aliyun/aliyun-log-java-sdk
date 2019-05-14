@@ -4,10 +4,10 @@ import java.util.Map;
 
 public class DeleteAlertResponse extends Response {
 
-	private static final long serialVersionUID = -7937591031153568747L;
+    private static final long serialVersionUID = -7937591031153568747L;
 
-	public DeleteAlertResponse(Map<String, String> headers) {
-		super(headers);
-	}
+    public DeleteAlertResponse(Map<String, String> headers) {
+        super(headers);
+    }
 
 }

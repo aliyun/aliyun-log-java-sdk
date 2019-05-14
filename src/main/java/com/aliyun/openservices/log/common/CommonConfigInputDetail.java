@@ -208,6 +208,16 @@ public abstract class CommonConfigInputDetail {
 	
 	protected void CommonConfigFromJsonObject(JSONObject inputDetail) throws LogException {
 		try {
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_ADJUSTTIMEZONE)) {
+				this.adjustTimezone = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ADJUSTTIMEZONE);
+			} else {
+				this.adjustTimezone = false;
+			}
+			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_LOGTIMEZONE)) {
+				this.logTimezone = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_LOGTIMEZONE);
+			} else {
+				this.logTimezone = "";
+			}	
 			if (inputDetail.has(Consts.CONST_CONFIG_INPUTDETAIL_PRIORITY))
 				this.priority = inputDetail.getInt(Consts.CONST_CONFIG_INPUTDETAIL_PRIORITY);
 			else

@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Utils;
 import net.sf.json.JSONObject;
 
@@ -10,6 +11,8 @@ import java.util.Date;
 
 
 public class Job implements Serializable {
+
+    private static final long serialVersionUID = 6457720937101208563L;
 
     /**
      * The name of job.
@@ -138,6 +141,8 @@ public class Job implements Serializable {
         switch (type) {
             case ALERT:
                 return new AlertConfiguration();
+            case REPORT:
+                return new ReportConfiguration();
             default:
                 throw new IllegalArgumentException("Unimplemented job type: " + type);
         }
@@ -145,14 +150,10 @@ public class Job implements Serializable {
 
     public void deserialize(JSONObject value) {
         name = value.getString("name");
-        if (value.has("displayName")) {
-            displayName = value.getString("displayName");
-        }
+        displayName = JsonUtils.readOptionalString(value, "displayName");
         type = JobType.fromString(value.getString("type"));
         state = JobState.fromString(value.getString("state"));
-        if (value.has("description")) {
-            description = value.getString("description");
-        }
+        description = JsonUtils.readOptionalString(value, "description");
         createTime = Utils.timestampToDate(value.getLong("createTime"));
         lastModifiedTime = Utils.timestampToDate(value.getLong("lastModifiedTime"));
         schedule = new JobSchedule();

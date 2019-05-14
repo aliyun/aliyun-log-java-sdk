@@ -39,7 +39,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
     static private final String project = "project1";
     static private final String logStore = "javasdk2";
     private final int startTime = getNowTimestamp();
-    private final String topic = "sls_java_topic_" + String.valueOf(startTime);
+    private final String topic = "sls_java_topic_" + startTime;
     private final String source = "127.0.0.1";
     private final int defaultShardNum = 2;
 
@@ -194,7 +194,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         reCreateLogStore(project, logStoreRes);
 
         int caseStartTime = getNowTimestamp();
-        String caseTopic = "sls_java_topic_" + String.valueOf(caseStartTime);
+        String caseTopic = "sls_java_topic_" + caseStartTime;
         List<LogItem> logGroupSample = new ArrayList<LogItem>();
         LogItem logItemSample = new LogItem(getNowTimestamp());
         logItemSample.PushBack("key", "value");
@@ -412,7 +412,7 @@ public class SlsLoghubDataFunctionTest extends FunctionTest {
         reCreateLogStore(project, logStoreRes);
 
         int caseStartTime = getNowTimestamp();
-        String caseTopic = "sls_java_topic_" + String.valueOf(caseStartTime);
+        String caseTopic = "sls_java_topic_" + caseStartTime;
         List<LogItem> logGroupSample = new ArrayList<LogItem>();
         LogItem logItemSample = new LogItem(getNowTimestamp());
         logItemSample.PushBack("key", "value");

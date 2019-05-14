@@ -16,7 +16,7 @@ public class ClientConnectionHelper {
 		private static final ClientConnectionHelper INSTANCE = new ClientConnectionHelper();
 	}
 
-	public static final ClientConnectionHelper getInstance() {
+	public static ClientConnectionHelper getInstance() {
 		return SingletonHolder.INSTANCE;
 	}
 

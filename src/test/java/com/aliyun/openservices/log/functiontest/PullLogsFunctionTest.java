@@ -23,10 +23,10 @@ public class PullLogsFunctionTest extends BaseMetadataTest {
             List<LogItem> logGroup = new ArrayList<LogItem>(10);
             for (int j = 0; j < 10; j++) {
                 LogItem logItem = new LogItem(getNowTimestamp());
-                logItem.PushBack("ID", "id_" + String.valueOf(i * 10 + j));
+                logItem.PushBack("ID", "id_" + (i * 10 + j));
                 logGroup.add(logItem);
             }
-            String topic = "topic_" + String.valueOf(i);
+            String topic = "topic_" + i;
             try {
                 client.PutLogs(TEST_PROJECT, logStore, topic, logGroup, "");
             } catch (LogException e) {

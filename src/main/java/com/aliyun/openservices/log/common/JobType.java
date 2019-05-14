@@ -9,7 +9,9 @@ import java.lang.reflect.Type;
  * Job type.
  */
 public enum JobType implements JSONSerializable {
-    ALERT("Alert");
+    ALERT("Alert"),
+    REPORT("Report"),
+    ;
 
     private final String value;
 

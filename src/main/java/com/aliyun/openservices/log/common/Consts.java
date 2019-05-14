@@ -5,7 +5,9 @@ package com.aliyun.openservices.log.common;
 
 public class Consts {
 	public enum CompressType {
-		NONE(""), LZ4(Consts.CONST_LZ4), GZIP(Consts.CONST_GZIP_ENCODING);
+		NONE(""),
+		LZ4(Consts.CONST_LZ4),
+		GZIP(Consts.CONST_GZIP_ENCODING);
 
 		private String strValue;
 
@@ -15,6 +17,15 @@ public class Consts {
 
 		public String toString() {
 			return strValue;
+		}
+
+		public static CompressType fromString(final String compressType) {
+			for (CompressType type : values()) {
+				if (type.strValue.equals(compressType)) {
+					return type;
+				}
+			}
+			throw new IllegalArgumentException("invalid CompressType: " + compressType + ", should be (" + CompressType.NONE + ", " + CompressType.GZIP + ", " + CompressType.LZ4 + ")");
 		}
 	}
 
@@ -149,6 +160,7 @@ public class Consts {
 	public static final String CONST_PRINCIPLEID= "principleId";
 	public static final String CONST_LOGSTORE_NAME= "logstoreName";
 	public static final String CONST_SPLIT_MID_HASH="key";
+	public static final String CONST_SPLIT_SHARDCOUNT = "shardCount";
 	public static final String CONST_ACTION="action";
 	public static final String CONST_ACTION_SPLIT="split";
 	public static final String CONST_ACTION_MERGE="merge";
@@ -280,6 +292,10 @@ public class Consts {
 	public static final String CONST_PROJECTDESC = "description";
 	public static final String CONST_PROJECTREGION = "region";
 
+	// domain
+	public static final String CONST_DOMAIN_URI = "/domains";
+	public static final String CONST_DOMAIN_NAME = "domainName";
+	
 	// savedsearch api
 	public static final String CONST_SAVEDSEARCH_URI = "/savedsearches";
 	public static final String CONST_SAVEDSEARCH_NAME = "savedsearchName";
@@ -288,39 +304,6 @@ public class Consts {
 	public static final String CONST_SAVEDSEARCH_QUERY = "searchQuery";
 	public static final String CONST_SAVEDSEARCH_LOGSTORE = "logstore";
 	public static final String CONST_SAVEDSEARCH_TOPIC = "topic";
-
-	// alert api
-	public static final String CONST_ALERT_URI = "/alerts";
-	public static final String CONST_ALERT_NAME = "alertName";
-	public static final String CONST_ALERT_DISPLAYNAME = "displayName";
-	public static final String CONST_ALERT_SAVEDSEARCHNAME = "savedsearchName";
-	public static final String CONST_ALERT_ROLEARN = "roleArn";
-	public static final String CONST_ALERT_FROM = "from";
-	public static final String CONST_ALERT_TO = "to";
-	public static final String CONST_ALERT_CHECKINTERVAL = "checkInterval";
-	public static final String CONST_ALERT_COUNT = "count";
-	public static final String CONST_ALERT_DETAIL = "alertDetail";
-	public static final String CONST_ALERT_KEY = "alertKey";
-	public static final String CONST_ALERT_VALUE = "alertValue";
-	public static final String CONST_ALERT_COMPARATOR = "comparator";
-	public static final String CONST_ALERT_MESSAGE = "alertMessage";
-	public static final String CONST_ALERT_ACTIONTYPE = "actionType";
-	public static final String CONST_ALERT_ACTIONTYPE_SMS = "sms";
-	public static final String CONST_ALERT_ACTIONTYPE_MNS = "mns";
-	public static final String CONST_ALERT_ACTIONTYPE_WEBHOOK = "webhook";
-	public static final String CONST_ALERT_ACTIONTYPE_DINGTALK = "dingtalk";
-	public static final String CONST_ALERT_ACTIONTYPE_NOTIFICATION = "notification";
-	public static final String CONST_ALERT_ACTIONDETAIL = "actionDetail";
-	public static final String CONST_ALERT_ACTIONDETAIL_PHONENUMBER = "phoneNumber";
-	public static final String CONST_ALERT_ACTIONDETAIL_MNS_PARAM = "param";
-	public static final String CONST_ALERT_ACTIONDETAIL_MESSAGE = "message";
-	public static final String CONST_ALERT_ACTIONDETAIL_WEBHOOK = "webhook";
-
-	public static final String CONST_ALERTTIME = "alertTime";
-	public static final String CONST_TRIGGERSTATUS = "triggerStatus";
-	public static final String CONST_TRIGGERMESSAGE = "triggerMessage";
-	public static final String CONST_ACTIONSTATUS = "actionStatus";
-	public static final String CONST_ACTIONMESSAGE = "actionMessage";
 
 	// logtail profile
 	public static final String CONST_GETLOGTAILPROFILE_URI = "/logtailprofile";
@@ -346,6 +329,10 @@ public class Consts {
 	public static final String ETL_JOB_TRIGGER_INTERVAL = "triggerInterval";
 	public static final String ETL_JOB_TRIGGER_MAX_RETRY_TIME = "maxRetryTime";
 	public static final String ETL_JOB_TRIGGER_ROLEARN = "roleArn";
+	public static final String ETL_JOB_TRIGGER_STARTING_POSITION = "startingPosition";
+	public static final String ETL_JOB_TRIGGER_STARTING_UNIXTIME = "startingUnixtime";
+	public static final String ETL_JOB_TRIGGER_STARTING_POSITION_LATEST = "latest";
+	public static final String ETL_JOB_TRIGGER_STARTING_POSITION_AT_UNIXTIME = "at-unixtime";
 	public static final String ETL_JOB_FUNCTION_CONFIG = "functionConfig";
 	public static final String ETL_JOB_FUNCTION_PROVIDER = "functionProvider";
 	public static final String ETL_JOB_FUNCTION_PARAMETER = "functionParameter";
@@ -379,11 +366,15 @@ public class Consts {
     public static final String JOB_NAME = "jobName";
     public static final String JOB_TYPE = "jobType";
     public static final String JOB_URI = "/jobs";
+    public static final String DISPLAY_NAME = "displayName";
 
     public static final String LOGGING_URI = "/logging";
-    public static final int MAX_TIME_SPAN_IN_QUERY = 86400;
     public static final String METHOD = "method";
     public static final String MOBILE_LIST = "mobileList";
     public static final String RESOURCE_PROVIDER = "resourceProvider";
-    public static final String SERVICE_URI = "serviceUri";
+    static final String SERVICE_URI = "serviceUri";
+    static final String SUBJECT = "subject";
+    static final String TITLE = "title";
+    static final String AT_MOBILES = "atMobiles";
+    static final String HEADERS = "headers";
 }

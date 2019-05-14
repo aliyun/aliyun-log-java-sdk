@@ -1,21 +1,11 @@
 package com.aliyun.openservices.log.request;
 
-public class GetAlertRequest extends Request {
 
-	private static final long serialVersionUID = 219859427246796382L;
-	protected String alertName;
+public class GetAlertRequest extends GetJobRequest {
 
-	public GetAlertRequest(String project, String alertName) {
-		super(project);
-		this.alertName = alertName;
-	}
+    private static final long serialVersionUID = -6270563487558925198L;
 
-	public String getAlertName() {
-		return alertName;
-	}
-
-	public void setAlertName(String alertName) {
-		this.alertName = alertName;
-	}
-
+    public GetAlertRequest(String project, String name) {
+        super(project, name);
+    }
 }
