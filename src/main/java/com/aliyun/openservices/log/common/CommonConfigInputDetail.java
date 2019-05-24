@@ -258,8 +258,8 @@ public abstract class CommonConfigInputDetail {
 				SetShardHashKey(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY));
 			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS)) {
 				JSONArray sensitiveKeysArray = inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS);
-				SensitiveKey sensitiveKey = new SensitiveKey();
 				for (int index = 0; index < sensitiveKeysArray.size(); index++) {
+					SensitiveKey sensitiveKey = new SensitiveKey();
 					sensitiveKey.FromJsonString(sensitiveKeysArray.getJSONObject(index).toString());
 					sensitiveKeys.add(sensitiveKey);
 				}

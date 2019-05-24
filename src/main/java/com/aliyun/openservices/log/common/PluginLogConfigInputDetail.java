@@ -27,7 +27,7 @@ public class PluginLogConfigInputDetail extends CommonConfigInputDetail {
 
 	@Override
 	public void FromJsonObject(JSONObject inputDetail) throws LogException {
-		CommonConfigToJsonObject(inputDetail);
+		CommonConfigFromJsonObject(inputDetail);
 		this.pluginDetail = inputDetail.getJSONObject("plugin").toString();
 	}
 }
