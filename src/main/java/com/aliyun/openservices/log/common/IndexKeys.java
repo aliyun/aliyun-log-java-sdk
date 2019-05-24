@@ -18,11 +18,16 @@ public class IndexKeys {
 
 	public IndexKeys() {
 	}
-	
+
 	public IndexKeys(IndexKeys other) {
 		keys = new HashMap<String, IndexKey>();
 		for (Map.Entry<String, IndexKey> entry : other.GetKeys().entrySet()) {
-			keys.put(entry.getKey(), new IndexKey(entry.getValue()));
+			IndexKey indexKey = entry.getValue();
+			if(indexKey instanceof IndexJsonKey){
+				keys.put(entry.getKey(), new IndexJsonKey((IndexJsonKey) indexKey));
+			}else {
+				keys.put(entry.getKey(), new IndexKey(indexKey));
+			}
 		}
 	}
 	
@@ -63,8 +68,14 @@ public class IndexKeys {
 			while (it.hasNext()) {
 				String key = it.next();
 				JSONObject value = dict.getJSONObject(key);
-				IndexKey indexKey = new IndexKey();
-				indexKey.FromJsonObject(value);
+				IndexKey indexKey;
+				if("json".equals(value.getString("type"))){
+					indexKey = new IndexJsonKey();
+					indexKey.FromJsonObject(value);
+				}else {
+					indexKey = new IndexKey();
+					indexKey.FromJsonObject(value);
+				}
 				AddKey(key, indexKey);
 			}
 		} catch (JSONException e) {

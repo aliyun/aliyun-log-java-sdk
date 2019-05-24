@@ -22,7 +22,7 @@ public class IndexKey implements Serializable {
 	private boolean docValue;
 	private boolean chn;
 	private String alias = "";
-	private String type;
+	private String type = "text";
 	
 	public IndexKey() {
 	}
