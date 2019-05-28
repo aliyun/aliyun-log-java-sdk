@@ -2,11 +2,11 @@ package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+
 import com.aliyun.openservices.log.exception.LogException;
 
 public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail implements Serializable {
@@ -30,7 +30,16 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 	protected Map<String, String> dockerIncludeEnv = new HashMap<String, String>();
 	protected Map<String, String> dockerExcludeEnv = new HashMap<String, String>();
 	protected long delaySkipBytes = 0;
-	
+	protected Advanced advanced = new Advanced();
+
+	public Advanced getAdvanced() {
+		return advanced;
+	}
+
+	public void setAdvanced(Advanced advanced) {
+		this.advanced = advanced;
+	}
+
 	public long getDelaySkipBytes() {
 		return delaySkipBytes;
 	}
@@ -187,6 +196,7 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE, isDockerFile);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES, delaySkipBytes);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DISCARDUNMATCH, discardUnmatch);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED, advanced);
 
 		JSONObject dockerIncludeEnvJson = new JSONObject();
 		for (Map.Entry<String, String> entry : dockerIncludeEnv.entrySet()) {
@@ -264,6 +274,11 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 				this.delaySkipBytes = inputDetail.getLong(Consts.CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES);
 			else 
 				this.delaySkipBytes = 0;
+
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED))
+				this.advanced = Advanced.FromJsonObject(inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED));
+			else
+				this.advanced = new Advanced(false);
 
 			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV)) {
 				JSONObject dockerIncludeEnvJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV);

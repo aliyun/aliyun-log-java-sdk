@@ -168,6 +168,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		SetFilterKeyRegex(inputDetail.GetFilterKey(), inputDetail.GetFilterRegex());
 		this.topicFormat = inputDetail.GetTopicFormat();
 		this.customizedFields = inputDetail.customizedFields;
+		this.advanced = inputDetail.advanced;
 	}
 
 	public ArrayList<String> GetKey() {

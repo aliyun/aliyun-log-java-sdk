@@ -202,6 +202,7 @@ public class Consts {
 	public static final String CONST_CONFIG_INPUTDETAIL_QUOTE = "quote";
 	public static final String CONST_CONFIG_INPUTDETAIL_AUTOEXTEND = "autoExtend";
 	public static final String CONST_CONFIG_INPUTDETAIL_DISCARDUNMATCH = "discardUnmatch";
+	public static final String CONST_CONFIG_INPUTDETAIL_ADVANCED = "advanced";
 	public static final String CONST_CONFIG_INPUTDETAIL_ENABLETAG = "enableTag";
 	public static final String CONST_CONFIG_INPUTDETAIL_ENABLERAWLOG = "enableRawLog";
 	public static final String CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY = "shardHashKey";
