@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -20,16 +19,16 @@
 
     <licenses>
         <license>
-            <name/>
-            <url/>
+            <name />
+            <url />
             <distribution>repo</distribution>
             <comments>Copyright (C) Alibaba Cloud Computing. All rights reserved.</comments>
         </license>
     </licenses>
     <scm>
         <url>https://github.com/aliyun/aliyun-log-java-sdk</url>
-        <connection>scm:git:git@github.com:aliyun/aliyun-log-java-sdk.git</connection>
-        <developerConnection>scm:git:git@github.com:aliyun/aliyun-log-java-sdk.git
+        <connection>scm:git:git@gitlab.alibaba-inc.com:sls/aliyun-log-java-sdk.git</connection>
+        <developerConnection>scm:git:git@gitlab.alibaba-inc.com:sls/aliyun-log-java-sdk.git
         </developerConnection>
     </scm>
     <developers>
