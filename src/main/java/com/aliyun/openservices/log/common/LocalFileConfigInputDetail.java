@@ -275,10 +275,11 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 			else 
 				this.delaySkipBytes = 0;
 
-			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED))
-				this.advanced = Advanced.FromJsonObject(inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED));
-			else
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED)) {
+				this.advanced = Advanced.fromJsonObject(inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED));
+			} else {
 				this.advanced = new Advanced(false);
+			}
 
 			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV)) {
 				JSONObject dockerIncludeEnvJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV);

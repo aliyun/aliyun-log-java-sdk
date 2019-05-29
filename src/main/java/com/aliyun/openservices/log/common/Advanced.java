@@ -17,6 +17,8 @@ public class Advanced {
     @JSONField(name = "force_multiconfig", alternateNames = {"force_multiconfig"})
     private boolean forceMulticonfig = false;
 
+    public final static String KEY_NAME = "force_multiconfig";
+
     public Advanced() {}
 
     public Advanced(boolean forceMulticonfig) {
@@ -31,16 +33,16 @@ public class Advanced {
         this.forceMulticonfig = forceMulticonfig;
     }
 
-    public JSONObject ToJsonObject() {
+    public JSONObject toJsonObject() {
         JSONObject jsonObj = new JSONObject();
         jsonObj.put("force_multiconfig", this.forceMulticonfig);
         return jsonObj;
     }
 
-    public static Advanced FromJsonObject(JSONObject advanced) throws LogException {
+    public static Advanced fromJsonObject(JSONObject advanced) throws LogException {
         try {
-            if (advanced.containsKey("force_multiconfig")) {
-                return new Advanced(advanced.getBoolean("force_multiconfig"));
+            if (advanced.containsKey(KEY_NAME)) {
+                return new Advanced(advanced.getBoolean(KEY_NAME));
             }
             return new Advanced(false);
         } catch (JSONException e) {
