@@ -37,11 +37,6 @@ public enum JobScheduleType implements JSONSerializable {
     DRY_RUN("DryRun"),
 
     /**
-     * Not scheduled.
-     */
-    NONE("None"),
-
-    /**
      * Long live.
      */
     RESIDENT("Resident"),

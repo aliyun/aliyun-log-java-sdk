@@ -24,6 +24,7 @@ public class ListJobsRequest extends JobRequest {
      * resourceProvider for searching
      */
     private String resourceProvider;
+    private String logstore;
     private Integer offset;
     private Integer size;
 
@@ -76,6 +77,14 @@ public class ListJobsRequest extends JobRequest {
         this.size = size;
     }
 
+    public String getLogstore() {
+        return logstore;
+    }
+
+    public void setLogstore(String logstore) {
+        this.logstore = logstore;
+    }
+
     @Override
     public HttpMethod getMethod() {
         return HttpMethod.GET;
@@ -106,6 +115,9 @@ public class ListJobsRequest extends JobRequest {
         }
         if (size != null) {
             SetParam(Consts.CONST_SIZE, size.toString());
+        }
+        if (logstore != null && !logstore.isEmpty()) {
+            SetParam(Consts.LOGSTORE_KEY, logstore);
         }
         return super.GetAllParams();
     }

@@ -63,7 +63,7 @@ public class SavedSearch implements Serializable {
 
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_NAME, getSavedSearchName());
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_QUERY, getSearchQuery());
-		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_LOGSTORE, getLogstore());
+		savedSearchJson.put(Consts.LOGSTORE_KEY, getLogstore());
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_TOPIC, getTopic());
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_DISPLAYNAME, getDisplayName());
 
@@ -76,7 +76,7 @@ public class SavedSearch implements Serializable {
 		try {		
 			setSavedSearchName(dict.getString(Consts.CONST_SAVEDSEARCH_NAME));
 			setSearchQuery(dict.getString(Consts.CONST_SAVEDSEARCH_QUERY));
-			setLogstore(dict.getString(Consts.CONST_SAVEDSEARCH_LOGSTORE));
+			setLogstore(dict.getString(Consts.LOGSTORE_KEY));
 			setTopic(dict.getString(Consts.CONST_SAVEDSEARCH_TOPIC));
 			if (dict.has(Consts.CONST_SAVEDSEARCH_DISPLAYNAME))
 				setDisplayName(dict.getString(Consts.CONST_SAVEDSEARCH_DISPLAYNAME));
