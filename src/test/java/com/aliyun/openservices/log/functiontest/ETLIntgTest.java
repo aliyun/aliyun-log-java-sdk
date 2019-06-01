@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.common.ETL;
 import com.aliyun.openservices.log.common.ETLConfiguration;
 import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.common.JobScheduleType;
+import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateETLRequest;
 import com.aliyun.openservices.log.request.CreateJobScheduleRequest;
@@ -20,6 +21,7 @@ import com.aliyun.openservices.log.response.GetETLResponse;
 import com.aliyun.openservices.log.response.GetJobScheduleResponse;
 import com.aliyun.openservices.log.response.ListETLResponse;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -47,19 +49,33 @@ public class ETLIntgTest extends JobIntgTest {
         configuration.setScript("hello world");
         configuration.setVersion(1);
         configuration.setContainerImage("test-image");
-        configuration.setInstanceType("small");
+        configuration.setInstanceType("Standard");
         configuration.setAccessKeyId("dummy");
         configuration.setAccessKeySecret("dummy");
         configuration.setParameters(Collections.<String, String>emptyMap());
         List<DataSink> sinks = new ArrayList<DataSink>();
-        sinks.add(new DataSink("test", "project", "logstore-test"));
+        DataSink sink = new DataSink("test", "project", "logstore-test");
+        sink.setAccessKeyId("1111");
+        sink.setAccessKeySecret("111111");
+        sinks.add(sink);
         configuration.setSinks(sinks);
         etl.setConfiguration(configuration);
         return etl;
     }
 
+    @BeforeClass
+    public static void prepareLogstore() {
+        LogStore logStore = new LogStore();
+        logStore.SetTtl(1);
+        logStore.SetShardCount(1);
+        logStore.SetLogStoreName("test-logstore");
+        logStore.setEnableWebTracking(true);
+        logStore.setAppendMeta(true);
+        createOrUpdateLogStore(TEST_PROJECT, logStore);
+    }
+
     @Before
-    public void prepare() throws Exception {
+    public void cleanUp() throws Exception {
         ListETLRequest listETLRequest = new ListETLRequest(TEST_PROJECT);
         listETLRequest.setOffset(0);
         listETLRequest.setSize(100);
