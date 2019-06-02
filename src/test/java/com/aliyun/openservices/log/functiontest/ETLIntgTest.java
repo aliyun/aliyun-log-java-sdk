@@ -86,6 +86,58 @@ public class ETLIntgTest extends JobIntgTest {
     }
 
     @Test
+    public void testETLJobQuota() throws Exception {
+        ETL etl = createETL();
+        etl.setRecyclable(true);
+        for (int i = 0; i < 100; i++) {
+            etl.setName("etl-" + getNowTimestamp() + "-" + i);
+            client.createETL(new CreateETLRequest(TEST_PROJECT, etl));
+        }
+        try {
+            etl.setName("etl-" + getNowTimestamp() + "-100");
+            client.createETL(new CreateETLRequest(TEST_PROJECT, etl));
+            fail();
+        } catch (LogException ex) {
+            assertEquals("ExceedQuota", ex.GetErrorCode());
+            assertEquals("ETL count exceeds the maximum limit", ex.GetErrorMessage());
+        }
+        etl.setRecyclable(false);
+        for (int i = 0; i < 100; i++) {
+            etl.setName("etl-" + getNowTimestamp() + "-" + i);
+            client.createETL(new CreateETLRequest(TEST_PROJECT, etl));
+        }
+        try {
+            etl.setName("etl-" + getNowTimestamp() + "-100");
+            client.createETL(new CreateETLRequest(TEST_PROJECT, etl));
+            fail();
+        } catch (LogException ex) {
+            assertEquals("ETL count for testing exceeds the maximum limit", ex.GetErrorMessage());
+            assertEquals("ExceedQuota", ex.GetErrorCode());
+        }
+    }
+
+    @Test
+    public void testETLJobScheduleQuota() throws Exception {
+        ETL etl = createETL();
+        client.createETL(new CreateETLRequest(TEST_PROJECT, etl));
+        JobSchedule schedule = new JobSchedule();
+        schedule.setType(JobScheduleType.DRY_RUN);
+        schedule.setJobName(etl.getName());
+        schedule.setDisplayName("displayName");
+        schedule.setFromTime((int) (System.currentTimeMillis() / 1000));
+        for (int i = 0; i < 300; i++) {
+            client.createJobSchedule(new CreateJobScheduleRequest(TEST_PROJECT, schedule));
+        }
+        try {
+            client.createJobSchedule(new CreateJobScheduleRequest(TEST_PROJECT, schedule));
+            fail();
+        } catch (LogException ex) {
+            assertEquals("ExceedQuota", ex.GetErrorCode());
+            assertEquals("Job schedule count quota exceeded", ex.GetErrorMessage());
+        }
+    }
+
+    @Test
     public void testETLCrud() throws Exception {
         ETL etl = createETL();
         client.createETL(new CreateETLRequest(TEST_PROJECT, etl));
