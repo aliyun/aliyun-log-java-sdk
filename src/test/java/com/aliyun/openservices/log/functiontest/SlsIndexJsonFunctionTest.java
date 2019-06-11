@@ -9,6 +9,7 @@ import com.aliyun.openservices.log.exception.LogException;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +38,11 @@ public class SlsIndexJsonFunctionTest {
     @Test
     public void TestUpdateIndex() {
         Index index = new Index();
+        index.setMaxTextLen(100);
+        List<String> whiteBlackList = Arrays.asList("123","456");
+        index.setLogReduceWhiteList(whiteBlackList);
+        index.setLogReduceBlackList(whiteBlackList);
+        index.setLogReduceEnable(true);
         IndexKeys keys = new IndexKeys();
         IndexKey keyContent = new IndexKey();
         keyContent.SetCaseSensitive(false);
@@ -64,6 +70,9 @@ public class SlsIndexJsonFunctionTest {
         try {
             client.UpdateIndex(project, logStore, index);
             Index res = client.GetIndex(project, logStore).GetIndex();
+            assertEquals(res.getMaxTextLen(), index.getMaxTextLen());
+            assertEquals(res.getLogReduceWhiteList(), whiteBlackList);
+            assertEquals(res.getLogReduceBlackList(), whiteBlackList);
             IndexKeys resKeys = res.GetKeys();
             assertEquals(index.GetKeys().GetKeys().size(), resKeys.GetKeys().size());
             assertTrue(resKeys.GetKeys().containsKey("json1"));

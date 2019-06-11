@@ -54,6 +54,9 @@ public class Index {
 		if (other.isLineSet()) {
 			SetLine(other.GetLine());
 		}
+		this.maxTextLen = other.getMaxTextLen();
+		setLogReduceWhiteList(other.getLogReduceWhiteList());
+		setLogReduceBlackList(other.getLogReduceBlackList());
 	}
 	
 	public boolean isLogReduceEnable() {
