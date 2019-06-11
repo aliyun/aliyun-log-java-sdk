@@ -1,9 +1,13 @@
 package com.aliyun.openservices.log.common;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Index config for a logstore,  it contains the index data life cycle(ttl),  index for keys and for log line
@@ -18,7 +22,11 @@ public class Index {
 	private boolean keysSet = false;
 	private boolean lineSet = false;
 	private boolean logReduceEnable = false;
-	
+
+	private int maxTextLen = 0;
+	private List<String> logReduceWhiteList = new ArrayList<String>();
+	private List<String> logReduceBlackList = new ArrayList<String>();
+
 	public Index() {
 	}
 	/**
@@ -115,7 +123,31 @@ public class Index {
 		lineSet = true;
 		this.line = new IndexLine(line);
 	}
-	
+
+	public int getMaxTextLen() {
+		return maxTextLen;
+	}
+
+	public void setMaxTextLen(int maxTextLen) {
+		this.maxTextLen = maxTextLen;
+	}
+
+	public List<String> getLogReduceWhiteList() {
+		return logReduceWhiteList;
+	}
+
+	public void setLogReduceWhiteList(List<String> logReduceWhiteList) {
+		this.logReduceWhiteList = logReduceWhiteList;
+	}
+
+	public List<String> getLogReduceBlackList() {
+		return logReduceBlackList;
+	}
+
+	public void setLogReduceBlackList(List<String> logReduceBlackList) {
+		this.logReduceBlackList = logReduceBlackList;
+	}
+
 	/**
 	 * Return index in json object
 	 * @return index in json object
@@ -135,6 +167,26 @@ public class Index {
 		if (keysSet) {
 			JSONObject keysDict = keys.ToJsonObject();
 			index.put("keys", keysDict);
+		}
+
+		if(maxTextLen>0){
+			index.put("max_text_len", maxTextLen);
+		}
+
+		if (logReduceWhiteList.size() > 0) {
+			JSONArray logReduceWhiteListDict = new JSONArray();
+			for (String v:logReduceWhiteList) {
+				logReduceWhiteListDict.add(v);
+			}
+			index.put("log_reduce_white_list", logReduceWhiteListDict);
+		}
+
+		if (logReduceBlackList.size() > 0) {
+			JSONArray logReduceBlackListDict = new JSONArray();
+			for (String v:logReduceBlackList) {
+				logReduceBlackListDict.add(v);
+			}
+			index.put("log_reduce_black_list", logReduceBlackListDict);
 		}
 
 		return index;
@@ -172,7 +224,27 @@ public class Index {
 			if (dict.containsKey("log_reduce")) {
 				logReduceEnable = dict.getBooleanValue("log_reduce");
 			}
-			
+
+			if (dict.containsKey("max_text_len")) {
+				maxTextLen = dict.getIntValue("max_text_len");
+			}
+
+            if (dict.containsKey("log_reduce_white_list")) {
+                JSONArray logReduceWhiteListDict = dict.getJSONArray("log_reduce_white_list");
+                logReduceWhiteList = new ArrayList<String>();
+                for (int i = 0;i < logReduceWhiteListDict.size();i++) {
+                    logReduceWhiteList.add(logReduceWhiteListDict.getString(i));
+                }
+            }
+
+            if (dict.containsKey("log_reduce_black_list")) {
+                JSONArray logReduceBlackListDict = dict.getJSONArray("log_reduce_black_list");
+                logReduceBlackList = new ArrayList<String>();
+                for (int i = 0;i < logReduceBlackListDict.size();i++) {
+                    logReduceBlackList.add(logReduceBlackListDict.getString(i));
+                }
+            }
+
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateIndex", e.getMessage(), e, "");
 		}
