@@ -919,8 +919,6 @@ public class Client implements LogService {
 			int to, String topic, String query) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-		CodingUtils.assertParameterNotNull(topic, "topic");
-		CodingUtils.assertParameterNotNull(query, "query");
 		GetLogsRequest request = new GetLogsRequest(project, logStore, from,
 				to, topic, query);
 		return GetLogs(request);
