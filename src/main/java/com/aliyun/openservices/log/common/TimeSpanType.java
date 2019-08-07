@@ -28,7 +28,7 @@ public enum TimeSpanType implements JSONSerializable {
                 return timeSpanType;
             }
         }
-        throw new IllegalArgumentException("Invalid timespan type: " + value);
+        return null;
     }
 
     @Override

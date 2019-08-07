@@ -51,9 +51,10 @@ public abstract class ResponseList<T> extends Response {
         try {
             count = value.getInt(Consts.CONST_COUNT);
             total = value.getInt(Consts.CONST_TOTAL);
-            results = JsonUtils.readList(value, "results", unmarshaller());
+            results = JsonUtils.readList(value, Consts.RESULTS, unmarshaller());
         } catch (final Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, "Unable to deserialize JSON to model: " + ex.getMessage(), ex, requestId);
+            throw new LogException(ErrorCodes.BAD_RESPONSE,
+                    "Unable to deserialize JSON to model: " + ex.getMessage(), ex, requestId);
         }
     }
 }

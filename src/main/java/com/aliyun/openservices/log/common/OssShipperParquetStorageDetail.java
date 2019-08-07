@@ -14,7 +14,7 @@ public class OssShipperParquetStorageDetail extends OssShipperStorageDetail impl
 	private ArrayList<OssShipperStorageColumn> mStorageColumns = new ArrayList<OssShipperStorageColumn>();
 
 	OssShipperParquetStorageDetail() {
-		setmStorageFormat("parquet");
+		setStorageFormat("parquet");
 	}
 	
 	public ArrayList<OssShipperStorageColumn> getmStorageColumns() {
@@ -39,7 +39,7 @@ public class OssShipperParquetStorageDetail extends OssShipperStorageDetail impl
 		detail.put("columns", columns);
 		JSONObject storage = new JSONObject();
 		storage.put("detail", detail);
-		storage.put("format", getmStorageFormat());
+		storage.put("format", getStorageFormat());
 		obj.put("storage", storage);
 		return obj;
 	}
@@ -48,7 +48,7 @@ public class OssShipperParquetStorageDetail extends OssShipperStorageDetail impl
 	public void FromJsonObject(JSONObject storageDetail) throws LogException {
 		try {
 			JSONObject storage = storageDetail.getJSONObject("storage");
-			setmStorageFormat(storage.getString("format"));
+			setStorageFormat(storage.getString("format"));
 			JSONObject detail = storage.getJSONObject("detail");
 			JSONArray columns = detail.getJSONArray("columns");
 			ArrayList<OssShipperStorageColumn> column = new ArrayList<OssShipperStorageColumn>();

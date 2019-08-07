@@ -140,13 +140,7 @@ public abstract class ServiceClient {
             uri += requestMessage.getResourcePath();
         }
 
-        String paramString;
-        try {
-            paramString = HttpUtil.paramToQueryString(requestMessage.getParameters(), charset);
-        } catch (UnsupportedEncodingException e) {
-            // Assertion error because the caller should guarantee the charset.
-            throw new AssertionError(("EncodingFailed" + e.getMessage()));
-        }
+        String paramString = HttpUtil.paramToQueryString(requestMessage.getParameters(), charset);
         /*
          * For all non-POST requests, and any POST requests that already have a
          * payload, we put the encoded params directly in the URI, otherwise,
@@ -178,6 +172,7 @@ public abstract class ServiceClient {
 
         return request;
     }
-    
+
+    public abstract void shutdown();
 }
 

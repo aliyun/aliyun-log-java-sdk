@@ -59,7 +59,7 @@ public enum JobScheduleType implements JSONSerializable {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Illegal schedule type: " + value);
+        return null;
     }
 
     @Override

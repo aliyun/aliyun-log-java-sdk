@@ -21,7 +21,7 @@ public enum JobState implements JSONSerializable {
                 return state;
             }
         }
-        throw new IllegalArgumentException("Unknown job state: " + value);
+        return null;
     }
 
     @Override

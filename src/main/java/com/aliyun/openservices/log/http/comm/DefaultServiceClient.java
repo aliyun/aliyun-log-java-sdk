@@ -1,79 +1,227 @@
-/**
- * Copyright (C) Alibaba Cloud Computing
- * All rights reserved.
- * 
- * 版权所有 （C）阿里云计算有限公司
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 package com.aliyun.openservices.log.http.comm;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpRequestBase;
-
-import com.aliyun.openservices.log.http.utils.ExceptionFactory;
-import com.aliyun.openservices.log.http.utils.HttpUtil;
+import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.ClientConfiguration;
+import com.aliyun.openservices.log.http.client.ClientException;
+import com.aliyun.openservices.log.http.utils.ExceptionFactory;
+import com.aliyun.openservices.log.http.utils.HttpHeaders;
+import com.aliyun.openservices.log.http.utils.HttpUtil;
+import com.aliyun.openservices.log.http.utils.IOUtils;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.Header;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AUTH;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.NTCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContextBuilder;
+
+import javax.net.ssl.SSLContext;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 
 /**
- * The default implementation of <code>ServiceClient</code>.
- * @author xiaoming.yin
- *
+ * Default implementation of {@link ServiceClient}.
  */
 public class DefaultServiceClient extends ServiceClient {
+    protected static HttpRequestFactory httpRequestFactory = new HttpRequestFactory();
 
-    private HttpClient httpClient;
+    protected CloseableHttpClient httpClient;
+    protected HttpClientConnectionManager connectionManager;
+    protected RequestConfig requestConfig;
+    protected CredentialsProvider credentialsProvider;
+    protected HttpHost proxyHttpHost;
+    protected AuthCache authCache;
 
-    /**
-     * 构造新实例。
-     */
     public DefaultServiceClient(ClientConfiguration config) {
         super(config);
-        httpClient = new HttpFactory().createHttpClient(config);
+        this.connectionManager = createHttpClientConnectionManager();
+        this.httpClient = createHttpClient(this.connectionManager);
+        RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
+        requestConfigBuilder.setConnectTimeout(config.getConnectionTimeout());
+        requestConfigBuilder.setSocketTimeout(config.getSocketTimeout());
+        requestConfigBuilder.setConnectionRequestTimeout(config.getConnectionRequestTimeout());
+
+        String proxyHost = config.getProxyHost();
+        int proxyPort = config.getProxyPort();
+        if (proxyHost != null && proxyPort > 0) {
+            this.proxyHttpHost = new HttpHost(proxyHost, proxyPort);
+            requestConfigBuilder.setProxy(proxyHttpHost);
+
+            String proxyUsername = config.getProxyUsername();
+            String proxyPassword = config.getProxyPassword();
+            String proxyDomain = config.getProxyDomain();
+            String proxyWorkstation = config.getProxyWorkstation();
+            if (proxyUsername != null && proxyPassword != null) {
+                this.credentialsProvider = new BasicCredentialsProvider();
+                this.credentialsProvider.setCredentials(new AuthScope(proxyHost, proxyPort),
+                        new NTCredentials(proxyUsername, proxyPassword, proxyWorkstation, proxyDomain));
+
+                this.authCache = new BasicAuthCache();
+                authCache.put(this.proxyHttpHost, new BasicScheme());
+            }
+        }
+
+        this.requestConfig = requestConfigBuilder.build();
     }
 
     @Override
-    public ResponseMessage sendRequestCore(ServiceClient.Request request, String charset)
-            throws IOException{
-        assert request != null;
-        
-        // When we release connections, the connection manager leaves them
-        // open so they can be reused.  We want to close out any idle
-        // connections so that they don't sit around in CLOSE_WAIT.
-        httpClient.getConnectionManager().closeIdleConnections(30, TimeUnit.SECONDS);
+    public ResponseMessage sendRequestCore(ServiceClient.Request request, String charset) throws IOException, LogException {
+        HttpRequestBase httpRequest = httpRequestFactory.createHttpRequest(request, charset);
+        setProxyAuthorizationIfNeed(httpRequest);
+        HttpClientContext httpContext = createHttpContext();
+        httpContext.setRequestConfig(this.requestConfig);
 
-        HttpRequestBase httpRequest = new HttpFactory().createHttpRequest(request, charset);
-
-        // Execute request, make the exception to the standard WebException
-        HttpResponse response = null;
+        CloseableHttpResponse httpResponse = null;
         try {
-            response = httpClient.execute(httpRequest);
+            httpResponse = httpClient.execute(httpRequest, httpContext);
         } catch (IOException ex) {
+            httpRequest.abort();
             throw ExceptionFactory.createNetworkException(ex);
         }
 
-        // Build result
-        ResponseMessage result = new ResponseMessage();
-        result.setUrl(request.getUri());
-        if (response.getStatusLine() != null){
-            result.setStatusCode(response.getStatusLine().getStatusCode());
+        return buildResponse(request, httpResponse);
+    }
+
+    protected static ResponseMessage buildResponse(ServiceClient.Request request, CloseableHttpResponse httpResponse)
+            throws IOException {
+
+        assert (httpResponse != null);
+
+        ResponseMessage response = new ResponseMessage();
+        response.setUrl(request.getUri());
+
+        if (httpResponse.getStatusLine() != null) {
+            response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
         }
-        if (response.getEntity() != null){
-            result.setContent(response.getEntity().getContent());
+
+        if (httpResponse.getEntity() != null) {
+            if (response.isSuccessful()) {
+                response.setContent(httpResponse.getEntity().getContent());
+            } else {
+                readAndSetErrorResponse(httpResponse.getEntity().getContent(), response);
+            }
         }
-        Header[] headers = response.getAllHeaders();
-        Map<String, String> resultHeaders = new HashMap<String, String>();
-        for (Header h : headers) {
-            resultHeaders.put(h.getName(), h.getValue());
+
+        for (Header header : httpResponse.getAllHeaders()) {
+            if (HttpHeaders.CONTENT_LENGTH.equals(header.getName())) {
+                response.setContentLength(Long.parseLong(header.getValue()));
+            }
+            response.addHeader(header.getName(), header.getValue());
         }
-        HttpUtil.convertHeaderCharsetFromIso88591(resultHeaders);
-        result.setHeaders(resultHeaders);
-        return result;
+
+        HttpUtil.convertHeaderCharsetFromIso88591(response.getHeaders());
+        return response;
+    }
+
+    private static void readAndSetErrorResponse(InputStream originalContent, ResponseMessage response)
+            throws IOException {
+        byte[] contentBytes = IOUtils.readStreamAsByteArray(originalContent);
+        response.setErrorResponseAsString(new String(contentBytes));
+        response.setContent(new ByteArrayInputStream(contentBytes));
+    }
+
+    protected CloseableHttpClient createHttpClient(HttpClientConnectionManager connectionManager) {
+        return HttpClients.custom().setConnectionManager(connectionManager)
+                .disableContentCompression().disableAutomaticRetries().build();
+    }
+
+    protected HttpClientConnectionManager createHttpClientConnectionManager() {
+        SSLContext sslContext = null;
+        try {
+            sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+
+                @Override
+                public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    return true;
+                }
+
+            }).build();
+
+        } catch (Exception e) {
+            throw new ClientException(e.getMessage());
+        }
+
+        SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
+                NoopHostnameVerifier.INSTANCE);
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register(Protocol.HTTP.toString(), PlainConnectionSocketFactory.getSocketFactory())
+                .register(Protocol.HTTPS.toString(), sslSocketFactory).build();
+
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
+                socketFactoryRegistry);
+        connectionManager.setDefaultMaxPerRoute(config.getMaxConnections());
+        connectionManager.setMaxTotal(config.getMaxConnections());
+        connectionManager.setValidateAfterInactivity(config.getValidateAfterInactivity());
+        connectionManager.setDefaultSocketConfig(
+                SocketConfig.custom().setSoTimeout(config.getSocketTimeout()).setTcpNoDelay(true).build());
+        return connectionManager;
+    }
+
+    protected HttpClientContext createHttpContext() {
+        HttpClientContext httpContext = HttpClientContext.create();
+        httpContext.setRequestConfig(this.requestConfig);
+        if (this.credentialsProvider != null) {
+            httpContext.setCredentialsProvider(this.credentialsProvider);
+            httpContext.setAuthCache(this.authCache);
+        }
+        return httpContext;
+    }
+
+    private void setProxyAuthorizationIfNeed(HttpRequestBase httpRequest) {
+        if (this.credentialsProvider != null) {
+            String auth = this.config.getProxyUsername() + ":" + this.config.getProxyPassword();
+            byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
+            String authHeader = "Basic " + new String(encodedAuth);
+            httpRequest.addHeader(AUTH.PROXY_AUTH_RESP, authHeader);
+        }
+    }
+
+    @Override
+    public void shutdown() {
+        this.connectionManager.shutdown();
     }
 }

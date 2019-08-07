@@ -29,7 +29,7 @@ public class ETLConfiguration extends JobConfiguration {
     private int version;
 
     @JSONField
-    private List<DataSink> sinks;
+    private List<AliyunLOGSink> sinks;
 
     @JSONField
     private Map<String, String> parameters;
@@ -80,11 +80,11 @@ public class ETLConfiguration extends JobConfiguration {
         this.version = version;
     }
 
-    public List<DataSink> getSinks() {
+    public List<AliyunLOGSink> getSinks() {
         return sinks;
     }
 
-    public void setSinks(List<DataSink> sinks) {
+    public void setSinks(List<AliyunLOGSink> sinks) {
         this.sinks = sinks;
     }
 
@@ -121,9 +121,9 @@ public class ETLConfiguration extends JobConfiguration {
         containerImage = JsonUtils.readOptionalString(value, "containerImage");
         parameters = JsonUtils.readOptionalMap(value, "parameters");
         JSONArray sinks = value.getJSONArray("sinks");
-        this.sinks = new ArrayList<DataSink>(sinks.size());
+        this.sinks = new ArrayList<AliyunLOGSink>(sinks.size());
         for (int i = 0; i < sinks.size(); i++) {
-            DataSink sink = new DataSink();
+            AliyunLOGSink sink = new AliyunLOGSink();
             sink.deserialize(sinks.getJSONObject(i));
             this.sinks.add(sink);
         }

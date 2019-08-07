@@ -14,8 +14,8 @@ public class ResponseMessage extends HttpMessage {
     private static final int HTTP_SUCCESS_STATUS_CODE = 200;
     private byte[] body = null;
 
-    public ResponseMessage() {
-    }
+    // For convenience of logging invalid response
+    private String errorResponseAsString;
 
     public String getUri() {
         return uri;
@@ -51,6 +51,14 @@ public class ResponseMessage extends HttpMessage {
         } catch (UnsupportedEncodingException e) {
             return null;
         }
+    }
+
+    public String getErrorResponseAsString() {
+        return errorResponseAsString;
+    }
+
+    public void setErrorResponseAsString(String errorResponseAsString) {
+        this.errorResponseAsString = errorResponseAsString;
     }
 
     /**

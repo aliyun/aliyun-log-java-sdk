@@ -43,7 +43,7 @@ public enum NotificationType implements JSONSerializable {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown notification type: " + value);
+        return null;
     }
 
     @Override

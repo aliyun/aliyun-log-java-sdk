@@ -99,7 +99,7 @@ public class PullLogsRequest extends Request {
         SetParam(Consts.CONST_CURSOR, cursor);
         SetParam(Consts.CONST_COUNT, String.valueOf(count));
         if (endCursor != null && !endCursor.isEmpty()) {
-            SetParam(Consts.CONST_END_CURSOR, cursor);
+            SetParam(Consts.CONST_END_CURSOR, endCursor);
         }
         return super.GetAllParams();
     }

@@ -9,7 +9,6 @@ import com.aliyun.openservices.log.common.DingTalkNotification;
 import com.aliyun.openservices.log.common.EmailNotification;
 import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.common.JobScheduleType;
-import com.aliyun.openservices.log.common.JobState;
 import com.aliyun.openservices.log.common.Notification;
 import com.aliyun.openservices.log.common.Query;
 import com.aliyun.openservices.log.common.TimeSpanType;
@@ -84,7 +83,6 @@ public class AlertSample {
             }
             Alert alert = new Alert();
             alert.setName(alertName);
-            alert.setState(JobState.ENABLED);
             alert.setDisplayName("count monitoring");
             AlertConfiguration configuration = new AlertConfiguration();
             configuration.setCondition("count > 1");

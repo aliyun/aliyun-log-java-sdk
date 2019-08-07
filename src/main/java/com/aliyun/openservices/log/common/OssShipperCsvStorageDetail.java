@@ -18,7 +18,7 @@ public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implemen
 	private ArrayList<String> mStorageColumns = new ArrayList<String>();
 	
 	OssShipperCsvStorageDetail() {
-		setmStorageFormat("csv");
+		setStorageFormat("csv");
 	}
 	
 	public ArrayList<String> getmStorageColumns() {
@@ -76,7 +76,7 @@ public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implemen
 		detail.put("header", this.header);
 		JSONObject storage = new JSONObject();
 		storage.put("detail", detail);
-		storage.put("format", getmStorageFormat());
+		storage.put("format", getStorageFormat());
 		obj.put("storage", storage);
 		return obj;
 	}
@@ -85,7 +85,7 @@ public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implemen
 	public void FromJsonObject(JSONObject storageDetail) throws LogException {
 		try {
 			JSONObject storage = storageDetail.getJSONObject("storage");
-			setmStorageFormat(storage.getString("format"));
+			setStorageFormat(storage.getString("format"));
 			JSONObject detail = storage.getJSONObject("detail");
 			JSONArray columns = detail.getJSONArray("columns");
 			ArrayList<String> column = new ArrayList<String>();

@@ -1,12 +1,7 @@
 package com.aliyun.openservices.log.functiontest;
 
 
-import com.aliyun.openservices.log.common.DataSink;
-import com.aliyun.openservices.log.common.ETL;
-import com.aliyun.openservices.log.common.ETLConfiguration;
-import com.aliyun.openservices.log.common.JobSchedule;
-import com.aliyun.openservices.log.common.JobScheduleType;
-import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateETLRequest;
 import com.aliyun.openservices.log.request.CreateJobScheduleRequest;
@@ -53,8 +48,8 @@ public class ETLIntgTest extends JobIntgTest {
         configuration.setAccessKeyId("dummy");
         configuration.setAccessKeySecret("dummy");
         configuration.setParameters(Collections.<String, String>emptyMap());
-        List<DataSink> sinks = new ArrayList<DataSink>();
-        DataSink sink = new DataSink("test", "project", "logstore-test");
+        List<AliyunLOGSink> sinks = new ArrayList<AliyunLOGSink>();
+        AliyunLOGSink sink = new AliyunLOGSink("test", "project", "logstore-test");
         sink.setAccessKeyId("1111");
         sink.setAccessKeySecret("111111");
         sinks.add(sink);

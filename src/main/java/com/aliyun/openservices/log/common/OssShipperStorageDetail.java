@@ -5,13 +5,13 @@ import com.aliyun.openservices.log.exception.LogException;
 import net.sf.json.JSONObject;
 
 public abstract class OssShipperStorageDetail {
-	private String mStorageFormat = "";
+	private String storageFormat = "";
 	
-	public String getmStorageFormat() {
-		return mStorageFormat;
+	public String getStorageFormat() {
+		return storageFormat;
 	}
-	public void setmStorageFormat(String mStorageFormat) {
-		this.mStorageFormat = mStorageFormat;
+	public void setStorageFormat(String storageFormat) {
+		this.storageFormat = storageFormat;
 	}
 	public abstract JSONObject ToJsonObject();
 	public abstract void FromJsonObject(JSONObject inputDetail) throws LogException;

@@ -116,21 +116,22 @@ public class Consts {
     public static final String CONST_SLS_JSON = "application/json";
 
     public static final String CONST_X_SLS_APIVERSION = "x-log-apiversion";
-    public static final String CONST_X_SLS_COMPRESSTYPE= "x-log-compresstype";
-    public static final String CONST_X_SLS_BODYRAWSIZE= "x-log-bodyrawsize";
-    public static final String CONST_X_SLS_SIGNATUREMETHOD= "x-log-signaturemethod";
-    public static final String CONST_X_SLS_REQUESTID = "x-log-requestid" ;
-    public static final String CONST_X_SLS_HOSTIP = "x-log-hostip" ;
+    public static final String CONST_X_SLS_COMPRESSTYPE = "x-log-compresstype";
+    public static final String CONST_X_SLS_BODYRAWSIZE = "x-log-bodyrawsize";
+    public static final String CONST_X_SLS_SIGNATUREMETHOD = "x-log-signaturemethod";
+    public static final String CONST_X_SLS_REQUESTID = "x-log-requestid";
+    public static final String CONST_X_SLS_HOSTIP = "x-log-hostip";
     public static final String CONST_X_SLS_IP = "x-log-ip";
     public static final String CONST_X_SLS_SSL = "x-log-ssl";
-    public static final String CONST_X_SLS_PREFIX= "x-log-";
-    public static final String CONST_X_ACS_PREFIX= "x-acs-";
+    public static final String CONST_X_SLS_PREFIX = "x-log-";
+    public static final String CONST_X_ACS_PREFIX = "x-acs-";
     public static final String CONST_X_SLS_CURSOR = "x-log-cursor";
     public static final String CONST_X_SLS_COUNT = "x-log-count";
     public static final String CONST_X_SLS_PROCESS = "x-log-progress";
     public static final String CONST_X_SLS_NEXT_TOKEN = "x-log-nexttoken";
     public static final String CONST_X_SLS_CONTENTENCODING = "x-log-contentencoding";
     public static final String CONST_X_ACS_SECURITY_TOKEN = "x-acs-security-token";
+    public static final String CONST_X_LOG_RESOURCEOWNERACCOUNT = "x-log-resourceowneraccount";
 
     public static final String CONST_X_LOG_AGGQUERY = "x-log-agg-query";
     public static final String CONST_X_LOG_WHEREQUERY = "x-log-where-query";
@@ -157,14 +158,14 @@ public class Consts {
     public static final String CONST_COUNT = "count";
     public static final String CONST_CONFIGNAME = "configName";
     public static final String CONST_GROUPNAME = "groupName";
-    public static final String CONST_PRINCIPLEID= "principleId";
-    public static final String CONST_LOGSTORE_NAME= "logstoreName";
-    public static final String CONST_SPLIT_MID_HASH="key";
+    public static final String CONST_PRINCIPLEID = "principleId";
+    public static final String CONST_LOGSTORE_NAME = "logstoreName";
+    public static final String CONST_SPLIT_MID_HASH = "key";
     public static final String CONST_SPLIT_SHARDCOUNT = "shardCount";
-    public static final String CONST_ACTION="action";
-    public static final String CONST_ACTION_SPLIT="split";
-    public static final String CONST_ACTION_MERGE="merge";
-    public static final String CONST_ROUTE_KEY="key";
+    public static final String CONST_ACTION = "action";
+    public static final String CONST_ACTION_SPLIT = "split";
+    public static final String CONST_ACTION_MERGE = "merge";
+    public static final String CONST_ROUTE_KEY = "key";
 
     // logtail config related
     public static final String CONST_CONFIG_INPUTTYPE_FILE = "file";
@@ -258,13 +259,13 @@ public class Consts {
     public static final String HMAC_SHA1 = "hmac-sha1";
     public static final String HMAC_SHA1_JAVA = "HmacSHA1";
 
-    public static final String CONST_LOCAL_IP= "127.0.0.1";
+    public static final String CONST_LOCAL_IP = "127.0.0.1";
     public static int CONST_MAX_PUT_SIZE = 50 * 1024 * 1024;
     public static int CONST_MAX_PUT_LINES = 40960;
 
     public static final int CONST_UN_AUTHORIZATION_CODE = 401;
     public static final int CONST_HTTP_OK = 200;
-    public static int HTTP_CONNECT_MAX_COUNT= 1000;
+    public static int HTTP_CONNECT_MAX_COUNT = 1000;
     public static int HTTP_CONNECT_TIME_OUT = 5 * 1000;
     public static int HTTP_SEND_TIME_OUT = 60 * 1000;
 
@@ -275,8 +276,9 @@ public class Consts {
     // common
     public static final String CONST_CREATTIME = "createTime";
     public static final String CONST_LASTMODIFYTIME = "lastModifyTime";
-    public static final String CONST_TOTAL= "total";
-    public static final String CONST_SIZE= "size";
+    public static final String CONST_TOTAL = "total";
+    public static final String CONST_SIZE = "size";
+    public static final String RESULTS = "results";
 
     // project relate
     public static final String CONST_PROJECTNAME = "projectName";

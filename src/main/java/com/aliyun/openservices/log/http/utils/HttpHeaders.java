@@ -8,4 +8,5 @@ package com.aliyun.openservices.log.http.utils;
 public interface HttpHeaders {
     String CONTENT_LENGTH = "Content-Length";
     String CONTENT_TYPE = "Content-Type";
+    String HOST = "Host";
 }

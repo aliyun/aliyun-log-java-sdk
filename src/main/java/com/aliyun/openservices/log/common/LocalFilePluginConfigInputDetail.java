@@ -10,7 +10,6 @@ import com.aliyun.openservices.log.exception.LogException;
  * Created by 冷倾(qingdao.pqd) on 2019/04/10
  *
  * @author <a href="mailto:qingdao.pqd@alibaba-inc.com">lengqing(kingdompan)</a>
- * @date 2019/04/10
  */
 public class LocalFilePluginConfigInputDetail extends ConfigInputDetail {
 

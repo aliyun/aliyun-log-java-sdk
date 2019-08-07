@@ -9,7 +9,9 @@ public enum JobType implements JSONSerializable {
     ALERT("Alert"),
     REPORT("Report"),
     ETL("ETL"),
-    ;
+    INGESTION("Ingestion"),
+    REBUILD_INDEX("RebuildIndex"),
+    EXPORT("Export");
 
     private final String value;
 
@@ -28,7 +30,7 @@ public enum JobType implements JSONSerializable {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Illegal job type: " + value);
+        return null;
     }
 
     @Override

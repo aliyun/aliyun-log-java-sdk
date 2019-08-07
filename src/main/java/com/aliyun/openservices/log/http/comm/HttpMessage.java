@@ -30,6 +30,10 @@ public abstract class HttpMessage {
         this.headers = headers;
     }
 
+    public void addHeader(String key, String value) {
+        this.headers.put(key, value);
+    }
+
     public InputStream getContent() {
         return content;
     }

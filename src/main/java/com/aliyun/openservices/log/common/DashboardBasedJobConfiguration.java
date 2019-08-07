@@ -43,6 +43,10 @@ abstract class DashboardBasedJobConfiguration extends JobConfiguration {
             public Notification unmarshal(JSONArray value, int index) {
                 JSONObject item = value.getJSONObject(index);
                 NotificationType notificationType = NotificationType.fromString(item.getString("type"));
+                if (notificationType == null) {
+                    // For bwc
+                    return null;
+                }
                 Notification notification = makeQualifiedNotification(notificationType);
                 notification.deserialize(item);
                 return notification;
