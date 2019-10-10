@@ -30,6 +30,7 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 	protected Map<String, String> dockerIncludeEnv = new HashMap<String, String>();
 	protected Map<String, String> dockerExcludeEnv = new HashMap<String, String>();
 	protected long delaySkipBytes = 0;
+	protected String pluginDetail = "";
 	protected Advanced advanced = new Advanced();
 
 	public Advanced getAdvanced() {
@@ -179,6 +180,10 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 	public void SetTopicFormat(String topicFormat) {
 		this.topicFormat = topicFormat;
 	}
+
+	public String GetPluginDetail() { return pluginDetail; }
+
+	public void SetPluginDetail(String pluginDetail) { this.pluginDetail = pluginDetail; }
 	
 	protected void LocalFileConfigToJsonObject(JSONObject jsonObj) {
 		CommonConfigToJsonObject(jsonObj);
@@ -196,7 +201,7 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ISDOCKERFILE, isDockerFile);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DELAYSKIPBYTES, delaySkipBytes);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DISCARDUNMATCH, discardUnmatch);
-		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED, advanced);
+		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED, advanced.toJsonObject());
 
 		JSONObject dockerIncludeEnvJson = new JSONObject();
 		for (Map.Entry<String, String> entry : dockerIncludeEnv.entrySet()) {
@@ -221,6 +226,13 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 			dockerExcludeLabelJson.put(entry.getKey(), entry.getValue());
 		}
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL, dockerExcludeLabelJson);
+
+		if (!pluginDetail.isEmpty()) {
+			JSONObject pluginObject = JSONObject.parseObject(pluginDetail);
+			if (pluginObject != null) {
+				jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_PLUGINDETAIL, pluginObject);
+			}
+		}
 	}
 	
 	protected void LocalFileConfigFromJsonObject(JSONObject inputDetail) throws LogException {
@@ -309,6 +321,10 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 				}
 			}
 
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_PLUGINDETAIL)) {
+				JSONObject exists = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_PLUGINDETAIL);
+				this.pluginDetail = exists == null ? "" : exists.toString();
+			}
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateInputDetail", e.getMessage(), e, "");
 		}

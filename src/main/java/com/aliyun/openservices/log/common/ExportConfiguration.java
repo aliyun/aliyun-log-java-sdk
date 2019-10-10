@@ -76,6 +76,9 @@ public class ExportConfiguration extends JobConfiguration {
         if (type == DataSinkType.ALIYUN_ADB) {
             sink = new AliyunADBSink();
             sink.deserialize(obj);
+        } else if (type == DataSinkType.ALIYUN_TSDB) {
+            sink = new AliyunTSDBSink();
+            sink.deserialize(obj);
         }
     }
 

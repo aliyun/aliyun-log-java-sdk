@@ -25,6 +25,12 @@ public class DingTalkNotification extends HttpNotification {
     @JSONField
     private String method;
 
+    /**
+     * At all group members or not.
+     */
+    @JSONField
+    private boolean atAll = false;
+
     public DingTalkNotification() {
         super(NotificationType.DING_TALK);
     }
@@ -55,12 +61,21 @@ public class DingTalkNotification extends HttpNotification {
         this.method = method;
     }
 
+    public boolean getAtAll() {
+        return atAll;
+    }
+
+    public void setAtAll(boolean atAll) {
+        this.atAll = atAll;
+    }
+
     @Override
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         atMobiles = JsonUtils.readOptionalStrings(value, Consts.AT_MOBILES);
         title = JsonUtils.readOptionalString(value, Consts.TITLE);
         method = JsonUtils.readOptionalString(value, Consts.METHOD);
+        atAll = JsonUtils.readBool(value, "atAll", false);
     }
 
     @Override
@@ -74,6 +89,8 @@ public class DingTalkNotification extends HttpNotification {
         if (getTitle() != null ? !getTitle().equals(that.getTitle()) : that.getTitle() != null) return false;
         if (getAtMobiles() != null ? !getAtMobiles().equals(that.getAtMobiles()) : that.getAtMobiles() != null)
             return false;
+        if (atAll != that.getAtAll())
+            return false;
         return getMethod() != null ? getMethod().equals(that.getMethod()) : that.getMethod() == null;
     }
 
@@ -83,6 +100,7 @@ public class DingTalkNotification extends HttpNotification {
         result = 31 * result + (getTitle() != null ? getTitle().hashCode() : 0);
         result = 31 * result + (getAtMobiles() != null ? getAtMobiles().hashCode() : 0);
         result = 31 * result + (getMethod() != null ? getMethod().hashCode() : 0);
+        result = 31 * result + (getAtAll() ? 1 : 0);
         return result;
     }
 }

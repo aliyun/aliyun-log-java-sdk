@@ -16,10 +16,8 @@ import com.aliyun.openservices.log.request.ListIngestionRequest;
 import com.aliyun.openservices.log.request.StartIngestionRequest;
 import com.aliyun.openservices.log.request.StopIngestionRequest;
 import com.aliyun.openservices.log.request.UpdateIngestionRequest;
-import com.aliyun.openservices.log.response.CreateIngestionResponse;
 import com.aliyun.openservices.log.response.GetIngestionResponse;
 import com.aliyun.openservices.log.response.ListIngestionResponse;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

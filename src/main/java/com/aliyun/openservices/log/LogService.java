@@ -3241,6 +3241,7 @@ public interface LogService {
 	StartIngestionResponse startIngestion(StartIngestionRequest request) throws LogException;
 
 	CreateRebuildResponse createRebuildIndex(CreateRebuildIndexRequest request) throws LogException;
+	DeleteRebuildIndexResponse deleteRebuildIndex(DeleteRebuildIndexRequest request) throws LogException;
 	GetRebuildIndexResponse getRebuildIndex(GetRebuildIndexRequest request) throws LogException;
 	ListRebuildIndexResponse listRebuildIndex(ListRebuildIndexRequest request) throws LogException;
 	StopRebuildIndexResponse stopRebuildIndex(StopRebuildIndexRequest request) throws LogException;

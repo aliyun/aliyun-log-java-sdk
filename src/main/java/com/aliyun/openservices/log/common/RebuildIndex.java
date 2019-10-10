@@ -12,6 +12,8 @@ public class RebuildIndex extends AbstractJob implements Serializable {
 
     private String status;
 
+    private String executionDetails;
+
     @JSONField
     private RebuildIndexConfiguration configuration;
 
@@ -36,10 +38,15 @@ public class RebuildIndex extends AbstractJob implements Serializable {
         this.status = status;
     }
 
+    public String getExecutionDetails() {
+        return executionDetails;
+    }
+
     @Override
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         status = JsonUtils.readOptionalString(value, "status");
+        executionDetails = JsonUtils.readOptionalString(value, "executionDetails");
         configuration = new RebuildIndexConfiguration();
         configuration.deserialize(value.getJSONObject("configuration"));
     }

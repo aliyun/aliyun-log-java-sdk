@@ -22,6 +22,7 @@ public class LogStore implements Serializable {
     private int lastModifyTime = -1;
     private long preserveStorage = -1;
     private long usedStorage = 0;
+    private String description;
 
     public LogStore() {
         super();
@@ -56,6 +57,7 @@ public class LogStore implements Serializable {
         this.mMaxSplitShard = logStore.getmMaxSplitShard();
         this.preserveStorage = logStore.preserveStorage;
         this.usedStorage = logStore.usedStorage;
+        this.description = logStore.getDescription();
     }
 
     public long getPreserveStorage() {
@@ -162,7 +164,15 @@ public class LogStore implements Serializable {
         this.shardCount = shardCount;
     }
 
-    public JSONObject ToRequestJson() {
+    public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public JSONObject ToRequestJson() {
         JSONObject logStoreDict = new JSONObject();
         logStoreDict.put("logstoreName", GetLogStoreName());
         logStoreDict.put("ttl", GetTtl());
@@ -171,6 +181,7 @@ public class LogStore implements Serializable {
         logStoreDict.put("autoSplit", ismAutoSplit());
         logStoreDict.put("maxSplitShard", getmMaxSplitShard());
         logStoreDict.put("appendMeta", isAppendMeta());
+        logStoreDict.put("description", getDescription());
         JSONObject resourceQuota = new JSONObject();
         JSONObject storage = new JSONObject();
         storage.put("preserved", preserveStorage);
@@ -218,6 +229,9 @@ public class LogStore implements Serializable {
             }
             appendMeta = dict.containsKey("appendMeta") && dict.getBoolean("appendMeta");
             
+            if (dict.containsKey("description")) {
+                description = dict.getString("description");
+            }
             // set resourceQuota
             if (dict.containsKey("resourceQuota")) {
             	JSONObject resourceQuotaJson = dict.getJSONObject("resourceQuota");

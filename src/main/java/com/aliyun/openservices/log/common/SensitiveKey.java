@@ -82,7 +82,7 @@ public class SensitiveKey implements Serializable {
 			setConstStr(dict.getString(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_CONST));
 		}
 		setRegexBegin(dict.getString(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_REGEXBEGIN));
-		setRegexContent(dict.getString(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_REGEXBEGIN));
+		setRegexContent(dict.getString(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_REGEXCONTENT));
 		setAll(dict.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_ALL));
 	}
 	

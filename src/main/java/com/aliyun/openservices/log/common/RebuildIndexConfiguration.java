@@ -10,16 +10,16 @@ public class RebuildIndexConfiguration extends JobConfiguration {
     private String logstore;
 
     @JSONField
-    private Integer startTime;
+    private Integer fromTime;
 
     @JSONField
-    private Integer endTime;
+    private Integer toTime;
 
     @Override
     public void deserialize(JSONObject value) {
         logstore = value.getString("logstore");
-        startTime = JsonUtils.readOptionalInt(value, "startTime");
-        endTime = JsonUtils.readOptionalInt(value, "endTime");
+        fromTime = JsonUtils.readOptionalInt(value, "fromTime");
+        toTime = JsonUtils.readOptionalInt(value, "toTime");
     }
 
     public String getLogstore() {
@@ -30,28 +30,28 @@ public class RebuildIndexConfiguration extends JobConfiguration {
         this.logstore = logstore;
     }
 
-    public Integer getStartTime() {
-        return startTime;
+    public Integer getFromTime() {
+        return fromTime;
     }
 
-    public void setStartTime(Integer startTime) {
-        this.startTime = startTime;
+    public void setFromTime(Integer fromTime) {
+        this.fromTime = fromTime;
     }
 
-    public Integer getEndTime() {
-        return endTime;
+    public Integer getToTime() {
+        return toTime;
     }
 
-    public void setEndTime(Integer endTime) {
-        this.endTime = endTime;
+    public void setToTime(Integer toTime) {
+        this.toTime = toTime;
     }
 
     @Override
     public String toString() {
         return "RebuildIndexConfiguration{" +
                 "logstore='" + logstore + '\'' +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
+                ", fromTime=" + fromTime +
+                ", toTime=" + toTime +
                 '}';
     }
 }

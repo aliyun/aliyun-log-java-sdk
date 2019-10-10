@@ -18,6 +18,7 @@ public class PullLogsResponse extends Response {
     private List<LogGroupData> logGroups;
     private int rawSize;
     private int count;
+    private byte[] rawData;
 
     public PullLogsResponse(Map<String, String> headers) {
         super(headers);
@@ -33,18 +34,12 @@ public class PullLogsResponse extends Response {
      */
     public PullLogsResponse(Map<String, String> headers, byte[] rawData) throws LogException {
         this(headers);
+        this.rawData = rawData;
         try {
             rawSize = Integer.parseInt(headers.get(Consts.CONST_X_SLS_BODYRAWSIZE));
-            if (rawSize > 0) {
-                byte[] uncompressedData = LZ4Encoder.decompressFromLhLz4Chunk(rawData, rawSize);
-                parseFastLogGroupList(uncompressedData);
-            }
             count = Integer.parseInt(GetHeader(Consts.CONST_X_SLS_COUNT));
         } catch (NumberFormatException e) {
             throw new LogException("ParseLogGroupListRawSizeError", e.getMessage(), e, GetRequestId());
-        }
-        if (logGroups.size() != count) {
-            throw new LogException("LogGroupCountNotMatch", "LogGroup count does match with the count in header message", GetRequestId());
         }
     }
 
@@ -53,6 +48,20 @@ public class PullLogsResponse extends Response {
      */
     public int getRawSize() {
         return rawSize;
+    }
+
+    private void parseLogGroupsIfNeeded() throws LogException {
+        if (logGroups != null) {
+            return;
+        }
+        logGroups = new ArrayList<LogGroupData>();
+        if (rawSize > 0) {
+            byte[] uncompressedData = LZ4Encoder.decompressFromLhLz4Chunk(rawData, rawSize);
+            parseFastLogGroupList(uncompressedData);
+        }
+        if (logGroups.size() != count) {
+            throw new LogException("LogGroupCountNotMatch", "LogGroup count does match with the count in header message", GetRequestId());
+        }
     }
 
     /**
@@ -121,9 +130,10 @@ public class PullLogsResponse extends Response {
      * @param index the index of log group array
      * @return one uncompressed log group
      */
-    public LogGroupData getLogGroup(int index) {
+    public LogGroupData getLogGroup(int index) throws LogException {
         Args.check(count > 0, "No LogGroups in response");
         Args.check(index >= 0 && index < count, "index out of range [0, " + count + ")");
+        parseLogGroupsIfNeeded();
         return logGroups.get(index);
     }
 
@@ -133,9 +143,10 @@ public class PullLogsResponse extends Response {
      * @param offset the offset to get log groups, starts with 0
      * @return uncompressed log groups
      */
-    public List<LogGroupData> getLogGroups(int offset) {
+    public List<LogGroupData> getLogGroups(int offset) throws LogException {
         Args.check(count > 0, "No LogGroups in response");
         Args.check(offset >= 0 && offset < count, "offset out of range [0, " + count + ")");
+        parseLogGroupsIfNeeded();
         return logGroups.subList(offset, count);
     }
 
@@ -144,7 +155,12 @@ public class PullLogsResponse extends Response {
      *
      * @return all uncompressed log groups
      */
-    public List<LogGroupData> getLogGroups() {
+    public List<LogGroupData> getLogGroups() throws LogException {
+        parseLogGroupsIfNeeded();
         return logGroups;
+    }
+
+    public byte[] getRawData() {
+        return rawData;
     }
 }

@@ -6,7 +6,6 @@ import net.sf.json.JSONObject;
 
 public abstract class StructuredDataFormat extends DataFormat {
     private String timeField;
-    private String timeFormat;
 
     public StructuredDataFormat(String type) {
         super(type);
@@ -20,18 +19,9 @@ public abstract class StructuredDataFormat extends DataFormat {
         this.timeField = timeField;
     }
 
-    public String getTimeFormat() {
-        return timeFormat;
-    }
-
-    public void setTimeFormat(String timeFormat) {
-        this.timeFormat = timeFormat;
-    }
-
     @Override
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         timeField = JsonUtils.readOptionalString(jsonObject, "timeField");
-        timeFormat = JsonUtils.readOptionalString(jsonObject, "timeFormat");
     }
 }

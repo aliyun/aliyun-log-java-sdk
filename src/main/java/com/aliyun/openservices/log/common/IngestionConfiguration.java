@@ -24,13 +24,26 @@ public class IngestionConfiguration extends JobConfiguration {
         this.source = source;
     }
 
+    private DataSource createSource(DataSourceType type) {
+        switch (type) {
+            case JDBC:
+                return new JDBCSource();
+            case ALIYUN_BSS:
+                return new AliyunBSSSource();
+            case ALIYUN_OSS:
+                return new AliyunOSSSource();
+            default:
+                return null;
+        }
+    }
+
     @Override
     public void deserialize(JSONObject value) {
         logstore = value.getString("logstore");
         JSONObject jsonObject = value.getJSONObject("source");
         DataSourceType kind = DataSourceType.fromString(jsonObject.getString("type"));
-        if (kind == DataSourceType.ALIYUN_OSS) {
-            source = new AliyunOSSSource();
+        source = createSource(kind);
+        if (source != null) {
             source.deserialize(jsonObject);
         }
     }

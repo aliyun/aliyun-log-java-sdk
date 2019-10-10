@@ -3,13 +3,11 @@ package com.aliyun.openservices.log.functiontest;
 import com.aliyun.openservices.log.common.RebuildIndex;
 import com.aliyun.openservices.log.common.RebuildIndexConfiguration;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.request.CreateRebuildIndexRequest;
-import com.aliyun.openservices.log.request.DisableJobRequest;
-import com.aliyun.openservices.log.request.GetRebuildIndexRequest;
-import com.aliyun.openservices.log.request.ListRebuildIndexRequest;
-import com.aliyun.openservices.log.request.StopRebuildIndexRequest;
+import com.aliyun.openservices.log.request.*;
+import com.aliyun.openservices.log.response.DeleteRebuildIndexResponse;
 import com.aliyun.openservices.log.response.GetRebuildIndexResponse;
 import com.aliyun.openservices.log.response.ListRebuildIndexResponse;
+import com.aliyun.openservices.log.response.StopRebuildIndexResponse;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -17,97 +15,63 @@ import static org.junit.Assert.fail;
 
 public class RebuildIndexFunctionTest extends JobIntgTest {
 
-    private static String getRebuildIndexName() {
-        return "rebuild-index-" + getNowTimestamp();
-    }
+    String project = "project-to-test-alert";
+    String logstore = "test_rebuild_index";
+    String jobName = "rebuild-index-6";
 
     private RebuildIndex createRebuildIndex() {
         RebuildIndex RebuildIndex = new RebuildIndex();
-        String jobName = getRebuildIndexName();
         RebuildIndex.setName(jobName);
-        RebuildIndex.setDisplayName("OSS-test");
+        RebuildIndex.setDisplayName("test rebuild index");
         RebuildIndexConfiguration configuration = new RebuildIndexConfiguration();
-        configuration.setLogstore("test-logstore2");
-        configuration.setStartTime(getNowTimestamp() - 1000);
-        configuration.setEndTime(getNowTimestamp());
+        configuration.setLogstore(logstore);
+        configuration.setFromTime((int)((System.currentTimeMillis() / (long)1000) - 864000));
+        configuration.setToTime((int)((System.currentTimeMillis() / (long)1000) - 900));
         RebuildIndex.setConfiguration(configuration);
         return RebuildIndex;
     }
 
     @Test
-    public void testCrud() throws Exception {
+    public void testCreate() throws Exception {
         RebuildIndex job = createRebuildIndex();
-        String jobName = job.getName();
-        String project = "ali-sls-etl-staging";
         client.createRebuildIndex(new CreateRebuildIndexRequest(project, job));
-        GetRebuildIndexResponse response = client.getRebuildIndex(new GetRebuildIndexRequest(project, jobName));
-        RebuildIndex rebuildIndex = response.getRebuildIndex();
-        assertEquals("STARTING", rebuildIndex.getStatus());
-        assertEquals(jobName, rebuildIndex.getName());
-        client.stopRebuildIndex(new StopRebuildIndexRequest(project, jobName));
-        response = client.getRebuildIndex(new GetRebuildIndexRequest(project, jobName));
-        RebuildIndex rebuildIndex1 = response.getRebuildIndex();
-        assertEquals(jobName, rebuildIndex1.getName());
-        try {
-            client.stopRebuildIndex(new StopRebuildIndexRequest(project, jobName));
-            fail();
-        } catch (LogException ex) {
-            assertEquals("The job to stop has already stopped", ex.GetErrorMessage());
-            assertEquals("ParameterInvalid", ex.GetErrorCode());
-        }
-//        client.startRebuildIndex(new StartRebuildIndexRequest(project, jobName));
-        response = client.getRebuildIndex(new GetRebuildIndexRequest(project, jobName));
-
-//        RebuildIndex RebuildIndex3 = response.getRebuildIndex();
-////        assertEquals(JobState.ENABLED, RebuildIndex3.getState());
-////        assertEquals("ENABLED", RebuildIndex3.getStatus());
-//        try {
-//            client.startRebuildIndex(new StartRebuildIndexRequest(project, jobName));
-//            fail();
-//        } catch (LogException ex) {
-//            assertEquals("The job to start has already started", ex.GetErrorMessage());
-//            assertEquals("ParameterInvalid", ex.GetErrorCode());
-//        }
-//        // Long live
-//        // Can we forbid this?
-//        JobSchedule schedule = new JobSchedule();
-//        schedule.setType(JobScheduleType.RESIDENT);
-//        RebuildIndex.setSchedule(schedule);
-//        client.updateRebuildIndex(new UpdateRebuildIndexRequest(project, RebuildIndex));
-//        // TODO fixme
+        Thread.sleep(3000);
+        testGet();
     }
 
     @Test
     public void testGet() throws Exception {
-        GetRebuildIndexResponse response = client.getRebuildIndex(new GetRebuildIndexRequest("ali-sls-etl-staging", "RebuildIndex-1563030173"));
-        RebuildIndex RebuildIndex = response.getRebuildIndex();
-        System.out.println(RebuildIndex.getName());
+        GetRebuildIndexResponse response = client.getRebuildIndex(new GetRebuildIndexRequest(project, jobName));
+        RebuildIndex ri = response.getRebuildIndex();
+        System.out.println("job: " + ri.getName() + "\nstatus: " +  ri.getStatus() + "\nexecutionDetails: " + ri.getExecutionDetails());
     }
 
     @Test
-    public void testInvalidOperation() throws Exception {
-//        client.enableJob(new EnableJobRequest("ali-sls-etl-staging", "RebuildIndex-1562994887"));
-        client.disableJob(new DisableJobRequest("ali-sls-etl-staging", "rebuild-index-1563030173"));
+    public void testStop() throws Exception {
+        StopRebuildIndexResponse response = client.stopRebuildIndex(new StopRebuildIndexRequest(project, jobName));
+        System.out.println(response.GetAllHeaders());
+        testGet();
     }
 
     @Test
     public void testDelete() throws Exception {
-        client.getRebuildIndex(new GetRebuildIndexRequest("ali-sls-etl-staging", "rebuild-index-1563261253"));
-        //   client.stopRebuildIndex(new StopRebuildIndexRequest("ali-sls-etl-staging", "RebuildIndex-1562994571"));
-        client.stopRebuildIndex(new StopRebuildIndexRequest("ali-sls-etl-staging", "rebuild-index-1563261253"));
-//        client.startRebuildIndex(new StartRebuildIndexRequest("ali-sls-etl-staging", "RebuildIndex-1562994571"));
-//        client.startRebuildIndex(new StartRebuildIndexRequest("ali-sls-etl-staging", "RebuildIndex-1562994571"));
-        //  client.startRebuildIndex(new StartRebuildIndexRequest("ali-sls-etl-staging", "RebuildIndex-1563261253"));
-        //  client.deleteRebuildIndex(new DeleteRebuildIndexRequest("ali-sls-etl-staging", "RebuildIndex-1563261253"));
+        DeleteRebuildIndexResponse response = client.deleteRebuildIndex(new DeleteRebuildIndexRequest(project, jobName));
+        System.out.println(response.GetAllHeaders());
     }
 
     @Test
     public void testList() throws Exception {
-        ListRebuildIndexResponse response = client.listRebuildIndex(new ListRebuildIndexRequest("ali-sls-etl-staging"));
+        ListRebuildIndexResponse response = client.listRebuildIndex(new ListRebuildIndexRequest(project));
         System.out.println(response.getCount());
         System.out.println(response.getTotal());
         for (RebuildIndex rebuildIndex : response.getResults()) {
             System.out.println(rebuildIndex.getName());
         }
+    }
+
+    @Test
+    public void testInvalidOperation() throws Exception {
+        client.enableJob(new EnableJobRequest(project, jobName));
+        client.disableJob(new DisableJobRequest(project, jobName));
     }
 }

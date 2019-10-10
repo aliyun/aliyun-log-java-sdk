@@ -6,7 +6,6 @@ import net.sf.json.JSONObject;
 public class LineFormat extends DataFormat {
 
     private String timePattern;
-    private String timeFormat;
 
     public LineFormat() {
         super("Line");
@@ -24,18 +23,9 @@ public class LineFormat extends DataFormat {
         this.timePattern = timePattern;
     }
 
-    public String getTimeFormat() {
-        return timeFormat;
-    }
-
-    public void setTimeFormat(String timeFormat) {
-        this.timeFormat = timeFormat;
-    }
-
     @Override
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         timePattern = JsonUtils.readOptionalString(jsonObject, "timePattern");
-        timeFormat = JsonUtils.readOptionalString(jsonObject, "timeFormat");
     }
 }

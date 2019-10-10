@@ -6,7 +6,9 @@ import com.alibaba.fastjson.serializer.JSONSerializer;
 import java.lang.reflect.Type;
 
 public enum DataSourceType implements JSONSerializable {
-    ALIYUN_OSS("AliyunOSS");
+    ALIYUN_OSS("AliyunOSS"),
+    ALIYUN_BSS("AliyunBSS"),
+    JDBC("JDBC");
 
     private final String name;
 
@@ -24,6 +26,11 @@ public enum DataSourceType implements JSONSerializable {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 
     @Override

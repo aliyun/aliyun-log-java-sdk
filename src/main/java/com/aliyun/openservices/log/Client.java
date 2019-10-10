@@ -720,6 +720,26 @@ public class Client implements LogService {
 		return GetLogs(request);
 	}
 
+	/**
+	 * getContextLogs uses @packID and @packMeta to specify a log as start log and queries logs around it.
+	 *
+	 * @param packID  package ID of the start log, such as 895CEA449A52FE-1 ({hex prefix}-{hex sequence number}).
+	 * @param packMeta  package meta of the start log, such as 0|MTU1OTI4NTExMjg3NTQ2MjQ3MQ==|2|1.
+	 * @param backLines  the number of logs to request backward, at most 100.
+	 * @param forwardLines  the number of logs to request forward, at most 100.
+	 * @return see getter in GetContextLogsResponse for more information.
+	 * @throws LogException
+	 */
+	public GetContextLogsResponse getContextLogs(String project, String logstore,
+			String packID, String packMeta,
+			int backLines, int forwardLines) throws LogException{
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(logstore, "logStore");
+		GetContextLogsRequest request = new GetContextLogsRequest(project, logstore,
+				packID, packMeta, backLines, forwardLines);
+		return getContextLogs(request);
+	}
+
 	public GetLogsResponse GetProjectLogs(String project,String query) throws  LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertParameterNotNull(query, "query");
@@ -755,28 +775,53 @@ public class Client implements LogService {
 		}
 	}
 
+	private com.alibaba.fastjson.JSONObject parseResponseMessageToObjectWithFastJSON(ResponseMessage response,
+			String requestId) throws LogException {
+		String returnStr = encodeResponseBodyToUtf8String(response, requestId);
+		try {
+            return com.alibaba.fastjson.JSONObject.parseObject(returnStr);
+		} catch (com.alibaba.fastjson.JSONException e) {
+			throw new LogException(ErrorCodes.BAD_RESPONSE,
+					"The response is not valid json string : " + returnStr, e,
+					requestId);
+		}
+	}
+
 	private void ExtractLogsWithFastJson(GetLogsResponse response, com.alibaba.fastjson.JSONArray logs) {
 		try {
 			for (int i = 0; i < logs.size(); i++) {
-				com.alibaba.fastjson.JSONObject log = logs.getJSONObject(i);
-				String source = "";
-				LogItem logItem = new LogItem();
-				Set<String> keySet = log.keySet();
-				for (String key:keySet) {
-					String value = log.getString(key);
-					if (key.equals(Consts.CONST_RESULT_SOURCE)) {
-						source = value;
-					} else if (key.equals(Consts.CONST_RESULT_TIME)) {
-						logItem.mLogTime = Integer.parseInt(value);
-					} else {
-						logItem.PushBack(key, value);
-					}
-				}
-				response.AddLog(new QueriedLog(source, logItem));
+				response.AddLog(extractLogFromJSON(logs.getJSONObject(i)));
 			}
 		} catch (JSONException e) {
 			// ignore;
 		}
+	}
+
+	private void extractLogsWithFastJson(GetContextLogsResponse response, com.alibaba.fastjson.JSONArray logs) {
+		try {
+			for (int i = 0; i < logs.size(); i++) {
+				response.addLog(extractLogFromJSON(logs.getJSONObject(i)));
+			}
+		} catch (JSONException e) {
+			// ignore;
+		}
+	}
+
+	private QueriedLog extractLogFromJSON(com.alibaba.fastjson.JSONObject log) throws JSONException {
+		String source = "";
+		LogItem logItem = new LogItem();
+		Set<String> keySet = log.keySet();
+		for (String key:keySet) {
+			String value = log.getString(key);
+			if (key.equals(Consts.CONST_RESULT_SOURCE)) {
+				source = value;
+			} else if (key.equals(Consts.CONST_RESULT_TIME)) {
+				logItem.mLogTime = Integer.parseInt(value);
+			} else {
+				logItem.PushBack(key, value);
+			}
+		}
+		return new QueriedLog(source, logItem);
 	}
 
 	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException {
@@ -794,6 +839,23 @@ public class Client implements LogService {
 		GetLogsResponse getLogsResponse = new GetLogsResponse(resHeaders);
 		ExtractLogsWithFastJson(getLogsResponse, object);
 		return getLogsResponse;
+	}
+
+	public GetContextLogsResponse getContextLogs(GetContextLogsRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		Map<String, String> urlParameter = request.GetAllParams();
+		String project = request.GetProject();
+		String logStore = request.getLogstore();
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/logstores/" + logStore;
+		ResponseMessage response = SendData(project, HttpMethod.GET,
+				resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		String requestId = GetRequestId(resHeaders);
+		com.alibaba.fastjson.JSONObject object = parseResponseMessageToObjectWithFastJSON(response, requestId);
+		GetContextLogsResponse logsResponse = new GetContextLogsResponse(resHeaders, object);
+		extractLogsWithFastJson(logsResponse, object.getJSONArray("logs"));
+		return logsResponse;
 	}
 
 	public ListLogStoresResponse ListLogStores(String project, int offset,
@@ -2052,9 +2114,9 @@ public class Client implements LogService {
 		return SendData(project, method, resourceUri, parameters, headers, body, null, null);
 	}
 
-	protected ResponseMessage SendData(String project, HttpMethod method, String resourceUri,
-			Map<String, String> parameters, Map<String, String> headers, byte[] body,
-			Map<String, String> output_header, String serverIp)
+	private ResponseMessage SendData(String project, HttpMethod method, String resourceUri,
+									 Map<String, String> parameters, Map<String, String> headers, byte[] body,
+									 Map<String, String> outputHeader, String serverIp)
 			throws LogException {
 		if (body.length > 0) {
 			headers.put(Consts.CONST_CONTENT_MD5, DigestUtils.md5Crypt(body));
@@ -2063,7 +2125,6 @@ public class Client implements LogService {
 			headers.put(Consts.CONST_X_LOG_RESOURCEOWNERACCOUNT, resourceOwnerAccount);
 		}
 		headers.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(body.length));
-
 		DigestUtils.addSignature(this.accessId, this.accessKey, method.toString(), headers, resourceUri, parameters);
 		URI uri;
 		if (serverIp == null) {
@@ -2071,38 +2132,37 @@ public class Client implements LogService {
 		} else {
 			uri = GetHostURIByIp(serverIp);
 		}
-
 		RequestMessage request = BuildRequest(uri, method,
 				resourceUri, parameters, headers,
 				new ByteArrayInputStream(body), body.length);
 		ResponseMessage response = null;
 		try {
-			response = this.serviceClient.sendRequest(request,
-					Consts.UTF_8_ENCODING);
+			response = this.serviceClient.sendRequest(request, Consts.UTF_8_ENCODING);
 			ExtractResponseBody(response);
-			if (output_header != null) {
-				output_header.putAll(response.getHeaders());
+			if (outputHeader != null) {
+				outputHeader.putAll(response.getHeaders());
 			}
 			int statusCode = response.getStatusCode();
 			if (statusCode != Consts.CONST_HTTP_OK) {
 				String requestId = GetRequestId(response.getHeaders());
-				JSONObject object = parseResponseBody(response, requestId);
-				ErrorCheck(object, requestId, statusCode);
+				try {
+					JSONObject object = parseResponseBody(response, requestId);
+					ErrorCheck(object, requestId, statusCode);
+				} catch (LogException ex) {
+					ex.SetHttpCode(response.getStatusCode());
+					throw ex;
+				}
 			}
 		} catch (ServiceException e) {
-			throw new LogException("RequestError", "Web request failed: "
-					+ e.getMessage(), e, "");
+			throw new LogException("RequestError", "Web request failed: " + e.getMessage(), e, "");
 		} catch (ClientException e) {
-			throw new LogException("RequestError", "Web request failed: "
-					+ e.getMessage(), e, "");
+			throw new LogException("RequestError", "Web request failed: " + e.getMessage(), e, "");
 		} finally {
 			try {
 				if (response != null) {
 					response.close();
 				}
-			} catch (IOException e) {
-			}
-
+			} catch (IOException ignore) {}
 		}
 		return response;
 	}
@@ -3495,6 +3555,12 @@ public class Client implements LogService {
 		GetRebuildIndexResponse response = new GetRebuildIndexResponse(message.getHeaders());
 		response.deserialize(responseBody, message.getRequestId());
 		return response;
+	}
+
+	@Override
+	public DeleteRebuildIndexResponse deleteRebuildIndex(DeleteRebuildIndexRequest request) throws LogException {
+		ResponseMessage responseMessage = send(request);
+		return new DeleteRebuildIndexResponse(responseMessage.getHeaders());
 	}
 
 	@Override

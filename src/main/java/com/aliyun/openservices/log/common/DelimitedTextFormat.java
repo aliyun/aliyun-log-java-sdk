@@ -14,8 +14,8 @@ public class DelimitedTextFormat extends StructuredDataFormat {
     private String fieldDelimiter;
     private String quoteChar;
     private String escapeChar;
-    private int skipLeadingRows = 0;
-    private int maxLines = -1;
+    private Integer skipLeadingRows = 0;
+    private Integer maxLines = -1;
     private boolean firstRowAsHeader = false;
 
     public DelimitedTextFormat() {
@@ -54,19 +54,19 @@ public class DelimitedTextFormat extends StructuredDataFormat {
         this.escapeChar = escapeChar;
     }
 
-    public int getSkipLeadingRows() {
+    public Integer getSkipLeadingRows() {
         return skipLeadingRows;
     }
 
-    public void setSkipLeadingRows(int skipLeadingRows) {
+    public void setSkipLeadingRows(Integer skipLeadingRows) {
         this.skipLeadingRows = skipLeadingRows;
     }
 
-    public int getMaxLines() {
+    public Integer getMaxLines() {
         return maxLines;
     }
 
-    public void setMaxLines(int maxLines) {
+    public void setMaxLines(Integer maxLines) {
         this.maxLines = maxLines;
     }
 
