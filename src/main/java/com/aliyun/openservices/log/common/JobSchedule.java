@@ -3,7 +3,7 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -76,6 +76,8 @@ public class JobSchedule implements Serializable {
     private Date startTime;
 
     private Date completeTime;
+
+    private boolean runImmediately = false;
 
     public String getId() {
         return id;
@@ -214,6 +216,14 @@ public class JobSchedule implements Serializable {
         this.description = description;
     }
 
+    public boolean isRunImmediately() {
+        return runImmediately;
+    }
+
+    public void setRunImmediately(boolean runImmediately) {
+        this.runImmediately = runImmediately;
+    }
+
     public void deserialize(JSONObject value) {
         id = JsonUtils.readOptionalString(value, "id");
         displayName = JsonUtils.readOptionalString(value, "displayName");
@@ -230,11 +240,11 @@ public class JobSchedule implements Serializable {
                 interval = value.getString("interval");
                 break;
             case DAILY:
-                hour = value.getInt("hour");
+                hour = value.getIntValue("hour");
                 break;
             case WEEKLY:
-                dayOfWeek = value.getInt("dayOfWeek");
-                hour = value.getInt("hour");
+                dayOfWeek = value.getIntValue("dayOfWeek");
+                hour = value.getIntValue("hour");
                 break;
         }
         status = JsonUtils.readOptionalString(value, "status");
@@ -243,6 +253,7 @@ public class JobSchedule implements Serializable {
         createTime = JsonUtils.readOptionalDate(value, "createTime");
         lastModifiedTime = JsonUtils.readOptionalDate(value, "lastModifiedTime");
         description = JsonUtils.readOptionalString(value, "description");
+        runImmediately = JsonUtils.readBool(value, "runImmediately", false);
     }
 
     @Override
@@ -280,6 +291,8 @@ public class JobSchedule implements Serializable {
             return false;
         if (getStartTime() != null ? !getStartTime().equals(schedule.getStartTime()) : schedule.getStartTime() != null)
             return false;
+        if (isRunImmediately() != schedule.isRunImmediately())
+            return false;
         return getCompleteTime() != null ? getCompleteTime().equals(schedule.getCompleteTime()) : schedule.getCompleteTime() == null;
     }
 
@@ -302,6 +315,7 @@ public class JobSchedule implements Serializable {
         result = 31 * result + (getLastModifiedTime() != null ? getLastModifiedTime().hashCode() : 0);
         result = 31 * result + (getStartTime() != null ? getStartTime().hashCode() : 0);
         result = 31 * result + (getCompleteTime() != null ? getCompleteTime().hashCode() : 0);
+        result = 31 * result + (isRunImmediately() ? 1 : 0);
         return result;
     }
 }
