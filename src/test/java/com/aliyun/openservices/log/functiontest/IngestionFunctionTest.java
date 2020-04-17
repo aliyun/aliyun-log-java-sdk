@@ -37,13 +37,12 @@ public class IngestionFunctionTest extends JobIntgTest {
         ingestion.setDisplayName("OSS-test");
         IngestionConfiguration configuration = new IngestionConfiguration();
         configuration.setLogstore("test-logstore2");
-//        configuration.setRoleARN("acs:ram::1654218965343050:role/osstologservicerole");
 
         AliyunOSSSource source = new AliyunOSSSource();
         source.setBucket("yunlei-bill");
         source.setEncoding("UTF-8");
         source.setEndpoint("oss-cn-beijing.aliyuncs.com");
-        source.setRoleARN("acs:ram::1654218965343050:role/osstologservicerole");
+        source.setRoleARN("acs:ram::1654218965343050:role/aliyunlogimportossrole");
 
         DelimitedTextFormat format = new DelimitedTextFormat();
         format.setEscapeChar("\\");
@@ -60,6 +59,14 @@ public class IngestionFunctionTest extends JobIntgTest {
         schedule.setType(JobScheduleType.FIXED_RATE);
         ingestion.setSchedule(schedule);
         return ingestion;
+    }
+
+    @Test
+    public void testCreateJob() throws Exception {
+        Ingestion ingestion = createIngestion();
+        String jobName = ingestion.getName();
+        String project = "ali-sls-etl-staging";
+        client.createIngestion(new CreateIngestionRequest(project, ingestion));
     }
 
     @Test
