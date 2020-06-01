@@ -84,7 +84,7 @@ while(true) {
 
     String nextCursor = logDataRes.GetNextCursor();  // 下次读取的位置
     System.out.print("The Next cursor:" + nextCursor);
-    if (cursor.equal(nextCursor)) {
+    if (cursor.equals(nextCursor)) {
         break;
     }
     cursor = nextCursor;
