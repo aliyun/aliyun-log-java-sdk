@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 /**
  * Util class for Date.
@@ -22,7 +23,7 @@ public class DateUtil {
     // RFC 822 Date Format
     private static final String RFC822_DATE_FORMAT =
             "EEE, dd MMM yyyy HH:mm:ss z";
-
+    private static final String FORMAT_TYPE = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     /**
      * Formats Date to GMT string.
      * @param date
@@ -32,21 +33,18 @@ public class DateUtil {
         return getRfc822DateFormat().format(date);
     }
 
-    /**
-     * Parses a GMT-format string.
-     * @param dateString
-     * @return date
-     * @throws ParseException
-     */
-    public static Date parseRfc822Date(String dateString) throws ParseException{
-        return getRfc822DateFormat().parse(dateString);
-    }
-
     private static DateFormat getRfc822DateFormat(){
         SimpleDateFormat rfc822DateFormat =
                 new SimpleDateFormat(RFC822_DATE_FORMAT, Locale.US);
         rfc822DateFormat.setTimeZone(new SimpleTimeZone(0, "GMT"));
 
         return rfc822DateFormat;
+    }
+
+    public static long stringToLong(String time) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT_TYPE);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        Date date = dateFormat.parse(time);
+        return date.getTime();
     }
 }

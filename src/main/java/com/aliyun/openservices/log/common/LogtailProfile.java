@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 public class LogtailProfile implements Serializable {
 
@@ -106,7 +106,7 @@ public class LogtailProfile implements Serializable {
 			this.time = dict.getLong(LOGTAILPROFILE_TIME);
 			this.source = dict.getString(LOGTAILPROFILE_SOURCE);
 			this.ip = dict.getString(LOGTAILPROFILE_IP);
-			this.alarmCount = dict.getInt(LOGTAILPROFILE_ALARMCOUNT);
+			this.alarmCount = dict.getIntValue(LOGTAILPROFILE_ALARMCOUNT);
 			this.alarmType = dict.getString(LOGTAILPROFILE_ALARMTYPE);
 			this.alarmMessage = dict.getString(LOGTAILPROFILE_ALARMMESSAGE);
 			this.machineOS = dict.getString(LOGTAILPROFILE_MACHINEOS);
@@ -117,7 +117,7 @@ public class LogtailProfile implements Serializable {
 	
 	public void FromJsonString(String logtailProfileString) throws LogException {
 		try {
-			JSONObject dict = JSONObject.fromObject(logtailProfileString);
+			JSONObject dict = JSONObject.parseObject(logtailProfileString);
 			FromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateLogtailProfile", e.getMessage(), e, "");

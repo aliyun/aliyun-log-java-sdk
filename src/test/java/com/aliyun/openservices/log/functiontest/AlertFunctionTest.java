@@ -75,7 +75,7 @@ public class AlertFunctionTest extends JobIntgTest {
         configuration.setThrottling("0s");
         configuration.setNotifyThreshold(100);
         alert.setConfiguration(configuration);
-        alert.setSchedule(createSchedule());
+        alert.setSchedule(createSchedule(true));
         return alert;
     }
 
@@ -103,12 +103,15 @@ public class AlertFunctionTest extends JobIntgTest {
         CreateAlertRequest request = new CreateAlertRequest(TEST_PROJECT, alert);
         try {
             client.createAlert(request);
-            fail("Dashboard not exist");
         } catch (LogException ex) {
             assertEquals(ex.GetErrorMessage(), "Dashboard does not exist: " + alert.getConfiguration().getDashboard());
         }
         createDashboard();
-        client.createAlert(request);
+        try {
+            client.createAlert(request);
+        } catch (LogException ex) {
+            assertEquals("Job " + jobName +" already exists", ex.GetErrorMessage());
+        }
         GetAlertResponse response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
 
         Alert created = response.getAlert();
@@ -121,11 +124,13 @@ public class AlertFunctionTest extends JobIntgTest {
         response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
         Alert alert1 = response.getAlert();
         assertEquals(alert1.getState(), JobState.DISABLED);
+        assertEquals(alert1.getStatus(), "DISABLED");
 
         client.enableAlert(new EnableAlertRequest(TEST_PROJECT, jobName));
         response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
         Alert alert2 = response.getAlert();
         assertEquals(alert2.getState(), JobState.ENABLED);
+        assertEquals(alert2.getStatus(), "ENABLED");
 
         DisableAlertRequest disableAlertRequest = new DisableAlertRequest(TEST_PROJECT, jobName);
         client.disableJob(disableAlertRequest);
@@ -133,6 +138,14 @@ public class AlertFunctionTest extends JobIntgTest {
         response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
         Alert alert3 = response.getAlert();
         assertEquals(alert3.getState(), JobState.DISABLED);
+        assertEquals(alert3.getStatus(), "DISABLED");
+
+        alert3.setState(JobState.ENABLED);
+        client.updateAlert(new UpdateAlertRequest(TEST_PROJECT, alert3));
+        response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
+        Alert alert4 = response.getAlert();
+        assertEquals(alert4.getState(), JobState.ENABLED);
+        assertEquals(alert4.getStatus(), "ENABLED");
 
         JobSchedule schedule1 = alert3.getSchedule();
         JobSchedule schedule = alert.getSchedule();
@@ -143,12 +156,18 @@ public class AlertFunctionTest extends JobIntgTest {
         alert3.getConfiguration().setMuteUntil(muteTo);
         client.updateAlert(new UpdateAlertRequest(TEST_PROJECT, alert3));
         response = client.getAlert(new GetAlertRequest(TEST_PROJECT, jobName));
-        Alert alert4 = response.getAlert();
-        assertEquals(muteTo.getTime() / 1000, alert4.getConfiguration().getMuteUntil().getTime() / 1000);
+        Alert alert5 = response.getAlert();
+        assertEquals(muteTo.getTime() / 1000, alert5.getConfiguration().getMuteUntil().getTime() / 1000);
 
         for (int i = 0; i < 10; i++) {
             alert.setName("alert-" + i);
+            JobState state = randomBoolean() ? JobState.ENABLED : JobState.DISABLED;
+            alert.setState(state);
             client.createAlert(new CreateAlertRequest(TEST_PROJECT, alert));
+            response = client.getAlert(new GetAlertRequest(TEST_PROJECT, alert.getName()));
+            Alert alert6 = response.getAlert();
+            assertEquals(state, alert6.getState());
+            assertEquals(state == JobState.ENABLED ? "ENABLED" : "DISABLED", alert6.getStatus());
         }
 
         // test list jobs
@@ -186,6 +205,7 @@ public class AlertFunctionTest extends JobIntgTest {
         client.deleteAlert(new DeleteAlertRequest(TEST_PROJECT, alert.getName()));
     }
 
+    //    @Ignore
     @Test
     public void testCreateWebHookWithHeaders() throws Exception {
         createDashboard();
@@ -239,6 +259,7 @@ public class AlertFunctionTest extends JobIntgTest {
         client.deleteAlert(new DeleteAlertRequest(TEST_PROJECT, alert.getName()));
     }
 
+    //    @Ignore
     @Test
     public void testCreateEmail() throws Exception {
         createDashboard();

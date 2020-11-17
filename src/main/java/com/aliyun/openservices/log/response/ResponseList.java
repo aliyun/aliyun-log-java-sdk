@@ -5,7 +5,7 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 import com.aliyun.openservices.log.util.JsonUtils;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -49,8 +49,8 @@ public abstract class ResponseList<T> extends Response {
 
     public void deserialize(JSONObject value, String requestId) throws LogException {
         try {
-            count = value.getInt(Consts.CONST_COUNT);
-            total = value.getInt(Consts.CONST_TOTAL);
+            count = value.getIntValue(Consts.CONST_COUNT);
+            total = value.getIntValue(Consts.CONST_TOTAL);
             results = JsonUtils.readList(value, Consts.RESULTS, unmarshaller());
         } catch (final Exception ex) {
             throw new LogException(ErrorCodes.BAD_RESPONSE,

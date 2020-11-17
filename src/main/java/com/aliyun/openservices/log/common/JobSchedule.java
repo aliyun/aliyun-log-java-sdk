@@ -10,7 +10,6 @@ import java.util.Date;
 
 import static com.aliyun.openservices.log.util.Args.checkDuration;
 
-
 public class JobSchedule implements Serializable {
 
     private static final long serialVersionUID = 8400426178465652937L;
@@ -191,19 +190,19 @@ public class JobSchedule implements Serializable {
     public void setCompleteTime(Date completeTime) {
         this.completeTime = completeTime;
     }
-
+    @Deprecated
     public Integer getFromTime() {
         return fromTime;
     }
-
+    @Deprecated
     public void setFromTime(Integer fromTime) {
         this.fromTime = fromTime;
     }
-
+    @Deprecated
     public Integer getToTime() {
         return toTime;
     }
-
+    @Deprecated
     public void setToTime(Integer toTime) {
         this.toTime = toTime;
     }

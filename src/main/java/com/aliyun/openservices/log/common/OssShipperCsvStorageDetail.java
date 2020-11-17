@@ -5,14 +5,15 @@ import java.util.ArrayList;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implements Serializable{
 	private static final long serialVersionUID = -9072422584563361211L;
 	private String delimiter = ",";
 	private String quote = "";
+	private String lineFeed = "\n";
 	private String nullIdentifier = "";
 	private boolean header = false;
 	private ArrayList<String> mStorageColumns = new ArrayList<String>();
@@ -61,17 +62,24 @@ public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implemen
 		this.header = header;
 	}
 
+	public String getLineFeed() {
+		return lineFeed;
+	}
+
+	public void setLineFeed(String lineFeed) {
+		this.lineFeed = lineFeed;
+	}
+
 	@Override
 	public JSONObject ToJsonObject() {
 		JSONObject obj = new JSONObject();
 		JSONArray columns = new JSONArray();
-		for (int index = 0; index < this.mStorageColumns.size(); index++) {
-			columns.add(this.mStorageColumns.get(index));
-		}
+		columns.addAll(this.mStorageColumns);
 		JSONObject detail = new JSONObject();
 		detail.put("columns", columns);
 		detail.put("delimiter", this.delimiter);
 		detail.put("quote", this.quote);
+		detail.put("lineFeed", this.lineFeed);
 		detail.put("nullIdentifier", this.nullIdentifier);
 		detail.put("header", this.header);
 		JSONObject storage = new JSONObject();
@@ -95,6 +103,7 @@ public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implemen
 			setmStorageColumns(column);
 			setDelimiter(detail.getString("delimiter"));
 			setQuote(detail.getString("quote"));
+			setLineFeed(detail.containsKey("lineFeed") ? detail.getString("lineFeed") : "\n");
 			setNullIdentifier(detail.getString("nullIdentifier"));
 			setHeader(detail.getBoolean("header"));
 		} catch (JSONException ex) {

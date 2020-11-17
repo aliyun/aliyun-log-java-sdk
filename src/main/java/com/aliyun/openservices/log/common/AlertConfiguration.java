@@ -1,13 +1,13 @@
 package com.aliyun.openservices.log.common;
 
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Utils;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import java.util.Date;
 import java.util.List;
@@ -41,6 +41,9 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
      */
     @JSONField
     private String throttling;
+
+    @JSONField
+    private boolean sendRecoveryMessage;
 
     public String getCondition() {
         return condition;
@@ -78,6 +81,14 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         return throttling;
     }
 
+    public boolean getSendRecoveryMessage() {
+        return sendRecoveryMessage;
+    }
+
+    public void setSendRecoveryMessage(boolean sendRecoveryMessage) {
+        this.sendRecoveryMessage = sendRecoveryMessage;
+    }
+
     public void setThrottling(String throttling) {
         Args.checkDuration(throttling);
         this.throttling = throttling;
@@ -95,11 +106,12 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
                 return query;
             }
         });
-        if (value.has("muteUntil")) {
+        if (value.containsKey("muteUntil")) {
             muteUntil = Utils.timestampToDate(value.getLong("muteUntil"));
         }
         notifyThreshold = JsonUtils.readOptionalInt(value, "notifyThreshold");
         throttling = JsonUtils.readOptionalString(value, "throttling");
+        sendRecoveryMessage = JsonUtils.readBool(value, "sendRecoveryMessage", false);
     }
 
     @Override
@@ -129,24 +141,23 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
 
         AlertConfiguration that = (AlertConfiguration) o;
 
-        if (getCondition() != null ? !getCondition().equals(that.getCondition()) : that.getCondition() != null)
+        if (sendRecoveryMessage != that.sendRecoveryMessage) return false;
+        if (condition != null ? !condition.equals(that.condition) : that.condition != null) return false;
+        if (queryList != null ? !queryList.equals(that.queryList) : that.queryList != null) return false;
+        if (muteUntil != null ? !muteUntil.equals(that.muteUntil) : that.muteUntil != null) return false;
+        if (notifyThreshold != null ? !notifyThreshold.equals(that.notifyThreshold) : that.notifyThreshold != null)
             return false;
-        if (getQueryList() != null ? !getQueryList().equals(that.getQueryList()) : that.getQueryList() != null)
-            return false;
-        if (getMuteUntil() != null ? !getMuteUntil().equals(that.getMuteUntil()) : that.getMuteUntil() != null)
-            return false;
-        if (getNotifyThreshold() != null ? !getNotifyThreshold().equals(that.getNotifyThreshold()) : that.getNotifyThreshold() != null)
-            return false;
-        return getThrottling() != null ? getThrottling().equals(that.getThrottling()) : that.getThrottling() == null;
+        return throttling != null ? throttling.equals(that.throttling) : that.throttling == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getCondition() != null ? getCondition().hashCode() : 0;
-        result = 31 * result + (getQueryList() != null ? getQueryList().hashCode() : 0);
-        result = 31 * result + (getMuteUntil() != null ? getMuteUntil().hashCode() : 0);
-        result = 31 * result + (getNotifyThreshold() != null ? getNotifyThreshold().hashCode() : 0);
-        result = 31 * result + (getThrottling() != null ? getThrottling().hashCode() : 0);
+        int result = condition != null ? condition.hashCode() : 0;
+        result = 31 * result + (queryList != null ? queryList.hashCode() : 0);
+        result = 31 * result + (muteUntil != null ? muteUntil.hashCode() : 0);
+        result = 31 * result + (notifyThreshold != null ? notifyThreshold.hashCode() : 0);
+        result = 31 * result + (throttling != null ? throttling.hashCode() : 0);
+        result = 31 * result + (sendRecoveryMessage ? 1 : 0);
         return result;
     }
 }

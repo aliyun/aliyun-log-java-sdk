@@ -1,8 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 
@@ -88,7 +88,7 @@ public class SensitiveKey implements Serializable {
 	
 	public void FromJsonString(String sensitiveKeyString) throws LogException {
 		try {
-			JSONObject dict = JSONObject.fromObject(sensitiveKeyString);
+			JSONObject dict = JSONObject.parseObject(sensitiveKeyString);
 			FromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateChart", e.getMessage(), e, "");

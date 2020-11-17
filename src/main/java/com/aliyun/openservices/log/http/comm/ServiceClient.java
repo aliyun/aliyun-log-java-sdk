@@ -12,33 +12,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
-/**
- * The client that accesses Aliyun services.
- * @author xiaoming.yin
- *
- */
 public abstract class ServiceClient {
 
-    /**
-     * A wrapper class to HttpMessage.
-     * It contains the data to create HttpRequestBase,
-     * and it is easy for testing to verify the built data such as URL, content.
-     * @author xiaoming.yin
-     *
-     */
     public static class Request extends HttpMessage {
         private String uri;
         private HttpMethod method;
 
-        public Request(){
-
+        public Request() {
         }
 
-        public String getUri(){
+        public String getUri() {
             return this.uri;
         }
 
-        public void setUrl(String uri){
+        public void setUrl(String uri) {
             this.uri = uri;
         }
 
@@ -61,34 +48,34 @@ public abstract class ServiceClient {
 
     protected ClientConfiguration config;
 
-    protected ServiceClient(ClientConfiguration config){
+    protected ServiceClient(ClientConfiguration config) {
         this.config = config;
     }
-    
+
     /**
      * Returns response from the service.
-     * @param request
-     *          Request message.
-     * @param charset
-     *          encode charset.
+     *
+     * @param request Request message.
+     * @param charset encode charset.
      */
     public ResponseMessage sendRequest(RequestMessage request, String charset)
-            throws ServiceException, ClientException{
+            throws ServiceException, ClientException {
         Args.notNull(request, "request");
         Args.notNullOrEmpty(charset, "charset");
 
-        try{
+        try {
             return sendRequestImpl(request, charset);
         } finally {
             // Close the request stream as well after the request is complete.
             try {
                 request.close();
-            } catch (IOException e) { }
+            } catch (IOException e) {
+            }
         }
     }
 
     private ResponseMessage sendRequestImpl(RequestMessage request,
-            String charset) throws ClientException, ServiceException {
+                                            String charset) throws ClientException, ServiceException {
         InputStream content = request.getContent();
 
         if (content != null && content.markSupported()) {
@@ -109,6 +96,7 @@ public abstract class ServiceClient {
 
     /**
      * Implements the core logic to send requests to Aliyun services.
+     *
      * @param request
      * @param charset
      * @return response message
@@ -118,25 +106,25 @@ public abstract class ServiceClient {
             throws Exception;
 
     private Request buildRequest(RequestMessage requestMessage, String charset)
-            throws ClientException{
+            throws ClientException {
         Request request = new Request();
         request.setMethod(requestMessage.getMethod());
         request.setHeaders(requestMessage.getHeaders());
         // The header must be converted after the request is signed,
         // otherwise the signature will be incorrect.
-        if (request.getHeaders() != null){
+        if (request.getHeaders() != null) {
             HttpUtil.convertHeaderCharsetToIso88591(request.getHeaders());
         }
 
         final String delimiter = "/";
         String uri = requestMessage.getEndpoint().toString();
-        if (! uri.endsWith(delimiter)
+        if (!uri.endsWith(delimiter)
                 && (requestMessage.getResourcePath() == null ||
-                ! requestMessage.getResourcePath().startsWith(delimiter))){
+                !requestMessage.getResourcePath().startsWith(delimiter))) {
             uri += delimiter;
         }
 
-        if (requestMessage.getResourcePath() != null){
+        if (requestMessage.getResourcePath() != null) {
             uri += requestMessage.getResourcePath();
         }
 
@@ -154,7 +142,7 @@ public abstract class ServiceClient {
         }
 
         request.setUrl(uri);
-        if (requestIsPost && requestMessage.getContent() == null && paramString != null){
+        if (requestIsPost && requestMessage.getContent() == null && paramString != null) {
             // Put the param string to the request body if POSTing and
             // no content.
             try {
@@ -165,7 +153,7 @@ public abstract class ServiceClient {
             } catch (UnsupportedEncodingException e) {
                 throw new AssertionError("EncodingFailed" + e.getMessage());
             }
-        } else{
+        } else {
             request.setContent(requestMessage.getContent());
             request.setContentLength(requestMessage.getContentLength());
         }

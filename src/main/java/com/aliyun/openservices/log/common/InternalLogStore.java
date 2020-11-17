@@ -1,8 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ public class InternalLogStore extends LogStore implements Serializable {
     private Long indexSize = 0l;
     private Long shardSize = 0l;
     private Long freeTtl = 0l;
+    private String productType = "";
 
     public Long getFreeTtl() {
 		return freeTtl;
@@ -114,21 +115,24 @@ public class InternalLogStore extends LogStore implements Serializable {
         this.paidAccount = paidAccount;
     }
 
-    @Override
-    public JSONObject ToJsonObject() {
-        JSONObject jsonObj = new JSONObject();
-        jsonObj = ToRequestJson();
+    public String getProductType() {
+		return productType;
+	}
 
+	public void setProductType(String productType) {
+		this.productType = productType;
+	}
+	
+	@Override
+    public JSONObject ToJsonObject() {
+        JSONObject jsonObj = ToRequestJson();
+        jsonObj.put("productType", productType);
         JSONArray operatingAccountJson = new JSONArray();
-        for (String account : operatingAccount) {
-            operatingAccountJson.add(account);
-        }
+        operatingAccountJson.addAll(operatingAccount);
         jsonObj.put("operatingAccount", operatingAccountJson);
 
         JSONArray restrictedActionJson = new JSONArray();
-        for (String action : restrictedAction) {
-            restrictedActionJson.add(action);
-        }
+        restrictedActionJson.addAll(restrictedAction);
         jsonObj.put("restrictedAction", restrictedActionJson);
 
         JSONObject freeCreditJson = new JSONObject();
@@ -154,43 +158,47 @@ public class InternalLogStore extends LogStore implements Serializable {
     @Override
     public void FromJsonString(String logStoreString) throws LogException {
         try {
-            JSONObject dict = JSONObject.fromObject(logStoreString);
+            JSONObject dict = JSONObject.parseObject(logStoreString);
             FromJsonObject(dict);
 
-            if (dict.has("freeCredit")) {
+            if (dict.containsKey("freeCredit")) {
                 JSONObject freeCredit = dict.getJSONObject("freeCredit");
-                if (freeCredit.has("paidAccount"))
+                if (freeCredit.containsKey("paidAccount"))
                     setPaidAccount(freeCredit.getString("paidAccount"));
-                if (freeCredit.has("allFree"))
+                if (freeCredit.containsKey("allFree"))
                     setAllFree(freeCredit.getBoolean("allFree"));
-                if (freeCredit.has("readCount"))
+                if (freeCredit.containsKey("readCount"))
                     setReadCount(freeCredit.getLong("readCount"));
-                if (freeCredit.has("writeCount"))
+                if (freeCredit.containsKey("writeCount"))
                     setWriteCount(freeCredit.getLong("writeCount"));
-                if (freeCredit.has("inflowSize"))
+                if (freeCredit.containsKey("inflowSize"))
                     setInflowSize(freeCredit.getLong("inflowSize"));
-                if (freeCredit.has("outflowSize"))
+                if (freeCredit.containsKey("outflowSize"))
                     setOutflowSize(freeCredit.getLong("outflowSize"));
-                if (freeCredit.has("indexSize"))
+                if (freeCredit.containsKey("indexSize"))
                     setIndexSize(freeCredit.getLong("indexSize"));
-                if (freeCredit.has("shardSize"))
+                if (freeCredit.containsKey("shardSize"))
                     setShardSize(freeCredit.getLong("shardSize"));
-                if (freeCredit.has("ttl"))
+                if (freeCredit.containsKey("ttl"))
                     setFreeTtl(freeCredit.getLong("ttl"));
             }
 
-            if (dict.has("restrictedAction")) {
+            if (dict.containsKey("restrictedAction")) {
                 JSONArray restrictedActionArray = dict.getJSONArray("restrictedAction");
                 for (int index = 0; index < restrictedActionArray.size(); index++) {
                     restrictedAction.add(restrictedActionArray.getString(index));
                 }
             }
 
-            if (dict.has("operatingAccount")) {
+            if (dict.containsKey("operatingAccount")) {
                 JSONArray operatingAccountArray = dict.getJSONArray("operatingAccount");
                 for (int index = 0; index < operatingAccountArray.size(); index++) {
                     operatingAccount.add(operatingAccountArray.getString(index));
                 }
+            }
+            
+            if (dict.containsKey("productType")) {
+            	setProductType(dict.getString("productType"));
             }
 
         } catch (LogException e) {

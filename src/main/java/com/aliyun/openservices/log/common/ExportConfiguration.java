@@ -1,6 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.util.JsonUtils;
+
+import java.util.Map;
 
 public class ExportConfiguration extends JobConfiguration {
 
@@ -10,11 +13,15 @@ public class ExportConfiguration extends JobConfiguration {
 
     private String accessKeySecret;
 
+    private String roleArn;
+
     private String instanceType;
 
     private int fromTime;
 
     private DataSink sink;
+
+    private Map<String, String> parameters;
 
     public String getLogstore() {
         return logstore;
@@ -38,6 +45,14 @@ public class ExportConfiguration extends JobConfiguration {
 
     public void setAccessKeySecret(String accessKeySecret) {
         this.accessKeySecret = accessKeySecret;
+    }
+
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
     }
 
     public String getInstanceType() {
@@ -64,13 +79,22 @@ public class ExportConfiguration extends JobConfiguration {
         this.sink = sink;
     }
 
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
     @Override
     public void deserialize(JSONObject value) {
         logstore = value.getString("logstore");
+        roleArn = value.getString("roleArn");
         accessKeyId = value.getString("accessKeyId");
         accessKeySecret = value.getString("accessKeySecret");
         instanceType = value.getString("instanceType");
-        fromTime = value.getInt("fromTime");
+        fromTime = value.getIntValue("fromTime");
         JSONObject obj = value.getJSONObject("sink");
         DataSinkType type = DataSinkType.fromString(obj.getString("type"));
         if (type == DataSinkType.ALIYUN_ADB) {
@@ -80,6 +104,6 @@ public class ExportConfiguration extends JobConfiguration {
             sink = new AliyunTSDBSink();
             sink.deserialize(obj);
         }
+        parameters = JsonUtils.readOptionalMap(value, "parameters");
     }
-
 }

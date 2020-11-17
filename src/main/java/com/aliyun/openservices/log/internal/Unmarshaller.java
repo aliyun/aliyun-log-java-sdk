@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.internal;
 
 
-import net.sf.json.JSONArray;
+import com.alibaba.fastjson.JSONArray;
 
 
 public interface Unmarshaller<T> {

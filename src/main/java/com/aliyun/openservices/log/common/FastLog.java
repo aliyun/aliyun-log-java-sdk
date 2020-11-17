@@ -82,4 +82,8 @@ public class FastLog {
             return null;
         }
     }
+
+    public int getByteSize(){
+        return endOffset - beginOffset;
+    }
 }

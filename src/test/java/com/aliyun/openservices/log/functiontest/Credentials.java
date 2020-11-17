@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
 import java.util.Scanner;
@@ -12,11 +12,13 @@ public final class Credentials {
     private String endpoint;
     private String accessKeyId;
     private String accessKey;
+    private String aliuid;
 
-    public Credentials(String endpoint, String accessKeyId, String accessKey) {
+    public Credentials(String endpoint, String accessKeyId, String accessKey, String aliuid) {
         this.endpoint = endpoint;
         this.accessKeyId = accessKeyId;
         this.accessKey = accessKey;
+        this.aliuid = aliuid;
     }
 
     public String getEndpoint() {
@@ -43,6 +45,14 @@ public final class Credentials {
         this.accessKey = accessKey;
     }
 
+    public String getAliuid() {
+        return aliuid;
+    }
+
+    public void setAliuid(String aliuid) {
+        this.aliuid = aliuid;
+    }
+
     public static Credentials load() {
         final File file = new File(System.getProperty("user.home"), CONFIG_FILE);
         if (!file.exists()) {
@@ -50,11 +60,12 @@ public final class Credentials {
         }
         try {
             final String text = new Scanner(file).useDelimiter("\\A").next();
-            JSONObject object = JSONObject.fromObject(text);
+            JSONObject object = JSONObject.parseObject(text);
             String endpoint = object.getString("endpoint");
             String accessKeyId = object.getString("accessKeyId");
             String accessKey = object.getString("accessKey");
-            return new Credentials(endpoint, accessKeyId, accessKey);
+            String aliuid = object.getString("aliuid");
+            return new Credentials(endpoint, accessKeyId, accessKey, aliuid);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }

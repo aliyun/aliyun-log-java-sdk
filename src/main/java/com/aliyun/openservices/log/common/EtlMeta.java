@@ -1,8 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 
@@ -111,18 +111,18 @@ public class EtlMeta implements Serializable {
             this.metaTag = etlMetaJson.getString(Consts.ETL_META_TAG);
             // For etl metas created by logging, EtlMetaValue may ends with new line.
             final String value = etlMetaJson.getString(Consts.ETL_META_VALUE);
-            this.metaValue = JSONObject.fromObject(value.trim());
-            if (etlMetaJson.has(Consts.ETL_META_CREATE_TIME)) {
+            this.metaValue = JSONObject.parseObject(value.trim());
+            if (etlMetaJson.containsKey(Consts.ETL_META_CREATE_TIME)) {
                 this.createTime = etlMetaJson.getLong(Consts.ETL_META_CREATE_TIME);
             } else {
                 this.createTime = 0;
             }
-            if (etlMetaJson.has(Consts.ETL_META_LAST_MODIFY_TIME)) {
+            if (etlMetaJson.containsKey(Consts.ETL_META_LAST_MODIFY_TIME)) {
                 this.lastModifyTime = etlMetaJson.getLong(Consts.ETL_META_LAST_MODIFY_TIME);
             } else {
                 this.lastModifyTime = 0;
             }
-            if (etlMetaJson.has(Consts.ETL_META_ENABLE)) {
+            if (etlMetaJson.containsKey(Consts.ETL_META_ENABLE)) {
                 this.enable = etlMetaJson.getBoolean(Consts.ETL_META_ENABLE);
             } else {
                 this.enable = true;

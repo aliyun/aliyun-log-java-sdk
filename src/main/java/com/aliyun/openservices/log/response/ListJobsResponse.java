@@ -3,7 +3,7 @@ package com.aliyun.openservices.log.response;
 
 import com.aliyun.openservices.log.common.Job;
 import com.aliyun.openservices.log.internal.Unmarshaller;
-import net.sf.json.JSONArray;
+import com.alibaba.fastjson.JSONArray;
 
 import java.util.Map;
 

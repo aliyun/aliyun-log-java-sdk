@@ -3,20 +3,8 @@
  */
 package com.aliyun.openservices.log;
 
-import com.aliyun.openservices.log.common.ACL;
-import com.aliyun.openservices.log.common.Config;
-import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
-import com.aliyun.openservices.log.common.ConsumerGroup;
-import com.aliyun.openservices.log.common.Domain;
-import com.aliyun.openservices.log.common.EtlMeta;
-import com.aliyun.openservices.log.common.Index;
-import com.aliyun.openservices.log.common.InternalLogStore;
-import com.aliyun.openservices.log.common.LogItem;
-import com.aliyun.openservices.log.common.LogStore;
-import com.aliyun.openservices.log.common.MachineGroup;
-import com.aliyun.openservices.log.common.MachineList;
-import com.aliyun.openservices.log.common.ShipperConfig;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.*;
 import com.aliyun.openservices.log.response.*;
@@ -24,6 +12,7 @@ import com.aliyun.openservices.log.response.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 public interface LogService {
@@ -273,7 +262,7 @@ public interface LogService {
 	 * @throws NullPointerException
 	 *             if required parameter is null
 	 */
-    ListTopicsResponse ListTopics(ListTopicsRequest request) throws LogException;
+	ListTopicsResponse ListTopics(ListTopicsRequest request) throws LogException;
 
 	/**
 	 * Send Data to log service server
@@ -592,45 +581,6 @@ public interface LogService {
 	 *             if project or logstore in request is empty
 	 */
     ListShardResponse MergeShards(MergeShardsRequest request) throws LogException;
-
-	/**
-	 * delete a readonly shard in the logtstore
-	 *
-	 * @param project
-	 *            the project name
-	 * @param logStore
-	 *            where the shard belongs to
-	 * @param shardId
-	 *            the shard id to delete
-	 *
-	 * @return the merges shards and new generated readwrite shard
-	 *
-	 * @throws LogException
-	 *             if any error happen when get the data from log service server
-	 * @throws NullPointerException
-	 *             if any parameter is null
-	 * @throws IllegalArgumentException
-	 *             if project or logstore in request is empty
-	 */
-    DeleteShardResponse DeleteShard(String project, String logStore,
-                                    int shardId) throws LogException;
-
-	/**
-	 * delete a readonly shard in the logtstore
-	 *
-	 * @param request
-	 *            delete shard request
-	 *
-	 * @return the merges shards and new generated readwrite shard
-	 *
-	 * @throws LogException
-	 *             if any error happen when get the data from log service server
-	 * @throws NullPointerException
-	 *             if any parameter is null
-	 * @throws IllegalArgumentException
-	 *             if project or logstore in request is empty
-	 */
-    DeleteShardResponse DeleteShard(DeleteShardRequest request) throws LogException;
 
 	/**
 	 * Batch get log
@@ -1681,6 +1631,31 @@ public interface LogService {
     CreateLogStoreResponse CreateLogStore(CreateLogStoreRequest request)
 			throws LogException;
 
+    /**
+     * create link store
+     *
+     * @param project   the project name
+     * @param linkStore the config
+     * @return the create link store response
+     * @throws LogException             if any error happen when creating link store
+     * @throws NullPointerException     if any parameter is null
+     * @throws IllegalArgumentException if project is empty
+     */
+    CreateLinkStoreResponse CreateLinkStore(String project,
+                                            LinkStore linkStore) throws LogException;
+
+    /**
+     * create link store
+     *
+     * @param request link store create request
+     * @return the create link store response
+     * @throws LogException             if any error happen when creating link store
+     * @throws NullPointerException     if required parameter is null
+     * @throws IllegalArgumentException if any required string parameter is empty
+     */
+    CreateLinkStoreResponse CreateLinkStore(CreateLinkStoreRequest request)
+            throws LogException;
+
 	/**
 	 * Update log store config
 	 *
@@ -1770,6 +1745,30 @@ public interface LogService {
 	 */
     DeleteLogStoreResponse DeleteLogStore(DeleteLogStoreRequest request)
 			throws LogException;
+
+    /**
+     * Delete link store
+     *
+     * @param project       the project name
+     * @param linkStoreName the link store to delete
+     * @return delete link store response
+     * @throws LogException             if any error happen when deleting link store
+     * @throws NullPointerException     if required parameter is null
+     * @throws IllegalArgumentException if any required string parameter is empty
+     */
+    DeleteLinkStoreResponse DeleteLinkStore(String project,
+                                            String linkStoreName) throws LogException;
+
+    /**
+     * Delete link store
+     *
+     * @param request delete link store request
+     * @return delete link store response
+     * @throws LogException             if any error happen when deleting link store
+     * @throws NullPointerException     if required parameter is null
+     * @throws IllegalArgumentException if any required string parameter is empty
+     */
+    DeleteLinkStoreResponse DeleteLinkStore(DeleteLinkStoreRequest request) throws LogException;
 
 	/**
 	 * Get the logstore config
@@ -2229,9 +2228,9 @@ public interface LogService {
 	 * @throws IllegalArgumentException
 	 *             if any required string parameter is empty
 	 */
-    ConsumerGroupHeartBeatResponse HeartBeat(String project,
-                                             String logStore, String consumerGroup, String consumer,
-                                             ArrayList<Integer> shards) throws LogException;
+	ConsumerGroupHeartBeatResponse HeartBeat(String project,
+											 String logStore, String consumerGroup, String consumer,
+											 List<Integer> shards) throws LogException;
 
 	/**
 	 * get shard checkpoint in the consumer group
@@ -2257,6 +2256,10 @@ public interface LogService {
                                                   String logStore, String consumerGroup, int shard)
 			throws LogException;
 
+	GetCheckPointResponse getCheckpoint(String project,
+										String logstore,
+										String consumerGroup,
+										int shard) throws LogException;
 	/**
 	 * get all of the shard checkpoints in the consumer group
 	 *
@@ -2637,6 +2640,20 @@ public interface LogService {
     StartJobScheduleResponse startJobSchedule(StartJobScheduleRequest request) throws LogException;
 
     StopJobScheduleResponse stopJobSchedule(StopJobScheduleRequest request) throws LogException;
+
+	CreateETLV2Response createETLV2(CreateETLV2Request request) throws LogException;
+
+	UpdateETLV2Response updateETLV2(UpdateETLV2Request request) throws LogException;
+
+	DeleteETLV2Response deleteETLV2(DeleteETLV2Request request) throws LogException;
+
+	GetETLV2Response getETLV2(GetETLV2Request request) throws LogException;
+
+	ListETLV2Response listETLV2(ListETLV2Request request) throws LogException;
+
+	StopETLV2Response stopETLV2(StopETLV2Request request) throws LogException;
+
+	StartETLV2Response startETLV2(StartETLV2Request request) throws LogException;
 
 	CreateExportResponse createExport(CreateExportRequest request) throws LogException;
 
@@ -3223,6 +3240,284 @@ public interface LogService {
      */
 	ClearLogStoreStorageResponse ClearLogStoreStorage(String project, String logStoreName) throws LogException;
 
+	/**
+	 * create project consumer group
+	 *
+	 * @param request contains all of parameters needed
+	 * @return response
+	 * @throws LogException             if any error happened
+	 * @throws NullPointerException     if required parameter is null
+	 * @throws IllegalArgumentException if any required string parameter is empty
+	 */
+	CreateProjectConsumerGroupResponse CreateProjectConsumerGroup(
+			CreateProjectConsumerGroupRequest request) throws LogException;
+
+	/**
+	 * create project consumer group
+	 *
+	 * @param project       project name
+	 * @param consumerGroup contains all of parameters needed by consumer group
+	 * @return response
+	 * @throws LogException             if any error happened
+	 * @throws NullPointerException     if required parameter is null
+	 * @throws IllegalArgumentException if any required string parameter is empty
+	 */
+	CreateProjectConsumerGroupResponse CreateProjectConsumerGroup(
+			String project, ProjectConsumerGroup consumerGroup) throws LogException;
+
+	/**
+	 * delete project consumer group
+	 *
+	 * @param project       project name
+	 * @param consumerGroup consumer group name
+	 * @return response
+	 * @throws LogException             if any error happened
+	 * @throws NullPointerException     if required parameter is null
+	 * @throws IllegalArgumentException if any required string parameter is empty
+	 */
+	DeleteProjectConsumerGroupResponse DeleteProjectConsumerGroup(
+			String project, String consumerGroup) throws LogException;
+
+	/**
+	 * list project consumer group
+	 *
+	 * @param project project name
+	 * @return response
+	 * @throws LogException             if any error happened
+	 * @throws NullPointerException     if required parameter is null
+	 * @throws IllegalArgumentException if any required string parameter is empty
+	 */
+	ListProjectConsumerGroupResponse ListProjectConsumerGroup(
+			String project) throws LogException;
+
+	/**
+	 * update project consumer group
+	 *
+	 * @param project       project name
+	 * @param consumerGroup consumer group name
+	 * @param inOrder       consume data in order or not
+	 * @param timeoutInSec  if the time interval of a consumer's heartbeat exceed this
+	 *                      value in second, the consumer will be deleted
+	 * @return response
+	 * @throws LogException             if any error happened
+	 * @throws NullPointerException     if required parameter is null
+	 * @throws IllegalArgumentException if any required string parameter is empty
+	 */
+	UpdateProjectConsumerGroupResponse UpdateProjectConsumerGroup(
+			String project, String consumerGroup, boolean inOrder, int timeoutInSec) throws LogException;
+
+	/**
+	 * update consume checkpoint in project consumer group
+	 *
+	 * @param project       project name
+	 * @param consumerGroup project consumer group name
+	 * @param consumer      consumer name
+	 * @param logStore      log store name
+	 * @param shard         shard id
+	 * @param checkpoint    shard cursor
+	 * @return response
+	 * @throws LogException             if any error happened
+	 * @throws NullPointerException     if required parameter is null
+	 * @throws IllegalArgumentException if any required string parameter is empty
+	 */
+	ProjectConsumerGroupUpdateCheckPointResponse UpdateProjectConsumerGroupCheckPoint(
+			String project, String consumerGroup, String consumer, String logStore, int shard, String checkpoint) throws LogException;
+
+	/**
+	 * update checkpoint in project consumer group
+	 *
+	 * @param project       project name
+	 * @param consumerGroup project consumer group name
+	 * @param logStore      log store name
+	 * @param shard         shard id
+	 * @param checkpoint    shard cursor
+	 * @return response
+	 * @throws LogException             if any error happened
+	 * @throws NullPointerException     if required parameter is null
+	 * @throws IllegalArgumentException if any required string parameter is empty
+	 */
+	ProjectConsumerGroupUpdateCheckPointResponse UpdateProjectConsumerGroupCheckPoint(
+			String project, String consumerGroup, String logStore, int shard, String checkpoint) throws LogException;
+
+	/**
+	 * get shard checkpoint in project consumer group
+	 *
+	 * @param project       project name
+	 * @param consumerGroup consumer group name
+	 * @param logStore      log store or link store name
+	 * @param shard         shard id
+	 * @return response
+	 * @throws LogException             if any error happened
+	 * @throws NullPointerException     if required parameter is null
+	 * @throws IllegalArgumentException if any required string parameter is empty
+	 */
+	ProjectConsumerGroupCheckPointResponse GetProjectConsumerGroupCheckPoint(
+			String project, String consumerGroup, String logStore, int shard) throws LogException;
+
+	/**
+	 * get all of shard checkpoints in specific log store in project consumer group
+	 *
+	 * @param project       project name
+	 * @param consumerGroup consumer group name
+	 * @param logStore      log store or link store name
+	 * @return response
+	 * @throws LogException             if any error happened
+	 * @throws NullPointerException     if required parameter is null
+	 * @throws IllegalArgumentException if any required string parameter is empty
+	 */
+	ProjectConsumerGroupCheckPointResponse GetProjectConsumerGroupCheckPoint(
+			String project, String consumerGroup, String logStore) throws LogException;
+
+	/**
+	 * get all of shard checkpoints in project consumer group
+	 *
+	 * @param project       project name
+	 * @param consumerGroup consumer group name
+	 * @return response
+	 * @throws LogException             if any error happened
+	 * @throws NullPointerException     if required parameter is null
+	 * @throws IllegalArgumentException if any required string parameter is empty
+	 */
+	ProjectConsumerGroupCheckPointResponse GetProjectConsumerGroupCheckPoint(
+			String project, String consumerGroup) throws LogException;
+
+	/**
+	 * notify the server periodically to show that the consumer is still alive
+	 *
+	 * @param project        project name
+	 * @param consumerGroup  consumer group name
+	 * @param consumer       consumer name
+	 * @param logStoreShards log store and shards hold by the consumer
+	 * @return response that indicates which log store and shards the consumer should hold
+	 * @throws LogException             if any error happened
+	 * @throws NullPointerException     if required parameter is null
+	 * @throws IllegalArgumentException if any required string parameter is empty
+	 */
+	ProjectConsumerGroupHeartBeatResponse ProjectConsumerGroupHeartBeat(
+			String project, String consumerGroup, String consumer, Map<String, ArrayList<Integer>> logStoreShards) throws LogException;
+
+
+	/**
+	 * @param project  name
+	 * @param logstore name
+	 * @return An instance of {@link ListSubStoreResponse}
+	 * @throws LogException if any error occurs
+	 */
+	ListSubStoreResponse listSubStore(String project, String logstore) throws LogException;
+
+	/**
+	 * @param request An instance of {@link ListSubStoreRequest}
+	 * @return An instance of {@link ListSubStoreResponse}
+	 * @throws LogException if any error occurs
+	 */
+	ListSubStoreResponse listSubStore(ListSubStoreRequest request) throws LogException;
+
+	/**
+	 * @param project  name
+	 * @param logstore name
+	 * @param name     substore name
+	 * @return An instance of {@link GetSubStoreResponse}
+	 * @throws LogException if any error occurs
+	 */
+	GetSubStoreResponse getSubStore(String project, String logstore, String name) throws LogException;
+
+	/**
+	 * @param request An instance of {@link GetSubStoreRequest}
+	 * @return An instance of {@link GetSubStoreResponse}
+	 * @throws LogException if any error occurs
+	 */
+	GetSubStoreResponse getSubStore(GetSubStoreRequest request) throws LogException;
+
+	/**
+	 * @param project  name
+	 * @param logstore name
+	 * @param subStore An instance of {@link SubStore}
+	 * @return An instance of {@link CreateSubStoreResponse}
+	 * @throws LogException if any error occurs
+	 */
+	CreateSubStoreResponse createSubStore(String project, String logstore, SubStore subStore) throws LogException;
+
+	/**
+	 * @param request An instance of {@link CreateSubStoreRequest}
+	 * @return An instance of {@link CreateSubStoreResponse}
+	 * @throws LogException if any error occurs
+	 */
+	CreateSubStoreResponse createSubStore(CreateSubStoreRequest request) throws LogException;
+
+	/**
+	 * @param project  name
+	 * @param logstore name
+	 * @param subStore An instance of {@link SubStore}
+	 * @return An instance of {@link UpdateSubStoreResponse}
+	 * @throws LogException if any error occurs
+	 */
+	UpdateSubStoreResponse updateSubStore(String project, String logstore, SubStore subStore) throws LogException;
+
+	/**
+	 * @param request An instance of {@link UpdateSubStoreRequest}
+	 * @return An instance of {@link UpdateSubStoreResponse}
+	 * @throws LogException if any error occurs
+	 */
+	UpdateSubStoreResponse updateSubStore(UpdateSubStoreRequest request) throws LogException;
+
+	/**
+	 * @param project      name
+	 * @param logstore     name
+	 * @param subStoreName subStore name
+	 * @return An instance of {@link DeleteSubStoreResponse}
+	 * @throws LogException if any error occurs
+	 */
+	DeleteSubStoreResponse deleteSubStore(String project, String logstore, String subStoreName) throws LogException;
+
+	/**
+	 * @param request An instance of {@link DeleteSubStoreRequest}
+	 * @return An instance of {@link DeleteSubStoreResponse}
+	 * @throws LogException if any error occurs
+	 */
+	DeleteSubStoreResponse deleteSubStore(DeleteSubStoreRequest request) throws LogException;
+
+	/**
+	 * @param project  name
+	 * @param logstore name
+	 * @return An instance of {@link GetSubStoreTTLResponse}
+	 * @throws LogException if any error occurs
+	 */
+	GetSubStoreTTLResponse getSubStoreTTL(String project, String logstore) throws LogException;
+
+	/**
+	 * @param request An instance of {@link GetSubStoreTTLResquest}
+	 * @return An instance of {@link GetSubStoreTTLResponse}
+	 * @throws LogException if any error occurs
+	 */
+	GetSubStoreTTLResponse getSubStoreTTL(GetSubStoreTTLResquest request) throws LogException;
+
+	/**
+	 * @param project  name
+	 * @param logstore name
+	 * @param ttl      ttl
+	 * @return An instance of {@link UpdateSubStoreTTLResponse}
+	 * @throws LogException if any error occurs
+	 */
+	UpdateSubStoreTTLResponse updateSubStoreTTL(String project, String logstore, int ttl) throws LogException;
+
+	/**
+	 * @param request An instance of {@link UpdateSubStoreTTLRequest}
+	 * @return An instance of {@link UpdateSubStoreTTLResponse}
+	 * @throws LogException if any error occurs
+	 */
+	UpdateSubStoreTTLResponse updateSubStoreTTL(UpdateSubStoreTTLRequest request) throws LogException;
+
+	/**
+	 * @param project       name
+	 * @param offset        offset
+	 * @param size          size
+	 * @param logstoreName  logstore name
+	 * @param telemetryType telemetry type
+	 * @return An instance of {@link ListLogStoresResponse}
+	 * @throws LogException if any error occurs
+	 */
+	ListLogStoresResponse listLogStores(String project, int offset, int size,String logstoreName, String telemetryType) throws LogException;
+
 	CreateDomainResponse createDomain(String project, Domain domain) throws LogException;
 	CreateDomainResponse createDomain(CreateDomainRequest requset) throws LogException;
 
@@ -3240,9 +3535,30 @@ public interface LogService {
 	StopIngestionResponse stopIngestion(StopIngestionRequest request) throws LogException;
 	StartIngestionResponse startIngestion(StartIngestionRequest request) throws LogException;
 
-	CreateRebuildResponse createRebuildIndex(CreateRebuildIndexRequest request) throws LogException;
+	CreateRebuildIndexResponse createRebuildIndex(CreateRebuildIndexRequest request) throws LogException;
 	DeleteRebuildIndexResponse deleteRebuildIndex(DeleteRebuildIndexRequest request) throws LogException;
 	GetRebuildIndexResponse getRebuildIndex(GetRebuildIndexRequest request) throws LogException;
 	ListRebuildIndexResponse listRebuildIndex(ListRebuildIndexRequest request) throws LogException;
 	StopRebuildIndexResponse stopRebuildIndex(StopRebuildIndexRequest request) throws LogException;
+
+	CreateAuditJobResponse createAuditJob(CreateAuditJobRequest request) throws LogException;
+	UpdateAuditJobResponse updateAuditJob(UpdateAuditJobRequest request) throws LogException;
+	GetAuditJobResponse getAuditJob(GetAuditJobRequest request) throws LogException;
+	DeleteAuditJobResponse deleteAuditJob(DeleteAuditJobRequest request) throws LogException;
+	ListAuditJobResponse listAuditJob(ListAuditJobRequest request) throws LogException;
+	StartAuditJobResponse startAuditJob(StartAuditJobRequest request) throws LogException;
+	StopAuditJobResponse stopAuditJob(StopAuditJobRequest request) throws LogException;
+
+	CreateResourceResponse createResource(CreateResourceRequest request) throws LogException;
+	UpdateResourceResponse updateResource(UpdateResourceRequest request) throws LogException;
+	GetResourceResponse    getResource(GetResourceRequest request) throws LogException;
+	DeleteResourceResponse deleteResource(DeleteResourceRequest request) throws LogException;
+	ListResourceResponse    listResource(ListResourceRequest request) throws LogException;
+
+	CreateResourceRecordResponse createResourceRecord(CreateResourceRecordRequest request) throws LogException;
+	UpsertResourceRecordResponse upsertResourceRecord(UpsertResourceRecordRequest request) throws LogException;
+	UpdateResourceRecordResponse updateResourceRecord(UpdateResourceRecordRequest request) throws LogException;
+	GetResourceRecordResponse    getResourceRecord(GetResourceRecordRequest request) throws LogException;
+	DeleteResourceRecordResponse deleteResourceRecord(DeleteResourceRecordRequest request) throws LogException;
+	ListResourceRecordResponse   listResourceRecord(ListResourceRecordRequest request) throws LogException;
 }

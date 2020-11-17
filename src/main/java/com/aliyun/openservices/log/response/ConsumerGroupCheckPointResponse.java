@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
+import com.alibaba.fastjson.JSONArray;
 
 import com.aliyun.openservices.log.common.ConsumerGroupShardCheckPoint;
 

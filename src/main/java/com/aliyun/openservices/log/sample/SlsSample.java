@@ -131,23 +131,6 @@ public class SlsSample {
 		}
 
 		/**
-		 * 查询logstore中的topic的名字
-		 */
-		try {
-			String token = "";
-			ListTopicsResponse listTopicResponse = client.ListTopics(project,
-					logStore, token, 10);
-			ArrayList<String> topics = listTopicResponse.GetTopics();
-			System.out.println("ListTopics:" + topics.toString());
-			System.out.println("NextTopic:" + listTopicResponse.GetNextToken() + "\n");
-		} catch (LogException e) {
-			System.out.println("error code :" + e.GetErrorCode());
-			System.out.println("error message :" + e.GetErrorMessage());
-			System.out.println("error requestId :" + e.GetRequestId());
-			throw e;
-		}
-
-		/**
 		 * 查询logstore的histogram信息
 		 */
 		try {

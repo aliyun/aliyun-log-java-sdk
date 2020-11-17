@@ -8,7 +8,7 @@ public class GetContextLogsRequest extends Request {
     private String logstore;
 
     /**
-     * @note see Client.getContextLogs for more information about parameters.
+     * see Client.getContextLogs for more information about parameters.
      */
     public GetContextLogsRequest(String project, String logstore,
             String packID, String packMeta, int backLines, int forwardLines) {

@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import com.aliyun.openservices.log.common.Consts.ACLPrivilege;
 import com.aliyun.openservices.log.exception.LogException;
 
@@ -153,7 +153,7 @@ public class ACLPrivileges implements Serializable {
 	 */
 	public void FromJsonString(String privilegesStr) throws LogException {
 		try {
-			JSONArray privilegesArray = JSONArray.fromObject(privilegesStr);
+			JSONArray privilegesArray = JSONArray.parseArray(privilegesStr);
 			FromJsonArray(privilegesArray);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateACLPrivileges",

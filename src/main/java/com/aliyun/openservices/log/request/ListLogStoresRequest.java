@@ -27,6 +27,15 @@ public class ListLogStoresRequest extends Request {
 		SetSize(size);
 		SetLogstoreName(logstoreName);
 	}
+
+	public ListLogStoresRequest(String project, int offset, int size, String logstoreName, String telemetryType)
+	{
+		super(project);
+		SetOffset(offset);
+		SetSize(size);
+		SetLogstoreName(logstoreName);
+		SetTelemetryType(telemetryType);
+	}
 	
 
 	public void SetOffset(int offset)
@@ -43,5 +52,10 @@ public class ListLogStoresRequest extends Request {
 	public void SetLogstoreName(String logstoreName)
 	{
 		SetParam(Consts.CONST_LOGSTORE_NAME,logstoreName);
+	}
+
+	public void SetTelemetryType(String telemetryType)
+	{
+		SetParam(Consts.CONST_TETEMETRY_TYPE,telemetryType);
 	}
 }

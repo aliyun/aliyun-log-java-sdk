@@ -19,6 +19,7 @@ import com.aliyun.openservices.log.response.PullLogsResponse;
 import com.aliyun.openservices.log.response.PutLogsResponse;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+@Ignore
 public class SlsPerformanceTest extends FunctionTest {
 
     private String project = "ali-cn-yunlei-sls-admin";
@@ -605,39 +607,6 @@ public class SlsPerformanceTest extends FunctionTest {
             fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
         }
     }
-
-
-    public double TestListTopics(String topic) {
-        try {
-            double maxTime = 0;
-            double minTime = 100000;
-            double totalTime = 0;
-
-            for (int i = 0; i < runTimes; ++i) {
-                String token = topic;
-                double st = new Date().getTime() / 1000.0;
-                ListTopicsResponse response = client.ListTopics(project, logStore, token, 100);
-                double last = new Date().getTime() / 1000.0 - st;
-
-                if (last > lastMaxTime) {
-                    System.out.println("last time: " + last + ", request id: " + response.GetRequestId());
-                }
-
-                maxTime = Math.max(maxTime, last);
-                minTime = Math.min(minTime, last);
-                totalTime += last;
-            }
-            System.out.println("TestListTopics: ");
-            System.out.println("max time: " + maxTime);
-            System.out.println("min time: " + minTime);
-            System.out.println("ave time: " + totalTime / runTimes);
-        } catch (LogException e) {
-            System.out.println(e.GetErrorCode() + ":" + e.GetErrorMessage());
-            fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
-        }
-        return -1;
-    }
-
 
     public double TestGetHistogram(String topic) {
         try {

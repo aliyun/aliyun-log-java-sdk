@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.PutLogsRequest;
 import com.aliyun.openservices.log.response.GetContextLogsResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
+@Ignore
 public class GetContextLogsFunctionTest extends LogTest {
     private final String PACK_ID_PREFIX = "ABCDEF" + getNowTimestamp() + "-";
     private final int PACKAGE_SIZE = 100;

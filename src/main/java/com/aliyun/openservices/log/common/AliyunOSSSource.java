@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 public class AliyunOSSSource extends DataSource {
 
@@ -20,6 +20,13 @@ public class AliyunOSSSource extends DataSource {
     private String encoding;
 
     private DataFormat format;
+
+    private boolean restoreObjectEnabled;
+
+    /**
+     * Whether use object last modified time as log time.
+     */
+    private boolean lastModifyTimeAsLogTime = false;
 
     public AliyunOSSSource() {
         super(DataSourceType.ALIYUN_OSS);
@@ -89,6 +96,22 @@ public class AliyunOSSSource extends DataSource {
         this.format = format;
     }
 
+    public boolean isRestoreObjectEnabled() {
+        return restoreObjectEnabled;
+    }
+
+    public void setRestoreObjectEnabled(boolean restoreObjectEnabled) {
+        this.restoreObjectEnabled = restoreObjectEnabled;
+    }
+
+    public boolean isLastModifyTimeAsLogTime() {
+        return lastModifyTimeAsLogTime;
+    }
+
+    public void setLastModifyTimeAsLogTime(boolean lastModifyTimeAsLogTime) {
+        this.lastModifyTimeAsLogTime = lastModifyTimeAsLogTime;
+    }
+
     private static DataFormat createFormat(String type) {
         if ("DelimitedText".equals(type)) {
             return new DelimitedTextFormat();
@@ -116,7 +139,9 @@ public class AliyunOSSSource extends DataSource {
         compressionCodec = JsonUtils.readOptionalString(jsonObject, "compressionCodec");
         encoding = JsonUtils.readOptionalString(jsonObject, "encoding");
         JSONObject formatObject = jsonObject.getJSONObject("format");
-        if (formatObject != null && !formatObject.isNullObject()) {
+        restoreObjectEnabled = JsonUtils.readBool(jsonObject, "restoreObjectEnabled", false);
+        lastModifyTimeAsLogTime = JsonUtils.readBool(jsonObject, "lastModifyTimeAsLogTime", false);
+        if (formatObject != null && !formatObject.isEmpty()) {
             String type = JsonUtils.readOptionalString(formatObject, "type");
             if (type != null) {
                 format = createFormat(type);

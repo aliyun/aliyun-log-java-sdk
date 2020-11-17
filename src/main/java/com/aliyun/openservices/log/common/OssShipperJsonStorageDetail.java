@@ -1,8 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 
@@ -38,17 +38,17 @@ public class OssShipperJsonStorageDetail extends OssShipperStorageDetail impleme
 	@Override
 	public void FromJsonObject(JSONObject storageDetail) throws LogException {
 		setStorageFormat("json");
-		if (!storageDetail.has("storage")) {
+		if (!storageDetail.containsKey("storage")) {
 			this.enableTag = false;
 			return;
 		}
 		JSONObject storage = storageDetail.getJSONObject("storage");
-		if (!storage.has("detail")) {
+		if (!storage.containsKey("detail")) {
 			this.enableTag = false;
 			return;
 		}
 		JSONObject detail = storage.getJSONObject("detail");
-		if (!detail.has("enableTag")) {
+		if (!detail.containsKey("enableTag")) {
 			this.enableTag = false;
 			return;
 		}

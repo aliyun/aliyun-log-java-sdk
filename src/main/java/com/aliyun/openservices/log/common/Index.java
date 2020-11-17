@@ -4,6 +4,7 @@ package com.aliyun.openservices.log.common;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.ArrayList;
@@ -178,17 +179,13 @@ public class Index {
 
 		if (logReduceWhiteList.size() > 0) {
 			JSONArray logReduceWhiteListDict = new JSONArray();
-			for (String v:logReduceWhiteList) {
-				logReduceWhiteListDict.add(v);
-			}
+			logReduceWhiteListDict.addAll(logReduceWhiteList);
 			index.put("log_reduce_white_list", logReduceWhiteListDict);
 		}
 
 		if (logReduceBlackList.size() > 0) {
 			JSONArray logReduceBlackListDict = new JSONArray();
-			for (String v:logReduceBlackList) {
-				logReduceBlackListDict.add(v);
-			}
+			logReduceBlackListDict.addAll(logReduceBlackList);
 			index.put("log_reduce_black_list", logReduceBlackListDict);
 		}
 
@@ -255,7 +252,7 @@ public class Index {
 	
 	public void FromJsonString(String indexString) throws LogException {
 		try {
-			JSONObject dict = JSONObject.parseObject(indexString);
+			JSONObject dict = JSONObject.parseObject(indexString, Feature.DisableSpecialKeyDetect);
 			FromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateIndex", e.getMessage(), e, "");

@@ -8,7 +8,10 @@ import java.lang.reflect.Type;
 public enum DataSourceType implements JSONSerializable {
     ALIYUN_OSS("AliyunOSS"),
     ALIYUN_BSS("AliyunBSS"),
-    JDBC("JDBC");
+    ALIYUN_MAX_COMPUTE("AliyunMaxCompute"),
+    JDBC("JDBC"),
+    KAFKA("Kafka"),
+    ALIYUN_CLOUD_MONITOR("AliyunCloudMonitor");
 
     private final String name;
 

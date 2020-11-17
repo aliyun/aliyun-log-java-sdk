@@ -63,14 +63,12 @@ public class IndexKeys {
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {
 			keys = new HashMap<String, IndexKey>();
-			Iterator<String> it = dict.keySet().iterator();
-			while (it.hasNext()) {
-				String key = it.next();
+			for (String key : dict.keySet()) {
 				JSONObject value = dict.getJSONObject(key);
 				IndexKey indexKey;
-				if("json".equals(value.getString("type"))){
+				if ("json".equals(value.getString("type"))) {
 					indexKey = new IndexJsonKey();
-				}else {
+				} else {
 					indexKey = new IndexKey();
 				}
 				indexKey.FromJsonObject(value);

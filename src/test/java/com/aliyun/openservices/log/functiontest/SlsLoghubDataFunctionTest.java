@@ -20,6 +20,7 @@ import com.aliyun.openservices.log.response.GetCursorResponse;
 import com.aliyun.openservices.log.response.ListShardResponse;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-
+@Ignore
 public class SlsLoghubDataFunctionTest extends FunctionTest {
     static private final String project = "project1";
     static private final String logStore = "javasdk2";
