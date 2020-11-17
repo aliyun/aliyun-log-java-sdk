@@ -22,7 +22,7 @@ import com.aliyun.openservices.log.request.ListAlertRequest;
 import com.aliyun.openservices.log.request.UpdateAlertRequest;
 import com.aliyun.openservices.log.response.GetAlertResponse;
 import com.aliyun.openservices.log.response.ListAlertResponse;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;

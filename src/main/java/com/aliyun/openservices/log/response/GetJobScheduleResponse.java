@@ -3,7 +3,7 @@ package com.aliyun.openservices.log.response;
 import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.Map;
 

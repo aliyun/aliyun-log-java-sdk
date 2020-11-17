@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.common.IndexJsonKey;
 import com.aliyun.openservices.log.common.IndexKey;
 import com.aliyun.openservices.log.common.IndexKeys;
 import com.aliyun.openservices.log.exception.LogException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-
+@Ignore
 public class SlsIndexJsonFunctionTest {
 
     static final Credentials credentials = Credentials.load();

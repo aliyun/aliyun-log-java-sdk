@@ -1,8 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 
@@ -58,7 +58,7 @@ public class SavedSearch implements Serializable {
 		JSONObject savedSearchJson = new JSONObject();
 
 		if (rawSavedSearchAttr.length() > 0) {
-			savedSearchJson = JSONObject.fromObject(rawSavedSearchAttr);
+			savedSearchJson = JSONObject.parseObject(rawSavedSearchAttr);
 		}
 
 		savedSearchJson.put(Consts.CONST_SAVEDSEARCH_NAME, getSavedSearchName());
@@ -78,7 +78,7 @@ public class SavedSearch implements Serializable {
 			setSearchQuery(dict.getString(Consts.CONST_SAVEDSEARCH_QUERY));
 			setLogstore(dict.getString(Consts.LOGSTORE_KEY));
 			setTopic(dict.getString(Consts.CONST_SAVEDSEARCH_TOPIC));
-			if (dict.has(Consts.CONST_SAVEDSEARCH_DISPLAYNAME))
+			if (dict.containsKey(Consts.CONST_SAVEDSEARCH_DISPLAYNAME))
 				setDisplayName(dict.getString(Consts.CONST_SAVEDSEARCH_DISPLAYNAME));
 
 			setRawSavedSearchAttr(dict.toString());
@@ -89,7 +89,7 @@ public class SavedSearch implements Serializable {
 	}
 	public void FromJsonString(String savedSearchString) throws LogException {
 		try {
-			JSONObject dict = JSONObject.fromObject(savedSearchString);
+			JSONObject dict = JSONObject.parseObject(savedSearchString);
 			FromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateSavedSearch", e.getMessage(), e, "");

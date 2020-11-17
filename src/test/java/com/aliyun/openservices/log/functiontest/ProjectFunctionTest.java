@@ -5,11 +5,15 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.response.GetProjectResponse;
 import org.junit.After;
+import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-
+@Ignore
 public class ProjectFunctionTest extends FunctionTest {
 
     // For testing environment, please make sure the endpoint
@@ -39,6 +43,22 @@ public class ProjectFunctionTest extends FunctionTest {
             assertEquals(errorMessage, ex.GetErrorMessage());
             assertEquals(errorCode, ex.GetErrorCode());
             assertEquals(httpCode, ex.GetHttpCode());
+        }
+    }
+
+    @Test
+    public void testCreateProject() throws Exception {
+        String desc = randomString();
+        client.CreateProject(TEST_PROJECT, desc);
+        GetProjectResponse response = client.GetProject(TEST_PROJECT);
+        assertEquals(response.GetProjectDescription(), desc);
+        assertEquals(response.GetProjectStatus(), "Normal");
+        client.DeleteProject(TEST_PROJECT);
+        try {
+            client.GetProject(TEST_PROJECT);
+            fail();
+        } catch (LogException ex) {
+            assertEquals("ProjectNotExist", ex.GetErrorCode());
         }
     }
 

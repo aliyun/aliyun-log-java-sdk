@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 
@@ -83,10 +83,10 @@ public class Query implements Serializable {
         setLogStore(value.getString("logStore"));
         setQuery(value.getString("query"));
         setTimeSpanType(TimeSpanType.fromString(value.getString("timeSpanType")));
-        if (value.has("start")) {
+        if (value.containsKey("start")) {
             setStart(value.getString("start"));
         }
-        if (value.has("end")) {
+        if (value.containsKey("end")) {
             setEnd(value.getString("end"));
         }
     }

@@ -5,9 +5,9 @@ import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.ObjectSerializer;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.aliyun.openservices.log.internal.Unmarshaller;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class JsonUtils {
 
@@ -51,7 +52,7 @@ public final class JsonUtils {
     }
 
     public static List<String> readOptionalStrings(JSONObject object, String key) {
-        if (!object.has(key)) {
+        if (object == null || !object.containsKey(key)) {
             return Collections.emptyList();
         }
         try {
@@ -71,37 +72,44 @@ public final class JsonUtils {
     }
 
     public static String readOptionalString(JSONObject object, String key) {
-        return object.has(key) ? object.getString(key) : null;
+        return object.containsKey(key) ? object.getString(key) : null;
+    }
+
+    public static String readOptionalString(JSONObject object, String key, String defaultValue) {
+        if (object.containsKey(key)) {
+            return object.getString(key);
+        } else {
+            return defaultValue;
+        }
     }
 
     public static boolean readBool(JSONObject object, String key, boolean defaultValue) {
-        return object.has(key) ? object.getBoolean(key) : defaultValue;
+        return object.containsKey(key) ? object.getBoolean(key) : defaultValue;
     }
 
     public static Integer readOptionalInt(JSONObject object, String key) {
-        return object.has(key) ? object.getInt(key) : null;
+        return object.containsKey(key) ? object.getIntValue(key) : null;
     }
 
     public static Date readOptionalDate(JSONObject object, String key) {
-        return object.has(key) ? readDate(object, key) : null;
+        return object.containsKey(key) ? readDate(object, key) : null;
     }
 
     public static Date readDate(JSONObject object, String key) {
-        return Utils.timestampToDate(object.getInt(key));
+        return Utils.timestampToDate(object.getIntValue(key));
     }
 
     public static Map<String, String> readOptionalMap(JSONObject object, final String key) {
-        if (!object.has(key)) {
+        if (!object.containsKey(key)) {
             return Collections.emptyMap();
         }
         JSONObject value = object.getJSONObject(key);
-        if (value.isNullObject()) {
+        if (value.isEmpty()) {
             return Collections.emptyMap();
         }
-        JSONArray names = value.names();
-        Map<String, String> map = new HashMap<String, String>(names.size());
-        for (int i = 0; i < names.size(); i++) {
-            String fieldName = names.getString(i);
+        Set<String> keySet = value.keySet();
+        Map<String, String> map = new HashMap<String, String>(keySet.size());
+        for (String fieldName : keySet) {
             map.put(fieldName, value.getString(fieldName));
         }
         return map;
@@ -123,4 +131,5 @@ public final class JsonUtils {
             }
         }
     }
+
 }

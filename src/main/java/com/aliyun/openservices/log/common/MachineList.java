@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 
 public class MachineList implements Serializable {
 
@@ -68,7 +68,7 @@ public class MachineList implements Serializable {
 	
 	public void FromJsonString(String machineListString) throws LogException {
 		try {
-			JSONArray machineArray = JSONArray.fromObject(machineListString);
+			JSONArray machineArray = JSONArray.parseArray(machineListString);
 			FromJsonArray(machineArray);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateMachineGroup", e.getMessage(), e, "");

@@ -198,6 +198,10 @@ public class DefaultServiceClient extends ServiceClient {
         connectionManager.setValidateAfterInactivity(config.getValidateAfterInactivity());
         connectionManager.setDefaultSocketConfig(
                 SocketConfig.custom().setSoTimeout(config.getSocketTimeout()).setTcpNoDelay(true).build());
+        if (config.isUseReaper()) {
+            IdleConnectionReaper.setIdleConnectionTime(config.getIdleConnectionTime());
+            IdleConnectionReaper.registerConnectionManager(connectionManager);
+        }
         return connectionManager;
     }
 
@@ -222,6 +226,7 @@ public class DefaultServiceClient extends ServiceClient {
 
     @Override
     public void shutdown() {
+        IdleConnectionReaper.removeConnectionManager(this.connectionManager);
         this.connectionManager.shutdown();
     }
 }

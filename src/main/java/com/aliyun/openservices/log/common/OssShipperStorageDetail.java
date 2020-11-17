@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 public abstract class OssShipperStorageDetail {
 	private String storageFormat = "";

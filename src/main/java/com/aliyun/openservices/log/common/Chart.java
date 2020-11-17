@@ -5,9 +5,9 @@ import java.util.ArrayList;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 public class Chart implements Serializable {
 
@@ -186,7 +186,7 @@ public class Chart implements Serializable {
 		displayJson.put("yAxis", yAxisArray);
 
 		if (getRawDisplayAttr().length() > 0) {
-			displayJson = JSONObject.fromObject(getRawDisplayAttr());
+			displayJson = JSONObject.parseObject(getRawDisplayAttr());
 		}
 		
 		return displayJson;
@@ -199,7 +199,7 @@ public class Chart implements Serializable {
 		
 		JSONObject searchJson = new JSONObject();
 		if (getRawSearchAttr().length() > 0) {
-			searchJson = JSONObject.fromObject(getRawSearchAttr());
+			searchJson = JSONObject.parseObject(getRawSearchAttr());
 		}
 		searchJson.put("logstore", getLogstore());
 		searchJson.put("topic", getTopic());
@@ -211,9 +211,9 @@ public class Chart implements Serializable {
 		chartJson.put("display", RawDisplayToJsonObject());
 
 		if (getRawActionAttr().length() > 0) {
-			chartJson.put("action", JSONObject.fromObject(getRawActionAttr()));
+			chartJson.put("action", JSONObject.parseObject(getRawActionAttr()));
 		} else {
-			chartJson.put("action", JSONObject.fromObject("{}"));
+			chartJson.put("action", JSONObject.parseObject("{}"));
 		}
 
 		return chartJson;
@@ -273,7 +273,7 @@ public class Chart implements Serializable {
 	}
 	public void FromJsonString(String chartString) throws LogException {
 		try {
-			JSONObject dict = JSONObject.fromObject(chartString);
+			JSONObject dict = JSONObject.parseObject(chartString);
 			FromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateChart", e.getMessage(), e, "");

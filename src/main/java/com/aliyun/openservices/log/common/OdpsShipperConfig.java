@@ -3,21 +3,21 @@ package com.aliyun.openservices.log.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
 
 public class OdpsShipperConfig implements ShipperConfig {
 
-	private String mOdpsEndPoint;
-	private String mOdpsProject;
-	private String mOdpsTable;
-	private List<String> mLogFieldsList;
-	private List<String> mPartitionColumn;
-	private String mPartitionTimeFormat;
-	private int mBufferInterval;
+	private String odpsEndPoint;
+	private String odpsProject;
+	private String odpsTable;
+	private List<String> logFieldsList;
+	private List<String> partitionColumn;
+	private String partitionTimeFormat;
+	private int bufferInterval;
 
 	/**
 	 * Create a odps shipper config
@@ -38,13 +38,13 @@ public class OdpsShipperConfig implements ShipperConfig {
 	public OdpsShipperConfig(String odpsEndPoint, String odpsProject,
 			String odpsTable, List<String> logFieldsList,
 			List<String> partitionColumn, String partitionTimeFormat) {
-		mOdpsEndPoint = odpsEndPoint;
-		mOdpsProject = odpsProject;
-		mOdpsTable = odpsTable;
-		mLogFieldsList = logFieldsList;
-		mPartitionColumn = partitionColumn;
-		mPartitionTimeFormat = partitionTimeFormat;
-		mBufferInterval = 1800;
+		this.odpsEndPoint = odpsEndPoint;
+		this.odpsProject = odpsProject;
+		this.odpsTable = odpsTable;
+		this.logFieldsList = logFieldsList;
+		this.partitionColumn = partitionColumn;
+		this.partitionTimeFormat = partitionTimeFormat;
+		this.bufferInterval = 1800;
 	}
 
 	public OdpsShipperConfig() {
@@ -52,27 +52,27 @@ public class OdpsShipperConfig implements ShipperConfig {
 	}
 
 	public String GetOdpsEndPoint() {
-		return mOdpsEndPoint;
+		return odpsEndPoint;
 	}
 
 	public String GetOdpsProject() {
-		return mOdpsProject;
+		return odpsProject;
 	}
 
 	public String GetOdpsTable() {
-		return mOdpsTable;
+		return odpsTable;
 	}
 
 	public List<String> GetLogFieldsList() {
-		return new ArrayList<String>(mLogFieldsList);
+		return new ArrayList<String>(logFieldsList);
 	}
 
 	public List<String> GetPartitionColumn() {
-		return new ArrayList<String>(mPartitionColumn);
+		return new ArrayList<String>(partitionColumn);
 	}
 
 	public String GetPartitionTimeFromat() {
-		return mPartitionTimeFormat;
+		return partitionTimeFormat;
 	}
 
 	public String GetShipperType() {
@@ -80,42 +80,42 @@ public class OdpsShipperConfig implements ShipperConfig {
 	}
 
 	public void setOdpsEndPoint(String odpsEndPoint) {
-		this.mOdpsEndPoint = odpsEndPoint;
+		this.odpsEndPoint = odpsEndPoint;
 	}
 
 	public void setOdpsProject(String odpsProject) {
-		this.mOdpsProject = odpsProject;
+		this.odpsProject = odpsProject;
 	}
 
 	public void setOdpsTable(String odpsTable) {
-		this.mOdpsTable = odpsTable;
+		this.odpsTable = odpsTable;
 	}
 
 	public void setLogFieldsList(List<String> logFieldsList) {
-		this.mLogFieldsList = logFieldsList;
+		this.logFieldsList = logFieldsList;
 	}
 
 	public void setPartitionColumn(List<String> partitionColumn) {
-		this.mPartitionColumn = partitionColumn;
+		this.partitionColumn = partitionColumn;
 	}
 
 	public void setPartitionTimeFormat(String partitionTimeFormat) {
-		this.mPartitionTimeFormat = partitionTimeFormat;
+		this.partitionTimeFormat = partitionTimeFormat;
 	}
 
-	public void setBufferInterval(int mBufferInterval) {
-		this.mBufferInterval = mBufferInterval;
+	public void setBufferInterval(int bufferInterval) {
+		this.bufferInterval = bufferInterval;
 	}
 
 	public JSONObject GetJsonObj() {
 		JSONObject obj = new JSONObject();
-		obj.put("odpsEndpoint", this.mOdpsEndPoint);
-		obj.put("odpsProject", this.mOdpsProject);
-		obj.put("odpsTable", this.mOdpsTable);
-		obj.put("fields", this.mLogFieldsList);
-		obj.put("partitionColumn", this.mPartitionColumn);
-		obj.put("partitionTimeFormat", this.mPartitionTimeFormat);
-		obj.put("bufferInterval", mBufferInterval);
+		obj.put("odpsEndpoint", this.odpsEndPoint);
+		obj.put("odpsProject", this.odpsProject);
+		obj.put("odpsTable", this.odpsTable);
+		obj.put("fields", this.logFieldsList);
+		obj.put("partitionColumn", this.partitionColumn);
+		obj.put("partitionTimeFormat", this.partitionTimeFormat);
+		obj.put("bufferInterval", this.bufferInterval);
 		return obj;
 	}
 
@@ -129,13 +129,13 @@ public class OdpsShipperConfig implements ShipperConfig {
 
 	public void FromJsonObj(JSONObject obj) throws LogException {
 		try {
-			this.mOdpsEndPoint = obj.getString("odpsEndpoint");
-			this.mOdpsProject = obj.getString("odpsProject");
-			this.mOdpsTable = obj.getString("odpsTable");
-			this.mLogFieldsList = FromJsonArray(obj.getJSONArray("fields"));
-			this.mPartitionColumn = FromJsonArray(obj.getJSONArray("partitionColumn"));
-			this.mPartitionTimeFormat = obj.getString("partitionTimeFormat");
-			this.mBufferInterval = obj.getInt("bufferInterval");
+			this.odpsEndPoint = obj.getString("odpsEndpoint");
+			this.odpsProject = obj.getString("odpsProject");
+			this.odpsTable = obj.getString("odpsTable");
+			this.logFieldsList = FromJsonArray(obj.getJSONArray("fields"));
+			this.partitionColumn = FromJsonArray(obj.getJSONArray("partitionColumn"));
+			this.partitionTimeFormat = obj.getString("partitionTimeFormat");
+			this.bufferInterval = obj.getIntValue("bufferInterval");
 		} catch (JSONException e) {
 			throw new LogException("FailToParseOssShipperConfig",
 					e.getMessage(), e, "");

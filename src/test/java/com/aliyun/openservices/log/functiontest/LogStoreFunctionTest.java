@@ -5,13 +5,14 @@ import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-
+@Ignore
 public class LogStoreFunctionTest extends FunctionTest {
     private static final String TEST_PROJECT = "project1";
 

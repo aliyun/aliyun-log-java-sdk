@@ -11,10 +11,11 @@ import org.junit.After;
 import org.junit.Before;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 abstract class JobIntgTest extends FunctionTest {
 
-    static final String TEST_PROJECT = "project-intg-" + getNowTimestamp();
+    static final String TEST_PROJECT = "test-project-intg-to-job";
     static final String TEST_DASHBOARD = "dashboardtest";
 
     @Before
@@ -37,9 +38,21 @@ abstract class JobIntgTest extends FunctionTest {
         }
     }
 
-    protected JobSchedule createSchedule() {
+    private static JobScheduleType randomScheduleType(boolean scheduled) {
+        if (scheduled) {
+            return randomFrom(Arrays.asList(JobScheduleType.DAILY,
+                    JobScheduleType.HOURLY,
+                    JobScheduleType.WEEKLY,
+                    JobScheduleType.FIXED_RATE,
+                    JobScheduleType.CRON));
+        }
+        return randomFrom(JobScheduleType.values());
+    }
+
+    protected JobSchedule createSchedule(boolean scheduled) {
         JobSchedule schedule = new JobSchedule();
-        schedule.setType(randomFrom(JobScheduleType.values()));
+        schedule.setType(randomScheduleType(scheduled));
+        schedule.setRunImmediately(randomBoolean());
         switch (schedule.getType()) {
             case DAILY:
                 schedule.setHour(0);
@@ -52,7 +65,7 @@ abstract class JobIntgTest extends FunctionTest {
                 schedule.setInterval("60s");
                 break;
             case CRON:
-                schedule.setCronExpression("0 0 12 * * ?");
+                schedule.setCronExpression("0 12 * * ?");
                 break;
         }
         schedule.setDelay(0);

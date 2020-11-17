@@ -1,8 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 
@@ -127,7 +127,7 @@ public class EtlJob implements Serializable {
         etlJobJson.put(Consts.ETL_JOB_FUNCTION_CONFIG, functionConfigJson);
 
         try {
-            JSONObject fpJsonObj = JSONObject.fromObject(this.functionParameter);
+            JSONObject fpJsonObj = JSONObject.parseObject(this.functionParameter);
             etlJobJson.put(Consts.ETL_JOB_FUNCTION_PARAMETER, fpJsonObj);
         } catch (JSONException e) {
             throw new LogException("PostBodyInvalid",  e.getMessage(), e, "");
@@ -156,7 +156,7 @@ public class EtlJob implements Serializable {
 
             JSONObject triggerConfigJson = etljobJson.getJSONObject(Consts.ETL_JOB_TRIGGER_CONFIG);
             EtlTriggerConfig triggerConfig = new EtlTriggerConfig(triggerConfigJson.getString(Consts.ETL_JOB_TRIGGER_ROLEARN),
-                    triggerConfigJson.getInt(Consts.ETL_JOB_TRIGGER_INTERVAL), triggerConfigJson.getInt(Consts.ETL_JOB_TRIGGER_MAX_RETRY_TIME));
+                    triggerConfigJson.getIntValue(Consts.ETL_JOB_TRIGGER_INTERVAL), triggerConfigJson.getIntValue(Consts.ETL_JOB_TRIGGER_MAX_RETRY_TIME));
             if (triggerConfigJson.containsKey(Consts.ETL_JOB_TRIGGER_STARTING_POSITION)) {
                 triggerConfig.setStartingPosition(triggerConfigJson.getString(Consts.ETL_JOB_TRIGGER_STARTING_POSITION));
             }

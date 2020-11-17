@@ -107,9 +107,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		LocalFileConfigToJsonObject(jsonObj);
 
 		JSONArray keyArray = new JSONArray();
-		for (String k : key) {
-			keyArray.add(k);
-		}
+		keyArray.addAll(key);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_KEY, keyArray);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX, logBeginRegex);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_REGEX, regex);

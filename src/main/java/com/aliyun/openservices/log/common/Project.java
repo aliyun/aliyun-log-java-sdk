@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 public class Project implements Serializable {
 
@@ -132,7 +132,7 @@ public class Project implements Serializable {
 	
 	public void FromJsonString(String projectString) throws LogException {
 		try {
-			JSONObject dict = JSONObject.fromObject(projectString);
+			JSONObject dict = JSONObject.parseObject(projectString);
 			FromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateProject",  e.getMessage(), e, "");

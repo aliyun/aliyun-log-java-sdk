@@ -144,7 +144,6 @@ public class Consts {
     public static final String CONST_DATE = "Date";
 
     public static final String CONST_USER_AGENT = "User-Agent";
-    public static final String CONST_USER_AGENT_VALUE = "sls-java-sdk-v-0.6.1";
     public static final String CONST_TOPIC = "topic";
     public static final String CONST_FROM = "from";
     public static final String CONST_TO = "to";
@@ -160,6 +159,7 @@ public class Consts {
     public static final String CONST_GROUPNAME = "groupName";
     public static final String CONST_PRINCIPLEID = "principleId";
     public static final String CONST_LOGSTORE_NAME = "logstoreName";
+    public static final String CONST_TETEMETRY_TYPE = "telemetryType";
     public static final String CONST_SPLIT_MID_HASH = "key";
     public static final String CONST_SPLIT_SHARDCOUNT = "shardCount";
     public static final String CONST_ACTION = "action";
@@ -252,9 +252,13 @@ public class Consts {
     public static final String CONST_TYPE_LOG = "log";
     public static final String CONST_TYPE_CONTEXT_LOG = "context_log";
     public static final String CONST_TYPE_TOPIC = "topic";
+    public static final String CONST_TTL = "ttl";
 
     public static final String CONST_RESULT_LOGS = "logs";
     public static final String CONST_RESULT_LOG_STORES = "logstores";
+    public static final String CONST_RESULT_SUB_STORES = "substores";
+    public static final String CONST_RESULT_EXTERNAL_STORES = "externalstores";
+    public static final String CONST_EXTERNAL_NAME = "externalStoreName";
     public static final String CONST_RESULT_HISTOGRAMS = "histograms";
     public static final String CONST_RESULT_PROCESS = "progress";
     public static final String CONST_RESULT_COUNT = "count";
@@ -376,6 +380,27 @@ public class Consts {
     public static final String JOB_TYPE = "jobType";
     public static final String JOB_URI = "/jobs";
     public static final String DISPLAY_NAME = "displayName";
+
+    public static final String CONST_RESOURCE_URI = "/resources";
+    public static final String CONST_RESOURCE_NAME_URI = CONST_RESOURCE_URI + "/%s";
+    public static final String RESOURCE_NAME = "name";
+    public static final String RESOURCE_NAMES = "names";
+    public static final String RESOURCE_TYPE = "type";
+    public static final String RESOURCE_SCHEMA = "schema";
+    public static final String RESOURCE_DESCRIPTION = "description";
+    public static final String RESOURCE_EXT_INFO = "extInfo";
+    public static final String RESOURCE_ACL = "acl";
+    public static final String RESOURCE_CREATE_TIME = "createTime";
+    public static final String RESOURCE_LAST_MODIFY_TIME = "lastModifyTime";
+
+    public static final String CONST_RESOURCE_RECORD_URI = CONST_RESOURCE_NAME_URI + "/records";
+    public static final String CONST_RESOURCE_RECORD_ID_URI = CONST_RESOURCE_RECORD_URI + "/%s";
+    public static final String RESOURCE_RECORD_ID = "id";
+    public static final String RESOURCE_RECORD_IDS = "ids";
+    public static final String RESOURCE_RECORD_TAG = "tag";
+    public static final String RESOURCE_RECORD_VALUE = "value";
+    public static final String RESOURCE_RECORDS = "records";
+    public static final String RESOURCE_OWNER = "owner";
 
     public static final String LOGGING_URI = "/logging";
     public static final String METHOD = "method";

@@ -107,7 +107,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.28</version>
+    <version>0.6.37</version>
     <classifier>jar-with-dependencies</classifier>
     <exclusions>
         <exclusion>

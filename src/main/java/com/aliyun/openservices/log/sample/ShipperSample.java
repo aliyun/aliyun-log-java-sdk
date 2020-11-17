@@ -74,8 +74,8 @@ public class ShipperSample {
 
     public static void createJsonOssShipper() throws LogException {
         String shipperName = "ossjsonshipper";
-        ShipperConfig ossConfig = new OssShipperConfig(ossBucket, ossPrefix, roleArn, bufferInterval, bufferSize, compressType, pathFormat, "json");
-		OssShipperJsonStorageDetail detail = (OssShipperJsonStorageDetail) ((OssShipperConfig) ossConfig).GetStorageDetail();
+        OssShipperConfig ossConfig = new OssShipperConfig(ossBucket, ossPrefix, roleArn, bufferInterval, bufferSize, compressType, pathFormat, "json", "");
+		OssShipperJsonStorageDetail detail = (OssShipperJsonStorageDetail) ossConfig.GetStorageDetail();
 		detail.setEnableTag(false);
 		client.CreateShipper(project, logStore, shipperName, ossConfig);
 
@@ -88,15 +88,15 @@ public class ShipperSample {
 
     public static void createParquetOssShipper() throws LogException {
         String shipperName = "ossparquetshipper";
-        ShipperConfig ossConfig = new OssShipperConfig(ossBucket, ossPrefix, roleArn, bufferInterval, bufferSize, compressType, pathFormat, "parquet");
+        OssShipperConfig ossConfig = new OssShipperConfig(ossBucket, ossPrefix, roleArn, bufferInterval, bufferSize, compressType, pathFormat, "parquet", "+1000");
         ArrayList<OssShipperStorageColumn> columns = new ArrayList<OssShipperStorageColumn>();
         columns.add(new OssShipperStorageColumn("MachineName", "string"));
         columns.add(new OssShipperStorageColumn("Role", "string"));
         columns.add(new OssShipperStorageColumn("ResValue", "int32"));
         columns.add(new OssShipperStorageColumn("__LINE__", "int64"));
         columns.add(new OssShipperStorageColumn("__THREAD__", "double"));
-        OssShipperParquetStorageDetail detail = (OssShipperParquetStorageDetail) ((OssShipperConfig) ossConfig).GetStorageDetail();
-        detail.setmStorageColumns(columns);
+        OssShipperParquetStorageDetail detail = (OssShipperParquetStorageDetail) ossConfig.GetStorageDetail();
+        detail.setStorageColumns(columns);
         client.CreateShipper(project, logStore, shipperName, ossConfig);
 
         GetShipperResponse ossRes = client.GetShipperConfig(project, logStore, shipperName);
@@ -108,7 +108,7 @@ public class ShipperSample {
 
     public static void createCsvOssShipper() throws LogException {
         String shipperName = "osscsvshipper";
-        ShipperConfig ossConfig = new OssShipperConfig(ossBucket, ossPrefix, roleArn, bufferInterval, bufferSize, compressType, pathFormat, "csv");
+        OssShipperConfig ossConfig = new OssShipperConfig(ossBucket, ossPrefix, roleArn, bufferInterval, bufferSize, compressType, pathFormat, "csv", "+0800");
         ArrayList<String> columns = new ArrayList<String>();
         columns.add("__topic__");
         columns.add("alarm_count");
@@ -116,7 +116,7 @@ public class ShipperSample {
         columns.add("alarm_type");
         columns.add("category");
         columns.add("project_name");
-        OssShipperCsvStorageDetail detail = (OssShipperCsvStorageDetail) ((OssShipperConfig) ossConfig).GetStorageDetail();
+        OssShipperCsvStorageDetail detail = (OssShipperCsvStorageDetail) ossConfig.GetStorageDetail();
         detail.setDelimiter(",");
         detail.setmStorageColumns(columns);
         detail.setQuote("\"");
@@ -131,11 +131,11 @@ public class ShipperSample {
         client.DeleteShipper(project, logStore, shipperName);
     }
 
-    public static void main(String args[]) throws LogException {
+    public static void main(String[] args) throws LogException {
 
         createOdpsShipper();
+        createJsonOssShipper();
         createCsvOssShipper();
         createParquetOssShipper();
-        createJsonOssShipper();
     }
 }

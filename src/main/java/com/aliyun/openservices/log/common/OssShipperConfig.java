@@ -1,24 +1,25 @@
 package com.aliyun.openservices.log.common;
 
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
 
 public class OssShipperConfig implements ShipperConfig {
 
-	private String mOssBucket;
-	private String mOssPrefix;
-	private String mRoleArn;
-	private int mBufferInterval;
-	private int mBufferMb;
-	private String mCompressType;
-	private String mPathFormat;
+	private String ossBucket;
+	private String ossPrefix;
+	private String roleArn;
+	private int bufferInterval;
+	private int bufferMB;
+	private String compressType;
+	private String pathFormat;
+	private String timeZone;
 	private OssShipperStorageDetail storageDetail;
 
 	public OssShipperConfig(String ossBucket, String ossPrefix, String roleArn,
-			int bufferInterval, int bufferMb) {
-		this(ossBucket, ossPrefix, roleArn, bufferInterval, bufferMb, "snappy");
+			int bufferInterval, int bufferMB) {
+		this(ossBucket, ossPrefix, roleArn, bufferInterval, bufferMB, "snappy");
 	}
 
 	/**
@@ -33,38 +34,39 @@ public class OssShipperConfig implements ShipperConfig {
 	 *            oss bucket
 	 * @param bufferInterval
 	 *            the time(seconds) to buffer before save to oss
-	 * @param bufferMb
+	 * @param bufferMB
 	 *            the data size(MB) to buffer before save to oss
 	 * @param compressType
 	 *            the compress type, only support 'snappy' or 'none'
 	 */
 	public OssShipperConfig(String ossBucket, String ossPrefix, String roleArn,
-			int bufferInterval, int bufferMb, String compressType) {
-		this(ossBucket, ossPrefix, roleArn, bufferInterval, bufferMb, compressType, "%Y/%m/%d/%H/%M", "json");
+			int bufferInterval, int bufferMB, String compressType) {
+		this(ossBucket, ossPrefix, roleArn, bufferInterval, bufferMB, compressType, "%Y/%m/%d/%H/%M", "json", "");
 	}
 	
 	public OssShipperConfig(String ossBucket, String ossPrefix, String roleArn,
-			int bufferInterval, int bufferMb, String compressType, String pathFormat) {
-		this(ossBucket, ossPrefix, roleArn, bufferInterval, bufferMb, compressType, pathFormat, "json");
+			int bufferInterval, int bufferMB, String compressType, String pathFormat) {
+		this(ossBucket, ossPrefix, roleArn, bufferInterval, bufferMB, compressType, pathFormat, "json", "");
 	}
 	
 
 	public OssShipperConfig(String ossBucket, String ossPrefix, String roleArn,
-			int bufferInteval, int bufferMb, String compressType, String pathFormat, String storageFormat) {
-		mOssBucket = ossBucket;
-		mOssPrefix = ossPrefix;
-		mRoleArn = roleArn;
-		mBufferInterval = bufferInteval;
-		mBufferMb = bufferMb;
-		mCompressType = compressType;
-		mPathFormat = pathFormat;
+			int bufferInterval, int bufferMB, String compressType, String pathFormat, String storageFormat, String timezone) {
+		this.ossBucket = ossBucket;
+		this.ossPrefix = ossPrefix;
+		this.roleArn = roleArn;
+		this.bufferInterval = bufferInterval;
+		this.bufferMB = bufferMB;
+		this.compressType = compressType;
+		this.pathFormat = pathFormat;
 		if (storageFormat.equals("parquet")) {
-			storageDetail = new OssShipperParquetStorageDetail();
+			this.storageDetail = new OssShipperParquetStorageDetail();
 		} else if (storageFormat.equals("csv")) {
-			storageDetail = new OssShipperCsvStorageDetail();
+			this.storageDetail = new OssShipperCsvStorageDetail();
 		} else {
-			storageDetail = new OssShipperJsonStorageDetail();
+			this.storageDetail = new OssShipperJsonStorageDetail();
 		}
+		this.timeZone = timezone;
 	}
 	
 	public OssShipperConfig() {
@@ -73,13 +75,18 @@ public class OssShipperConfig implements ShipperConfig {
 
 	public void FromJsonObj(JSONObject obj) throws LogException {
 		try {
-			this.mOssBucket = obj.getString("ossBucket");
-			this.mOssPrefix = obj.getString("ossPrefix");
-			this.mRoleArn = obj.getString("roleArn");
-			this.mBufferInterval = obj.getInt("bufferInterval");
-			this.mBufferMb = obj.getInt("bufferSize");
-			this.mCompressType = obj.getString("compressType");
-			this.mPathFormat = obj.getString("pathFormat");
+			this.ossBucket = obj.getString("ossBucket");
+			this.ossPrefix = obj.getString("ossPrefix");
+			this.roleArn = obj.getString("roleArn");
+			this.bufferInterval = obj.getIntValue("bufferInterval");
+			this.bufferMB = obj.getIntValue("bufferSize");
+			this.compressType = obj.getString("compressType");
+			this.pathFormat = obj.getString("pathFormat");
+			if (obj.containsKey("timeZone")) {
+				this.timeZone = obj.getString("timeZone");
+			} else {
+				this.timeZone = "";
+			}
 			JSONObject storage = obj.getJSONObject("storage");
 			String storageFormat = storage.getString("format");
 			
@@ -104,59 +111,67 @@ public class OssShipperConfig implements ShipperConfig {
 	}
 	
 	public String GetPathFormat() {
-		return mPathFormat;
+		return pathFormat;
 	}
 	
 	public String GetOssBucket() {
-		return mOssBucket;
+		return ossBucket;
 	}
 
 	public String GetOssPrefix() {
-		return mOssPrefix;
+		return ossPrefix;
 	}
 
 	public String GetRoleArm() {
-		return mRoleArn;
+		return roleArn;
 	}
 
 	public int GetBufferInterval() {
-		return mBufferInterval;
+		return bufferInterval;
 	}
 
-	public int GetBufferMb() {
-		return mBufferMb;
+	public int GetBufferMB() {
+		return bufferMB;
 	}
 
 	public String GetCompressType() {
-		return mCompressType;
+		return compressType;
 	}
 
 	public void setOssBucket(String ossBucket) {
-		this.mOssBucket = ossBucket;
+		this.ossBucket = ossBucket;
 	}
 
 	public void setOssPrefix(String ossPrefix) {
-		this.mOssPrefix = ossPrefix;
+		this.ossPrefix = ossPrefix;
 	}
 
 	public void setRoleArn(String roleArn) {
-		this.mRoleArn = roleArn;
+		this.roleArn = roleArn;
 	}
 
 	public void setBufferInterval(int bufferInterval) {
-		this.mBufferInterval = bufferInterval;
+		this.bufferInterval = bufferInterval;
 	}
 
-	public void setBufferMb(int bufferMb) {
-		this.mBufferMb = bufferMb;
+	public void setBufferMB(int bufferMB) {
+		this.bufferMB = bufferMB;
 	}
 
 	public void setCompressType(String compressType) {
-		this.mCompressType = compressType;
+		this.compressType = compressType;
 	}
 
 	public void setPathFormat(String pathFormat) {
-		this.mPathFormat = pathFormat;
+		this.pathFormat = pathFormat;
+	}
+
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
 	}
 
 	public void setStorageDetail(OssShipperStorageDetail storageDetail) {
@@ -170,14 +185,16 @@ public class OssShipperConfig implements ShipperConfig {
 
 	public JSONObject GetJsonObj() {
 		JSONObject obj = storageDetail.ToJsonObject();
-		obj.put("ossBucket", this.mOssBucket);
-		obj.put("ossPrefix", this.mOssPrefix);
-		obj.put("roleArn", this.mRoleArn);
-		obj.put("bufferInterval", this.mBufferInterval);
-		obj.put("bufferSize", this.mBufferMb);
-		obj.put("compressType", this.mCompressType);
-		obj.put("pathFormat", this.mPathFormat);
+		obj.put("ossBucket", this.ossBucket);
+		obj.put("ossPrefix", this.ossPrefix);
+		obj.put("roleArn", this.roleArn);
+		obj.put("bufferInterval", this.bufferInterval);
+		obj.put("bufferSize", this.bufferMB);
+		obj.put("compressType", this.compressType);
+		obj.put("pathFormat", this.pathFormat);
+		obj.put("timeZone", this.timeZone);
 		
 		return obj;
 	}
+
 }

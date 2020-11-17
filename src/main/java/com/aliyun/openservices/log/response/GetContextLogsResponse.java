@@ -53,7 +53,7 @@ public class GetContextLogsResponse extends Response {
     public int getForwardLines() { return forwardLines; }
 
     /**
-     * @note Users of getContextLogs can ignore following methods.
+     * Users of getContextLogs can ignore following methods.
      */
     public void addLog(QueriedLog log) { logs.add(log); }
     public void setProcessStatus(String processStatus) {

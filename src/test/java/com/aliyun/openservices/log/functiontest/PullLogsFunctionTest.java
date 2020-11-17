@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.Logs;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-
+@Ignore
 public class PullLogsFunctionTest extends LogTest {
 
     private int writeData(String logStore) {

@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.Args;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 

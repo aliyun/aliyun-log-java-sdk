@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.ListConsumerGroupResponse;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+@Ignore
 public class ConsumerGroupFunctionTest extends FunctionTest {
 
     private static final String TEST_PROJECT = "project-intg-" + getNowTimestamp();

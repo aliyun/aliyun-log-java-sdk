@@ -5,7 +5,6 @@ import com.aliyun.openservices.log.common.Dashboard;
 import com.aliyun.openservices.log.common.DingTalkNotification;
 import com.aliyun.openservices.log.common.EmailNotification;
 import com.aliyun.openservices.log.common.JobSchedule;
-import com.aliyun.openservices.log.common.JobScheduleType;
 import com.aliyun.openservices.log.common.JobState;
 import com.aliyun.openservices.log.common.Notification;
 import com.aliyun.openservices.log.common.Report;
@@ -22,6 +21,7 @@ import com.aliyun.openservices.log.request.ListReportRequest;
 import com.aliyun.openservices.log.response.GetReportResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
 import com.aliyun.openservices.log.response.ListReportResponse;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -56,10 +56,11 @@ public class ReportFunctionTest extends JobIntgTest {
         notifications.add(notification);
         configuration.setNotificationList(notifications);
         report.setConfiguration(configuration);
-        report.setSchedule(createSchedule());
+        report.setSchedule(createSchedule(true));
         return report;
     }
 
+    @Ignore
     @Test
     public void testCrud() throws Exception {
         // test list jobs
