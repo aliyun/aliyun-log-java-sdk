@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 
@@ -29,6 +29,69 @@ public class Query implements Serializable {
 
     @JSONField
     private String end;
+
+    @JSONField
+    private String storeType;
+    @JSONField
+    private String project;
+    @JSONField
+    private String store;
+    @JSONField
+    private String ui;
+    @JSONField
+    private String region;
+    @JSONField
+    private String roleArn;
+    @JSONField
+    private String dashboardId;
+
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public String getStoreType() {
+        return storeType;
+    }
+
+    public void setStoreType(String storeType) {
+        this.storeType = storeType;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
+
+    public String getStore() {
+        return store;
+    }
+
+    public void setStore(String store) {
+        this.store = store;
+    }
+
+    public String getUi() {
+        return ui;
+    }
+
+    public void setUi(String ui) {
+        this.ui = ui;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
 
     public String getChartTitle() {
         return chartTitle;
@@ -78,16 +141,45 @@ public class Query implements Serializable {
         this.end = end;
     }
 
+    public String getDashboardId() {
+        return dashboardId;
+    }
+
+    public void setDashboardId(String dashboardId) {
+        this.dashboardId = dashboardId;
+    }
+
     public void deserialize(JSONObject value) {
         setChartTitle(value.getString("chartTitle"));
         setLogStore(value.getString("logStore"));
         setQuery(value.getString("query"));
         setTimeSpanType(TimeSpanType.fromString(value.getString("timeSpanType")));
-        if (value.has("start")) {
+        if (value.containsKey("start")) {
             setStart(value.getString("start"));
         }
-        if (value.has("end")) {
+        if (value.containsKey("end")) {
             setEnd(value.getString("end"));
+        }
+        if (value.containsKey("storeType")) {
+            setStoreType(value.getString("storeType"));
+        }
+        if (value.containsKey("store")) {
+            setStore(value.getString("store"));
+        }
+        if (value.containsKey("ui")) {
+            setUi(value.getString("ui"));
+        }
+        if (value.containsKey("region")) {
+            setRegion(value.getString("region"));
+        }
+        if (value.containsKey("project")) {
+            setProject(value.getString("project"));
+        }
+        if (value.containsKey("roleArn")) {
+            setRoleArn(value.getString("roleArn"));
+        }
+        if (value.containsKey("dashboardId")) {
+            setDashboardId(value.getString("dashboardId"));
         }
     }
 

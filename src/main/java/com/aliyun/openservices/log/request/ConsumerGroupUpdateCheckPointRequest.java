@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.request;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 public class ConsumerGroupUpdateCheckPointRequest extends ConsumerGroupRequest {
 	/**

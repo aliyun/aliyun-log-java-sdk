@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.common;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 public class ShipperTask {
 
@@ -67,9 +67,9 @@ public class ShipperTask {
 		mTaskId = obj.getString("id");
 		mTaskStatus = obj.getString("taskStatus");
 		mTaskMessage = obj.getString("taskMessage");
-		mTaskCreateTime = obj.getInt("taskCreateTime");
-		mTaskLastDataReceiveTime = obj.getInt("taskLastDataReceiveTime");
-		mTaskFinishTime = obj.getInt("taskFinishTime");
+		mTaskCreateTime = obj.getIntValue("taskCreateTime");
+		mTaskLastDataReceiveTime = obj.getIntValue("taskLastDataReceiveTime");
+		mTaskFinishTime = obj.getIntValue("taskFinishTime");
 		mTaskDataLines = obj.getLong("taskDataLines");
 	}
 	

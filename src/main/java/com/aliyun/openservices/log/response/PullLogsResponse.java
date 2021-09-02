@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.response;
 
 import com.aliyun.openservices.log.common.Consts;
-import com.aliyun.openservices.log.common.LZ4Encoder;
+import com.aliyun.openservices.log.util.LZ4Encoder;
 import com.aliyun.openservices.log.common.LogGroupData;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.util.Args;
@@ -20,11 +20,6 @@ public class PullLogsResponse extends Response {
     private int count;
     private byte[] rawData;
 
-    public PullLogsResponse(Map<String, String> headers) {
-        super(headers);
-        logGroups = new ArrayList<LogGroupData>();
-    }
-
     /**
      * Construct the response with http headers
      *
@@ -33,7 +28,7 @@ public class PullLogsResponse extends Response {
      * @throws LogException if any error occurs in generating compressed log data
      */
     public PullLogsResponse(Map<String, String> headers, byte[] rawData) throws LogException {
-        this(headers);
+        super(headers);
         this.rawData = rawData;
         try {
             rawSize = Integer.parseInt(headers.get(Consts.CONST_X_SLS_BODYRAWSIZE));

@@ -2,9 +2,9 @@ package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.common.Consts.ACLAction;
 import com.aliyun.openservices.log.exception.LogException;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 
@@ -225,11 +225,11 @@ public class ACL implements Serializable {
 			}
 
 			if (dict.containsKey("createTime")) {
-				createTime = dict.getInt("createTime");
+				createTime = dict.getIntValue("createTime");
 			}
 
 			if (dict.containsKey("lastModifyTime")) {
-				lastModifyTime = dict.getInt("lastModifyTime");
+				lastModifyTime = dict.getIntValue("lastModifyTime");
 			}
 
 		} catch (JSONException e) {
@@ -247,7 +247,7 @@ public class ACL implements Serializable {
 	 */
 	public void FromJsonString(String aclString) throws LogException {
 		try {
-			JSONObject dict = JSONObject.fromObject(aclString);
+			JSONObject dict = JSONObject.parseObject(aclString);
 			FromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateACL", e.getMessage(), e, "");

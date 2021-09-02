@@ -17,10 +17,6 @@ public abstract class HttpMessage {
     private InputStream content;
     private long contentLength;
 
-    protected HttpMessage() {
-        super();
-    }
-
     public Map<String, String> getHeaders() {
         return headers;
     }

@@ -43,9 +43,7 @@ public class ListDomainsResponse extends Response {
 
 	public void setDomains(List<Domain> domains) {
 		this.domains = new ArrayList<Domain>();
-		for (Domain domain : domains) {
-			this.domains.add(domain);
-		}
+		this.domains.addAll(domains);
 	}
 
 }

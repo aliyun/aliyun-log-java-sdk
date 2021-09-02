@@ -1,11 +1,14 @@
 package com.aliyun.openservices.log.functiontest;
 
+import com.aliyun.openservices.log.common.Config;
 import com.aliyun.openservices.log.common.LocalFileConfigInputDetail;
 import com.aliyun.openservices.log.exception.LogException;
-import net.sf.json.JSONException;
-import org.junit.Assert;
 import org.junit.Test;
-import com.aliyun.openservices.log.common.Config;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MixLogtailConfigFunctionTest {
     @Test
@@ -15,8 +18,8 @@ public class MixLogtailConfigFunctionTest {
         Config cfg = new Config();
         cfg.FromJsonString(str);
         LocalFileConfigInputDetail detail = (LocalFileConfigInputDetail) cfg.GetInputDetail();
-        Assert.assertTrue(!detail.GetPluginDetail().isEmpty());
-        Assert.assertTrue(cfg.ToJsonString().contains("processors"));
+        assertFalse(detail.GetPluginDetail().isEmpty());
+        assertTrue(cfg.ToJsonString().contains("processors"));
     }
 
     @Test
@@ -26,12 +29,12 @@ public class MixLogtailConfigFunctionTest {
         Config cfg = new Config();
         try {
             cfg.FromJsonString(str);
-            Assert.assertTrue(false);
+            fail();
         } catch (LogException e) {
-            Assert.assertTrue(true);
+            assertTrue(true);
         }
         LocalFileConfigInputDetail detail = (LocalFileConfigInputDetail) cfg.GetInputDetail();
-        Assert.assertEquals(detail.GetPluginDetail(), "");
-        Assert.assertTrue(!cfg.ToJsonString().contains("plugin"));
+        assertEquals(detail.GetPluginDetail(), "");
+        assertFalse(cfg.ToJsonString().contains("plugin"));
     }
 }

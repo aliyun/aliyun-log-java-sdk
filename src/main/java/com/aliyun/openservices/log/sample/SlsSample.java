@@ -13,7 +13,6 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.PullLogsRequest;
 import com.aliyun.openservices.log.response.GetHistogramsResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
-import com.aliyun.openservices.log.response.ListTopicsResponse;
 import com.aliyun.openservices.log.response.PullLogsResponse;
 
 import java.util.ArrayList;
@@ -124,23 +123,6 @@ public class SlsSample {
 			System.out.println("ListLogs:" + logStores.toString() + "\n");
 		} catch (LogException e) {
 			System.out.print(e.getCause());
-			System.out.println("error code :" + e.GetErrorCode());
-			System.out.println("error message :" + e.GetErrorMessage());
-			System.out.println("error requestId :" + e.GetRequestId());
-			throw e;
-		}
-
-		/**
-		 * 查询logstore中的topic的名字
-		 */
-		try {
-			String token = "";
-			ListTopicsResponse listTopicResponse = client.ListTopics(project,
-					logStore, token, 10);
-			ArrayList<String> topics = listTopicResponse.GetTopics();
-			System.out.println("ListTopics:" + topics.toString());
-			System.out.println("NextTopic:" + listTopicResponse.GetNextToken() + "\n");
-		} catch (LogException e) {
 			System.out.println("error code :" + e.GetErrorCode());
 			System.out.println("error message :" + e.GetErrorMessage());
 			System.out.println("error requestId :" + e.GetRequestId());

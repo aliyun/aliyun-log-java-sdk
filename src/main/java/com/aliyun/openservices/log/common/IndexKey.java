@@ -145,9 +145,7 @@ public class IndexKey implements Serializable {
 	public JSONObject ToRequestJson() throws LogException {
 		JSONObject allKeys = new JSONObject();
 		JSONArray tokenDict = new JSONArray();
-		for (String v:token) {
-			tokenDict.add(v);
-		}
+		tokenDict.addAll(token);
 		
 		allKeys.put("type", GetType());
 		// only text type require token & caseSensitive
@@ -168,8 +166,7 @@ public class IndexKey implements Serializable {
 	}
 	
 	public JSONObject ToJsonObject() throws LogException {
-		JSONObject allKeys = ToRequestJson();
-		return allKeys;
+		return ToRequestJson();
 	}
 	 
 	public String ToJsonString() throws LogException {	

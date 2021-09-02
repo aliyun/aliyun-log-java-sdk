@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.util;
 
 import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.common.auth.Credentials;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Mac;
@@ -35,7 +36,8 @@ public final class DigestUtils {
         }
     }
 
-    public static void addSignature(String accessKeyId, String accessKey, String verb,
+    public static void addSignature(Credentials credentials,
+                                    String verb,
                                     Map<String, String> headers, String resourceUri,
                                     Map<String, String> urlParams) {
         StringBuilder builder = new StringBuilder();
@@ -49,11 +51,11 @@ public final class DigestUtils {
             builder.append("?");
             builder.append(urlParametersToString(urlParams));
         }
-        String signature = encode(accessKey, builder.toString());
-        headers.put(Consts.CONST_AUTHORIZATION, Consts.CONST_HEADSIGNATURE_PREFIX + accessKeyId + ":" + signature);
+        String signature = encode(credentials.getAccessKeySecret(), builder.toString());
+        headers.put(Consts.CONST_AUTHORIZATION, Consts.CONST_HEADSIGNATURE_PREFIX + credentials.getAccessKeyId() + ":" + signature);
     }
 
-    private static String urlParametersToString(Map<String, String> paras) {
+    static String urlParametersToString(Map<String, String> paras) {
         Map<String, String> treeMap = new TreeMap<String, String>(paras);
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<String, String> entry : treeMap.entrySet()) {

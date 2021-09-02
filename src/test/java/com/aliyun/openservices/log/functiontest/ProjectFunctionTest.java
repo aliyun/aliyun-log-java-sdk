@@ -1,21 +1,41 @@
 package com.aliyun.openservices.log.functiontest;
 
 
+import com.aliyun.openservices.log.common.Project;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.response.GetProjectResponse;
+import com.aliyun.openservices.log.response.ListProjectResponse;
 import org.junit.After;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ProjectFunctionTest extends FunctionTest {
 
-    // For testing environment, please make sure the endpoint
-    // project1.<endpoint> is accessible.
-    private static final String TEST_PROJECT = "project-to-update";
+    private static final String TEST_PROJECT = makeProjectName();
 
+    @Test
+    public void testUpdateProjectList() throws LogException {
+        String project = TEST_PROJECT;
+        client.CreateProject(project, "abc");
+
+        GetProjectResponse response = client.GetProject(project);
+        assertEquals(response.GetProjectDescription(), "abc");
+
+        ListProjectResponse response1 = client.ListProject(project, 0, 100);
+        for (Project project1 : response1.getProjects()) {
+            assertEquals(project1.getProjectDesc(), "abc");
+        }
+        client.updateProject(new UpdateProjectRequest(project, "124"));
+        response1 = client.ListProject(project, 0, 100);
+        for (Project project1 : response1.getProjects()) {
+            assertEquals(project1.getProjectDesc(), "124");
+        }
+        safeDeleteProjectWithoutSleep(project);
+    }
 
     private void verifyUpdate(final String description,
                               final String expected) throws LogException {
@@ -43,8 +63,25 @@ public class ProjectFunctionTest extends FunctionTest {
     }
 
     @Test
+    public void testCreateProject() throws Exception {
+        String desc = randomString();
+        String project = makeProjectName();
+        client.CreateProject(project, desc);
+        GetProjectResponse response = client.GetProject(project);
+        assertEquals(response.GetProjectDescription(), desc);
+        assertEquals(response.GetProjectStatus(), "Normal");
+        safeDeleteProjectWithoutSleep(project);
+        try {
+            client.GetProject(project);
+            fail();
+        } catch (LogException ex) {
+            assertEquals("ProjectNotExist", ex.GetErrorCode());
+        }
+    }
+
+    @Test
     public void testUpdateProject() throws Exception {
-        safeDeleteProject(TEST_PROJECT);
+        safeDeleteProjectWithoutSleep(TEST_PROJECT);
         client.CreateProject(TEST_PROJECT, "xxx");
 
         GetProjectResponse response = client.GetProject(TEST_PROJECT);
@@ -84,13 +121,8 @@ public class ProjectFunctionTest extends FunctionTest {
         verifyUpdate(chinese, chinese);
     }
 
-
     @After
     public void tearDown() {
-        try {
-            client.DeleteProject(TEST_PROJECT);
-        } catch (Exception ex) {
-            // swallow it
-        }
+        safeDeleteProjectWithoutSleep(TEST_PROJECT);
     }
 }

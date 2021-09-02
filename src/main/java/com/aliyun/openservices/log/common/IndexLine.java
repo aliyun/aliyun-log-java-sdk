@@ -101,24 +101,18 @@ public class IndexLine {
 	public JSONObject ToRequestJson() {
 		JSONObject line = new JSONObject();
 		JSONArray tokenDict = new JSONArray();
-		for (String v:token) {
-			tokenDict.add(v);
-		}
+		tokenDict.addAll(token);
 		line.put("token", tokenDict);
 		
 		if (includeKeys.size() > 0) {
 			JSONArray includeKeysDict = new JSONArray();
-			for (String v:includeKeys) {
-				includeKeysDict.add(v);
-			}
+			includeKeysDict.addAll(includeKeys);
 			line.put("include_keys", includeKeysDict);
 		}
 		
 		if (excludeKeys.size() > 0) {
 			JSONArray excludeKeysDict = new JSONArray();
-			for (String v:excludeKeys) {
-				excludeKeysDict.add(v);
-			}
+			excludeKeysDict.addAll(excludeKeys);
 			line.put("exclude_keys", excludeKeysDict);
 		}
 		
@@ -133,8 +127,7 @@ public class IndexLine {
 	}
 	
 	public JSONObject ToJsonObject() {
-		JSONObject line = ToRequestJson();
-		return line;
+		return ToRequestJson();
 	}
 	 
 	public String ToJsonString() {	

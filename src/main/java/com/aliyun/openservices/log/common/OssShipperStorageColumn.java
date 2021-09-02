@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 public class OssShipperStorageColumn implements Serializable {
 	
@@ -56,7 +56,7 @@ public class OssShipperStorageColumn implements Serializable {
 	
 	public void FromJsonString(String columnString) throws LogException {
 		try {
-			JSONObject dict = JSONObject.fromObject(columnString);
+			JSONObject dict = JSONObject.parseObject(columnString);
 			FromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateColumn",  e.getMessage(), e, "");

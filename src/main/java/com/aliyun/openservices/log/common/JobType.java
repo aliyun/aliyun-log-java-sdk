@@ -11,7 +11,9 @@ public enum JobType implements JSONSerializable {
     ETL("ETL"),
     INGESTION("Ingestion"),
     REBUILD_INDEX("RebuildIndex"),
-    EXPORT("Export");
+    AUDIT_JOB("AuditJob"),
+    EXPORT("Export"),
+    SCHEDULED_SQL("ScheduledSQL");
 
     private final String value;
 

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 public class Dashboard implements Serializable {
 
@@ -85,9 +85,9 @@ public class Dashboard implements Serializable {
 		dashboardJson.put("displayName", getDisplayName());
 		
 		if (getAttribute().length() > 0) {
-			dashboardJson.put("attribute", JSONObject.fromObject(getAttribute()));
+			dashboardJson.put("attribute", JSONObject.parseObject(getAttribute()));
 		} else {
-			dashboardJson.put("attribute", JSONObject.fromObject("{}"));
+			dashboardJson.put("attribute", JSONObject.parseObject("{}"));
 		}
 		
 		JSONArray chartArray = new JSONArray();
@@ -105,7 +105,7 @@ public class Dashboard implements Serializable {
 			setDashboardName(dict.getString("dashboardName"));
 			setDescription(dict.getString("description"));
 			// displayName
-			if (dict.has("displayName")) {
+			if (dict.containsKey("displayName")) {
 				setDisplayName(dict.getString("displayName"));
 			}
 			// attribute
@@ -116,23 +116,28 @@ public class Dashboard implements Serializable {
 			ArrayList<Chart> chartList = new ArrayList<Chart>();
 			try {
 				JSONArray chartJsonArray = dict.getJSONArray("charts");
-				for (int index = 0; index != chartJsonArray.size(); index++) {
-					Chart chart = new Chart();
-					chart.FromJsonObject(chartJsonArray.getJSONObject(index));
-					chartList.add(chart);
+				if (chartJsonArray != null) {
+					for (int index = 0; index != chartJsonArray.size(); index++) {
+						JSONObject jsonObject = chartJsonArray.getJSONObject(index);
+						if (jsonObject == null) {
+							continue;
+						}
+						Chart chart = new Chart();
+						chart.FromJsonObject(jsonObject);
+						chartList.add(chart);
+					}
 				}
 			} catch (JSONException e) {
 				// ignore
 			}
 			setChartList(chartList);
-			
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateDashboard",  e.getMessage(), e, "");
 		}
 	}
 	public void FromJsonString(String dashboardString) throws LogException {
 		try {
-			JSONObject dict = JSONObject.fromObject(dashboardString);
+			JSONObject dict = JSONObject.parseObject(dashboardString);
 			FromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateDashboard", e.getMessage(), e, "");

@@ -6,10 +6,20 @@ import com.alibaba.fastjson.serializer.JSONSerializer;
 import java.lang.reflect.Type;
 
 public enum TimeSpanType implements JSONSerializable {
+    /**
+     * Relative time span, e,g -1m-now. now is trigger time.
+     */
     RELATIVE("Relative"),
+    /**
+     * Truncated time span. e,g if current time is 2019-02-01:02:32:15:
+     * -1h - (2019-02-01:01:00:00 - 2019-02-01:02:00:00)
+     * -1m - (2019-02-01:01:31:00 - 2019-02-01:02:32:00)
+     * -1d - (2019-02-01:00:00:00 - 2019-02-02:00:00:00)
+     */
     TRUNCATED("Truncated"),
     TODAY("Today"),
-    CUSTOM("Custom");
+    CUSTOM("Custom"),
+    FIXED("Fixed");
 
     private final String value;
 

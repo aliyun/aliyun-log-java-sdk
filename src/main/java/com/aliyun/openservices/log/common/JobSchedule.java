@@ -10,7 +10,6 @@ import java.util.Date;
 
 import static com.aliyun.openservices.log.util.Args.checkDuration;
 
-
 public class JobSchedule implements Serializable {
 
     private static final long serialVersionUID = 8400426178465652937L;
@@ -78,6 +77,12 @@ public class JobSchedule implements Serializable {
     private Date completeTime;
 
     private boolean runImmediately = false;
+
+    /**
+     * timeZone eg. +0800
+     */
+    @JSONField
+    private String timeZone;
 
     public String getId() {
         return id;
@@ -191,19 +196,19 @@ public class JobSchedule implements Serializable {
     public void setCompleteTime(Date completeTime) {
         this.completeTime = completeTime;
     }
-
+    @Deprecated
     public Integer getFromTime() {
         return fromTime;
     }
-
+    @Deprecated
     public void setFromTime(Integer fromTime) {
         this.fromTime = fromTime;
     }
-
+    @Deprecated
     public Integer getToTime() {
         return toTime;
     }
-
+    @Deprecated
     public void setToTime(Integer toTime) {
         this.toTime = toTime;
     }
@@ -223,6 +228,14 @@ public class JobSchedule implements Serializable {
     public void setRunImmediately(boolean runImmediately) {
         this.runImmediately = runImmediately;
     }
+
+    public String getTimeZone() {
+        return timeZone;
+    }
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
 
     public void deserialize(JSONObject value) {
         id = JsonUtils.readOptionalString(value, "id");
@@ -248,6 +261,7 @@ public class JobSchedule implements Serializable {
                 break;
         }
         status = JsonUtils.readOptionalString(value, "status");
+        timeZone = JsonUtils.readOptionalString(value, "timeZone");
         startTime = JsonUtils.readOptionalDate(value, "startTime");
         completeTime = JsonUtils.readOptionalDate(value, "completeTime");
         createTime = JsonUtils.readOptionalDate(value, "createTime");

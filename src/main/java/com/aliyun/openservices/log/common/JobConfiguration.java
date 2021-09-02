@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 public abstract class JobConfiguration {
 

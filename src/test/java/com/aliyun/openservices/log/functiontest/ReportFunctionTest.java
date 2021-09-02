@@ -5,7 +5,6 @@ import com.aliyun.openservices.log.common.Dashboard;
 import com.aliyun.openservices.log.common.DingTalkNotification;
 import com.aliyun.openservices.log.common.EmailNotification;
 import com.aliyun.openservices.log.common.JobSchedule;
-import com.aliyun.openservices.log.common.JobScheduleType;
 import com.aliyun.openservices.log.common.JobState;
 import com.aliyun.openservices.log.common.Notification;
 import com.aliyun.openservices.log.common.Report;
@@ -56,7 +55,7 @@ public class ReportFunctionTest extends JobIntgTest {
         notifications.add(notification);
         configuration.setNotificationList(notifications);
         report.setConfiguration(configuration);
-        report.setSchedule(createSchedule());
+        report.setSchedule(createSchedule(true));
         return report;
     }
 
@@ -81,12 +80,13 @@ public class ReportFunctionTest extends JobIntgTest {
         String jobName = report.getName();
         // create
         CreateReportRequest request = new CreateReportRequest(TEST_PROJECT, report);
-        try {
-            client.createReport(request);
-            fail("Dashboard not exist");
-        } catch (LogException ex) {
-            assertEquals(ex.GetErrorMessage(), "Dashboard does not exist: " + report.getConfiguration().getDashboard());
-        }
+        // TODO Uncomment the following code after validation supported
+//        try {
+//            client.createReport(request);
+//            fail("Dashboard not exist");
+//        } catch (LogException ex) {
+//            assertEquals(ex.GetErrorMessage(), "Dashboard does not exist: " + report.getConfiguration().getDashboard());
+//        }
         createDashboard();
         client.createReport(request);
         GetReportResponse response = client.getReport(new GetReportRequest(TEST_PROJECT, jobName));

@@ -2,8 +2,8 @@ package com.aliyun.openservices.log.common;
 
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,10 +85,10 @@ public class DelimitedTextFormat extends StructuredDataFormat {
         quoteChar = JsonUtils.readOptionalString(jsonObject, "quoteChar");
         escapeChar = JsonUtils.readOptionalString(jsonObject, "escapeChar");
         if (jsonObject.containsKey("skipLeadingRows")) {
-            skipLeadingRows = jsonObject.getInt("skipLeadingRows");
+            skipLeadingRows = jsonObject.getIntValue("skipLeadingRows");
         }
         if (jsonObject.containsKey("maxLines")) {
-            maxLines = jsonObject.getInt("maxLines");
+            maxLines = jsonObject.getIntValue("maxLines");
         }
         JSONArray array = jsonObject.getJSONArray("fieldNames");
         if (array != null) {

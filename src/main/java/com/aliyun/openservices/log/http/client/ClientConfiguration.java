@@ -3,6 +3,8 @@
  */
 package com.aliyun.openservices.log.http.client;
 
+import com.aliyun.openservices.log.http.comm.Protocol;
+
 /**
  * The client configuration for accessing Aliyun Log Service.
  */
@@ -12,11 +14,14 @@ public class ClientConfiguration {
     public static final int DEFAULT_VALIDATE_AFTER_INACTIVITY = 2 * 1000;
     public static final int DEFAULT_THREAD_POOL_WAIT_TIME = 60 * 1000;
     public static final int DEFAULT_REQUEST_TIMEOUT = 60 * 1000;
+    public static final boolean DEFAULT_USE_REAPER = false;
 
     private int maxConnections = 50;
     private int socketTimeout = 50 * 1000;
     private int connectionTimeout = 50 * 1000;
     protected int connectionRequestTimeout = DEFAULT_CONNECTION_REQUEST_TIMEOUT;
+    protected Protocol protocol = Protocol.HTTP;
+
     protected String proxyHost = null;
     protected int proxyPort = -1;
     protected String proxyUsername = null;
@@ -27,7 +32,8 @@ public class ClientConfiguration {
     private boolean requestTimeoutEnabled = false;
     protected long idleConnectionTime = DEFAULT_IDLE_CONNECTION_TIME;
     protected int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
-
+    protected boolean useReaper = DEFAULT_USE_REAPER;
+    private boolean connManagerShared = false;
 
     public ClientConfiguration() {
     }
@@ -81,6 +87,21 @@ public class ClientConfiguration {
     public int getConnectionRequestTimeout() {
         return connectionRequestTimeout;
     }
+
+    /**
+     * Gets the SLS's protocol (HTTP or HTTPS).
+     */
+    public Protocol getProtocol() {
+        return protocol;
+    }
+
+    /**
+     * Sets the SLS's protocol (HTTP or HTTPS).
+     */
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
+
 
     public String getProxyHost() {
         return proxyHost;
@@ -166,5 +187,54 @@ public class ClientConfiguration {
      */
     public int getRequestTimeout() {
         return requestTimeout;
+    }
+
+
+    /**
+     * Gets the flag of using {@link com.aliyun.openservices.log.http.comm.IdleConnectionReaper} to manage expired
+     * connection.
+     */
+    public boolean isUseReaper() {
+        return useReaper;
+    }
+
+    /**
+     * Sets the flag of using {@link com.aliyun.openservices.log.http.comm.IdleConnectionReaper} to manage expired
+     * connection.
+     */
+    public void setUseReaper(boolean useReaper) {
+        this.useReaper = useReaper;
+    }
+
+    public boolean isConnManagerShared() {
+        return connManagerShared;
+    }
+
+    public void setConnManagerShared(boolean connManagerShared) {
+        this.connManagerShared = connManagerShared;
+    }
+
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
+
+    public void setProxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public void setProxyUsername(String proxyUsername) {
+        this.proxyUsername = proxyUsername;
+    }
+
+    public void setProxyPassword(String proxyPassword) {
+        this.proxyPassword = proxyPassword;
+    }
+
+    public void setProxyDomain(String proxyDomain) {
+        this.proxyDomain = proxyDomain;
+    }
+
+    public void setProxyWorkstation(String proxyWorkstation) {
+        this.proxyWorkstation = proxyWorkstation;
     }
 }

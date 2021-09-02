@@ -109,4 +109,13 @@ public class LogException extends Exception {
     public void SetHttpCode(int httpCode) {
         this.httpCode = httpCode;
     }
+
+    @Override
+    public String toString() {
+        return "LogException{" +
+                "httpCode=" + httpCode +
+                ", errorCode='" + errorCode + '\'' +
+                ", requestId='" + requestId + '\'' +
+                '}';
+    }
 }

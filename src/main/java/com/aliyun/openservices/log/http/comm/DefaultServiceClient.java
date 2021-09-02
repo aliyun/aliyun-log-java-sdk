@@ -79,7 +79,7 @@ public class DefaultServiceClient extends ServiceClient {
     public DefaultServiceClient(ClientConfiguration config) {
         super(config);
         this.connectionManager = createHttpClientConnectionManager();
-        this.httpClient = createHttpClient(this.connectionManager);
+        this.httpClient = createHttpClient(this.connectionManager, config);
         RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
         requestConfigBuilder.setConnectTimeout(config.getConnectionTimeout());
         requestConfigBuilder.setSocketTimeout(config.getSocketTimeout());
@@ -164,9 +164,14 @@ public class DefaultServiceClient extends ServiceClient {
         response.setContent(new ByteArrayInputStream(contentBytes));
     }
 
-    protected CloseableHttpClient createHttpClient(HttpClientConnectionManager connectionManager) {
-        return HttpClients.custom().setConnectionManager(connectionManager)
-                .disableContentCompression().disableAutomaticRetries().build();
+    protected CloseableHttpClient createHttpClient(HttpClientConnectionManager connectionManager,
+                                                   ClientConfiguration config) {
+        return HttpClients.custom()
+                .setConnectionManager(connectionManager)
+                .setConnectionManagerShared(config.isConnManagerShared())
+                .disableContentCompression()
+                .disableAutomaticRetries()
+                .build();
     }
 
     protected HttpClientConnectionManager createHttpClientConnectionManager() {
@@ -198,6 +203,10 @@ public class DefaultServiceClient extends ServiceClient {
         connectionManager.setValidateAfterInactivity(config.getValidateAfterInactivity());
         connectionManager.setDefaultSocketConfig(
                 SocketConfig.custom().setSoTimeout(config.getSocketTimeout()).setTcpNoDelay(true).build());
+        if (config.isUseReaper()) {
+            IdleConnectionReaper.setIdleConnectionTime(config.getIdleConnectionTime());
+            IdleConnectionReaper.registerConnectionManager(connectionManager);
+        }
         return connectionManager;
     }
 
@@ -222,6 +231,7 @@ public class DefaultServiceClient extends ServiceClient {
 
     @Override
     public void shutdown() {
+        IdleConnectionReaper.removeConnectionManager(this.connectionManager);
         this.connectionManager.shutdown();
     }
 }

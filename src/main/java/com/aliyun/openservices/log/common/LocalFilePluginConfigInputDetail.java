@@ -6,11 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-/**
- * Created by 冷倾(qingdao.pqd) on 2019/04/10
- *
- * @author <a href="mailto:qingdao.pqd@alibaba-inc.com">lengqing(kingdompan)</a>
- */
 public class LocalFilePluginConfigInputDetail extends ConfigInputDetail {
     public LocalFilePluginConfigInputDetail() {
         super();
