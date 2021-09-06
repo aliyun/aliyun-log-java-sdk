@@ -1,6 +1,3 @@
-/*
- * Copyright (C) Alibaba Cloud Computing All rights reserved.
- */
 package com.aliyun.openservices.log.request;
 
 import com.aliyun.openservices.log.common.Consts;
@@ -42,7 +39,38 @@ public class GetLogsRequest extends Request {
 		SetToTime(to);
 		SetParam(Consts.CONST_TYPE, Consts.CONST_TYPE_LOG);
 	}
-
+	/**
+	 * Construct a the request
+	 *
+	 * @param project
+	 *            project name
+	 * @param logStore
+	 *            log store name of a project
+	 * @param from
+	 *            begin time
+	 * @param to
+	 *            end time
+	 * @param topic
+	 *            topic name of a log store
+	 * @param query
+	 *            user query
+	 * @param offset
+	 *            the log offset to return
+	 * @param line
+	 *            how many lines to get, the max lines is decided by
+	 *            the sls backend server
+	 * @param reverse
+	 *            if reverse is set to true, the query will return the latest
+	 *            logs first
+	 */
+	public GetLogsRequest(String project, String logStore, int from, int to,
+						  String topic, String query, int offset, int line,
+						  boolean reverse) {
+		this(project, logStore,  from, to, topic, query);
+		SetOffset(offset);
+		SetLine(line);
+		SetReverse(reverse);
+	}
 	/**
 	 * Construct a the request
 	 * 
@@ -69,12 +97,13 @@ public class GetLogsRequest extends Request {
 	 */
 	public GetLogsRequest(String project, String logStore, int from, int to, 
 			String topic, String query, int offset, int line,
-			boolean reverse) {
+			boolean reverse,
+			boolean powerSql) {
 		this(project, logStore,  from, to, topic, query);
 		SetOffset(offset);
 		SetLine(line);
 		SetReverse(reverse);
-
+		SetPowerSql(powerSql);
 	}
 
 	/**
@@ -187,6 +216,15 @@ public class GetLogsRequest extends Request {
 		SetParam(Consts.CONST_OFFSET, String.valueOf(offset));
 	}
 
+	/**
+	 *set request powerSql
+	 *
+	 * @param powerSql
+	 *
+	 */
+	public void SetPowerSql(boolean powerSql) {
+		SetParam(Consts.CONST_POWER_SQL,String.valueOf(powerSql));
+	}
 	/**
 	 * Get request offset
 	 * 

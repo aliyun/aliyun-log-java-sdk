@@ -13,18 +13,18 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class ConsumerGroupFunctionTest extends FunctionTest {
+public class ConsumerGroupFunctionTest extends MetaAPIBaseFunctionTest {
 
-    private static final String TEST_PROJECT = "project-intg-" + getNowTimestamp();
     private static final String TEST_LOGSTORE = "logstore1";
 
     @Before
     public void setUp() {
+        super.setUp();
         LogStore logStore = new LogStore();
         logStore.SetLogStoreName(TEST_LOGSTORE);
         logStore.SetShardCount(2);
         logStore.SetTtl(1);
-        createOrUpdateLogStore(TEST_PROJECT, logStore);
+        createOrUpdateLogStoreNoWait(TEST_PROJECT, logStore);
     }
 
     @Test

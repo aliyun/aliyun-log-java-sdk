@@ -8,16 +8,12 @@ import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.ArrayList;
 
-/**
- * Created by 冷倾(qingdao.pqd) on 2019/05/28
- *
- * @author <a href="mailto:qingdao.pqd@alibaba-inc.com">lengqing(kingdompan)</a>
- */
 public class Advanced {
     private boolean forceMulticonfig = false;
     private ArrayList<String> dirBlacklist = new ArrayList<String>();
     private ArrayList<String> fileNameBlacklist = new ArrayList<String>();
     private ArrayList<String> filePathBlacklist = new ArrayList<String>();
+    private JSONObject others = new JSONObject();
 
     public Advanced() {}
 
@@ -57,6 +53,10 @@ public class Advanced {
         this.filePathBlacklist = filePathBlacklist;
     }
 
+    public void setOthers(JSONObject others) { this.others = others; }
+
+    public JSONObject getOthers() { return others; }
+
     public JSONObject toJsonObject() {
         JSONObject jsonObj = new JSONObject();
         jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_FORCEMULTICONFIG, this.forceMulticonfig);
@@ -75,6 +75,7 @@ public class Advanced {
             jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST, blacklistObj);
         }
 
+        jsonObj.putAll(others);
         return jsonObj;
     }
 
@@ -84,6 +85,7 @@ public class Advanced {
 
             if (advanced.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_FORCEMULTICONFIG)) {
                 advObj.setForceMulticonfig(advanced.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_FORCEMULTICONFIG));
+                advanced.remove(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_FORCEMULTICONFIG);
             }
 
             if (advanced.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST)) {
@@ -97,7 +99,11 @@ public class Advanced {
                 if (obj.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST_FILEPATH)) {
                     advObj.setFilePathBlacklist(fromJSONArray(obj.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST_FILEPATH)));
                 }
+                advanced.remove(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST);
             }
+
+            // Keep other key/values.
+            advObj.others = advanced;
 
             return advObj;
         } catch (JSONException e) {

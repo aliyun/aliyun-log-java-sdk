@@ -17,7 +17,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-
 public class SlsIndexJsonFunctionTest {
 
     static final Credentials credentials = Credentials.load();
@@ -27,9 +26,6 @@ public class SlsIndexJsonFunctionTest {
     static private String project = "test-lichao-3";
     static private String host = credentials.getEndpoint();
     static private String logStore = "test-java-sdk";
-
-    private int startTime = (int) (new Date().getTime() / 1000);
-
     static private Client client = new Client(host, accessId, accessKey);
 
     public SlsIndexJsonFunctionTest() {

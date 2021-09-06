@@ -3,8 +3,8 @@ package com.aliyun.openservices.log.common;
 import java.io.Serializable;
 
 import com.aliyun.openservices.log.util.Args;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
 
@@ -22,7 +22,31 @@ public class LogStore implements Serializable {
     private int lastModifyTime = -1;
     private long preserveStorage = -1;
     private long usedStorage = 0;
-    private String description;
+    private String productType = "";
+    private int archiveSeconds = 0;
+    private String telemetryType = "";
+    private EncryptConf encryptConf = null;
+    private int hotTTL = -1;
+
+    public int getArchiveSeconds() {
+        return archiveSeconds;
+    }
+
+    public void setArchiveSeconds(int archiveSeconds) {
+        this.archiveSeconds = archiveSeconds;
+    }
+
+    public String getTelemetryType() {
+        return telemetryType;
+    }
+
+    public void setTelemetryType(String telemetryType) {
+        this.telemetryType = telemetryType;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
 
     public LogStore() {
         super();
@@ -57,7 +81,11 @@ public class LogStore implements Serializable {
         this.mMaxSplitShard = logStore.getmMaxSplitShard();
         this.preserveStorage = logStore.preserveStorage;
         this.usedStorage = logStore.usedStorage;
-        this.description = logStore.getDescription();
+        this.productType = logStore.getProductType();
+        this.archiveSeconds = logStore.getArchiveSeconds();
+        this.telemetryType = logStore.getTelemetryType();
+        this.encryptConf = logStore.encryptConf;
+        this.hotTTL = logStore.hotTTL;
     }
 
     public long getPreserveStorage() {
@@ -163,14 +191,24 @@ public class LogStore implements Serializable {
     public void SetShardCount(int shardCount) {
         this.shardCount = shardCount;
     }
+    
+    public void SetEncryptConf(EncryptConf encrypt_conf)
+    {
+    	this.encryptConf = encrypt_conf;
+    }
+    
+    public EncryptConf getEncryptConf()
+    {
+    	return this.encryptConf;
+    }
 
-    public String getDescription() {
-		return description;
-	}
+    public int getHotTTL() {
+        return hotTTL;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setHotTTL(int hotTTL) {
+        this.hotTTL = hotTTL;
+    }
 
 	public JSONObject ToRequestJson() {
         JSONObject logStoreDict = new JSONObject();
@@ -181,12 +219,20 @@ public class LogStore implements Serializable {
         logStoreDict.put("autoSplit", ismAutoSplit());
         logStoreDict.put("maxSplitShard", getmMaxSplitShard());
         logStoreDict.put("appendMeta", isAppendMeta());
-        logStoreDict.put("description", getDescription());
         JSONObject resourceQuota = new JSONObject();
         JSONObject storage = new JSONObject();
         storage.put("preserved", preserveStorage);
         resourceQuota.put("storage", storage);
         logStoreDict.put("resourceQuota", resourceQuota);
+        logStoreDict.put("archiveSeconds", archiveSeconds);
+        logStoreDict.put("telemetryType", telemetryType);
+        if(hotTTL > 0) {
+            logStoreDict.put("hot_ttl",hotTTL);
+        }
+        if (this.encryptConf != null)
+        {
+        	logStoreDict.put("encrypt_conf", this.encryptConf.ToJsonObject());
+        }
         return logStoreDict;
     }
 
@@ -208,29 +254,34 @@ public class LogStore implements Serializable {
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
             SetLogStoreName(dict.getString("logstoreName"));
-            SetTtl(dict.getInt("ttl"));
-            SetShardCount(dict.getInt("shardCount"));
+            SetTtl(dict.getIntValue("ttl"));
+            SetShardCount(dict.getIntValue("shardCount"));
             if (dict.containsKey("enable_tracking")) {
                 this.setEnableWebTracking(dict.getBoolean("enable_tracking"));
             }
             if (dict.containsKey("createTime")) {
-                createTime = dict.getInt("createTime");
+                createTime = dict.getIntValue("createTime");
             }
 
             if (dict.containsKey("lastModifyTime")) {
-                lastModifyTime = dict.getInt("lastModifyTime");
+                lastModifyTime = dict.getIntValue("lastModifyTime");
             }
 
             if (dict.containsKey("autoSplit")) {
                 mAutoSplit = dict.getBoolean("autoSplit");
             }
             if (dict.containsKey("maxSplitShard")) {
-                mMaxSplitShard = dict.getInt("maxSplitShard");
+                mMaxSplitShard = dict.getIntValue("maxSplitShard");
             }
             appendMeta = dict.containsKey("appendMeta") && dict.getBoolean("appendMeta");
-            
-            if (dict.containsKey("description")) {
-                description = dict.getString("description");
+            if (dict.containsKey("productType")) {
+                productType = dict.getString("productType");
+            }
+            if (dict.containsKey("archiveSeconds")) {
+                archiveSeconds = dict.getIntValue("archiveSeconds");
+            }
+            if (dict.containsKey("telemetryType")) {
+                telemetryType = dict.getString("telemetryType");
             }
             // set resourceQuota
             if (dict.containsKey("resourceQuota")) {
@@ -245,6 +296,16 @@ public class LogStore implements Serializable {
             		}
             	}
             }
+            if (dict.containsKey("encrypt_conf"))
+            {
+            	EncryptConf encypt_config = new EncryptConf();
+            	encypt_config.FromJsonObject(dict.getJSONObject("encrypt_conf"));
+            	this.encryptConf = encypt_config;
+            }
+            if (dict.containsKey("hot_ttl"))
+            {
+                this.hotTTL = dict.getInteger("hot_ttl");
+            }
         } catch (JSONException e) {
             throw new LogException("FailToGenerateLogStore", e.getMessage(), e, "");
         }
@@ -252,7 +313,7 @@ public class LogStore implements Serializable {
 
     public void FromJsonString(String logStoreString) throws LogException {
         try {
-            JSONObject dict = JSONObject.fromObject(logStoreString);
+            JSONObject dict = JSONObject.parseObject(logStoreString);
             FromJsonObject(dict);
         } catch (JSONException e) {
             throw new LogException("FailToGenerateLogStore", e.getMessage(), e, "");

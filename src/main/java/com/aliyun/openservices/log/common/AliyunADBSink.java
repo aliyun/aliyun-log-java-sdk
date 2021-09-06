@@ -1,12 +1,17 @@
 package com.aliyun.openservices.log.common;
 
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Set;
 
 public class AliyunADBSink extends DataSink {
+
+    private static final String ADB_V2 = "adb20";
+
+    private static final String ADB_V3 = "adb30";
 
     private String url;
 
@@ -16,13 +21,25 @@ public class AliyunADBSink extends DataSink {
 
     private String dbType;
 
-    private String regionId;
+    //required for v2
+    private String regionId = "";
 
-    private String zoneId;
+    //required for v2
+    private String zoneId = "";
+
+    //required for v2
+    private String tableGroupName = "";
+
+    //optional for v2, required for v3
+    private String vpcId = "";
+
+    //optional for v2, required for v3
+    private String instanceId = "";
+
+    //optional for v2, required for v3
+    private String instancePort = "";
 
     private String database;
-
-    private String tableGroupName;
 
     private String table;
 
@@ -36,16 +53,30 @@ public class AliyunADBSink extends DataSink {
         super(DataSinkType.ALIYUN_ADB);
     }
 
-    public AliyunADBSink(DataSinkType type, String url, String user, String password, String dbType, String regionId, String zoneId, String database, String tableGroupName, String table, int batchSize, boolean strictMode, HashMap<String, String> columnMapping) {
-        super(type);
+    public void BuildAliyunADBV2Sink(String url, String user, String password, String regionId, String zoneId, String database, String tableGroupName, String table, int batchSize, boolean strictMode, HashMap<String, String> columnMapping) {
+        this.dbType = ADB_V2;
         this.url = url;
         this.user = user;
         this.password = password;
-        this.dbType = dbType;
         this.regionId = regionId;
         this.zoneId = zoneId;
         this.database = database;
         this.tableGroupName = tableGroupName;
+        this.table = table;
+        this.batchSize = batchSize;
+        this.strictMode = strictMode;
+        this.columnMapping = columnMapping;
+    }
+
+    public void BuildAliyunADBV3Sink(String url, String user, String password, String vpcId, String instanceId, String instancePort, String database, String table, int batchSize, boolean strictMode, HashMap<String, String> columnMapping) {
+        this.dbType = ADB_V3;
+        this.url = url;
+        this.user = user;
+        this.password = password;
+        this.vpcId = vpcId;
+        this.instanceId = instanceId;
+        this.instancePort = instancePort;
+        this.database = database;
         this.table = table;
         this.batchSize = batchSize;
         this.strictMode = strictMode;
@@ -148,25 +179,61 @@ public class AliyunADBSink extends DataSink {
         this.columnMapping = columnMapping;
     }
 
+    public String getVpcId() {
+        return vpcId;
+    }
+
+    public void setVpcId(String vpcId) {
+        this.vpcId = vpcId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
+
+    public String getInstancePort() {
+        return instancePort;
+    }
+
+    public void setInstancePort(String instancePort) {
+        this.instancePort = instancePort;
+    }
+
     @Override
     public void deserialize(JSONObject value) {
         url = value.getString("url");
         user = value.getString("user");
         password = value.getString("password");
         dbType = value.getString("dbType");
-        regionId = value.getString("regionId");
-        zoneId = value.getString("zoneId");
+        if (dbType.equals(ADB_V2)) {
+            regionId = value.getString("regionId");
+            zoneId = value.getString("zoneId");
+            tableGroupName = value.getString("tableGroupName");
+            vpcId = JsonUtils.readOptionalString(value, "vpcId", "");
+            instanceId = JsonUtils.readOptionalString(value, "instanceId", "");
+            instancePort = JsonUtils.readOptionalString(value, "instancePort", "");
+        } else {
+            regionId = JsonUtils.readOptionalString(value, "regionId", "");
+            zoneId = JsonUtils.readOptionalString(value, "zoneId", "");
+            tableGroupName = JsonUtils.readOptionalString(value, "tableGroupName", "");
+            vpcId = value.getString("vpcId");
+            instanceId = value.getString("instanceId");
+            instancePort = value.getString("instancePort");
+        }
         database = value.getString("database");
-        tableGroupName = value.getString("tableGroupName");
         table = value.getString("table");
-        batchSize = value.getInt("batchSize");
+        batchSize = value.getIntValue("batchSize");
         strictMode = value.getBoolean("strictMode");
         JSONObject cm = value.getJSONObject("columnMapping");
-        Iterator iterator = cm.keys();
+        Set<String> keySet = cm.keySet();
         columnMapping = new HashMap<String, String>();
-        while (iterator.hasNext()) {
-            String key = (String) iterator.next();
+        for (String key : keySet) {
             columnMapping.put(key, cm.getString(key));
         }
     }
+
 }

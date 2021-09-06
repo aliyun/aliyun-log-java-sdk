@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-
 public class SlsLoghubDataFunctionTest extends FunctionTest {
     static private final String project = "project1";
     static private final String logStore = "javasdk2";

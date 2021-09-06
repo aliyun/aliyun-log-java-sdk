@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.functiontest;
 
-import com.aliyun.openservices.log.Client;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.ACL;
 import com.aliyun.openservices.log.common.ACLPrivileges;
 import com.aliyun.openservices.log.common.ApsaraLogConfigInputDetail;
@@ -23,8 +24,6 @@ import com.aliyun.openservices.log.response.ListACLResponse;
 import com.aliyun.openservices.log.response.ListConfigResponse;
 import com.aliyun.openservices.log.response.ListMachineGroupResponse;
 import com.aliyun.openservices.log.response.ListProjectResponse;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -416,7 +415,7 @@ public class SlsScmFunctionTest extends FunctionTest {
 				res = client.GetConfig(project, testConfigName);
 				assertEquals("configName does not match", testConfigName, res.GetConfig().GetConfigName());
 				
-				JSONObject inputDetailJsonRes = JSONObject.fromObject(((ConfigInputDetail)res.GetConfig().GetInputDetail()).ToJsonString());
+				JSONObject inputDetailJsonRes = JSONObject.parseObject(((ConfigInputDetail)res.GetConfig().GetInputDetail()).ToJsonString());
 				
 				assertEquals("logType does not match", inputDetailJson.getString("logType"), inputDetailJsonRes.getString("logType"));
 				assertEquals("logPath does not match", inputDetailJson.getString("logPath"), inputDetailJsonRes.getString("logPath"));
@@ -445,7 +444,7 @@ public class SlsScmFunctionTest extends FunctionTest {
 					assertEquals("filterRegex " + i + " does not match", filterRegexJsonArray.getString(0), filterRegexJsonArrayRes.getString(0));
 				}
 				
-				JSONObject outputDetailJsonRes = JSONObject.fromObject(res.GetConfig().GetOutputDetail().ToJsonString());
+				JSONObject outputDetailJsonRes = JSONObject.parseObject(res.GetConfig().GetOutputDetail().ToJsonString());
 				//System.out.println(outputDetailJsonRes.toString());
 				//assertEquals("projectName does not match"+outputDetailJson.getString("projectName"), outputDetailJson.getString("projectName"), outputDetailJsonRes.getString("projectName"));
 				assertEquals("logstoreName does not match", outputDetailJson.getString("logstoreName"), outputDetailJsonRes.getString("logstoreName"));

@@ -1,14 +1,25 @@
 package com.aliyun.openservices.log.common;
 
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
 public class AliyunTSDBSink extends DataSink {
+
+    public static final String DEFAULT_TSDB_INSTANCE_PORT = "8242";
+
+    public String getInstancePort() {
+        return instancePort;
+    }
+
+    public void setInstancePort(String instancePort) {
+        this.instancePort = instancePort;
+    }
 
     public static class MappingField {
         private String name;
@@ -46,7 +57,7 @@ public class AliyunTSDBSink extends DataSink {
         }
     };
 
-    public static class MappingTag {
+    public static class KVEntry {
         private String key;
         private String value;
 
@@ -66,7 +77,7 @@ public class AliyunTSDBSink extends DataSink {
             this.value = value;
         }
 
-        public MappingTag(String key, String value) {
+        public KVEntry(String key, String value) {
             this.key = key;
             this.value = value;
         }
@@ -78,6 +89,8 @@ public class AliyunTSDBSink extends DataSink {
 
     private String instanceId;
 
+    private String instancePort = DEFAULT_TSDB_INSTANCE_PORT;
+
     private String dbType;
 
     private String dbVersion;
@@ -86,27 +99,32 @@ public class AliyunTSDBSink extends DataSink {
 
     private ArrayList<MappingField> fieldMapping;
 
-    private ArrayList<MappingTag> tagMapping;
+    private ArrayList<KVEntry> tagMapping;
+
+    private KVEntry timestamp;
 
     private boolean strictMode;
 
     public AliyunTSDBSink() {
         super(DataSinkType.ALIYUN_TSDB);
         this.fieldMapping = new ArrayList<MappingField>();
-        this.tagMapping = new ArrayList<MappingTag>();
+        this.tagMapping = new ArrayList<KVEntry>();
+        this.timestamp = new KVEntry("", "");
     }
 
-    public AliyunTSDBSink(String endpoint, String vpcId, String instanceId, String dbType, String dbVersion, String metric, boolean strictMode) {
+    public AliyunTSDBSink(String endpoint, String vpcId, String instanceId, String instancePort, String dbType, String dbVersion, String metric, boolean strictMode) {
         super(DataSinkType.ALIYUN_TSDB);
         this.endpoint = endpoint;
         this.vpcId = vpcId;
         this.instanceId = instanceId;
+        this.instancePort = instancePort;
         this.dbType = dbType;
         this.dbVersion = dbVersion;
         this.metric = metric;
         this.strictMode = strictMode;
         this.fieldMapping = new ArrayList<MappingField>();
-        this.tagMapping = new ArrayList<MappingTag>();
+        this.tagMapping = new ArrayList<KVEntry>();
+        this.timestamp = new KVEntry("", "");
     }
 
     public String getEndpoint() {
@@ -169,16 +187,24 @@ public class AliyunTSDBSink extends DataSink {
         this.fieldMapping.add(field);
     }
 
-    public ArrayList<MappingTag> getTagMapping() {
+    public ArrayList<KVEntry> getTagMapping() {
         return tagMapping;
     }
 
-    public void setTagMapping(ArrayList<MappingTag> tagMapping) {
+    public void setTagMapping(ArrayList<KVEntry> tagMapping) {
         this.tagMapping = tagMapping;
     }
 
-    public void addTagMapping(MappingTag tag) {
+    public void addTagMapping(KVEntry tag) {
         this.tagMapping.add(tag);
+    }
+
+    public KVEntry getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(KVEntry timestamp) {
+        this.timestamp = timestamp;
     }
 
     public boolean isStrictMode() {
@@ -194,6 +220,7 @@ public class AliyunTSDBSink extends DataSink {
         endpoint = value.getString("endpoint");
         vpcId = value.getString("vpcId");
         instanceId = value.getString("instanceId");
+        instancePort = JsonUtils.readOptionalString(value, "instancePort", DEFAULT_TSDB_INSTANCE_PORT);
         dbType = value.getString("dbType");
         dbVersion = value.getString("dbVersion");
         metric = value.getString("metric");
@@ -210,10 +237,12 @@ public class AliyunTSDBSink extends DataSink {
         this.tagMapping.clear();
         for (int i = 0; i < tm.size(); ++i) {
             JSONObject t = tm.getJSONObject(i);
-            this.tagMapping.add(new MappingTag(
+            this.tagMapping.add(new KVEntry(
                     t.getString("key"),
                     t.getString("value")));
         }
+        JSONObject ts = value.getJSONObject("timestamp");
+        this.timestamp = new KVEntry(ts.getString("key"), ts.getString("value"));
         strictMode = value.getBoolean("strictMode");
     }
 }

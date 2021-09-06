@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 public class Domain implements Serializable {
 
@@ -45,7 +45,7 @@ public class Domain implements Serializable {
 	
 	public void fromJsonString(String domainString) throws LogException {
 		try {
-			JSONObject dict = JSONObject.fromObject(domainString);
+			JSONObject dict = JSONObject.parseObject(domainString);
 			fromJsonObject(dict);
 		} catch (JSONException ex) {
 			throw new LogException("FailToGenerateDomain", ex.getMessage(), ex, "");

@@ -4,8 +4,8 @@ import java.util.Map;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 public class GetProjectResponse extends Response {
 

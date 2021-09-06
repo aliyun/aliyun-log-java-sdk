@@ -139,18 +139,20 @@ public class Consts {
     public static final String CONST_X_LOG_PROCESSEDROWS = "x-log-processed-rows";
     public static final String CONST_X_LOG_ELAPSEDMILLISECOND = "x-log-elapsed-millisecond";
     public static final String CONST_X_LOG_QUERY_INFO = "x-log-query-info";
+    public static final String CONST_X_LOG_CPU_SEC = "x-log-cpu-sec";
+    public static final String CONST_X_LOG_CPU_CORES = "x-log-cpu-cores";
 
     public static final String CONST_HOST = "Host";
     public static final String CONST_DATE = "Date";
 
     public static final String CONST_USER_AGENT = "User-Agent";
-    public static final String CONST_USER_AGENT_VALUE = "sls-java-sdk-v-0.6.1";
     public static final String CONST_TOPIC = "topic";
     public static final String CONST_FROM = "from";
     public static final String CONST_TO = "to";
     public static final String CONST_LINE = "line";
     public static final String CONST_OFFSET = "offset";
     public static final String CONST_REVERSE = "reverse";
+    public static final String CONST_POWER_SQL="powerSql";
     public static final String CONST_QUERY = "query";
     public static final String CONST_TOKEN = "token";
     public static final String CONST_CURSOR = "cursor";
@@ -160,6 +162,7 @@ public class Consts {
     public static final String CONST_GROUPNAME = "groupName";
     public static final String CONST_PRINCIPLEID = "principleId";
     public static final String CONST_LOGSTORE_NAME = "logstoreName";
+    public static final String CONST_TETEMETRY_TYPE = "telemetryType";
     public static final String CONST_SPLIT_MID_HASH = "key";
     public static final String CONST_SPLIT_SHARDCOUNT = "shardCount";
     public static final String CONST_ACTION = "action";
@@ -252,9 +255,13 @@ public class Consts {
     public static final String CONST_TYPE_LOG = "log";
     public static final String CONST_TYPE_CONTEXT_LOG = "context_log";
     public static final String CONST_TYPE_TOPIC = "topic";
+    public static final String CONST_TTL = "ttl";
 
     public static final String CONST_RESULT_LOGS = "logs";
     public static final String CONST_RESULT_LOG_STORES = "logstores";
+    public static final String CONST_RESULT_SUB_STORES = "substores";
+    public static final String CONST_RESULT_EXTERNAL_STORES = "externalstores";
+    public static final String CONST_EXTERNAL_NAME = "externalStoreName";
     public static final String CONST_RESULT_HISTOGRAMS = "histograms";
     public static final String CONST_RESULT_PROCESS = "progress";
     public static final String CONST_RESULT_COUNT = "count";
@@ -377,6 +384,31 @@ public class Consts {
     public static final String JOB_URI = "/jobs";
     public static final String DISPLAY_NAME = "displayName";
 
+    public static final String CONST_RESOURCE_URI = "/resources";
+    public static final String CONST_RESOURCE_NAME_URI = CONST_RESOURCE_URI + "/%s";
+    public static final String RESOURCE_NAME = "name";
+    public static final String RESOURCE_NAMES = "names";
+    public static final String RESOURCE_TYPE = "type";
+    public static final String RESOURCE_SCHEMA = "schema";
+    public static final String RESOURCE_DESCRIPTION = "description";
+    public static final String RESOURCE_EXT_INFO = "extInfo";
+    public static final String RESOURCE_ACL = "acl";
+    public static final String RESOURCE_CREATE_TIME = "createTime";
+    public static final String RESOURCE_LAST_MODIFY_TIME = "lastModifyTime";
+
+    public static final String CONST_RESOURCE_RECORD_URI = CONST_RESOURCE_NAME_URI + "/records";
+    public static final String CONST_RESOURCE_RECORD_ID_URI = CONST_RESOURCE_RECORD_URI + "/%s";
+    public static final String RESOURCE_RECORD_ID = "id";
+    public static final String RESOURCE_RECORD_IDS = "ids";
+    public static final String RESOURCE_RECORD_TAG = "tag";
+    public static final String RESOURCE_RECORD_VALUE = "value";
+    public static final String RESOURCE_RECORDS = "records";
+    public static final String RESOURCE_OWNER = "owner";
+    public static final String RESOURCE_SEARCHED_JSON = "sjson";
+    public static final String RESOURCE_SEARCHED_VALUE = "search";
+    public static final String RESOURCE_JSON_PATH = "jsonPath";
+    public static final String RESOURCE_JSON_PATH_VALUE = "jsonPathValue";
+
     public static final String LOGGING_URI = "/logging";
     public static final String METHOD = "method";
     public static final String MOBILE_LIST = "mobileList";
@@ -392,4 +424,14 @@ public class Consts {
     public static final String DASHBOARD_NAME_KEY = "dashboardName";
     public static final String LOGSTORE_KEY = "logstore";
     public static final String JOB_SCHEDULE_URI = "/jobschedules";
+
+    // Scheduled SQL
+    public static final String JOB_INSTANCES_URI = "/jobinstances";
+    public static final String JOB_INSTANCES_RESULT = "result";
+    public static final String JOB_INSTANCES_STATE = "state";
+    public static final String JOB_INSTANCES_START_TIME = "start";
+    public static final String JOB_INSTANCES_END_TIME = "end";
+    public static final String SCHEDULED_SQL_RUNNING = "RUNNING";
+    
+    public static final String INVALID_LOG_TIME = "InvalidLogTime";
 }

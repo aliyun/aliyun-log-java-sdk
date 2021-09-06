@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 public class LogTest extends FunctionTest {
 
-    static String TEST_PROJECT = "project-intg-test-" + getNowTimestamp();
+    static String TEST_PROJECT = makeProjectName();
 
     @BeforeClass
     public static void setUp() {
@@ -47,7 +47,6 @@ public class LogTest extends FunctionTest {
     private void pullForShard(String project, String logStore, int shard, List<Logs.LogGroup> results) throws LogException {
         GetCursorResponse cursorResponse = client.GetCursor(project, logStore, shard, Consts.CursorMode.BEGIN);
         String cursor = cursorResponse.GetCursor();
-        System.out.println(cursor);
         while (true) {
             PullLogsRequest request = new PullLogsRequest(project, logStore, shard, 1000, cursor);
             PullLogsResponse response = client.pullLogs(request);
@@ -111,6 +110,6 @@ public class LogTest extends FunctionTest {
 
     @AfterClass
     public static void tearDown() {
-//        safeDeleteProject(TEST_PROJECT);
+        safeDeleteProjectWithoutSleep(TEST_PROJECT);
     }
 }

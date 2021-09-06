@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.common;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 public class JDBCSource extends DataSource {
 
@@ -168,8 +168,8 @@ public class JDBCSource extends DataSource {
 		jdbcPort = jsonObject.getString("jdbcPort");
 		tableName = jsonObject.getString("tableName");
 		tableKey = jsonObject.getString("tableKey");
-		pageSize = jsonObject.getInt("pageSize");
-		pageNumber = jsonObject.getInt("pageNumber");
+		pageSize = jsonObject.getIntValue("pageSize");
+		pageNumber = jsonObject.getIntValue("pageNumber");
 		appendSQL = jsonObject.getString("appendSQL");
 		jdbcDriver = jsonObject.getString("jdbcDriver");
 		jdbcURL = jsonObject.getString("jdbcURL");

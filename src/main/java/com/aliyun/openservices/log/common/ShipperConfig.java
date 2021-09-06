@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.common;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
 

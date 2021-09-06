@@ -1,13 +1,10 @@
 package com.aliyun.openservices.log.functiontest;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.Logs;
-import com.aliyun.openservices.log.exception.LogException;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -18,7 +15,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -159,13 +155,6 @@ public class WebTrackingTest extends LogTest {
     }
 
     @Test
-    public void testPullLogs() throws LogException {
-        String logStoreName = "logstore-1556243198";
-        List<Logs.LogGroup> logGroups = pullAllLogGroups(TEST_PROJECT, logStoreName, 1);
-        assertEquals(1, logGroups.size());
-    }
-
-    @Test
     public void testCompressLogs() throws Exception {
         String logStoreName = "logstore-" + getNowTimestamp();
         LogStore logStore = new LogStore();
@@ -190,8 +179,9 @@ public class WebTrackingTest extends LogTest {
         object.put("__logs__", array);
         Response response = postTestLogs(logStoreName, object, true);
         assertEquals(200, response.status);
+        waitForSeconds(5);
 
-        List<Logs.LogGroup> logGroups = pullAllLogGroups(TEST_PROJECT, logStoreName, 0);
+        List<Logs.LogGroup> logGroups = pullAllLogGroups(TEST_PROJECT, logStoreName, 1);
         assertEquals(1, logGroups.size());
         Logs.LogGroup logGroup = logGroups.get(0);
         assertEquals("test-topic", logGroup.getTopic());
@@ -217,12 +207,10 @@ public class WebTrackingTest extends LogTest {
     }
 
     private static class Response {
-        private int status;
-        private String body;
+        private final int status;
 
-        Response(int status, String body) {
+        Response(int status) {
             this.status = status;
-            this.body = body;
         }
     }
 
@@ -263,24 +251,14 @@ public class WebTrackingTest extends LogTest {
                 httpPost.setEntity(stringEntity);
                 httpPost.addHeader(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(body.length()));
             }
-            System.out.println("Executing request " + httpPost.getRequestLine());
-            for (Header header : httpPost.getAllHeaders()) {
-                System.out.println(header.getName() + "=" + header.getValue());
-            }
             ResponseHandler<Response> responseHandler = new ResponseHandler<Response>() {
                 @Override
                 public Response handleResponse(final HttpResponse response) throws IOException {
                     int status = response.getStatusLine().getStatusCode();
-                    HttpEntity entity = response.getEntity();
-                    String body = entity != null ? EntityUtils.toString(entity) : null;
-                    return new Response(status, body);
+                    return new Response(status);
                 }
             };
-            Response responseBody = httpclient.execute(httpPost, responseHandler);
-            System.out.println("----------------------------------------");
-            System.out.println(responseBody.status);
-            System.out.println(responseBody.body);
-            return responseBody;
+            return httpclient.execute(httpPost, responseHandler);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.Args;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 import java.util.List;
@@ -38,11 +38,11 @@ public class Alert extends ScheduledJob implements Serializable {
         Args.notNullOrEmpty(getName(), "name");
         Args.notNullOrEmpty(getDisplayName(), "displayName");
         Args.notNull(configuration, "configuration");
-        List<Query> queries = configuration.getQueryList();
-        Args.notNullOrEmpty(queries, "Query list");
-        for (Query query : queries) {
-            Args.notNull(query, "query");
-        }
+//        List<Query> queries = configuration.getQueryList();
+//        Args.notNullOrEmpty(queries, "Query list");
+//        for (Query query : queries) {
+//            Args.notNull(query, "query");
+//        }
         Args.notNull(getSchedule(), "schedule");
     }
 }

@@ -1,7 +1,12 @@
 package com.aliyun.openservices.log.functiontest;
 
 
-import com.aliyun.openservices.log.common.*;
+import com.aliyun.openservices.log.common.Index;
+import com.aliyun.openservices.log.common.IndexLine;
+import com.aliyun.openservices.log.common.LogContent;
+import com.aliyun.openservices.log.common.LogItem;
+import com.aliyun.openservices.log.common.QueriedLog;
+import com.aliyun.openservices.log.common.TagContent;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.PutLogsRequest;
 import com.aliyun.openservices.log.response.GetContextLogsResponse;
@@ -14,6 +19,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 
 public class GetContextLogsFunctionTest extends LogTest {
     private final String PACK_ID_PREFIX = "ABCDEF" + getNowTimestamp() + "-";
@@ -43,7 +49,7 @@ public class GetContextLogsFunctionTest extends LogTest {
         return logGroupCount;
     }
 
-    private class PackInfo {
+    private static class PackInfo {
         public String packID;
         public String packMeta;
 
@@ -56,8 +62,7 @@ public class GetContextLogsFunctionTest extends LogTest {
     private PackInfo extractPackInfo(QueriedLog log) {
         PackInfo ret = new PackInfo("", "");
         ArrayList<LogContent> contents = log.GetLogItem().GetLogContents();
-        for (int i = 0; i < contents.size(); ++i) {
-            LogContent content = contents.get(i);
+        for (LogContent content : contents) {
             if (content.GetKey().equals("__tag__:__pack_id__")) {
                 ret.packID = content.GetValue();
             } else if (content.GetKey().equals("__pack_meta__")) {

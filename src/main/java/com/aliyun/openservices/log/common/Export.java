@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.io.Serializable;
 
@@ -17,6 +18,8 @@ public class Export extends ScheduledJob implements Serializable {
 
     private ExportConfiguration configuration;
 
+    private String scheduleId;
+
     @Override
     public ExportConfiguration getConfiguration() {
         return configuration;
@@ -26,8 +29,13 @@ public class Export extends ScheduledJob implements Serializable {
         this.configuration = configuration;
     }
 
+    public String getScheduleId() {
+        return scheduleId;
+    }
+
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
+        scheduleId = JsonUtils.readOptionalString(jsonObject,"scheduleId","");
         configuration = new ExportConfiguration();
         configuration.deserialize(jsonObject.getJSONObject("configuration"));
     }

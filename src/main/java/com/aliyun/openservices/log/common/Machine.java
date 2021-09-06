@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * The config of a machine
@@ -81,7 +81,7 @@ public class Machine implements Serializable {
 			this.machine_unique_id = dict.getString("machine-uniqueid");
 			this.user_defined_id = dict.getString("userdefined-id");
 
-			this.heartbeat_time = dict.getInt("lastHeartbeatTime");
+			this.heartbeat_time = dict.getIntValue("lastHeartbeatTime");
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateMachine", e.getMessage(), e,
 					"");
@@ -98,7 +98,7 @@ public class Machine implements Serializable {
 	 */
 	public void FromJsonString(String machineString) throws LogException {
 		try {
-			JSONObject dict = JSONObject.fromObject(machineString);
+			JSONObject dict = JSONObject.parseObject(machineString);
 			FromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateMachine", e.getMessage(), e,
