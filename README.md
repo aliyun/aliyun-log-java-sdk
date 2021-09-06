@@ -84,7 +84,7 @@ while(true) {
 
     String nextCursor = logDataRes.GetNextCursor();  // 下次读取的位置
     System.out.print("The Next cursor:" + nextCursor);
-    if (cursor.equal(nextCursor)) {
+    if (cursor.equals(nextCursor)) {
         break;
     }
     cursor = nextCursor;
@@ -97,7 +97,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.28</version>
+    <version>0.6.33</version>
 </dependency>
 ```
 
@@ -107,7 +107,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.37</version>
+    <version>0.6.28</version>
     <classifier>jar-with-dependencies</classifier>
     <exclusions>
         <exclusion>
