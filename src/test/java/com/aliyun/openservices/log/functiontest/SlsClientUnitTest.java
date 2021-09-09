@@ -2475,6 +2475,231 @@ public class SlsClientUnitTest {
     }
 
     @Test
+    public void TestExecuteLogstoreSql() {
+        LogItem item1 = new LogItem();
+        item1.SetTime(100);
+        ArrayList<LogContent> contents1 = new ArrayList<LogContent>();
+        contents1.add(new LogContent("cnt", "100"));
+        item1.SetLogContents(contents1);
+
+        QueriedLog log1 = new QueriedLog("", item1);
+
+        List<QueriedLog> queriedLogs = new ArrayList<QueriedLog>();
+        queriedLogs.add(log1);
+
+        JSONArray logsArray = new JSONArray();
+        for (QueriedLog queriedLog : queriedLogs) {
+            JSONObject log = new JSONObject();
+            log.put("__time__", queriedLog.GetLogItem().GetTime());
+            log.put("__source__", queriedLog.GetSource());
+
+            for (LogContent content : queriedLog.GetLogItem().GetLogContents()) {
+                log.put(content.GetKey(), content.GetValue());
+            }
+
+            logsArray.add(log);
+        }
+
+        String jsonStr = logsArray.toString();
+        byte[] body = null;
+        try {
+            body = jsonStr.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            assertTrue(e.getMessage(), false);
+        }
+        InputStream content = new ByteArrayInputStream(body);
+
+        ResponseMessage response = new ResponseMessage();
+
+        final long PROCESSEDROWS = 27564134;
+        final long CPU_CORES = 68;
+        final double CpuSec = 2.376;
+        final long ElapsedMilliSecond = 845;
+        Map<String, String> resHeaders = new HashMap<String, String>();
+        resHeaders.put(Consts.CONST_X_SLS_REQUESTID, "TESTREQID");
+        resHeaders.put(Consts.CONST_X_SLS_PROCESS, Consts.CONST_RESULT_COMPLETE);
+        resHeaders.put(Consts.CONST_X_LOG_PROCESSEDROWS, ""+PROCESSEDROWS);
+        resHeaders.put(Consts.CONST_X_LOG_ELAPSEDMILLISECOND, ""+ElapsedMilliSecond);
+        resHeaders.put(Consts.CONST_X_LOG_CPU_CORES, ""+CPU_CORES);
+        resHeaders.put(Consts.CONST_X_LOG_CPU_SEC, ""+CpuSec);
+        resHeaders.put(Consts.CONST_X_LOG_HASSQL, "true");
+        resHeaders.put(Consts.CONST_X_LOG_WHEREQUERY, "*");
+        resHeaders.put(Consts.CONST_X_LOG_AGGQUERY, "select count(1)");
+        response.setHeaders(resHeaders);
+        response.setContent(content);
+        response.setStatusCode(200);
+        response.SetBody(body);
+        try {
+            mock.ChangeResponse(response);
+            GetLogsResponse res = mock.executeLogstoreSql("project", "logStore", 0, 0, "* | select count(1)", true);
+
+            String resComplete = "Incomplete";
+            if (res.IsCompleted()) {
+                resComplete = "Complete";
+            }
+
+            assertEquals("Complete", resComplete);
+            assertEquals(res.getProcessedRow(), PROCESSEDROWS);
+            assertEquals(res.getCpuCores(), CPU_CORES);
+            assertTrue(res.getCpuSec() - CpuSec < 0.00001);
+            assertEquals(res.getElapsedMilliSecond(), ElapsedMilliSecond);
+            assertEquals(res.isHasSQL(), true);
+            assertEquals(res.getWhereQuery(), "*");
+            assertEquals(res.getAggQuery(), "select count(1)");
+            assertEquals(queriedLogs.size(), res.GetCount());
+
+            for (int i = 0; i < res.GetCount(); i++) {
+                QueriedLog log = res.getLogs().get(i);
+                LogItem originLog = queriedLogs.get(i).GetLogItem();
+                LogItem resultLog = log.GetLogItem();
+
+                assertEquals(originLog.GetTime(), resultLog.GetTime());
+                assertEquals(queriedLogs.get(i).GetSource(), log.GetSource());
+                assertEquals(originLog.GetLogContents().size(), resultLog.GetLogContents().size());
+
+                for (int j = 0; j < originLog.GetLogContents().size(); j++) {
+                    assertEquals(originLog.GetLogContents().get(j).GetKey(), resultLog.GetLogContents().get(j).GetKey());
+                    assertEquals(originLog.GetLogContents().get(j).GetValue(), resultLog.GetLogContents().get(j).GetValue());
+                }
+            }
+
+        } catch (LogException e) {
+            assertTrue(e.getMessage(), false);
+        }
+
+
+        byte[] errorBody = null;
+        try {
+            errorBody = SlsClientTestData.TEST_STANDARD_ERROR.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            assertTrue(e.getMessage(), false);
+        }
+        InputStream errorContent = new ByteArrayInputStream(errorBody);
+        response.setStatusCode(400);
+        response.setContent(errorContent);
+        mock.ChangeResponse(response);
+        try {
+            mock.executeLogstoreSql("project", "logStore", 0, 0, "* | select count(1)", true);
+        } catch (LogException e) {
+            assertEquals("code", e.GetErrorCode());
+            assertEquals("message", e.GetErrorMessage());
+        }
+    }
+
+    @Test
+    public void TestExecuteProjectSql() {
+        LogItem item1 = new LogItem();
+        item1.SetTime(100);
+        ArrayList<LogContent> contents1 = new ArrayList<LogContent>();
+        contents1.add(new LogContent("cnt", "100"));
+        item1.SetLogContents(contents1);
+
+        QueriedLog log1 = new QueriedLog("", item1);
+
+        List<QueriedLog> queriedLogs = new ArrayList<QueriedLog>();
+        queriedLogs.add(log1);
+
+        JSONArray logsArray = new JSONArray();
+        for (QueriedLog queriedLog : queriedLogs) {
+            JSONObject log = new JSONObject();
+            log.put("__time__", queriedLog.GetLogItem().GetTime());
+            log.put("__source__", queriedLog.GetSource());
+
+            for (LogContent content : queriedLog.GetLogItem().GetLogContents()) {
+                log.put(content.GetKey(), content.GetValue());
+            }
+
+            logsArray.add(log);
+        }
+
+        String jsonStr = logsArray.toString();
+        byte[] body = null;
+        try {
+            body = jsonStr.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            assertTrue(e.getMessage(), false);
+        }
+        InputStream content = new ByteArrayInputStream(body);
+
+        ResponseMessage response = new ResponseMessage();
+
+        String sql = "select count(1) AS cnt from xxx where __time__ > 1629977900";
+        final long PROCESSEDROWS = 27564134;
+        final long CPU_CORES = 68;
+        final double CpuSec = 2.376;
+        final long ElapsedMilliSecond = 845;
+        Map<String, String> resHeaders = new HashMap<String, String>();
+        resHeaders.put(Consts.CONST_X_SLS_REQUESTID, "TESTREQID");
+        resHeaders.put(Consts.CONST_X_SLS_PROCESS, Consts.CONST_RESULT_COMPLETE);
+        resHeaders.put(Consts.CONST_X_LOG_PROCESSEDROWS, ""+PROCESSEDROWS);
+        resHeaders.put(Consts.CONST_X_LOG_ELAPSEDMILLISECOND, ""+ElapsedMilliSecond);
+        resHeaders.put(Consts.CONST_X_LOG_CPU_CORES, ""+CPU_CORES);
+        resHeaders.put(Consts.CONST_X_LOG_CPU_SEC, ""+CpuSec);
+        resHeaders.put(Consts.CONST_X_LOG_HASSQL, "true");
+        resHeaders.put(Consts.CONST_X_LOG_WHEREQUERY, "");
+        resHeaders.put(Consts.CONST_X_LOG_AGGQUERY, sql);
+        response.setHeaders(resHeaders);
+        response.setContent(content);
+        response.setStatusCode(200);
+        response.SetBody(body);
+        try {
+            mock.ChangeResponse(response);
+            GetLogsResponse res = mock.executeProjectSql("project", sql, true);
+
+            String resComplete = "Incomplete";
+            if (res.IsCompleted()) {
+                resComplete = "Complete";
+            }
+
+            assertEquals("Complete", resComplete);
+            assertEquals(res.getProcessedRow(), PROCESSEDROWS);
+            assertEquals(res.getCpuCores(), CPU_CORES);
+            assertTrue(res.getCpuSec() - CpuSec < 0.00001);
+            assertEquals(res.getElapsedMilliSecond(), ElapsedMilliSecond);
+            assertEquals(res.isHasSQL(), true);
+            assertEquals(res.getWhereQuery(), "");
+            assertEquals(res.getAggQuery(), sql);
+            assertEquals(queriedLogs.size(), res.GetCount());
+
+            for (int i = 0; i < res.GetCount(); i++) {
+                QueriedLog log = res.getLogs().get(i);
+                LogItem originLog = queriedLogs.get(i).GetLogItem();
+                LogItem resultLog = log.GetLogItem();
+
+                assertEquals(originLog.GetTime(), resultLog.GetTime());
+                assertEquals(queriedLogs.get(i).GetSource(), log.GetSource());
+                assertEquals(originLog.GetLogContents().size(), resultLog.GetLogContents().size());
+
+                for (int j = 0; j < originLog.GetLogContents().size(); j++) {
+                    assertEquals(originLog.GetLogContents().get(j).GetKey(), resultLog.GetLogContents().get(j).GetKey());
+                    assertEquals(originLog.GetLogContents().get(j).GetValue(), resultLog.GetLogContents().get(j).GetValue());
+                }
+            }
+
+        } catch (LogException e) {
+            assertTrue(e.getMessage(), false);
+        }
+
+
+        byte[] errorBody = null;
+        try {
+            errorBody = SlsClientTestData.TEST_STANDARD_ERROR.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            assertTrue(e.getMessage(), false);
+        }
+        InputStream errorContent = new ByteArrayInputStream(errorBody);
+        response.setStatusCode(400);
+        response.setContent(errorContent);
+        mock.ChangeResponse(response);
+        try {
+            mock.executeProjectSql("project", sql, true);
+        } catch (LogException e) {
+            assertEquals("code", e.GetErrorCode());
+            assertEquals("message", e.GetErrorMessage());
+        }
+    }
+
+    @Test
     public void TestLogItemString() {
         LogItem log = new LogItem(1);
         log.PushBack("key1", "value1");
