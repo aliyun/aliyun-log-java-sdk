@@ -12,11 +12,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
@@ -63,7 +65,13 @@ public class LogstoreTest extends FunctionTest {
         try {
             ListLogStoresResponse response = client.ListLogStores(project, 0, 100, "");
             for (String logstore : response.GetLogStores()) {
-                client.DeleteLogStore(project, logstore);
+                try {
+                    client.DeleteLogStore(project, logstore);
+                } catch (LogException ex) {
+                    if (!ex.GetErrorCode().equals("LogStoreNotExist")) {
+                        throw ex;
+                    }
+                }
             }
             safeDeleteProjectWithoutSleep(project);
         } catch (LogException ex) {
@@ -137,11 +145,10 @@ public class LogstoreTest extends FunctionTest {
             client.DeleteLogStore(project, logstoreName);
             System.out.println("Delete logstore " + logstoreName);
             int total = 0;
-            String query = logstoreName;
-            ListLogStoresResponse response2 = client.ListLogStores(project, 0, 10, query);
+            ListLogStoresResponse response2 = client.ListLogStores(project, 0, 10, logstoreName);
             for (int j = i + 1; j < numberOfLogstore; j++) {
                 String x = "logstore-" + j;
-                if (x.contains(query)) {
+                if (x.contains(logstoreName)) {
                     total++;
                 }
             }
@@ -193,19 +200,25 @@ public class LogstoreTest extends FunctionTest {
         assertEquals(Math.min(size, numberOfLogstore), response.GetCount());
 
         for (int i = 0; i < numberOfLogstore; i++) {
-            client.DeleteLogStore(project, "logstore-" + i);
+            String logstoreName = "logstore-" + i;
+            client.DeleteLogStore(project, logstoreName);
             int total = 0;
-            String query = "logstore-" + i;
-            ListLogStoresResponse response2 = client.ListLogStores(project, 0, 10, query);
+            ListLogStoresResponse response2 = client.ListLogStores(project, 0, 10, logstoreName);
             for (int j = i + 1; j < numberOfLogstore; j++) {
                 String x = "logstore-" + j;
-                if (x.contains(query)) {
+                if (x.contains(logstoreName)) {
                     total++;
                 }
             }
             int count = Math.min(10, total);
             assertEquals(count, response2.GetCount());
             assertEquals(total, response2.GetTotal());
+
+            ListLogStoresResponse response3 = client.ListLogStores(project, 0, 100);
+            int left = numberOfLogstore - i - 1;
+            assertEquals(left, response3.GetTotal());
+            assertEquals(left, response3.GetCount());
+            assertFalse(response3.GetLogStores().contains(logstoreName));
         }
     }
 

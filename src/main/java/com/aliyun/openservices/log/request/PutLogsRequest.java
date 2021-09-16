@@ -28,6 +28,7 @@ public class PutLogsRequest extends Request {
 	private CompressType compressType = CompressType.LZ4;
 	private String mContentType = Consts.CONST_PROTO_BUF;
 	private byte[] mLogGroupBytes = null;
+	private Integer hashRouteKeySeqId;
 	/**
 	 * @return the compressType
 	 */
@@ -242,10 +243,18 @@ public class PutLogsRequest extends Request {
 	
 	public void SetRouteKey(String hashKey)
 	{
-		SetParam(Consts.CONST_ROUTE_KEY,hashKey);
+		mHashKey = hashKey;
 	}
 	public String GetRouteKey()
 	{
 		return mHashKey;
+	}
+
+	public Integer getHashRouteKeySeqId() {
+		return hashRouteKeySeqId;
+	}
+
+	public void setHashRouteKeySeqId(Integer hashRouteKeySeqId) {
+		this.hashRouteKeySeqId = hashRouteKeySeqId;
 	}
 }

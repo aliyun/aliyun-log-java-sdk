@@ -648,12 +648,18 @@ public class Client implements LogService {
 		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE,
 				String.valueOf(originalSize));
 
+		Map<String, String> urlParameter = request.GetAllParams();
 		String resourceUri = "/logstores/" + logStore;
 		if (shardKey == null || shardKey.length() == 0) {
 			resourceUri += "/shards/lb";
-		} else
-			resourceUri += "/shards/route?key=" + shardKey;
-		Map<String, String> urlParameter = request.GetAllParams();
+		} else {
+			resourceUri += "/shards/route";
+			urlParameter.put("key", shardKey);
+			if (request.getHashRouteKeySeqId() != null) {
+				urlParameter.put("seqid", String.valueOf(request.getHashRouteKeySeqId()));
+			}
+		}
+
 		long cmp_size = logBytes.length;
 
 		for (int i = 0; i < 2; i++) {
