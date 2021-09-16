@@ -742,6 +742,17 @@ public class Client implements LogService {
 		return GetLogs(request);
 	}
 
+	public GetLogsResponse executeLogstoreSql(String project, String logStore, int from,
+											  int to, String sql, boolean powerSql) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+		CodingUtils.assertParameterNotNull(sql, "sql");
+		GetLogsRequest request = new GetLogsRequest(project, logStore, from,
+				to, "", sql);
+		request.SetPowerSql(powerSql);
+		return GetLogs(request);
+	}
+
 	/**
 	 * getContextLogs uses @packID and @packMeta to specify a log as start log and queries logs around it.
 	 *
@@ -783,6 +794,15 @@ public class Client implements LogService {
 		JSONArray object = ParseResponseMessageToArrayWithFastJson(response, requestId);
 		extractLogsWithFastJson(getLogsResponse, object, requestId);
 		return getLogsResponse;
+	}
+
+	public GetLogsResponse executeProjectSql(String project,
+											 String sql, boolean powerSql) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertParameterNotNull(sql, "sql");
+		GetProjectLogsRequest request = new GetProjectLogsRequest(project, sql);
+		request.SetPowerSql(powerSql);
+		return GetProjectLogs(request);
 	}
 
 	private JSONArray ParseResponseMessageToArrayWithFastJson(ResponseMessage response,

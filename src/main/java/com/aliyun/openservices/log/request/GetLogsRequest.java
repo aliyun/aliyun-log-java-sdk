@@ -217,15 +217,6 @@ public class GetLogsRequest extends Request {
 	}
 
 	/**
-	 *set request powerSql
-	 *
-	 * @param powerSql
-	 *
-	 */
-	public void SetPowerSql(boolean powerSql) {
-		SetParam(Consts.CONST_POWER_SQL,String.valueOf(powerSql));
-	}
-	/**
 	 * Get request offset
 	 * 
 	 * @return offset value
@@ -284,6 +275,30 @@ public class GetLogsRequest extends Request {
 			return false;
 		} else {
 			return Boolean.parseBoolean(reverse);
+		}
+	}
+
+	/**
+	 * Set request powerSql flag
+	 *
+	 * @param powerSql
+	 *            powerSql flag
+	 */
+	public void SetPowerSql(boolean powerSql) {
+		SetParam(Consts.CONST_POWER_SQL, String.valueOf(powerSql));
+	}
+
+	/**
+	 * Get request powerSql flag
+	 *
+	 * @return powerSql flag
+	 */
+	public boolean GetPowerSql() {
+		String powerSql = GetParam(Consts.CONST_POWER_SQL);
+		if (powerSql.isEmpty()) {
+			return false;
+		} else {
+			return Boolean.parseBoolean(powerSql);
 		}
 	}
 }

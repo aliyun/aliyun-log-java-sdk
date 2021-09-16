@@ -180,5 +180,47 @@ public class SlsSample {
 			throw e;
 		}
 
+		/**
+		 * 执行指定logstore内的SQL查询
+		 */
+		try {
+			String sql = "* | select count(1)";
+			int from = (int) (new Date().getTime() / 1000 - 600);
+			int to = (int) (new Date().getTime() / 1000);
+			GetLogsResponse logsResponse = client.executeLogstoreSql(project, logStore,
+					from, to, sql, true);
+			System.out.println("Returned sql result count:" + logsResponse.GetCount());
+			for (QueriedLog log : logsResponse.getLogs()) {
+				LogItem item = log.GetLogItem();
+				System.out.println("time : " + item.mLogTime);
+				for (LogContent content : item.mContents) {
+					System.out.println(content.mKey + ":" + content.mValue);
+				}
+			}
+		} catch (LogException e) {
+			System.out.println("error code :" + e.GetErrorCode());
+			System.out.println("error message :" + e.GetErrorMessage());
+			throw e;
+		}
+
+		/**
+		 * 执行指定project内的SQL查询
+		 */
+		try {
+			int now = (int) (new Date().getTime() / 1000);
+			String sql = "select count(1) as cnt from xxx where __time__ > " + now;
+			GetLogsResponse logsResponse = client.executeProjectSql(project, sql, true);
+			System.out.println("Returned sql result count:" + logsResponse.GetCount());
+			for (QueriedLog log : logsResponse.getLogs()) {
+				LogItem item = log.GetLogItem();
+				for (LogContent content : item.mContents) {
+					System.out.println(content.mKey + ":" + content.mValue);
+				}
+			}
+		} catch (LogException e) {
+			System.out.println("error code :" + e.GetErrorCode());
+			System.out.println("error message :" + e.GetErrorMessage());
+			throw e;
+		}
 	}
 }
