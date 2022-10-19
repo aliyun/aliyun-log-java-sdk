@@ -10,7 +10,7 @@
 
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.68-SNAPSHOT</version>
+    <version>0.6.75-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Aliyun LOG Java SDK</name>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.71</version>
+            <version>1.2.83_noneautotype</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>

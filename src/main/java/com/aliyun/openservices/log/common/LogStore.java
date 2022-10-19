@@ -27,6 +27,7 @@ public class LogStore implements Serializable {
     private String telemetryType = "";
     private EncryptConf encryptConf = null;
     private int hotTTL = -1;
+    private String mode = null;
 
     public int getArchiveSeconds() {
         return archiveSeconds;
@@ -86,6 +87,7 @@ public class LogStore implements Serializable {
         this.telemetryType = logStore.getTelemetryType();
         this.encryptConf = logStore.encryptConf;
         this.hotTTL = logStore.hotTTL;
+        this.mode = logStore.mode;
     }
 
     public long getPreserveStorage() {
@@ -210,6 +212,14 @@ public class LogStore implements Serializable {
         this.hotTTL = hotTTL;
     }
 
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
 	public JSONObject ToRequestJson() {
         JSONObject logStoreDict = new JSONObject();
         logStoreDict.put("logstoreName", GetLogStoreName());
@@ -232,6 +242,9 @@ public class LogStore implements Serializable {
         if (this.encryptConf != null)
         {
         	logStoreDict.put("encrypt_conf", this.encryptConf.ToJsonObject());
+        }
+        if (mode != null) {
+            logStoreDict.put("mode", mode);
         }
         return logStoreDict;
     }
@@ -305,6 +318,10 @@ public class LogStore implements Serializable {
             if (dict.containsKey("hot_ttl"))
             {
                 this.hotTTL = dict.getInteger("hot_ttl");
+            }
+            if (dict.containsKey("mode"))
+            {
+                this.mode = dict.getString("mode");
             }
         } catch (JSONException e) {
             throw new LogException("FailToGenerateLogStore", e.getMessage(), e, "");

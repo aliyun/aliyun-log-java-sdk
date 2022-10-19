@@ -1,7 +1,5 @@
 package com.aliyun.openservices.log.request;
 
-import com.aliyun.openservices.log.common.Chart;
-
 public class GetChartRequest extends Request {
 
 	private static final long serialVersionUID = 898227016586837966L;

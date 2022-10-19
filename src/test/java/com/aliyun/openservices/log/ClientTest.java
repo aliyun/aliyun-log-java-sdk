@@ -64,10 +64,9 @@ public class ClientTest {
         JSONArray jObj_1 = JSONArray.parseArray(TEST_HISTOGRAM_DATA_1);
         Map<String, String> headers = new HashMap<String, String>();
         headers.put(Consts.CONST_X_SLS_PROCESS, Consts.CONST_RESULT_INCOMPLETE);
-        GetHistogramsResponse response_1 = new GetHistogramsResponse(
-                headers);
+        GetHistogramsResponse response_1 = new GetHistogramsResponse(headers);
+        response_1.fromJSON(jObj_1);
 
-        client.extractHistograms(response_1, jObj_1);
         // assertEquals(100, meta.mTotalogNum);
         assertEquals(response_1.GetTotalCount(), 200);
         //assertEquals(response_1.IsCompleted(), false);
@@ -88,7 +87,7 @@ public class ClientTest {
         headers = new HashMap<String, String>();
         headers.put(Consts.CONST_X_SLS_PROCESS, Consts.CONST_RESULT_COMPLETE);
         GetHistogramsResponse response_2 = new GetHistogramsResponse(headers);
-        client.extractHistograms(response_2, jObj_2);
+        response_2.fromJSON(jObj_2);
         // assertEquals(100, meta.mTotalogNum);
         assertEquals(response_2.GetTotalCount(), 300);
         //assertEquals(response_2.IsCompleted(), true);

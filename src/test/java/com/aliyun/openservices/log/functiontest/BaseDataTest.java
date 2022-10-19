@@ -28,7 +28,7 @@ public abstract class BaseDataTest extends FunctionTest {
     public void ensureDataReady() {
         timestamp = getNowTimestamp();
         PACK_ID_PREFIX = "ABCDEF" + timestamp + "-";
-        project = "test-project-" + timestamp;
+        project = makeProjectName();
         logStore = new LogStore();
         logStore.SetTtl(1);
         logStore.SetShardCount(SHARD_COUNT);
@@ -101,7 +101,7 @@ public abstract class BaseDataTest extends FunctionTest {
                     timestamp + 1800, "", "", 100, totalSize, true);
             size = logs.GetCount();
             totalSize += size;
-            for (QueriedLog log : logs.GetLogs()) {
+            for (QueriedLog log : logs.getLogs()) {
                 for (LogContent mContent : log.mLogItem.mContents) {
                     String mKey = mContent.mKey;
                     String mValue = mContent.mValue;

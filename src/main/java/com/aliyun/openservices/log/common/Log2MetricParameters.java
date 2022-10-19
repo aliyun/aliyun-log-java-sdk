@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.JSONObject;
 
-public class Log2MetricParameters implements ScheduledSQLParameters {
+public class Log2MetricParameters extends ScheduledSQLBaseParameters {
     private String timeKey;
     private String metricKeys;
     private String labelKeys;
@@ -14,6 +14,7 @@ public class Log2MetricParameters implements ScheduledSQLParameters {
 
     @Override
     public void deserialize(JSONObject value) {
+        super.deserialize(value);
         timeKey = value.getString("timeKey");
         metricKeys = value.getString("metricKeys");
         labelKeys = value.getString("labelKeys");
@@ -23,7 +24,8 @@ public class Log2MetricParameters implements ScheduledSQLParameters {
 
     @Override
     public int hashCode() {
-        int result = getTimeKey() != null ? getTimeKey().hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (getTimeKey() != null ? getTimeKey().hashCode() : 0);
         result = 31 * result + (getMetricKeys() != null ? getMetricKeys().hashCode() : 0);
         result = 31 * result + (getLabelKeys() != null ? getLabelKeys().hashCode() : 0);
         result = 31 * result + (getHashLabels() != null ? getHashLabels().hashCode() : 0);
@@ -37,6 +39,9 @@ public class Log2MetricParameters implements ScheduledSQLParameters {
             return true;
         }
         if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
             return false;
         }
         Log2MetricParameters that = (Log2MetricParameters) obj;

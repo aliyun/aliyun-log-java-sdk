@@ -115,10 +115,10 @@ public abstract class FunctionTest {
             return true;
         } catch (LogException ex) {
             System.out.println("ERROR: errorCode=" + ex.GetErrorCode()
-                    + ", httpCode=" + ex.GetHttpCode()
-                    + ", errorMessage=" + ex.GetErrorMessage()
-                    + ", requestId=" + ex.GetRequestId());
-            assertEquals(ex.GetHttpCode(), 404);
+                    + ", httpCode=" + ex.getHttpCode()
+                    + ", errorMessage=" + ex.getMessage()
+                    + ", requestId=" + ex.getRequestId());
+            assertEquals(ex.getHttpCode(), 404);
         }
         return false;
     }
@@ -130,7 +130,7 @@ public abstract class FunctionTest {
             waitOneMinutes();
             return;
         } catch (LogException ex) {
-            if (!ex.GetErrorCode().equals("LogStoreAlreadyExist")) {
+            if (!ex.getErrorCode().equals("LogStoreAlreadyExist")) {
                 throw new IllegalStateException(ex);
             }
         }
@@ -147,7 +147,7 @@ public abstract class FunctionTest {
             client.CreateLogStore(project, logStore);
             return;
         } catch (LogException ex) {
-            if (!ex.GetErrorCode().equals("LogStoreAlreadyExist")) {
+            if (!ex.getErrorCode().equals("LogStoreAlreadyExist")) {
                 throw new IllegalStateException(ex);
             }
         }
@@ -163,7 +163,7 @@ public abstract class FunctionTest {
         try {
             client.CreateLogStore(project, logStore);
         } catch (LogException ex) {
-            if (!ex.GetErrorCode().equals("LogStoreAlreadyExist")) {
+            if (!ex.getErrorCode().equals("LogStoreAlreadyExist")) {
                 throw new IllegalStateException(ex);
             }
             client.UpdateLogStore(project, logStore);

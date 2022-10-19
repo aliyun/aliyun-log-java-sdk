@@ -8,6 +8,7 @@ public class EtlFunctionFcConfig extends EtlFunctionConfig {
     private String regionName;
     private String serviceName;
     private String functionName;
+    private String roleArn;
 
     public String getEndpoint() {
         return endpoint;
@@ -49,6 +50,14 @@ public class EtlFunctionFcConfig extends EtlFunctionConfig {
         this.functionName = functionName;
     }
 
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
     public EtlFunctionFcConfig(String functionProvider, String endpoint, String accountId, String regionName, String serviceName, String functionName) {
         super(functionProvider);
         this.endpoint = endpoint;
@@ -56,5 +65,6 @@ public class EtlFunctionFcConfig extends EtlFunctionConfig {
         this.regionName = regionName;
         this.serviceName = serviceName;
         this.functionName = functionName;
+        this.roleArn = "";
     }
 }

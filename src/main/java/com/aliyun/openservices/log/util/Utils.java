@@ -1,6 +1,8 @@
 package com.aliyun.openservices.log.util;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -110,5 +112,20 @@ public final class Utils {
             }
         }
         return sb.toString();
+    }
+
+    public static <T> List<T> removeNullItems(List<T> list){
+
+        List<T> nList = new ArrayList<T>(list);
+        Iterator<T> iter = nList.iterator();
+        
+        while(iter.hasNext()){
+            T v = iter.next();
+            if(v==null){
+                iter.remove();
+            }
+        }
+
+        return nList;
     }
 }

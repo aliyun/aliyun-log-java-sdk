@@ -20,17 +20,17 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
-public class ScheduledSQLTest extends FunctionTest{
+public class ScheduledSQLTest extends FunctionTest {
     private final String endpoint = credentials.getEndpoint();
     private final String accessKeyId = credentials.getAccessKeyId();
     private final String accessKeySecret = credentials.getAccessKey();
     private final String aliUid = credentials.getAliuid();
-    private final String roleArn = "acs:ram::"+aliUid+":role/aliyunlogscheduledsqlrole";
+    private final String roleArn = "acs:ram::" + aliUid + ":role/aliyunlogscheduledsqlrole";
     private final String script = "select min(id) as min_id from test";
-    private final String project = "test-ss-" + getNowTimestamp();
+    private final String project = makeProjectName();
     private final String sourceLogstore = "test";
     private final String destEndpoint = "cn-hangzhou.log.aliyuncs.com";
-    private final String destProject = "test-ss-dest-" + getNowTimestamp();
+    private final String destProject = makeProjectName() + "-dest";
     private final String destLogstore = "dest";
     private final String fromTimeExpr = "-1hour";
     private final String toTimeExpr = "-0s";
@@ -60,6 +60,7 @@ public class ScheduledSQLTest extends FunctionTest{
         safeDeleteProjectWithoutSleep(project);
         safeDeleteProjectWithoutSleep(destProject);
     }
+
     @Test
     public void testCrud() throws LogException, InterruptedException {
         new ScheduledSQLTest();
@@ -94,7 +95,7 @@ public class ScheduledSQLTest extends FunctionTest{
         try {
             client.createScheduledSQL(new CreateScheduledSQLRequest(project, scheduledSql));
         } catch (IllegalArgumentException e) {
-            assertEquals("Invalid fromTime: 0 toTime: "+ toTime + ", please ensure fromTime more than 1451577600.", e.getMessage());
+            assertEquals("Invalid fromTime: 0 toTime: " + toTime + ", please ensure fromTime more than 1451577600.", e.getMessage());
         }
         configuration.setFromTime(toTime);
         configuration.setToTime(toTime);
@@ -102,7 +103,7 @@ public class ScheduledSQLTest extends FunctionTest{
         try {
             client.createScheduledSQL(new CreateScheduledSQLRequest(project, scheduledSql));
         } catch (IllegalArgumentException e) {
-            assertEquals("Invalid fromTime: "+toTime+" toTime: "+toTime + ", please ensure fromTime more than 1451577600.", e.getMessage());
+            assertEquals("Invalid fromTime: " + toTime + " toTime: " + toTime + ", please ensure fromTime more than 1451577600.", e.getMessage());
         }
         configuration.setFromTime(fromTime);
         configuration.setToTime(-1L);
@@ -110,7 +111,7 @@ public class ScheduledSQLTest extends FunctionTest{
         try {
             client.createScheduledSQL(new CreateScheduledSQLRequest(project, scheduledSql));
         } catch (IllegalArgumentException e) {
-            assertEquals("Invalid fromTime: "+fromTime+" toTime: -1, please ensure fromTime more than 1451577600.", e.getMessage());
+            assertEquals("Invalid fromTime: " + fromTime + " toTime: -1, please ensure fromTime more than 1451577600.", e.getMessage());
         }
     }
 
@@ -137,8 +138,8 @@ public class ScheduledSQLTest extends FunctionTest{
         assertEquals("ScheduledSQL", scheduledSQLResponse.getScheduledSQL().getType().toString());
         // configuration
         ScheduledSQLConfiguration configuration = scheduledSQLResponse.getScheduledSQL().getConfiguration();
-        assertEquals("searchQuery",configuration.getSqlType());
-        assertEquals("enhanced",configuration.getResourcePool());
+        assertEquals("searchQuery", configuration.getSqlType());
+        assertEquals("enhanced", configuration.getResourcePool());
         assertEquals(destProject, configuration.getDestProject());
         assertEquals(destLogstore, configuration.getDestLogstore());
         assertEquals(roleArn, configuration.getRoleArn());
@@ -209,7 +210,7 @@ public class ScheduledSQLTest extends FunctionTest{
     private void testGetJobInstance() throws LogException {
         // JobInstances
         GetJobInstanceResponse getJobInstanceResponse = getJobInstance();
-        assertEquals(sqlTaskName,getJobInstanceResponse.getJobInstance().getJobName());
+        assertEquals(sqlTaskName, getJobInstanceResponse.getJobInstance().getJobName());
         assertNotNull(getJobInstanceResponse.getJobInstance().getJobScheduleId());
         System.out.println("getJobInstance: " + JSONObject.toJSONString(getJobInstanceResponse));
     }
@@ -219,10 +220,10 @@ public class ScheduledSQLTest extends FunctionTest{
         System.out.println("Wait for start jobInstance...");
         TimeUnit.MINUTES.sleep(5);
         ListJobInstancesResponse listJobInstancesResponse = client.listJobInstances(new ListJobInstancesRequest(project, sqlTaskName, fromTime, toTime));
-        if (listJobInstancesResponse.getResults().size()>0){
+        if (listJobInstancesResponse.getResults().size() > 0) {
             instanceId = listJobInstancesResponse.getResults().get(0).getInstanceId();
         } else {
-            throw new LogException("NoJobInstance","JobInstances have not start, please wait.","");
+            throw new LogException("NoJobInstance", "JobInstances have not start, please wait.", "");
         }
         System.out.println("list JobInstances: " + JSONObject.toJSONString(listJobInstancesResponse));
     }
@@ -232,13 +233,13 @@ public class ScheduledSQLTest extends FunctionTest{
         // Stop jobInstance
         GetJobInstanceResponse getJobInstanceResponse = getJobInstance();
         String state = getJobInstanceResponse.getJobInstance().getState();
-        if ("SUCCEEDED".equals(state)||"FAILED".equals(state)) {
+        if ("SUCCEEDED".equals(state) || "FAILED".equals(state)) {
             client.modifyJobInstanceState(new ModifyJobInstanceStateRequest(project, sqlTaskName, instanceId, "RUNNING"));
         }
         TimeUnit.SECONDS.sleep(3);
         GetJobInstanceResponse getJobInstanceResponse2 = getJobInstance();
         String afterModifyState = getJobInstanceResponse2.getJobInstance().getState();
-        List<String> stateList = Arrays.asList("RUNNING","SUCCEEDED","FAILED");
+        List<String> stateList = Arrays.asList("RUNNING", "SUCCEEDED", "FAILED");
         assertTrue(stateList.contains(afterModifyState));
     }
 
@@ -247,6 +248,7 @@ public class ScheduledSQLTest extends FunctionTest{
         // Start jobInstance
         ModifyJobInstanceStateResponse modifyJobInstanceStateResponse = client.modifyJobInstanceState(new ModifyJobInstanceStateRequest(project, sqlTaskName, "c7f6e01fc67ecdcb-5bd121c38cc93-5645bf9", "STOPPED"));
     }
+
     private ScheduledSQL generateScheduledSQL() {
         ScheduledSQL scheduledSQLStructure = new ScheduledSQL();
         scheduledSQLStructure.setName(sqlTaskName);
@@ -261,6 +263,7 @@ public class ScheduledSQLTest extends FunctionTest{
         scheduledSQLStructure.setSchedule(jobSchedule);
         return scheduledSQLStructure;
     }
+
     private ScheduledSQLConfiguration generateConfig() {
         ScheduledSQLConfiguration scheduledSQLConfiguration = new ScheduledSQLConfiguration();
         scheduledSQLConfiguration.setScript(script);
@@ -280,14 +283,17 @@ public class ScheduledSQLTest extends FunctionTest{
         scheduledSQLConfiguration.setToTime(toTime);
         return scheduledSQLConfiguration;
     }
+
     private GetScheduledSQLResponse getScheduledSQL() throws LogException {
         System.out.println("Get ScheduledSQL ready to start.......");
         return client.getScheduledSQL(new GetScheduledSQLRequest(project, sqlTaskName));
     }
+
     private GetJobInstanceResponse getJobInstance() throws LogException {
         System.out.println("Get JobInstance ready to start.....");
-        return client.getJobInstance(new GetJobInstanceRequest(project,sqlTaskName,instanceId));
+        return client.getJobInstance(new GetJobInstanceRequest(project, sqlTaskName, instanceId));
     }
+
     private Long getLastHourTime(int n) {
         Calendar ca = Calendar.getInstance();
         ca.set(Calendar.MINUTE, 0);

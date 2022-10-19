@@ -363,10 +363,10 @@ public class ScheduledSqlE2E extends FunctionTest {
         try {
             destClient.DeleteLogStore(project, logstore);
         } catch (LogException ex) {
-            System.out.println("ERROR: errorCode=" + ex.GetErrorCode()
-                    + ", httpCode=" + ex.GetHttpCode()
-                    + ", errorMessage=" + ex.GetErrorMessage()
-                    + ", requestId=" + ex.GetRequestId());
+            System.out.println("ERROR: errorCode=" + ex.getErrorCode()
+                    + ", httpCode=" + ex.getHttpCode()
+                    + ", errorMessage=" + ex.getMessage()
+                    + ", requestId=" + ex.getRequestId());
             assertEquals(ex.GetHttpCode(), 404);
         }
         destClient.CreateLogStore(project, structureLogStore(logstore));
@@ -491,7 +491,7 @@ public class ScheduledSqlE2E extends FunctionTest {
 
     private String getDestLogsIdNumbers(String project, String logStore, int fromTime, int toTime, String query, Client client) throws LogException {
         GetLogsResponse getLogsResponse = client.GetLogs(project, logStore, fromTime, toTime, "", query);
-        return getLogsResponse.GetLogs().get(0).GetLogItem().mContents.get(0).GetValue();
+        return getLogsResponse.getLogs().get(0).GetLogItem().mContents.get(0).GetValue();
     }
 
     private Integer getLastTimeInSecond(int n) {

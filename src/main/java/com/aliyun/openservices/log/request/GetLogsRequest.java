@@ -107,6 +107,113 @@ public class GetLogsRequest extends Request {
 	}
 
 	/**
+	 * Construct a the request
+	 *
+	 * @param project
+	 *            project name
+	 * @param logStore
+	 *            log store name of a project
+	 * @param from
+	 *            begin time
+	 * @param to
+	 *            end time
+	 * @param topic
+	 *            topic name of a log store
+	 * @param query
+	 *            user query
+	 * @param offset
+	 *            the log offset to return
+	 * @param line
+	 *            how many lines to get, the max lines is decided by
+	 *            the sls backend server
+	 * @param reverse
+	 *            if reverse is set to true, the query will return the latest
+	 *            logs first
+	 * @param forward
+	 *            only usable when phrase query, forward is ture means next page,
+	 *            otherwise means previous page
+	 */
+	public GetLogsRequest(String project, String logStore, int from, int to,
+						  String topic, String query, int offset, int line,
+						  boolean reverse,
+						  boolean powerSql,
+						  boolean forward) {
+		this(project, logStore,  from, to, topic, query);
+		SetOffset(offset);
+		SetLine(line);
+		SetReverse(reverse);
+		SetPowerSql(powerSql);
+		SetForward(forward);
+	}
+
+	/**
+	 * Construct a the request
+	 *
+	 * @param project
+	 *            project name
+	 * @param logStore
+	 *            log store name of a project
+	 * @param from
+	 *            begin time
+	 * @param to
+	 *            end time
+	 * @param topic
+	 *            topic name of a log store
+	 * @param query
+	 *            user query
+	 * @param offset
+	 *            the log offset to return
+	 * @param line
+	 *            how many lines to get, the max lines is decided by
+	 *            the sls backend server
+	 * @param reverse
+	 *            if reverse is set to true, the query will return the latest
+	 *            logs first
+	 * @param shard
+	 *            specific shard
+	 */
+	public GetLogsRequest(String project, String logStore, int from, int to,
+						  String topic, String query, int offset, int line,
+						  boolean reverse,int shard) {
+		this(project, logStore,  from, to, topic, query, offset, line, reverse);
+		SetShard(shard);
+	}
+
+	/**
+	 * Construct a the request
+	 *
+	 * @param project
+	 *            project name
+	 * @param logStore
+	 *            log store name of a project
+	 * @param from
+	 *            begin time
+	 * @param to
+	 *            end time
+	 * @param topic
+	 *            topic name of a log store
+	 * @param query
+	 *            user query
+	 * @param offset
+	 *            the log offset to return
+	 * @param line
+	 *            how many lines to get, the max lines is decided by
+	 *            the sls backend server
+	 * @param reverse
+	 *            if reverse is set to true, the query will return the latest
+	 *            logs first
+	 * @param session
+	 *            query session param
+	 */
+	public GetLogsRequest(String project, String logStore, int from, int to,
+						  String topic, String query, int offset, int line,
+						  boolean reverse,boolean forward,String session) {
+		this(project, logStore,  from, to, topic, query, offset, line, reverse);
+		SetForward(forward);
+		SetSession(session);
+	}
+
+	/**
 	 * Set log store
 	 * 
 	 * @param logStore
@@ -288,6 +395,13 @@ public class GetLogsRequest extends Request {
 		SetParam(Consts.CONST_POWER_SQL, String.valueOf(powerSql));
 	}
 
+	public void SetShard(int shard) {
+		SetParam(Consts.CONST_SHARD, String.valueOf(shard));
+	}
+	public void SetSession(String session) {
+		if (session != null)
+			SetParam(Consts.CONST_SESSION, session);
+	}
 	/**
 	 * Get request powerSql flag
 	 *
@@ -299,6 +413,30 @@ public class GetLogsRequest extends Request {
 			return false;
 		} else {
 			return Boolean.parseBoolean(powerSql);
+		}
+	}
+
+	/**
+	 * Set request forward flag
+	 *
+	 * @param forward
+	 *            forward flag
+	 */
+	public void SetForward(boolean forward) {
+		SetParam(Consts.CONST_FORWARD, String.valueOf(forward));
+	}
+
+	/**
+	 * Get request forward flag
+	 *
+	 * @return forward flag
+	 */
+	public boolean GetForward() {
+		String forward = GetParam(Consts.CONST_FORWARD);
+		if (forward.isEmpty()) {
+			return false;
+		} else {
+			return Boolean.parseBoolean(forward);
 		}
 	}
 }

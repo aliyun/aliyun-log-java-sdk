@@ -44,6 +44,8 @@ public class Query implements Serializable {
     private String roleArn;
     @JSONField
     private String dashboardId;
+    @JSONField
+    private String powerSqlMode;
 
     public String getRoleArn() {
         return roleArn;
@@ -149,6 +151,14 @@ public class Query implements Serializable {
         this.dashboardId = dashboardId;
     }
 
+    public String getPowerSqlMode() {
+        return powerSqlMode;
+    }
+
+    public void setPowerSqlMode(String powerSqlMode) {
+        this.powerSqlMode = powerSqlMode;
+    }
+
     public void deserialize(JSONObject value) {
         setChartTitle(value.getString("chartTitle"));
         setLogStore(value.getString("logStore"));
@@ -180,6 +190,9 @@ public class Query implements Serializable {
         }
         if (value.containsKey("dashboardId")) {
             setDashboardId(value.getString("dashboardId"));
+        }
+        if (value.containsKey("powerSqlMode")) {
+            setPowerSqlMode(value.getString("powerSqlMode"));
         }
     }
 

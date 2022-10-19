@@ -2,7 +2,9 @@ package com.aliyun.openservices.log.functiontest;
 
 
 import com.aliyun.openservices.log.common.Project;
+import com.aliyun.openservices.log.common.ProjectQuota;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.request.ListProjectRequest;
 import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.response.GetProjectResponse;
 import com.aliyun.openservices.log.response.ListProjectResponse;
@@ -10,12 +12,28 @@ import org.junit.After;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ProjectFunctionTest extends FunctionTest {
 
     private static final String TEST_PROJECT = makeProjectName();
+
+
+    @Test
+    public void testProjectNameCannotBeLogtail() {
+        String project = "logtail";
+        try {
+            client.CreateProject(project, "");
+            fail();
+        } catch (LogException ex) {
+            assertEquals(ex.GetHttpCode(), 400);
+            assertEquals(ex.GetErrorCode(), "ProjectAlreadyExist");
+            assertEquals(ex.GetErrorMessage(), "Project logtail already exist");
+        }
+    }
 
     @Test
     public void testUpdateProjectList() throws LogException {
@@ -70,6 +88,54 @@ public class ProjectFunctionTest extends FunctionTest {
         GetProjectResponse response = client.GetProject(project);
         assertEquals(response.GetProjectDescription(), desc);
         assertEquals(response.GetProjectStatus(), "Normal");
+        assertNotNull(response.getQuota());
+        ProjectQuota quota = response.getQuota();
+        assertEquals(400, quota.getShard());
+
+        boolean found = false;
+        ListProjectResponse listProjectResponse = client.ListProject(project, 0, 100);
+        for (Project item : listProjectResponse.getProjects()) {
+            if (item.getProjectName().equals(project)) {
+                assertEquals(item.getProjectDesc(), desc);
+                assertEquals(item.getProjectStatus(), "Normal");
+                assertNull(item.getQuota());
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
+
+        ListProjectRequest listProjectRequest = new ListProjectRequest(project, 0, 100);
+        listProjectRequest.setFetchQuota(true);
+        found = false;
+        listProjectResponse = client.ListProject(listProjectRequest);
+        for (Project item : listProjectResponse.getProjects()) {
+            if (item.getProjectName().equals(project)) {
+                assertEquals(item.getProjectDesc(), desc);
+                assertEquals(item.getProjectStatus(), "Normal");
+                ProjectQuota projectQuota = item.getQuota();
+                assertNotNull(projectQuota);
+                assertEquals(400, projectQuota.getShard());
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
+
+        listProjectRequest.setFetchQuota(false);
+        found = false;
+        listProjectResponse = client.ListProject(listProjectRequest);
+        for (Project item : listProjectResponse.getProjects()) {
+            if (item.getProjectName().equals(project)) {
+                assertEquals(item.getProjectDesc(), desc);
+                assertEquals(item.getProjectStatus(), "Normal");
+                assertNull(item.getQuota());
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
+
         safeDeleteProjectWithoutSleep(project);
         try {
             client.GetProject(project);

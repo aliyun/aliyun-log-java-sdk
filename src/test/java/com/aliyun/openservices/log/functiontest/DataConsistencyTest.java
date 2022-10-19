@@ -64,7 +64,7 @@ public class DataConsistencyTest extends BaseDataTest {
         GetLogsResponse logs = client.GetLogs(project, logStore.GetLogStoreName(),
                 timestamp - 1800, timestamp + 1800, "", "__tag__:__pack_id__:" + startPackID + "|with_pack_meta");
 
-        PackInfo info = extractPackInfo(logs.GetLogs().get(0));
+        PackInfo info = extractPackInfo(logs.getLogs().get(0));
         startPackMeta = info.packMeta;
         GetContextLogsResponse contextLogs = client.getContextLogs(project, logStore.GetLogStoreName(),
                 startPackID, startPackMeta, 10, 10);

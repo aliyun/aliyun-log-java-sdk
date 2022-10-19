@@ -143,6 +143,140 @@ public interface LogService {
 
 	/**
 	 * Get The sub set of logs data from log service server which match input
+	 * parameters. All the data with logstore and topic in [from, to) which
+	 * contain the keys in query are the matched data.
+	 *
+	 * @param project
+	 *            the project name
+	 * @param logStore
+	 *            the result data logstore
+	 * @param from
+	 *            the begin time of the result data to get
+	 * @param to
+	 *            the end time of the result data to get
+	 * @param topic
+	 *            the result data topic
+	 * @param reverse
+	 *            a flag to determine the return data order, if reverse is set
+	 *            to false, the return logs is ascending order by time, other
+	 *            wise, it's descending order
+	 * @param line
+	 *            how many lines to get, the max lines is decided by the sls
+	 *            backend server
+	 * @param offset
+	 *            the start log index in all the matched logs.
+	 * @param query
+	 *            If the query is not empty, it will return the logs contain the
+	 *            keys in query, if "all_hit" is contained in the query, only
+	 *            the logs contains all the keys in query are matched logs,
+	 *            other wise logs contain any key in query are matched logs.
+	 * @param powerSql
+	 *            if the query runs using a power instance
+	 * @return a response contains a sub set of the logs matched the input
+	 *         parameters
+	 * @throws LogException
+	 *             if any error happen when get the data from log service server
+	 * @throws NullPointerException
+	 *             if any parameter is null
+	 * @throws IllegalArgumentException
+	 *             if project or logstore is empty
+	 */
+	GetLogsResponse GetLogs(String project, String logStore, int from,
+							int to, String topic, String query, int line, int offset,
+							boolean reverse,
+							boolean powerSql,
+							boolean forward) throws LogException;
+
+	/**
+	 * Get The sub set of logs data from log service server which match input
+	 * parameters. All the data with logstore and topic in [from, to) which
+	 * contain the keys in query are the matched data.
+	 *
+	 * @param project
+	 *            the project name
+	 * @param logStore
+	 *            the result data logstore
+	 * @param from
+	 *            the begin time of the result data to get
+	 * @param to
+	 *            the end time of the result data to get
+	 * @param topic
+	 *            the result data topic
+	 * @param reverse
+	 *            a flag to determine the return data order, if reverse is set
+	 *            to false, the return logs is ascending order by time, other
+	 *            wise, it's descending order
+	 * @param line
+	 *            how many lines to get, the max lines is decided by the sls
+	 *            backend server
+	 * @param offset
+	 *            the start log index in all the matched logs.
+	 * @param query
+	 *            If the query is not empty, it will return the logs contain the
+	 *            keys in query, if "all_hit" is contained in the query, only
+	 *            the logs contains all the keys in query are matched logs,
+	 *            otherwise logs contain any key in query are matched logs.
+	 * @param shard
+	 *            specific shard
+	 * @return a response contains a sub set of the logs matched the input
+	 *         parameters
+	 * @throws LogException
+	 *             if any error happen when get the data from log service server
+	 * @throws NullPointerException
+	 *             if any parameter is null
+	 * @throws IllegalArgumentException
+	 *             if project or logstore is empty
+	 */
+	GetLogsResponse GetLogs(String project, String logStore, int from,
+							int to, String topic, String query, int line, int offset,
+							boolean reverse, int shard) throws LogException;
+
+	/**
+	 * Get The sub set of logs data from log service server which match input
+	 * parameters. All the data with logstore and topic in [from, to) which
+	 * contain the keys in query are the matched data.
+	 *
+	 * @param project
+	 *            the project name
+	 * @param logStore
+	 *            the result data logstore
+	 * @param from
+	 *            the begin time of the result data to get
+	 * @param to
+	 *            the end time of the result data to get
+	 * @param topic
+	 *            the result data topic
+	 * @param reverse
+	 *            a flag to determine the return data order, if reverse is set
+	 *            to false, the return logs is ascending order by time, other
+	 *            wise, it's descending order
+	 * @param line
+	 *            how many lines to get, the max lines is decided by the sls
+	 *            backend server
+	 * @param offset
+	 *            the start log index in all the matched logs.
+	 * @param query
+	 *            If the query is not empty, it will return the logs contain the
+	 *            keys in query, if "all_hit" is contained in the query, only
+	 *            the logs contains all the keys in query are matched logs,
+	 *            otherwise logs contain any key in query are matched logs.
+	 * @param session
+	 *            query session param, should be like powerSql=true;schema_free=true;....
+	 * @return a response contains a sub set of the logs matched the input
+	 *         parameters
+	 * @throws LogException
+	 *             if any error happen when get the data from log service server
+	 * @throws NullPointerException
+	 *             if any parameter is null
+	 * @throws IllegalArgumentException
+	 *             if project or logstore is empty
+	 */
+	GetLogsResponse GetLogs(String project, String logStore, int from,
+							int to, String topic, String query, int line, int offset,
+							boolean reverse, boolean forward, String session) throws LogException;
+
+	/**
+	 * Get The sub set of logs data from log service server which match input
 	 * parameters.
 	 *
 	 * @param request
@@ -1839,6 +1973,148 @@ public interface LogService {
     GetLogStoreResponse GetLogStore(GetLogStoreRequest request) throws LogException;
 
 	/**
+	 * create a metric store in a project
+	 *
+	 * @param project
+	 *            the project name
+	 * @param metricStore
+	 *            the config
+	 * @return the create log store response
+	 * @throws LogException
+	 *             if any error happen when creasting logstore
+	 *
+	 * @throws NullPointerException
+	 *             if any parameter is null
+	 * @throws IllegalArgumentException
+	 *             if project is empty
+	 */
+	CreateLogStoreResponse createMetricStore(String project,
+											 LogStore metricStore) throws LogException;
+
+	/**
+	 * create a metric store in a project
+	 *
+	 * @param request
+	 *            logstore create request
+	 * @return the create log store response
+	 * @throws LogException
+	 *             if any error happen when creasting logstore
+	 *
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	CreateLogStoreResponse createMetricStore(CreateLogStoreRequest request)
+			throws LogException;
+
+	/**
+	 * Update metric store config
+	 *
+	 * @param project
+	 *            the project name
+	 * @param metricStore
+	 *            the logsotre config
+	 * @return update logstore response
+	 * @throws LogException
+	 *             if any error happen when updating logstore
+	 *
+	 * @throws NullPointerException
+	 *             if any parameter is null
+	 * @throws IllegalArgumentException
+	 *             if project is empty
+	 */
+	UpdateLogStoreResponse updateMetricStore(String project,
+											 LogStore metricStore) throws LogException;
+
+	/**
+	 * Update metric store config
+	 *
+	 * @param request
+	 *            update logstore requst
+	 * @return Update logstore response
+	 *
+	 * @throws LogException
+	 *             if any error happen when updating logstore
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	UpdateLogStoreResponse updateMetricStore(UpdateLogStoreRequest request)
+			throws LogException;
+
+	/**
+	 * Delete the metric store
+	 *
+	 * @param project
+	 *            the project name
+	 * @param metricStoreName
+	 *            the lostore to delete
+	 * @return delete logstore response
+	 * @throws LogException
+	 *             if any error happen when deleting logstore
+	 *
+	 * @throws NullPointerException
+	 *             if any parameter is null
+	 * @throws IllegalArgumentException
+	 *             if an param is empty
+	 */
+	DeleteLogStoreResponse deleteMetricStore(String project,
+											 String metricStoreName) throws LogException;
+
+	/**
+	 * Delete the metric store
+	 *
+	 * @param request
+	 *            delete logstore request
+	 * @return the delete logstore response
+	 * @throws LogException
+	 *             if any error happen when deleting logstore
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	DeleteLogStoreResponse deleteMetricStore(DeleteLogStoreRequest request)
+			throws LogException;
+
+	/**
+	 * get the metric store config
+	 *
+	 * @param project
+	 *            the project name
+	 * @param metricStoreName
+	 *            the logstore name
+	 * @return the get logstore response
+	 * @throws LogException
+	 *             if any error happen when getting logstore config
+	 *
+	 * @throws NullPointerException
+	 *             if any parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any parameter is empty
+	 */
+	GetLogStoreResponse getMetricStore(String project, String metricStoreName)
+			throws LogException;
+
+	/**
+	 * get the metric store config
+	 *
+	 * @param request
+	 *            the get logstore config request
+	 * @return the get logstore response
+	 * @throws LogException
+	 *             if any error happen when getting logstore config
+	 *
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	GetLogStoreResponse getMetricStore(GetLogStoreRequest request) throws LogException;
+
+	/**
 	 * create logstore index
 	 *
 	 * @param project
@@ -2678,6 +2954,8 @@ public interface LogService {
 
 	StartETLV2Response startETLV2(StartETLV2Request request) throws LogException;
 
+	ReStartETLV2Response reStartETLV2(ReStartETLV2Request request) throws LogException;
+
 	CreateExportResponse createExport(CreateExportRequest request) throws LogException;
 
 	UpdateExportResponse updateExport(UpdateExportRequest request) throws LogException;
@@ -2691,6 +2969,8 @@ public interface LogService {
 	StopExportResponse stopExport(StopExportRequest request) throws LogException;
 
 	StartExportResponse startExport(StartExportRequest request) throws LogException;
+
+	RestartExportResponse restartExport(RestartExportRequest request) throws LogException;
 
 	CreateScheduledSQLResponse createScheduledSQL(CreateScheduledSQLRequest request) throws LogException;
 
@@ -3546,6 +3826,7 @@ public interface LogService {
 	ListIngestionResponse listIngestion(ListIngestionRequest request) throws LogException;
 	StopIngestionResponse stopIngestion(StopIngestionRequest request) throws LogException;
 	StartIngestionResponse startIngestion(StartIngestionRequest request) throws LogException;
+	StartIngestionResponse restartIngestion(RestartIngestionRequest request) throws LogException;
 
 	CreateRebuildIndexResponse createRebuildIndex(CreateRebuildIndexRequest request) throws LogException;
 	DeleteRebuildIndexResponse deleteRebuildIndex(DeleteRebuildIndexRequest request) throws LogException;
@@ -3561,6 +3842,24 @@ public interface LogService {
 	StartAuditJobResponse startAuditJob(StartAuditJobRequest request) throws LogException;
 	StopAuditJobResponse stopAuditJob(StopAuditJobRequest request) throws LogException;
 
+	CreateTopostoreResponse createTopostore(CreateTopostoreRequest request) throws LogException;
+	UpdateTopostoreResponse updateTopostore(UpdateTopostoreRequest request) throws LogException;
+	GetTopostoreResponse getTopostore(GetTopostoreRequest request) throws LogException;
+	DeleteTopostoreResponse deleteTopostore(DeleteTopostoreRequest request) throws LogException ;
+	ListTopostoreResponse listTopostore(ListTopostoreRequest request) throws LogException ;
+	
+	CreateTopostoreNodeResponse createTopostoreNode(CreateTopostoreNodeRequest request) throws LogException;
+	UpsertTopostoreNodeResponse upsertTopostoreNode(UpsertTopostoreNodeRequest request) throws LogException;
+	UpdateTopostoreNodeResponse updateTopostoreNode(UpdateTopostoreNodeRequest request) throws LogException;
+	DeleteTopostoreNodeResponse deleteTopostoreNode(DeleteTopostoreNodeRequest request) throws LogException;
+	ListTopostoreNodeResponse listTopostoreNode(ListTopostoreNodeRequest request) throws LogException;
+
+	CreateTopostoreRelationResponse createTopostoreRelation(CreateTopostoreRelationRequest request) throws LogException;
+	UpsertTopostoreRelationResponse upsertTopostoreRelation(UpsertTopostoreRelationRequest request) throws LogException;
+	UpdateTopostoreRelationResponse updateTopostoreRelation(UpdateTopostoreRelationRequest request) throws LogException;
+	DeleteTopostoreRelationResponse deleteTopostoreRelation(DeleteTopostoreRelationRequest request) throws LogException;
+	ListTopostoreRelationResponse listTopostoreRelation(ListTopostoreRelationRequest request) throws LogException;
+	
 	CreateResourceResponse createResource(CreateResourceRequest request) throws LogException;
 	UpdateResourceResponse updateResource(UpdateResourceRequest request) throws LogException;
 	GetResourceResponse    getResource(GetResourceRequest request) throws LogException;
@@ -3582,4 +3881,8 @@ public interface LogService {
 	GetMetricAggRulesResponse getMetricAggRules(GetMetricAggRulesRequest request) throws LogException;
 	UpdateMetricAggRulesResponse updateMetricAggRules(UpdateMetricAggRulesRequest request) throws LogException;
 	DeleteMetricAggRulesResponse deleteMetricAggRules(DeleteMetricAggRulesRequest request) throws LogException;
+
+	SetProjectPolicyResponse setProjectPolicy(String projectName, String policyText) throws LogException;
+	GetProjectPolicyReponse getProjectPolicy(String projectName) throws LogException;
+	DeleteProjectPolicyReponse deleteProjectPolicy(String projectName) throws LogException;
 }

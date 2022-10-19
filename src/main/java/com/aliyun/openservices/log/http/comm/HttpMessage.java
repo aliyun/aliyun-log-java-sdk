@@ -46,6 +46,13 @@ public abstract class HttpMessage {
         this.contentLength = contentLength;
     }
 
+    /**
+     * Indicate whether the request should be repeatedly sent.
+     */
+    public boolean isRepeatable() {
+        return content == null || content.markSupported();
+    }
+
     public void close() throws IOException{
         if (content != null){
             content.close();

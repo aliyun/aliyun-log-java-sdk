@@ -8,7 +8,10 @@ import java.lang.reflect.Type;
 public enum DataSinkType implements JSONSerializable {
     ALIYUN_LOG("AliyunLOG"),
     ALIYUN_ADB("AliyunADB"),
-    ALIYUN_TSDB("AliyunTSDB");
+    ALIYUN_TSDB("AliyunTSDB"),
+    ALIYUN_OSS("AliyunOSS"),
+    ALIYUN_ODPS("AliyunODPS"),
+    GENERAL("General");
 
     private final String name;
 
@@ -26,6 +29,11 @@ public enum DataSinkType implements JSONSerializable {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.util.Map;
 
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.QueriedLog;
 import com.aliyun.openservices.log.common.Consts;
 
@@ -34,6 +35,15 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 	private long mLimited = 0;
 	private double mCpuSec =0;
 	private long mCpuCores = 0;
+
+	private boolean mIsPhraseQuery = false;
+	private boolean mScanAll = false;
+	private long mBeginOffset = 0;
+	private long mEndOffset = 0;
+	private long mEndTime = 0;
+	private int  mShard = 0;
+	private long mScanBytes = 0;
+	private int mQueryMode = 0;
 
 	private ArrayList<String> mKeys;
 	private ArrayList<ArrayList<String>> mTerms;
@@ -102,8 +112,69 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 			if (object.containsKey("marker")) {
 				mMarker = object.getString("marker");
 			}
+
+
+			if (object.containsKey("mode")) {
+				mQueryMode = object.getIntValue("mode");
+				if (mQueryMode == 1)
+					mIsPhraseQuery = true;
+			}
+
+			if (object.containsKey("phraseQueryInfo")) {
+				JSONObject phraseQueryInfo = object.getJSONObject("phraseQueryInfo");
+				if (phraseQueryInfo.containsKey("scanAll")) {
+					mScanAll = Boolean.parseBoolean(phraseQueryInfo.getString("scanAll"));
+				}
+				if (phraseQueryInfo.containsKey("beginOffset")) {
+					mBeginOffset = Long.parseLong(phraseQueryInfo.getString("beginOffset"));
+				}
+				if (phraseQueryInfo.containsKey("endOffset")) {
+					mEndOffset = Long.parseLong(phraseQueryInfo.getString("endOffset"));
+				}
+				if (phraseQueryInfo.containsKey("endTime")) {
+					mEndTime = Long.parseLong(phraseQueryInfo.getString("endTime"));
+				}
+			}
+
+			if (object.containsKey("shard")) {
+				mShard = object.getIntValue("shard");
+			}
+
+			if (object.containsKey("scanBytes")) {
+				mScanBytes = object.getLongValue("scanBytes");
+			}
 		}
 	}
+
+	public boolean IsPhraseQuery() {
+		return mIsPhraseQuery;
+	}
+
+	public boolean IsScanAll() {
+		return mScanAll;
+	}
+
+	public long GetBeginOffset() {
+		return mBeginOffset;
+	}
+
+	public long GetEndOffset() {
+		return mEndOffset;
+	}
+
+	public long GetEndTime() {
+		return mEndTime;
+	}
+
+	public int GetShard() {
+		return mShard;
+	}
+
+	public long GetScanBytes() {
+		return mScanBytes;
+	}
+
+	public int GetQueryMode() { return mQueryMode; }
 	
 	public String getmMarker() {
 		return mMarker;
@@ -189,12 +260,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 	 *            process status(Complete/InComplete only)
 	 */
 	public void SetProcessStatus(String processStatus) {
-		if (processStatus.equals(Consts.CONST_RESULT_COMPLETE)) {
-			mIsCompleted = true;
-		} else {
-			mIsCompleted = false;
-		}
-
+		mIsCompleted = processStatus.equals(Consts.CONST_RESULT_COMPLETE);
 	}
 
 	/**
@@ -221,6 +287,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 	 * 
 	 * @param log
 	 *            log data to add
+	 * @deprecated Use addLog(QueriedLog log) instead.
 	 */
 	@Deprecated
 	public void AddLog(QueriedLog log) {
@@ -229,6 +296,8 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 
 	/**
 	 * Get all logs from the response
+	 *
+	 * @deprecated Use getLogs() instead.
 	 * 
 	 * @return all log data
 	 */

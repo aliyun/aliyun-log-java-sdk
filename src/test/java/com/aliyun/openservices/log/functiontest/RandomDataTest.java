@@ -48,7 +48,7 @@ public class RandomDataTest extends FunctionTest {
                 return new Response();
             } else {
                 List<String[]> res = new ArrayList<String[]>();
-                for (QueriedLog log : response.GetLogs()) {
+                for (QueriedLog log : response.getLogs()) {
                     String[] str = new String[]{"", "", ""};
                     for (LogContent mContent : log.mLogItem.mContents) {
                         String mKey = mContent.mKey;
