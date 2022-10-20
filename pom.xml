@@ -194,7 +194,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>1.4</version>
+                <version>3.2.4</version>
                 <configuration>
                     <artifactSet>
                         <excludes>
@@ -217,6 +217,17 @@
                             <shadedPattern>com.aliyun.log.thirdparty.org.apache.commons</shadedPattern>
                         </relocation>
                     </relocations>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                                <exclude>**/pom.xml</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                     <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
                 </configuration>
