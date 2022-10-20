@@ -18,6 +18,7 @@ public enum TimeSpanType implements JSONSerializable {
      */
     TRUNCATED("Truncated"),
     TODAY("Today"),
+    YESTERDAY("Yesterday"),
     CUSTOM("Custom"),
     FIXED("Fixed");
 

@@ -104,9 +104,9 @@ public class ETLV2Test extends JobIntgTest {
             boolean res = etlStatus("STOPPED");
             assertTrue(res);
         } catch (LogException e) {
-            System.out.println(e.GetErrorCode());
-            System.out.println(e.GetErrorMessage());
-            System.out.println(e.GetHttpCode());
+            System.out.println(e.getErrorCode());
+            System.out.println(e.getMessage());
+            System.out.println(e.getHttpCode());
         }
 
     }

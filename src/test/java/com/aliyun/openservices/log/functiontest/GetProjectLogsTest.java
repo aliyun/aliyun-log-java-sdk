@@ -22,7 +22,7 @@ public class GetProjectLogsTest extends BaseDataTest {
         assertEquals(count * 10, logs.GetCount());
         assertTrue(logs.IsCompleted());
 
-        for (QueriedLog log : logs.GetLogs()) {
+        for (QueriedLog log : logs.getLogs()) {
             assertEquals("test-source", log.mSource);
             for (LogContent mContent : log.mLogItem.mContents) {
                 String mKey = mContent.mKey;

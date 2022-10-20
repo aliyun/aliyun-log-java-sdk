@@ -13,248 +13,241 @@ import com.aliyun.openservices.log.common.TagContent;
 
 /**
  * The request used to send data to sls server
- * 
- * @author sls_dev
- * 
  */
 public class PutLogsRequest extends Request {
-	private static final long serialVersionUID = 7226856831224917838L;
-	private String mLogStore;
-	private String mTopic;
-	private String mSource;
-	private String mHashKey;
-	private ArrayList<LogItem> mlogItems;
-	private ArrayList<TagContent> mTags = null;
-	private CompressType compressType = CompressType.LZ4;
-	private String mContentType = Consts.CONST_PROTO_BUF;
-	private byte[] mLogGroupBytes = null;
-	private Integer hashRouteKeySeqId;
-	/**
-	 * @return the compressType
-	 */
-	public CompressType GetCompressType() {
-		return compressType;
-	}
+    private static final long serialVersionUID = 7226856831224917838L;
+    private String mLogStore;
+    private String mTopic;
+    private String mSource;
+    private String mHashKey;
+    private ArrayList<LogItem> mlogItems;
+    private ArrayList<TagContent> mTags = null;
+    private CompressType compressType = CompressType.LZ4;
+    private String mContentType = Consts.CONST_PROTO_BUF;
+    private byte[] mLogGroupBytes = null;
+    private Integer hashRouteKeySeqId;
 
-	/**
-	 * @param compressType the compressType to set
-	 */
-	public void SetCompressType(CompressType compressType) {
-		this.compressType = compressType;
-	}
-	
-	public String getContentType() {
-		return mContentType;
-	}
+    /**
+     * @return the compressType
+     */
+    public CompressType GetCompressType() {
+        return compressType;
+    }
 
-	public void setContentType(String contentType) {
-		this.mContentType = contentType;
-	}
+    /**
+     * @param compressType the compressType to set
+     */
+    public void SetCompressType(CompressType compressType) {
+        this.compressType = compressType;
+    }
 
-	/**
-	 * Construct a put log request
-	 * 
-	 * @param project
-	 *            project name
-	 * @param logStore
-	 *            log store name of the project
-	 * @param topic
-	 *            topic name of the log store
-	 * @param source
-	 *            source of the log
-	 * @param logItems
-	 *            log data
-	 * @param hashKey
-	 * 			  hashKey
-	 */
-	public PutLogsRequest(String project, String logStore, String topic,
-			String source, List<LogItem> logItems,String hashKey) {
-		super(project);
-		mLogStore = logStore;
-		mTopic = topic;
-		mSource = source;
-		mlogItems = new ArrayList<LogItem>(logItems);
-		mHashKey = hashKey;
-	}
-	/**
-	 * Construct a put log request
-	 * 
-	 * @param project
-	 *            project name
-	 * @param logStore
-	 *            log store name of the project
-	 * @param topic
-	 *            topic name of the log store
-	 * @param source
-	 *            source of the log
-	 * @param logItems
-	 *            log data
-	 */
-	public PutLogsRequest(String project, String logStore, String topic,
-			String source, List<LogItem> logItems) {
-		super(project);
-		mLogStore = logStore;
-		mTopic = topic;
-		mSource = source;
-		mlogItems = new ArrayList<LogItem>(logItems);
-		mHashKey = null;
-	}
+    public String getContentType() {
+        return mContentType;
+    }
 
+    public void setContentType(String contentType) {
+        this.mContentType = contentType;
+    }
 
-	/**
-	 * Construct a put log request
-	 * 
-	 * @param project
-	 *            project name
-	 * @param logStore
-	 *            log store name of the project
-	 * @param topic
-	 *            topic name of the log store
-	 * @param logItems
-	 *            log data
-	 */
-	public PutLogsRequest(String project, String logStore, String topic,
-			List<LogItem> logItems) {
-		super(project);
-		mLogStore = logStore;
-		mTopic = topic;
-		mlogItems = new ArrayList<LogItem>(logItems);
-	}
+    /**
+     * Construct a put log request
+     *
+     * @param project  project name
+     * @param logStore log store name of the project
+     * @param topic    topic name of the log store
+     * @param source   source of the log
+     * @param logItems log data
+     * @param hashKey  hashKey
+     */
+    public PutLogsRequest(String project, String logStore, String topic,
+                          String source, List<LogItem> logItems, String hashKey) {
+        super(project);
+        mLogStore = logStore;
+        mTopic = topic;
+        mSource = source;
+        mlogItems = new ArrayList<LogItem>(logItems);
+        mHashKey = hashKey;
+    }
 
-	/**
-	 * Construct a put log request
-	 *
-	 * @param project
-	 *            project name
-	 * @param logStore
-	 *            log store name of the project
-	 * @param topic
-	 *            topic name of the log store
-	 * @param source
-	 *            source of the log
-	 * @param logGroupBytes
-	 *            Porotbuf serialized string of LogGroup
-	 * @param hashKey
-	 * 			  hashKey
-	 */
-	public PutLogsRequest(String project, String logStore, String topic,
-						  String source, byte[] logGroupBytes, String hashKey) {
-		super(project);
-		mLogStore = logStore;
-		mTopic = topic;
-		mSource = source;
-		mLogGroupBytes = logGroupBytes;
-		mHashKey = hashKey;
-	}
+    /**
+     * Construct a put log request
+     *
+     * @param project  project name
+     * @param logStore log store name of the project
+     * @param topic    topic name of the log store
+     * @param source   source of the log
+     * @param logItems log data
+     */
+    public PutLogsRequest(String project, String logStore, String topic,
+                          String source, List<LogItem> logItems) {
+        this(project, logStore, topic, source, logItems, null);
+    }
 
-	/**
-	 * Get log store
-	 * 
-	 * @return log store
-	 */
-	public String GetLogStore() {
-		return mLogStore;
-	}
+    /**
+     * Construct a put log request
+     *
+     * @param project  project name
+     * @param logStore log store name of the project
+     * @param topic    topic name of the log store
+     * @param logItems log data
+     */
+    public PutLogsRequest(String project, String logStore, String topic,
+                          List<LogItem> logItems) {
+        super(project);
+        mLogStore = logStore;
+        mTopic = topic;
+        mlogItems = new ArrayList<LogItem>(logItems);
+    }
 
-	/**
-	 * Set log store
-	 * 
-	 * @param logStore
-	 *            log store name
-	 */
-	public void SetLogStore(String logStore) {
-		mLogStore = logStore;
-	}
+    /**
+     * Construct a put log request
+     *
+     * @param project       project name
+     * @param logStore      log store name of the project
+     * @param topic         topic name of the log store
+     * @param source        source of the log
+     * @param logGroupBytes Porotbuf serialized string of LogGroup
+     * @param hashKey       hashKey
+     */
+    public PutLogsRequest(String project, String logStore, String topic,
+                          String source, byte[] logGroupBytes, String hashKey) {
+        super(project);
+        mLogStore = logStore;
+        mTopic = topic;
+        mSource = source;
+        mLogGroupBytes = logGroupBytes;
+        mHashKey = hashKey;
+    }
 
-	/**
-	 * Get the topic
-	 * 
-	 * @return the topic
-	 */
-	public String GetTopic() {
-		return mTopic;
-	}
+    /**
+     * Get log store
+     *
+     * @return log store
+     */
+    public String GetLogStore() {
+        return mLogStore;
+    }
 
-	/**
-	 * Set topic value
-	 * 
-	 * @param topic
-	 *            topic value
-	 */
-	public void SetTopic(String topic) {
-		mTopic = topic;
-	}
+    /**
+     * Set log store
+     *
+     * @param logStore log store name
+     */
+    public void SetLogStore(String logStore) {
+        mLogStore = logStore;
+    }
 
-	/**
-	 * Get log source
-	 * 
-	 * @return log source
-	 */
-	public String GetSource() {
-		return mSource;
-	}
+    /**
+     * Get the topic
+     *
+     * @return the topic
+     */
+    public String GetTopic() {
+        return mTopic;
+    }
 
-	/**
-	 * Set log source
-	 * 
-	 * @param source
-	 *            log source
-	 */
-	public void SetSource(String source) {
-		mSource = source;
-	}
+    /**
+     * Set topic value
+     *
+     * @param topic topic value
+     */
+    public void SetTopic(String topic) {
+        mTopic = topic;
+    }
 
-	/**
-	 * Get all the log data
-	 * 
-	 * @return log data
-	 */
-	public ArrayList<LogItem> GetLogItems() {
-		return mlogItems;
-	}
+    /**
+     * Get log source
+     *
+     * @return log source
+     */
+    public String GetSource() {
+        return mSource;
+    }
 
-	/**
-	 * Get all the tag
-	 *
-	 * @return tag
-	 */
-	public ArrayList<TagContent> GetTags() {
-		return mTags;
-	}
+    /**
+     * Set log source
+     *
+     * @param source log source
+     */
+    public void SetSource(String source) {
+        mSource = source;
+    }
 
-	/**
-	 * Get all the logGroupBytes
-	 *
-	 * @return logGroupBytes
-	 */
-	public byte[] GetLogGroupBytes() { return mLogGroupBytes; }
+    /**
+     * Get all the log data
+     *
+     * @return log data
+     */
+    public ArrayList<LogItem> GetLogItems() {
+        return mlogItems;
+    }
 
-	/**
-	 * Set the log data , shallow copy is used to set the log data
-	 * 
-	 * @param logItems
-	 *            log data
-	 */
-	public void SetlogItems(List<LogItem> logItems) {
-		mlogItems = new ArrayList<LogItem>(logItems);
-	}
+    /**
+     * Get all the tag
+     *
+     * @return tag
+     */
+    public ArrayList<TagContent> GetTags() {
+        return mTags;
+    }
 
-	public void SetTags(List<TagContent> tags) { mTags = new ArrayList<TagContent>(tags); }
-	
-	public void SetRouteKey(String hashKey)
-	{
-		mHashKey = hashKey;
-	}
-	public String GetRouteKey()
-	{
-		return mHashKey;
-	}
+    /**
+     * Get all the logGroupBytes
+     *
+     * @return logGroupBytes
+     */
+    public byte[] GetLogGroupBytes() {
+        return mLogGroupBytes;
+    }
 
-	public Integer getHashRouteKeySeqId() {
-		return hashRouteKeySeqId;
-	}
+    /**
+     * Set the log data , shallow copy is used to set the log data
+     *
+     * @param logItems log data
+     */
+    public void SetlogItems(List<LogItem> logItems) {
+        mlogItems = new ArrayList<LogItem>(logItems);
+    }
 
-	public void setHashRouteKeySeqId(Integer hashRouteKeySeqId) {
-		this.hashRouteKeySeqId = hashRouteKeySeqId;
-	}
+    public void SetTags(List<TagContent> tags) {
+        mTags = new ArrayList<TagContent>(tags);
+    }
+
+    /**
+     * Use setHashKey
+     *
+     * @param hashKey The hash key
+     * @deprecated Use setHashKey() instead.
+     */
+    @Deprecated
+    public void SetRouteKey(String hashKey) {
+        setHashKey(hashKey);
+    }
+
+    /**
+     * Use getHashKey
+     *
+     * @return The hash key
+     * @deprecated Use getHashKey() instead.
+     */
+    @Deprecated
+    public String GetRouteKey() {
+        return mHashKey;
+    }
+
+    public String getHashKey() {
+        return mHashKey;
+    }
+
+    public void setHashKey(String mHashKey) {
+        this.mHashKey = mHashKey;
+    }
+
+    public Integer getHashRouteKeySeqId() {
+        return hashRouteKeySeqId;
+    }
+
+    public void setHashRouteKeySeqId(Integer hashRouteKeySeqId) {
+        this.hashRouteKeySeqId = hashRouteKeySeqId;
+    }
 }

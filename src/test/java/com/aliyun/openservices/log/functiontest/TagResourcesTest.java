@@ -2,11 +2,16 @@ package com.aliyun.openservices.log.functiontest;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.common.Tag;
+import com.aliyun.openservices.log.common.TagResource;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.ListTagResourcesRequest;
+import com.aliyun.openservices.log.request.TagResourcesRequest;
+import com.aliyun.openservices.log.request.UntagResourcesRequest;
 import com.aliyun.openservices.log.response.ListTagResourcesResponse;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,6 +58,25 @@ public class TagResourcesTest extends MetaAPIBaseFunctionTest {
         }
         //created correctly
         client.tagResources(createTagSources("project", TEST_PROJECT, 3, false));
+
+        List<Tag> tags = new ArrayList<Tag>();
+        tags.add(new Tag("t1", "k1"));
+        TagResourcesRequest request = new TagResourcesRequest("project",
+                Collections.singletonList(TEST_PROJECT), tags);
+        client.tagResources(request);
+
+        List<String> tagKeys = new ArrayList<String>();
+        for (Tag t : tags) {
+            tagKeys.add(t.getKey());
+        }
+        UntagResourcesRequest untagResourcesRequest = new UntagResourcesRequest(
+                "project",
+                Collections.singletonList(TEST_PROJECT),
+                tagKeys);
+        client.untagResources(untagResourcesRequest);
+        untagResourcesRequest = new UntagResourcesRequest("project",
+                Collections.singletonList(TEST_PROJECT));
+        client.untagResources(untagResourcesRequest);
     }
 //
 //    @Test
@@ -98,14 +122,12 @@ public class TagResourcesTest extends MetaAPIBaseFunctionTest {
         client.untagResources(createTagSources("project", TEST_PROJECT, 2, true));
         ListTagResourcesResponse resources = client.listTagResources(new ListTagResourcesRequest("project",
                 Arrays.asList(TEST_PROJECT), Collections.singletonMap("tag-key-" + 2, "tag-value-" + 2)));
-        JSONObject parseObject = JSONObject.parseObject(resources.getTagList());
-        List<String> array = JSONArray.parseArray(parseObject.getString("tagResources"), String.class);
-        assertEquals(1, array.size());
-        JSONObject res = JSONObject.parseObject(array.get(0));
-        assertEquals("project", res.getString("resourceType"));
-        assertEquals(TEST_PROJECT, res.getString("resourceId"));
-        assertEquals("tag-key-2", res.getString("tagKey"));
-        assertEquals("tag-value-2", res.getString("tagValue"));
+        assertEquals(1, resources.getTagResources().size());
+        TagResource tagResource = resources.getTagResources().get(0);
+        assertEquals("project", tagResource.getResourceType());
+        assertEquals(TEST_PROJECT, tagResource.getResourceId());
+        assertEquals("tag-key-2", tagResource.getTagKey());
+        assertEquals("tag-value-2", tagResource.getTagValue());
     }
 
     private String createTagSources(String type, String id, int length, boolean untag) {

@@ -29,16 +29,13 @@ import static org.junit.Assert.fail;
 
 public class SlsIndexDataFunctionTest extends FunctionTest {
 
-    private static final String PROJECT_PREFIX = "test-java-sdk-index-data-";
-
-    private static String project;
+    private static final String project = makeProjectName();
     private final int startTime = getNowTimestamp();
-    private static final String logStore = "test-logstore-"+ getNowTimestamp();
+    private static final String logStore = "test-logstore-" + getNowTimestamp();
     private final String topic_prefix = "sls_java_topic_" + startTime + "_";
 
     @BeforeClass
     public static void SetupOnce() {
-        project = PROJECT_PREFIX + randomInt();
         safeCreateProject(project, "");
         try {
             client.DeleteIndex(project, logStore);
@@ -203,11 +200,10 @@ public class SlsIndexDataFunctionTest extends FunctionTest {
                     this.startTime, this.startTime + 3600, topic, "ID", 100, 50, false);
             assertEquals(res.GetCount(), 100);
             assertTrue(res.IsCompleted());
-            ArrayList<QueriedLog> queriedLogs = res.GetLogs();
+            List<QueriedLog> queriedLogs = res.getLogs();
             for (QueriedLog log : queriedLogs) {
                 LogItem item = log.GetLogItem();
-                assertEquals(topic ,item.GetLogContents().get(0)
-                                .GetValue());
+                assertEquals(topic, item.GetLogContents().get(0).GetValue());
             }
         } catch (LogException e) {
             fail(e.GetErrorCode() + ":" + e.GetErrorMessage());

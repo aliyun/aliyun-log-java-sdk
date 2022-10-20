@@ -123,6 +123,7 @@ public class EtlJob implements Serializable {
             functionConfigJson.put(Consts.ETL_JOB_FC_REGION_NAME, fcConfig.getRegionName());
             functionConfigJson.put(Consts.ETL_JOB_FC_SERVICE_NAME, fcConfig.getServiceName());
             functionConfigJson.put(Consts.ETL_JOB_FC_FUNCTION_NAME, fcConfig.getFunctionName());
+            functionConfigJson.put(Consts.ETL_JOB_TRIGGER_ROLEARN, fcConfig.getRoleArn());
         }
         etlJobJson.put(Consts.ETL_JOB_FUNCTION_CONFIG, functionConfigJson);
 
@@ -171,6 +172,9 @@ public class EtlJob implements Serializable {
                 EtlFunctionFcConfig functionConfig = new EtlFunctionFcConfig(functionProvider, functionConfigJson.getString(Consts.ETL_JOB_FC_ENDPOINT),
                         functionConfigJson.getString(Consts.ETL_JOB_FC_ACCOUNT_ID), functionConfigJson.getString(Consts.ETL_JOB_FC_REGION_NAME),
                         functionConfigJson.getString(Consts.ETL_JOB_FC_SERVICE_NAME), functionConfigJson.getString(Consts.ETL_JOB_FC_FUNCTION_NAME));
+                if (functionConfigJson.containsKey(Consts.ETL_JOB_TRIGGER_ROLEARN)) {
+                    functionConfig.setRoleArn(functionConfigJson.getString(Consts.ETL_JOB_TRIGGER_ROLEARN));
+                }
                 setFunctionConfig(functionConfig);
             } else {
                 EtlFunctionConfig functionConfig = new EtlFunctionConfig(functionProvider);

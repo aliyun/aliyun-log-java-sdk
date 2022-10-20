@@ -113,19 +113,19 @@ public class AliyunOSSSource extends DataSource {
     }
 
     private static DataFormat createFormat(String type) {
-        if ("DelimitedText".equals(type)) {
+        if ("DelimitedText".equalsIgnoreCase(type)) {
             return new DelimitedTextFormat();
-        } else if ("JSON".equals(type)) {
+        } else if ("JSON".equalsIgnoreCase(type)) {
             return new JSONFormat();
-        } else if ("Multiline".equals(type)) {
+        } else if ("Multiline".equalsIgnoreCase(type)) {
             return new MultilineFormat();
-        } else if ("Parquet".equals(type)) {
+        } else if ("Parquet".equalsIgnoreCase(type)) {
             return new ParquetFormat();
-        } else if ("Line".equals(type)) {
+        } else if ("Line".equalsIgnoreCase(type)) {
             return new LineFormat();
-        } else {
-            return null;
         }
+        // Handle this type as generic structured format
+        return new StructuredDataFormat(type);
     }
 
     @Override
@@ -143,11 +143,9 @@ public class AliyunOSSSource extends DataSource {
         lastModifyTimeAsLogTime = JsonUtils.readBool(jsonObject, "lastModifyTimeAsLogTime", false);
         if (formatObject != null && !formatObject.isEmpty()) {
             String type = JsonUtils.readOptionalString(formatObject, "type");
-            if (type != null) {
+            if (type != null && !type.equals("")) {
                 format = createFormat(type);
-                if (format != null) {
-                    format.deserialize(formatObject);
-                }
+                format.deserialize(formatObject);
             }
         }
     }

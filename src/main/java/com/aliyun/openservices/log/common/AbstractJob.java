@@ -93,7 +93,11 @@ abstract class AbstractJob {
         displayName = JsonUtils.readOptionalString(value, "displayName");
         description = JsonUtils.readOptionalString(value, "description");
         recyclable = JsonUtils.readBool(value, "recyclable", false);
-        createTime = Utils.timestampToDate(value.getLong("createTime"));
-        lastModifiedTime = Utils.timestampToDate(value.getLong("lastModifiedTime"));
+        if (value.containsKey("createTime")) {
+            createTime = Utils.timestampToDate(value.getLong("createTime"));
+        }
+        if (value.containsKey("lastModifiedTime")) {
+            lastModifiedTime = Utils.timestampToDate(value.getLong("lastModifiedTime"));
+        }
     }
 }

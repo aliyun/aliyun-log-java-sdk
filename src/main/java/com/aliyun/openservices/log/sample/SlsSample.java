@@ -55,7 +55,7 @@ public class SlsSample {
 			}
 		}
 		catch(LogException e) {
-			System.out.println(e.GetRequestId() + e.GetErrorMessage());
+			System.out.println(e.getRequestId() + e.getMessage());
 		}
 	
 		if (shardId > 0)
@@ -69,7 +69,7 @@ public class SlsSample {
 		GetLogsResponse res = client.GetLogs(project, logStore, from_t, to_t, topic, "", 10, 0, false);
 
 		System.out.println("Returned log data count:" + res.GetCount());
-		for (QueriedLog log : res.GetLogs()) {
+		for (QueriedLog log : res.getLogs()) {
 			System.out.println("source : " + log.GetSource());
 			LogItem item = log.GetLogItem();
 			System.out.println("time : " + item.mLogTime);
@@ -102,9 +102,9 @@ public class SlsSample {
 			try {
 				client.PutLogs(project, logStore, topic, logGroup, "");
 			} catch (LogException e) {
-				System.out.println("error code :" + e.GetErrorCode());
-				System.out.println("error message :" + e.GetErrorMessage());
-				System.out.println("error requestId :" + e.GetRequestId());
+				System.out.println("error code :" + e.getErrorCode());
+				System.out.println("error message :" + e.getMessage());
+				System.out.println("error requestId :" + e.getRequestId());
 				throw e;
 			}
 
@@ -123,9 +123,9 @@ public class SlsSample {
 			System.out.println("ListLogs:" + logStores.toString() + "\n");
 		} catch (LogException e) {
 			System.out.print(e.getCause());
-			System.out.println("error code :" + e.GetErrorCode());
-			System.out.println("error message :" + e.GetErrorMessage());
-			System.out.println("error requestId :" + e.GetRequestId());
+			System.out.println("error code :" + e.getErrorCode());
+			System.out.println("error message :" + e.getMessage());
+			System.out.println("error requestId :" + e.getRequestId());
 			throw e;
 		}
 
@@ -149,9 +149,9 @@ public class SlsSample {
 			}
 			System.out.println("");
 		} catch (LogException e) {
-			System.out.println("error code :" + e.GetErrorCode());
-			System.out.println("error message :" + e.GetErrorMessage());
-			System.out.println("error requestId :" + e.GetRequestId());
+			System.out.println("error code :" + e.getErrorCode());
+			System.out.println("error message :" + e.getMessage());
+			System.out.println("error requestId :" + e.getRequestId());
 			throw e;
 		}
 
@@ -166,7 +166,7 @@ public class SlsSample {
 			GetLogsResponse logsResponse = client.GetLogs(project, logStore,
 					from, to, topic, query, 10, 0, false);
 			System.out.println("Returned log data count:" + logsResponse.GetCount());
-			for (QueriedLog log : logsResponse.GetLogs()) {
+			for (QueriedLog log : logsResponse.getLogs()) {
 				System.out.println("source : " + log.GetSource());
 				LogItem item = log.GetLogItem();
 				System.out.println("time : " + item.mLogTime);
@@ -175,8 +175,8 @@ public class SlsSample {
 				}
 			}
 		} catch (LogException e) {
-			System.out.println("error code :" + e.GetErrorCode());
-			System.out.println("error message :" + e.GetErrorMessage());
+			System.out.println("error code :" + e.getErrorCode());
+			System.out.println("error message :" + e.getMessage());
 			throw e;
 		}
 
@@ -198,8 +198,8 @@ public class SlsSample {
 				}
 			}
 		} catch (LogException e) {
-			System.out.println("error code :" + e.GetErrorCode());
-			System.out.println("error message :" + e.GetErrorMessage());
+			System.out.println("error code :" + e.getErrorCode());
+			System.out.println("error message :" + e.getMessage());
 			throw e;
 		}
 
@@ -218,8 +218,8 @@ public class SlsSample {
 				}
 			}
 		} catch (LogException e) {
-			System.out.println("error code :" + e.GetErrorCode());
-			System.out.println("error message :" + e.GetErrorMessage());
+			System.out.println("error code :" + e.getErrorCode());
+			System.out.println("error message :" + e.getMessage());
 			throw e;
 		}
 	}

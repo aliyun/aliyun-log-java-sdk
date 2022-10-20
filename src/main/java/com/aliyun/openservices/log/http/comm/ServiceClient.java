@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.http.client.ServiceException;
 import com.aliyun.openservices.log.http.utils.HttpUtil;
 import com.aliyun.openservices.log.util.Args;
+import org.apache.http.conn.HttpClientConnectionManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -76,21 +77,43 @@ public abstract class ServiceClient {
 
     private ResponseMessage sendRequestImpl(RequestMessage request,
                                             String charset) throws ClientException, ServiceException {
-        InputStream content = request.getContent();
+        InputStream requestContent = request.getContent();
 
-        if (content != null && content.markSupported()) {
-            content.mark(DEFAULT_MARK_LIMIT);
+        if (requestContent != null && requestContent.markSupported()) {
+            requestContent.mark(DEFAULT_MARK_LIMIT);
         }
 
-        try {
-            Request httpRequest = buildRequest(request, charset);
-            return sendRequestCore(httpRequest, charset);
-        } catch (ServiceException ex) {
-            throw ex;
-        } catch (ClientException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new ClientException(ex.getMessage(), ex);
+        int retries = 0;
+        RetryStrategy retryStrategy = config.getRetryStrategy() != null ? config.getRetryStrategy()
+                : this.getDefaultRetryStrategy();
+
+        while (true) {
+            try {
+                if (retries > 0) {
+                    pause(retries, retryStrategy);
+                    if (requestContent != null && requestContent.markSupported()) {
+                        try {
+                            requestContent.reset();
+                        } catch (IOException ex) {
+                            throw new ClientException("Failed to reset the request input stream: ", ex);
+                        }
+                    }
+                }
+                Request httpRequest = buildRequest(request, charset);
+                return sendRequestCore(httpRequest, charset);
+            } catch (ServiceException sex) {
+                if (!shouldRetry(sex, request, retries, retryStrategy)) {
+                    throw sex;
+                }
+            } catch (ClientException cex) {
+                if (!shouldRetry(cex, request, retries, retryStrategy)) {
+                    throw cex;
+                }
+            } catch (Exception ex) {
+                throw new ClientException(ex.getMessage(), ex);
+            } finally {
+                retries++;
+            }
         }
     }
 
@@ -104,6 +127,35 @@ public abstract class ServiceClient {
      */
     protected abstract ResponseMessage sendRequestCore(Request request, String charset)
             throws Exception;
+
+    private void pause(int retries, RetryStrategy retryStrategy) throws ClientException {
+        long delay = retryStrategy.getPauseDelay(retries);
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            throw new ClientException(e.getMessage(), e);
+        }
+    }
+
+    private boolean shouldRetry(Exception exception, RequestMessage request,
+                                int retries,
+                                RetryStrategy retryStrategy) {
+
+        if (retries >= config.getMaxErrorRetry()) {
+            return false;
+        }
+
+        if (!request.isRepeatable()) {
+            return false;
+        }
+
+        if (retryStrategy.shouldRetry(exception, request, retries)) {
+            return true;
+        }
+        return false;
+    }
+
+    protected abstract RetryStrategy getDefaultRetryStrategy();
 
     private Request buildRequest(RequestMessage requestMessage, String charset)
             throws ClientException {
@@ -162,5 +214,7 @@ public abstract class ServiceClient {
     }
 
     public abstract void shutdown();
+
+    public abstract HttpClientConnectionManager getConnectionManager();
 }
 

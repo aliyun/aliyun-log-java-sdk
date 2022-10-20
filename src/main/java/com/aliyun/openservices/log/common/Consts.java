@@ -152,7 +152,10 @@ public class Consts {
     public static final String CONST_LINE = "line";
     public static final String CONST_OFFSET = "offset";
     public static final String CONST_REVERSE = "reverse";
-    public static final String CONST_POWER_SQL="powerSql";
+    public static final String CONST_POWER_SQL = "powerSql";
+    public static final String CONST_FORWARD = "forward";
+    public static final String CONST_SHARD = "shard";
+    public static final String CONST_SESSION = "session";
     public static final String CONST_QUERY = "query";
     public static final String CONST_TOKEN = "token";
     public static final String CONST_CURSOR = "cursor";
@@ -163,6 +166,7 @@ public class Consts {
     public static final String CONST_PRINCIPLEID = "principleId";
     public static final String CONST_LOGSTORE_NAME = "logstoreName";
     public static final String CONST_TETEMETRY_TYPE = "telemetryType";
+    public static final String CONST_LOGSTORE_MODE = "mode";
     public static final String CONST_SPLIT_MID_HASH = "key";
     public static final String CONST_SPLIT_SHARDCOUNT = "shardCount";
     public static final String CONST_ACTION = "action";
@@ -282,9 +286,8 @@ public class Consts {
 
     public static final String CONST_LOCAL_IP = "127.0.0.1";
     public static int CONST_MAX_PUT_SIZE = 50 * 1024 * 1024;
-    public static int CONST_MAX_PUT_LINES = 40960;
+    public static int CONST_MAX_POST_BODY_SIZE = 10 * 1024 * 1024;
 
-    public static final int CONST_UN_AUTHORIZATION_CODE = 401;
     public static final int CONST_HTTP_OK = 200;
     public static int HTTP_CONNECT_MAX_COUNT = 1000;
     public static int HTTP_CONNECT_TIME_OUT = 5 * 1000;
@@ -307,6 +310,7 @@ public class Consts {
     public static final String CONST_PROJECTOWNER = "owner";
     public static final String CONST_PROJECTDESC = "description";
     public static final String CONST_PROJECTREGION = "region";
+    public static final String CONST_QUOTA = "quota";
 
     // domain
     public static final String CONST_DOMAIN_URI = "/domains";
@@ -409,6 +413,73 @@ public class Consts {
     public static final String RESOURCE_JSON_PATH = "jsonPath";
     public static final String RESOURCE_JSON_PATH_VALUE = "jsonPathValue";
 
+    public static final String TOPOSTORE_URI = "/topostores";
+    public static final String TOPOSTORE_OWNER = "owner";
+    public static final String TOPOSTORE_NAME = "name";
+    public static final String TOPOSTORE_NAME_LIST = "names";
+    public static final String TOPOSTORE_TAG = "tag";
+    public static final String TOPOSTORE_TAG_KEY = "tagKey";
+    public static final String TOPOSTORE_SCHEMA = "schema";
+    public static final String TOPOSTORE_EXTINFO = "extInfo";
+    public static final String TOPOSTORE_ACL = "acl";
+    public static final String TOPOSTORE_TAG_VALUE = "tagValue";
+    public static final String TOPOSTORE_TAGS = "tags";
+    public static final String TOPOSTORE_LIST_OFFSET = "offset";
+    public static final String TOPOSTORE_LIST_LIMIT = "limit";
+    public static final String TOPOSTORE_DESCRIPTION = "description";
+    public static final String TOPOSTORE_CREATE_TIME = "createTime";
+    public static final String TOPOSTORE_LAST_MODIFY_TIME = "lastModifyTime";
+
+    public static final String TOPOSTORE_NODE_ID = "nodeId";
+    public static final String TOPOSTORE_NODE_ID_LIST = "nodeIds";
+    public static final String TOPOSTORE_NODE_TYPE = "nodeType";
+    public static final String TOPOSTORE_NODE_TYPE_LIST = "nodeTypes";
+    public static final String TOPOSTORE_NODE_PROPERTY = "property";
+    public static final String TOPOSTORE_NODE_PROPERTY_KEY = "propertyKey";
+    public static final String TOPOSTORE_NODE_PROPERTY_VALUE = "propertyValue";
+    public static final String TOPOSTORE_NODE_PROPERTIES = "properties";
+    public static final String TOPOSTORE_NODE_DESCRIPTION = "description";
+    public static final String TOPOSTORE_NODE_DISPLAY_NAME = "displayName";
+    public static final String TOPOSTORE_NODE_CREATE_TIME = "createTime";
+    public static final String TOPOSTORE_NODE_LAST_MODIFY_TIME = "lastModifyTime";
+    public static final String TOPOSTORE_NODE_COUNT = "count";
+    public static final String TOPOSTORE_NODE_TOTAL = "total";
+    public static final String TOPOSTORE_NODE_ITEMS = "items";
+
+    public static final String TOPOSTORE_RELATION_ID = "relationId";
+    public static final String TOPOSTORE_RELATION_ID_LIST = "relationIds";
+    public static final String TOPOSTORE_RELATION_SRC_NODE_ID = "srcNodeId";
+    public static final String TOPOSTORE_RELATION_SRC_NODE_ID_LIST = "srcNodeIds";
+    public static final String TOPOSTORE_RELATION_DST_NODE_ID = "dstNodeId";
+    public static final String TOPOSTORE_RELATION_DST_NODE_ID_LIST = "dstNodeIds";
+    public static final String TOPOSTORE_RELATION_TYPE = "relationType";
+    public static final String TOPOSTORE_RELATION_TYPE_LIST = "relationTypes";
+    public static final String TOPOSTORE_RELATION_PROPERTY = "property";
+    public static final String TOPOSTORE_RELATION_PROPERTY_KEY = "propertyKey";
+    public static final String TOPOSTORE_RELATION_PROPERTIES = "properties";
+    public static final String TOPOSTORE_RELATION_DESCRIPTION = "description";
+    public static final String TOPOSTORE_RELATION_DISPLAY_NAME = "displayName";
+    public static final String TOPOSTORE_RELATION_PROPERTY_VALUE = "propertyValue";
+    public static final String TOPOSTORE_RELATION_CREATE_TIME = "createTime";
+    public static final String TOPOSTORE_RELATION_LAST_MODIFY_TIME = "lastModifyTime";
+    public static final String TOPOSTORE_RELATION_COUNT = "count";
+    public static final String TOPOSTORE_RELATION_TOTAL = "total";
+    public static final String TOPOSTORE_RELATION_ITEMS = "items";
+    public static final String TOPOSTORE_RELATION_DIRECTION_IN = "in";
+    public static final String TOPOSTORE_RELATION_DIRECTION_OUT = "out";
+    public static final String TOPOSTORE_RELATION_DIRECTION_BOTH = "both";
+
+    public static final String ERROR_CODE_TOPOSTORE_NOT_EXIST = "TopostoreNotExist";
+    public static final String ERROR_CODE_TOPOSTORE_NODE_NOT_EXIST = "TopostoreNodeNotExist";
+    public static final String ERROR_CODE_TOPOSTORE_RELATION_NOT_EXIST = "TopostoreRelationNotExist";
+    public static final String ERROR_CODE_TOPOSTORE_ALREADY_EXIST = "TopostoreAlreadyExist";
+    public static final String ERROR_CODE_TOPOSTORE_NODE_ALREADY_EXIST = "TopostoreNodeAlreadyExist";
+    public static final String ERROR_CODE_TOPOSTORE_RELATION_ALREADY_EXIST = "TopostoreRelationAlreadyExist";
+    public static final String ERROR_CODE_TOPOSTORE_QUOTA_EXCEED = "TopostoreQuotaExceed";
+    public static final String ERROR_CODE_TOPOSTORE_NODE_QUOTA_EXCEED = "TopostoreNodeQuotaExceed";
+    public static final String ERROR_CODE_TOPOSTORE_RELATION_QUOTA_EXCEED = "TopostoreRelationQuotaExceed";
+    public static final String ERROR_CODE_REGION_TOPOSTORE_IS_READONLY = "RegionTopostoreIsReadOnly";
+
     public static final String LOGGING_URI = "/logging";
     public static final String METHOD = "method";
     public static final String MOBILE_LIST = "mobileList";
@@ -421,6 +492,7 @@ public class Consts {
 
     public static final String STOP = "STOP";
     public static final String START = "START";
+    public static final String RESTART = "RESTART";
     public static final String DASHBOARD_NAME_KEY = "dashboardName";
     public static final String LOGSTORE_KEY = "logstore";
     public static final String JOB_SCHEDULE_URI = "/jobschedules";
@@ -432,6 +504,6 @@ public class Consts {
     public static final String JOB_INSTANCES_START_TIME = "start";
     public static final String JOB_INSTANCES_END_TIME = "end";
     public static final String SCHEDULED_SQL_RUNNING = "RUNNING";
-    
+
     public static final String INVALID_LOG_TIME = "InvalidLogTime";
 }

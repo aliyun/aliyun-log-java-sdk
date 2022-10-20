@@ -27,7 +27,7 @@ import static org.junit.Assert.fail;
 
 public class SubStoreTest extends FunctionTest {
     static int timestamp = getNowTimestamp();
-    static String PROJECT = "test-substore-project-" + timestamp;
+    static String PROJECT = makeProjectName();
     static String LOGSTORE1 = "test-substore-logstore-" + timestamp;
 
     @Before
@@ -91,7 +91,7 @@ public class SubStoreTest extends FunctionTest {
         try {
             client.updateSubStore(PROJECT, LOGSTORE1, subStore);
             fail();
-        }catch (LogException e){
+        } catch (LogException e) {
             assertEquals(e.GetErrorMessage(), "this method is not implemented for metric store not Implemented yet!");
             assertEquals(e.GetErrorCode(), "NotImplemented");
             assertEquals(e.GetHttpCode(), 501);

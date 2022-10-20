@@ -13,4 +13,5 @@ public final class ErrorCodes {
      * Request times out.
      */
     public  static final String REQUEST_TIMEOUT = "RequestTimeout";
+    public  static final String INVALID_PARAMETER = "InvalidParameter";
 }

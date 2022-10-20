@@ -37,4 +37,9 @@ public interface ClientErrorCode {
      * The input stream is not repeatable for reading.
      */
     String NONREPEATABLE_REQUEST = "NonRepeatableRequest";
+
+    /**
+     * Ssl exception
+     */
+    String SSL_EXCEPTION = "SslException";
 }

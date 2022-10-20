@@ -105,9 +105,35 @@ public class LogException extends Exception {
      * Set the http response code
      *
      * @param httpCode http code, -1 the error is happened in the client
+     * @deprecated Use setHttpCode(int httpCode) instead.
      */
+    @Deprecated
     public void SetHttpCode(int httpCode) {
         this.httpCode = httpCode;
+    }
+
+    public int getHttpCode() {
+        return httpCode;
+    }
+
+    public void setHttpCode(int httpCode) {
+        this.httpCode = httpCode;
+    }
+
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     @Override
@@ -115,6 +141,7 @@ public class LogException extends Exception {
         return "LogException{" +
                 "httpCode=" + httpCode +
                 ", errorCode='" + errorCode + '\'' +
+                ", message='" + GetErrorMessage() + '\'' +
                 ", requestId='" + requestId + '\'' +
                 '}';
     }

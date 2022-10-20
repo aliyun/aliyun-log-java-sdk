@@ -4,6 +4,7 @@
 package com.aliyun.openservices.log.http.client;
 
 import com.aliyun.openservices.log.http.comm.Protocol;
+import com.aliyun.openservices.log.http.comm.RetryStrategy;
 
 /**
  * The client configuration for accessing Aliyun Log Service.
@@ -34,8 +35,26 @@ public class ClientConfiguration {
     protected int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
     protected boolean useReaper = DEFAULT_USE_REAPER;
     private boolean connManagerShared = false;
+    private RetryStrategy retryStrategy;
+    private int maxErrorRetry = 3;
 
     public ClientConfiguration() {
+    }
+
+    public RetryStrategy getRetryStrategy() {
+        return retryStrategy;
+    }
+
+    public void setRetryStrategy(RetryStrategy retryStrategy) {
+        this.retryStrategy = retryStrategy;
+    }
+
+    public int getMaxErrorRetry() {
+        return maxErrorRetry;
+    }
+
+    public void setMaxErrorRetry(int maxErrorRetry) {
+        this.maxErrorRetry = maxErrorRetry;
     }
 
     /**

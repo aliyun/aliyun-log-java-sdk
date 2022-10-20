@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class MetricAggRulesTest extends FunctionTest {
-    private static final String TEST_PROJECT = "test-metric-agg-project-" + getNowTimestamp();
+    private static final String TEST_PROJECT = makeProjectName();
     private static final String TEST_LOG_STORE = "test_logstore";
     private static final String TEST_METRIC_STORE = "test_metricstore";
     private static final String TEST_METRIC_STORE1 = "test_metricstore1";

@@ -9,7 +9,7 @@ java sdk 是对所有log service 提供的API的封装，通过该sdk，可以�
 
 String accessId = "your_access_id";
 String accessKey = "your_access_key";
-String host = "cn-hangzhou-staging-intranet.sls.aliyuncs.com";
+String host = "your_endpoint";
 Client client = new Client(host, accessId, accessKey);
 
 ```
@@ -97,7 +97,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.33</version>
+    <version>0.6.64</version>
 </dependency>
 ```
 
@@ -107,7 +107,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.28</version>
+    <version>0.6.64</version>
     <classifier>jar-with-dependencies</classifier>
     <exclusions>
         <exclusion>

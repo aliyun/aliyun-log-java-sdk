@@ -7,6 +7,7 @@ import com.aliyun.openservices.log.exception.LogException;
 public class SqlInstance {
     String name;
     int cu;
+    boolean useAsDefault;
     int createTime;
     int updateTime;
 
@@ -22,9 +23,14 @@ public class SqlInstance {
         return updateTime;
     }
 
-    public SqlInstance(String name, int cu, int createTime, int updateTime) {
+    public boolean isUseAsDefault() {
+        return useAsDefault;
+    }
+
+    public SqlInstance(String name, int cu, boolean useAsDefault, int createTime, int updateTime) {
         this.name = name;
         this.cu = cu;
+        this.useAsDefault = useAsDefault;
         this.createTime = createTime;
         this.updateTime = updateTime;
     }
@@ -37,6 +43,9 @@ public class SqlInstance {
             cu = object.getInteger("cu");
             createTime = object.getInteger("createTime");
             updateTime = object.getInteger("updateTime");
+            if(object.containsKey("useAsDefault")) {
+                this.useAsDefault = object.getBoolean("useAsDefault");
+            }
         }
         catch (JSONException e) {
             throw new LogException("failed to generate sql instance", e.getMessage(),e,"");

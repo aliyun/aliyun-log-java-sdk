@@ -31,7 +31,7 @@ import static org.junit.Assert.fail;
 
 public class RebuildIndexFunctionTest extends FunctionTest {
 
-    private static final String project = "test-project-to-alert-" + getNowTimestamp();
+    private static final String project = makeProjectName();
     private static final String logstore = "test_rebuild_index_" + getNowTimestamp();
     private static final String jobName = "rebuild-index-6";
 

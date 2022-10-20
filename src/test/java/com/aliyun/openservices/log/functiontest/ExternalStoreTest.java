@@ -36,7 +36,7 @@ public class ExternalStoreTest extends MetaAPIBaseFunctionTest {
             fail("Already exists");
         } catch (LogException ex) {
             assertEquals("ParameterInvalid", ex.GetErrorCode());
-            assertEquals(400, ex.GetHttpCode());
+            assertEquals(400, ex.getHttpCode());
         }
 
         //get
@@ -86,8 +86,8 @@ public class ExternalStoreTest extends MetaAPIBaseFunctionTest {
             client.createExternalStore(createRequest);
             fail("Already exists");
         } catch (LogException ex) {
-            assertEquals("ParameterInvalid", ex.GetErrorCode());
-            assertEquals(400, ex.GetHttpCode());
+            assertEquals("ParameterInvalid", ex.getErrorCode());
+            assertEquals(400, ex.getHttpCode());
         }
 
 //        注意，此处会返回创建者的accessid和accesskey

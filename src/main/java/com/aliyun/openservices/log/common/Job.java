@@ -61,6 +61,9 @@ public class Job implements Serializable {
     @JSONField
     private JobState state;
 
+    @JSONField
+    private String status;
+
     /**
      * The configuration of job.
      */
@@ -105,6 +108,15 @@ public class Job implements Serializable {
 
     public void setState(JobState state) {
         this.state = state;
+    }
+
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public JobConfiguration getConfiguration() {
@@ -155,6 +167,8 @@ public class Job implements Serializable {
                 return new IngestionConfiguration();
             case REBUILD_INDEX:
                 return new RebuildIndexConfiguration();
+            case SCHEDULED_SQL:
+                return new ScheduledSQLConfiguration();
             default:
                 return null;
         }
@@ -167,6 +181,9 @@ public class Job implements Serializable {
         if (value.containsKey("state")) {
             state = JobState.fromString(value.getString("state"));
         }
+        if (value.containsKey("status")) {
+            status = value.getString("status");
+        }
         description = JsonUtils.readOptionalString(value, "description");
         if (value.containsKey("createTime")) {
             createTime = Utils.timestampToDate(value.getLong("createTime"));
@@ -174,8 +191,10 @@ public class Job implements Serializable {
         if (value.containsKey("lastModifiedTime")) {
             lastModifiedTime = Utils.timestampToDate(value.getLong("lastModifiedTime"));
         }
-        schedule = new JobSchedule();
-        schedule.deserialize(value.getJSONObject("schedule"));
+        if (value.containsKey("schedule")) {
+            schedule = new JobSchedule();
+            schedule.deserialize(value.getJSONObject("schedule"));
+        }
         configuration = createConfiguration(type);
         if (configuration != null) {
             configuration.deserialize(value.getJSONObject("configuration"));

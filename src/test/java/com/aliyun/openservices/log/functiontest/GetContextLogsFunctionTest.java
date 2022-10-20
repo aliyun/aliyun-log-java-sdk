@@ -104,7 +104,7 @@ public class GetContextLogsFunctionTest extends LogTest {
                     getNowTimestamp() - 120, getNowTimestamp() + 60, "",
                     "__tag__:__pack_id__:" + startPackID + "|with_pack_meta");
             assertEquals(response.GetCount(), 100);
-            PackInfo info = extractPackInfo(response.GetLogs().get(0));
+            PackInfo info = extractPackInfo(response.getLogs().get(0));
             assertEquals(info.packID, startPackID);
             startPackMeta = info.packMeta;
         }

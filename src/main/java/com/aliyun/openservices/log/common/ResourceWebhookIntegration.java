@@ -19,6 +19,8 @@ public class ResourceWebhookIntegration implements Serializable {
     private String type;
     @JSONField(name = "headers")
     private List<Header> headers;
+    @JSONField(name = "secret")
+    private String secret;
 
     public String getId() {
         return id;
@@ -66,6 +68,14 @@ public class ResourceWebhookIntegration implements Serializable {
 
     public void setHeaders(List<Header> headers) {
         this.headers = headers;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 
     public static class Header {

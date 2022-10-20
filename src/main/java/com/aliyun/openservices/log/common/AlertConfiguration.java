@@ -85,6 +85,9 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     @JSONField
     private PolicyConfiguration policyConfiguration;
 
+    @JSONField
+    private List<String> tags;
+
     public String getCondition() {
         return condition;
     }
@@ -174,6 +177,9 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         notifyThreshold = JsonUtils.readOptionalInt(value, "notifyThreshold");
         throttling = JsonUtils.readOptionalString(value, "throttling");
         sendRecoveryMessage = JsonUtils.readBool(value, "sendRecoveryMessage", false);
+        if (value.containsKey("tags")) {
+            tags = JsonUtils.readStringList(value, "tags");
+        }
     }
 
     private void deserializeAlert2(JSONObject value) {
@@ -258,6 +264,10 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         policyConfiguration = new PolicyConfiguration();
         if (value.containsKey("policyConfiguration") && value.getJSONObject("policyConfiguration") != null) {
             policyConfiguration.deserialize(value.getJSONObject("policyConfiguration"));
+        }
+
+        if (value.containsKey("tags")) {
+            tags = JsonUtils.readStringList(value, "tags");
         }
     }
 
@@ -419,6 +429,14 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
 
     public void setPolicyConfiguration(PolicyConfiguration policyConfiguration) {
         this.policyConfiguration = policyConfiguration;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     public enum Severity {

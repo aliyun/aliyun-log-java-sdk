@@ -6,7 +6,9 @@ import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.NonRepeatableRequestException;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.HttpHostConnectException;
 
+import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -19,6 +21,8 @@ public class ExceptionFactory {
 
         if (ex instanceof SocketTimeoutException) {
             errorCode = ClientErrorCode.SOCKET_TIMEOUT;
+        } else if (ex instanceof HttpHostConnectException) {
+            errorCode = ClientErrorCode.CONNECTION_REFUSED;
         } else if (ex instanceof SocketException) {
             errorCode = ClientErrorCode.SOCKET_EXCEPTION;
         } else if (ex instanceof ConnectTimeoutException) {
@@ -27,6 +31,8 @@ public class ExceptionFactory {
             errorCode = ClientErrorCode.UNKNOWN_HOST;
         } else if (ex instanceof NoHttpResponseException) {
             errorCode = ClientErrorCode.CONNECTION_TIMEOUT;
+        } else if (ex instanceof SSLException) {
+            errorCode = ClientErrorCode.SSL_EXCEPTION;
         } else if (ex instanceof ClientProtocolException) {
             Throwable cause = ex.getCause();
             if (cause instanceof NonRepeatableRequestException) {
