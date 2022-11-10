@@ -156,7 +156,7 @@ public class AliyunOSSSink extends DataSink {
         } else if ("json".equals(contentType)) {
             contentDetail = new ExportContentJsonDetail();
         } else {
-            throw new RuntimeException("ContentType should be json/csv/parquet");
+            throw new RuntimeException("ContentType should be json/csv/parquet/orc");
         }
         contentDetail.deserialize(obj);
     }

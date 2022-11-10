@@ -22,6 +22,6 @@ public class ExportContentJsonDetail extends ExportContentDetail {
 
     @Override
     public void deserialize(JSONObject value) {
-        enableTag = value.getBoolean("enableTag");
+        enableTag = value.getBooleanValue("enableTag");
     }
 }

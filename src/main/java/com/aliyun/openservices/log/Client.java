@@ -3721,6 +3721,12 @@ public class Client implements LogService {
 	@Override
 	public CreateProjectResponse CreateProject(String project,
 			String projectDescription) throws LogException {
+		return createProject(project, projectDescription, null);
+	}
+
+	@Override
+	public CreateProjectResponse createProject(String project,
+			String projectDescription, String resourceGroupId) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		if (projectDescription == null) {
 			projectDescription = "";
@@ -3730,6 +3736,9 @@ public class Client implements LogService {
 		JSONObject jsonBody = new JSONObject();
         jsonBody.put("projectName", project);
         jsonBody.put("description", projectDescription);
+		if (resourceGroupId != null) {
+			jsonBody.put("resourceGroupId", resourceGroupId);
+		}
 		byte[] body = encodeToUtf8(jsonBody.toString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -3777,6 +3786,25 @@ public class Client implements LogService {
                 Collections.<String, String>emptyMap(), headers, JsonUtils.serialize(request.getBody()));
         return new UpdateProjectResponse(response.getHeaders());
     }
+
+	@Override
+	public ChangeResourceGroupResponse changeResourceGroup(String resourceType, String resourceId, String resourceGroupId) throws  LogException {
+		CodingUtils.assertStringNotNullOrEmpty(resourceType, "resourceType");
+		CodingUtils.assertStringNotNullOrEmpty(resourceId, "resourceId");
+		CodingUtils.assertStringNotNullOrEmpty(resourceGroupId, "resourceGroupId");
+		Map<String, String> headParameter = GetCommonHeadPara("");
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		String resourceUri = "/resourcegroup";
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("resourceType", resourceType);
+		jsonBody.put("resourceId", resourceId);
+		jsonBody.put("resourceGroupId", resourceGroupId);
+		byte[] body = encodeToUtf8(jsonBody.toString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		ResponseMessage response = SendData(resourceId, HttpMethod.PUT, resourceUri, urlParameter, headParameter, body);
+		Map<String, String> resHeaders = response.getHeaders();
+		return new ChangeResourceGroupResponse(resHeaders);
+	}
 
 	@Override
 	public UpdateMachineGroupMachineResponse AddMachineIntoMahineGroup(

@@ -18,6 +18,7 @@ public class GetProjectResponse extends Response {
 
     private String mDescription = "";
     private String mStatus = "";
+    private String mResourceGroup = "";
 
     private String mRegion = "";
     private String mOwner = "";
@@ -31,6 +32,7 @@ public class GetProjectResponse extends Response {
         try {
             mDescription = obj.getString("description");
             mStatus = obj.getString("status");
+            mResourceGroup = obj.getString("resourceGroupId");
             mRegion = obj.getString("region");
             mOwner = obj.getString("owner");
             quota = ProjectQuota.parseFromJSON(obj.getJSONObject(Consts.CONST_QUOTA));
@@ -46,6 +48,10 @@ public class GetProjectResponse extends Response {
 
     public String GetProjectStatus() {
         return mStatus;
+    }
+
+    public String getResourceGroupId() {
+        return mResourceGroup;
     }
 
     public String GetProjectRegion() {

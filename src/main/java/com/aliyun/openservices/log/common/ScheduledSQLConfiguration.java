@@ -184,6 +184,9 @@ public class ScheduledSQLConfiguration extends JobConfiguration {
         } else if ("metric2metric".equals(dataFormat)) {
             parameters = new Metric2MetricParameters();
             parameters.deserialize(value.getJSONObject("parameters"));
+        } else if (value.containsKey("parameters")) {
+            parameters = new ScheduledSQLBaseParameters();
+            parameters.deserialize(value.getJSONObject("parameters"));
         }
     }
 
