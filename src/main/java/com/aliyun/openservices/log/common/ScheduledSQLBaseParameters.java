@@ -15,6 +15,7 @@ public class ScheduledSQLBaseParameters implements ScheduledSQLParameters {
 
     public ScheduledSQLBaseParameters() {
         baseParams = new HashMap<String, String>();
+        fields.add("__task_type__");
     }
 
     public void withFields(String... fields) {

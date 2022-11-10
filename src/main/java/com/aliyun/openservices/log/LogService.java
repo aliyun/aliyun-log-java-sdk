@@ -2772,6 +2772,8 @@ public interface LogService {
     CreateProjectResponse CreateProject(String project,
                                         String projectDescription) throws LogException;
 
+	CreateProjectResponse createProject(String project, String projectDescription, String resourceGroupId) throws LogException;
+
 	/**
 	 * get a project
 	 *
@@ -2843,6 +2845,8 @@ public interface LogService {
 	 * @return A instance of {@link UpdateProjectResponse}
 	 */
 	UpdateProjectResponse updateProject(UpdateProjectRequest request) throws LogException;
+
+	ChangeResourceGroupResponse changeResourceGroup(String resourceType, String resourceId, String resourceGroupId) throws  LogException;
 
 	/**
 	 * list project

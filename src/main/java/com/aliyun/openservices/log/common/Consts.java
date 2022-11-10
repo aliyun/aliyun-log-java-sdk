@@ -310,6 +310,7 @@ public class Consts {
     public static final String CONST_PROJECTOWNER = "owner";
     public static final String CONST_PROJECTDESC = "description";
     public static final String CONST_PROJECTREGION = "region";
+    public static final String CONST_RESOURCEGROUPID = "resourceGroupId";
     public static final String CONST_QUOTA = "quota";
 
     // domain

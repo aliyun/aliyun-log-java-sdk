@@ -19,6 +19,7 @@ public class Project implements Serializable {
     protected String region = "";
     protected String createTime = "";
     protected String lastModifyTime = "";
+    protected String resourceGroupId;
     private ProjectQuota quota;
 
     public Project() {
@@ -35,6 +36,7 @@ public class Project implements Serializable {
         this.region = region;
         this.createTime = createTime;
         this.lastModifyTime = lastModifyTime;
+        this.resourceGroupId = "";
     }
 
     public Project(Project project) {
@@ -46,6 +48,7 @@ public class Project implements Serializable {
         this.region = project.getRegion();
         this.createTime = project.getCreateTime();
         this.lastModifyTime = project.getLastModifyTime();
+        this.resourceGroupId = project.getResourceGroupId();
     }
 
     public String getProjectName() {
@@ -96,6 +99,14 @@ public class Project implements Serializable {
         this.createTime = createTime;
     }
 
+    public String getResourceGroupId() {
+        return resourceGroupId;
+    }
+
+    public void setResourceGroupId(String resourceGroupId) {
+        this.resourceGroupId = resourceGroupId;
+    }
+
     public String getLastModifyTime() {
         return lastModifyTime;
     }
@@ -119,6 +130,7 @@ public class Project implements Serializable {
         projectDict.put(Consts.CONST_PROJECTOWNER, getProjectOwner());
         projectDict.put(Consts.CONST_PROJECTDESC, getProjectDesc());
         projectDict.put(Consts.CONST_PROJECTREGION, getRegion());
+        projectDict.put(Consts.CONST_RESOURCEGROUPID, getResourceGroupId());
         return projectDict;
     }
 
@@ -146,6 +158,7 @@ public class Project implements Serializable {
             setRegion(dict.getString(Consts.CONST_PROJECTREGION));
             setCreateTime(dict.getString(Consts.CONST_CREATTIME));
             setLastModifyTime(dict.getString(Consts.CONST_LASTMODIFYTIME));
+            setResourceGroupId(dict.getString(Consts.CONST_RESOURCEGROUPID));
             setQuota(ProjectQuota.parseFromJSON(dict.getJSONObject(Consts.CONST_QUOTA)));
         } catch (JSONException e) {
             throw new LogException("FailToGenerateProject", e.getMessage(), e, "");
