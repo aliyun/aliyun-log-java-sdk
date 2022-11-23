@@ -363,8 +363,6 @@ class ScmSampleClient {
 	
 	public void CreateMachineGroup() {
 		//Construct machineGroup type1: using ArrayList<Machine> to create machinelist
-		String groupType = "Armory";
-		String externalName = "testgroup";
 		String groupTopic = "testtopic";
 		
 		ArrayList<String> machineList = new ArrayList<String>();
@@ -372,8 +370,6 @@ class ScmSampleClient {
 		machineList.add("127.0.0.2");
 		
 		MachineGroup group = new MachineGroup(testMachineGroupName, "ip", machineList);
-		group.SetGroupType(groupType);
-		group.SetExternalName(externalName);
 		group.SetGroupTopic(groupTopic);
 		
 		try {
@@ -388,19 +384,16 @@ class ScmSampleClient {
 	}
 	public void UpdateMachineGroup() {
 		//Construct machineGroup type2: using JSONArray to create machinelist
-		String groupType = "";
-		String externalName = "testgroup2";
 		String groupTopic = "testtopic2";
 		
 		ArrayList<String> machineList = new ArrayList<String>();
 		machineList.add("uu_id_1");
 		machineList.add("uu_id_2");
 		
-		GroupAttribute groupAttribute = new GroupAttribute(externalName, groupTopic);
+		GroupAttribute groupAttribute = new GroupAttribute("", groupTopic);
 		
 		MachineGroup group = new MachineGroup(testMachineGroupName, "userdefined", machineList);
 
-		group.SetGroupType(groupType);
 		group.SetGroupAttribute(groupAttribute);
 		
 		try {
