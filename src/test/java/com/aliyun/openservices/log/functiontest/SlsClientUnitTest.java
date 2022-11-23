@@ -381,11 +381,9 @@ public class SlsClientUnitTest {
     public void TestExtractMachineGroupFromResponse() {
         JSONObject jObj = new JSONObject();
         jObj.put("groupName", "testgroup");
-        jObj.put("groupType", "Armory");
         jObj.put("machineIdentifyType", "uuid");
 
         JSONObject groupAttribute = new JSONObject();
-        groupAttribute.put("externalName", "testgroupX");
         groupAttribute.put("groupTopic", "topic");
         jObj.put("groupAttribute", groupAttribute);
 
@@ -407,9 +405,7 @@ public class SlsClientUnitTest {
         }
 
         assertEquals(group.GetGroupName(), "testgroup");
-        assertEquals(group.GetGroupType(), "Armory");
         assertEquals(group.GetMachineIdentifyType(), "uuid");
-        assertEquals(group.GetExternalName(), "testgroupX");
         assertEquals(group.GetGroupTopic(), "topic");
 
         assertEquals(group.GetMachineList().size(), machineList.size());
@@ -921,8 +917,6 @@ public class SlsClientUnitTest {
 
         String testGroupName = "test_group";
         String machineIdentifyType = "uuid";
-        String groupType = "Armory";
-        String externalName = "testgroup";
 
         ArrayList<String> machineList = new ArrayList<String>();
         machineList.add("UUID1");
@@ -930,8 +924,6 @@ public class SlsClientUnitTest {
 
         MachineGroup group = new MachineGroup(testGroupName, "userdefined", machineList);
         group.SetMachineIdentifyType(machineIdentifyType);
-        group.SetGroupType(groupType);
-        group.SetExternalName(externalName);
 
         String project = "test-project";
 
@@ -1049,8 +1041,6 @@ public class SlsClientUnitTest {
 
         String testGroupName = "test_group";
         String machineIdentifyType = "uuid";
-        String groupType = "";
-        String externalName = "testgroup2";
         String groupTopic = "groupTopic2";
 
         ArrayList<String> machineList = new ArrayList<String>();
@@ -1058,8 +1048,6 @@ public class SlsClientUnitTest {
 
         MachineGroup group = new MachineGroup(testGroupName, "userdefined", machineList);
         group.SetMachineIdentifyType(machineIdentifyType);
-        group.SetGroupType(groupType);
-        group.SetExternalName(externalName);
         group.SetGroupTopic(groupTopic);
 
         String project = "test-project";
@@ -1206,9 +1194,7 @@ public class SlsClientUnitTest {
     @Test
     public void TestGetMachineGroup() {
         String testGroupName = "test_group";
-        String groupType = "Armory";
         String machineIdentifyType = "uuid";
-        String externalName = "testgroup";
         String groupTopic = "groupTopic";
 
         JSONArray machineList = new JSONArray();
@@ -1218,8 +1204,6 @@ public class SlsClientUnitTest {
         MachineGroup group = new MachineGroup();
         group.SetMachineIdentifyType(machineIdentifyType);
         group.SetGroupName(testGroupName);
-        group.SetGroupType(groupType);
-        group.SetExternalName(externalName);
         group.SetGroupTopic(groupTopic);
         group.SetMachineList(machineList);
 
@@ -1230,10 +1214,8 @@ public class SlsClientUnitTest {
 
         JSONObject groupDict = new JSONObject();
         groupDict.put("groupName", group.GetGroupName());
-        groupDict.put("groupType", group.GetGroupType());
 
         JSONObject groupAttributeDict = new JSONObject();
-        groupAttributeDict.put("externalName", group.GetGroupAttribute().GetExternalName());
         groupAttributeDict.put("groupTopic", group.GetGroupAttribute().GetGroupTopic());
         groupDict.put("groupAttribute", groupAttributeDict);
 
@@ -1269,9 +1251,7 @@ public class SlsClientUnitTest {
             mock.ChangeResponse(response);
             GetMachineGroupResponse res = mock.GetMachineGroup(project, testGroupName);
             assertEquals("group name does not match", testGroupName, res.GetMachineGroup().GetGroupName());
-            assertEquals("group type does not match", groupType, res.GetMachineGroup().GetGroupType());
             assertEquals("machineIdentifyType does not match", machineIdentifyType, res.GetMachineGroup().GetMachineIdentifyType());
-            assertEquals("external name does not match", externalName, res.GetMachineGroup().GetExternalName());
             assertEquals("group topic does not match", groupTopic, res.GetMachineGroup().GetGroupTopic());
             assertEquals("createTime does not match", createTime, res.GetMachineGroup().GetCreateTime());
             assertEquals("lastModifyTime does not match", lastModifyTime, res.GetMachineGroup().GetLastModifyTime());
@@ -2261,16 +2241,16 @@ public class SlsClientUnitTest {
         try {
             mock.ChangeResponse(response);
             GetHistogramsResponse res = mock.GetHistograms("project", "logStore", 0, 0, "topic", "query");
-			
-			/*
-			String resComplete = "Incomplete";
-			if (res.IsCompleted()) {
-				resComplete = "Complete";
-			}
-			
-			assertEquals("Complete", resComplete);
-			assertEquals(300, res.GetTotalCount());
-			*/
+      
+      /*
+      String resComplete = "Incomplete";
+      if (res.IsCompleted()) {
+        resComplete = "Complete";
+      }
+      
+      assertEquals("Complete", resComplete);
+      assertEquals(300, res.GetTotalCount());
+      */
             assertEquals(histograms.size(), res.GetHistograms().size());
             for (int i = 0; i < histograms.size(); i++) {
                 assertEquals(histograms.get(i).GetCount(), res.GetHistograms().get(i).GetCount());
@@ -2949,21 +2929,21 @@ public class SlsClientUnitTest {
         } catch (LogException e) {
             assertTrue(e.GetErrorMessage(), false);
         }
-		
-	
-		/*String logStoreJsonString = logStore.ToJsonString();
-		JSONObject logStoreJson = JSONObject.parseObject(logStoreJsonString);
-		LogStore another = new LogStore();
-		try {
-			another.FromJsonObject(logStoreJson);
-			assertEquals(another.GetLogStoreName(), logStore.GetLogStoreName());
-			assertEquals(another.GetShardCount(), logStore.GetShardCount());
-			assertEquals(another.GetTtl(), logStore.GetTtl());
-			assertEquals(another.GetCreateTime(), logStore.GetCreateTime());
-			assertEquals(another.GetLastModifyTime(), logStore.GetLastModifyTime());
-		} catch (LogException e) {
-			assertTrue(e.GetErrorMessage(), false);
-		}*/
+    
+  
+    /*String logStoreJsonString = logStore.ToJsonString();
+    JSONObject logStoreJson = JSONObject.parseObject(logStoreJsonString);
+    LogStore another = new LogStore();
+    try {
+      another.FromJsonObject(logStoreJson);
+      assertEquals(another.GetLogStoreName(), logStore.GetLogStoreName());
+      assertEquals(another.GetShardCount(), logStore.GetShardCount());
+      assertEquals(another.GetTtl(), logStore.GetTtl());
+      assertEquals(another.GetCreateTime(), logStore.GetCreateTime());
+      assertEquals(another.GetLastModifyTime(), logStore.GetLastModifyTime());
+    } catch (LogException e) {
+      assertTrue(e.GetErrorMessage(), false);
+    }*/
 
 
         LogItem log = new LogItem(12);
@@ -3057,126 +3037,121 @@ public class SlsClientUnitTest {
         acl.SetPrinciple("ID");
         assertEquals("ID", acl.GetPrinciple());
 
-        GroupAttribute attribute = new GroupAttribute("externalName1", "groupTopic1");
-        assertEquals("externalName1", attribute.GetExternalName());
+        GroupAttribute attribute = new GroupAttribute("", "groupTopic1");
         assertEquals("groupTopic1", attribute.GetGroupTopic());
 
-        String fromAttributeStr = "{\"externalName\":\"externalName2\",\"groupTopic\":\"groupTopic2\"}";
+        String fromAttributeStr = "{\"groupTopic\":\"groupTopic2\"}";
         try {
             attribute.FromJsonString(fromAttributeStr);
-            assertEquals("externalName2", attribute.GetExternalName());
             assertEquals("groupTopic2", attribute.GetGroupTopic());
         } catch (LogException e) {
             assertTrue(e.GetErrorMessage(), false);
         }
-		
-		/*try {
-			JSONObject errorInfoObj = new JSONObject();
-			attribute.FromJsonObject(errorInfoObj);
-		} catch (LogException e) {
-			assertEquals("FailToGenerateGroupAttribute", e.GetErrorCode());
-		}*/
+    
+    /*try {
+      JSONObject errorInfoObj = new JSONObject();
+      attribute.FromJsonObject(errorInfoObj);
+    } catch (LogException e) {
+      assertEquals("FailToGenerateGroupAttribute", e.GetErrorCode());
+    }*/
 
         try {
             attribute.FromJsonString("af");
         } catch (LogException e) {
             assertEquals("FailToGenerateGroupAttribute", e.GetErrorCode());
         }
-		
-		/*ArrayList<String> machineList = new ArrayList<String>();
-		machineList.add("uuid1");
-		MachineGroup group1 = new MachineGroup("groupName", "userdefined", machineList);
-		group1.SetGroupAttribute(attribute);
-		group1.SetGroupType("type1");
-		group1.SetCreateTime(543211);
-		group1.SetLastModifyTime(543212);
-		
-		String groupJsonStr = group1.ToJsonString();
-		JSONObject groupJsonObj = JSONObject.parseObject(groupJsonStr);
-		
-		assertEquals("groupName", groupJsonObj.getString("groupName"));
-		assertEquals("type1", groupJsonObj.getString("groupType"));
-		assertEquals(543211, groupJsonObj.getIntValue("createTime"));
-		assertEquals(543212, groupJsonObj.getIntValue("lastModifyTime"));
-		
-		assertEquals("externalName2", groupJsonObj.getJSONObject("groupAttribute").getString("externalName"));
-		assertEquals("groupTopic2", groupJsonObj.getJSONObject("groupAttribute").getString("groupTopic"));
-		
-		assertEquals(1, groupJsonObj.getJSONArray("machineList").size());
-		String machine1 = groupJsonObj.getJSONArray("machineList").getString(0);
-		assertEquals("uuid1", machine1);
-		
-		try {
-			group1.FromJsonString("af");
-		} catch (LogException e) {
-			assertEquals("FailToGenerateMachineGroup", e.GetErrorCode());
-		}
-		
-		Config config1 = new Config("configName");
-		config1.SetCreateTime(32321);
-		config1.SetLastModifyTime(32322);
-		JSONObject configObj = JSONObject.parseObject(config1.ToJsonString());
-		assertEquals("configName", configObj.getString("configName"));
-		assertEquals(32321, configObj.getIntValue("createTime"));
-		assertEquals(32322, configObj.getIntValue("lastModifyTime"));
-		
-		try {
-			config1.FromJsonString("af");
-		} catch (LogException e) {
-			assertEquals("FailToGenerateConfig", e.GetErrorCode());
-		}
-		
-		ACLPrivileges privileges = new ACLPrivileges();
-		String privilegesStr = "[\"READ\",\"WRITE\",\"READ\"]";
-		try {
-			privileges.FromJsonString(privilegesStr);
-			assertEquals(2, privileges.GetPrivileges().size());
-			assertEquals(ACLPrivilege.READ, privileges.GetPrivileges().get(0));
-			assertEquals(ACLPrivilege.WRITE, privileges.GetPrivileges().get(1));
-		} catch (LogException e) {
-			assertTrue(e.GetErrorMessage(), false);
-		}
-		
-		try {
-			privileges.FromJsonString("fsad");
-		} catch (LogException e) {
-			assertEquals("FailToGenerateACLPrivileges", e.GetErrorCode());
-		}
-		
-		ACL acl1 = new ACL();
-		try {
-			acl1.FromJsonString("fsad");
-		} catch (LogException e) {
-			assertEquals("FailToGenerateACL", e.GetErrorCode());
-		}
-		
-		acl1.SetCreateTime(3321);
-		acl1.SetLastModifyTime(3322);
+    
+    /*ArrayList<String> machineList = new ArrayList<String>();
+    machineList.add("uuid1");
+    MachineGroup group1 = new MachineGroup("groupName", "userdefined", machineList);
+    group1.SetGroupAttribute(attribute);
+    group1.SetCreateTime(543211);
+    group1.SetLastModifyTime(543212);
+    
+    String groupJsonStr = group1.ToJsonString();
+    JSONObject groupJsonObj = JSONObject.parseObject(groupJsonStr);
+    
+    assertEquals("groupName", groupJsonObj.getString("groupName"));
+    assertEquals(543211, groupJsonObj.getIntValue("createTime"));
+    assertEquals(543212, groupJsonObj.getIntValue("lastModifyTime"));
+    
+    assertEquals("groupTopic2", groupJsonObj.getJSONObject("groupAttribute").getString("groupTopic"));
+    
+    assertEquals(1, groupJsonObj.getJSONArray("machineList").size());
+    String machine1 = groupJsonObj.getJSONArray("machineList").getString(0);
+    assertEquals("uuid1", machine1);
+    
+    try {
+      group1.FromJsonString("af");
+    } catch (LogException e) {
+      assertEquals("FailToGenerateMachineGroup", e.GetErrorCode());
+    }
+    
+    Config config1 = new Config("configName");
+    config1.SetCreateTime(32321);
+    config1.SetLastModifyTime(32322);
+    JSONObject configObj = JSONObject.parseObject(config1.ToJsonString());
+    assertEquals("configName", configObj.getString("configName"));
+    assertEquals(32321, configObj.getIntValue("createTime"));
+    assertEquals(32322, configObj.getIntValue("lastModifyTime"));
+    
+    try {
+      config1.FromJsonString("af");
+    } catch (LogException e) {
+      assertEquals("FailToGenerateConfig", e.GetErrorCode());
+    }
+    
+    ACLPrivileges privileges = new ACLPrivileges();
+    String privilegesStr = "[\"READ\",\"WRITE\",\"READ\"]";
+    try {
+      privileges.FromJsonString(privilegesStr);
+      assertEquals(2, privileges.GetPrivileges().size());
+      assertEquals(ACLPrivilege.READ, privileges.GetPrivileges().get(0));
+      assertEquals(ACLPrivilege.WRITE, privileges.GetPrivileges().get(1));
+    } catch (LogException e) {
+      assertTrue(e.GetErrorMessage(), false);
+    }
+    
+    try {
+      privileges.FromJsonString("fsad");
+    } catch (LogException e) {
+      assertEquals("FailToGenerateACLPrivileges", e.GetErrorCode());
+    }
+    
+    ACL acl1 = new ACL();
+    try {
+      acl1.FromJsonString("fsad");
+    } catch (LogException e) {
+      assertEquals("FailToGenerateACL", e.GetErrorCode());
+    }
+    
+    acl1.SetCreateTime(3321);
+    acl1.SetLastModifyTime(3322);
 
-		acl1.SetPrinciple("principle");
-		acl1.SetPrivilege(privileges);
-		
-		try {
-			JSONObject aclDict = JSONObject.parseObject(acl1.ToJsonString());
-			assertEquals(3321, aclDict.getIntValue("createTime"));
-			assertEquals(3322, aclDict.getIntValue("lastModifyTime"));
-			assertEquals("principle", aclDict.getString("principle"));
-			
-			JSONArray privilegesArray = aclDict.getJSONArray("privilege");
-			assertEquals(2, privilegesArray.size());
-			assertEquals("READ", privilegesArray.getString(0));
-			assertEquals("WRITE", privilegesArray.getString(1));
-		} catch (LogException e) {
-			assertTrue(e.GetErrorMessage(), false);
-		}
-		
-		try {
-			acl1.SetPrivilege(new ACLPrivileges());
-			acl1.ToRequestJson();
-		} catch (LogException e) {
-			assertEquals("BadResponse", e.GetErrorCode());
-			assertEquals("ACL privilege must have at least one value", e.GetErrorMessage());
-		}*/
+    acl1.SetPrinciple("principle");
+    acl1.SetPrivilege(privileges);
+    
+    try {
+      JSONObject aclDict = JSONObject.parseObject(acl1.ToJsonString());
+      assertEquals(3321, aclDict.getIntValue("createTime"));
+      assertEquals(3322, aclDict.getIntValue("lastModifyTime"));
+      assertEquals("principle", aclDict.getString("principle"));
+      
+      JSONArray privilegesArray = aclDict.getJSONArray("privilege");
+      assertEquals(2, privilegesArray.size());
+      assertEquals("READ", privilegesArray.getString(0));
+      assertEquals("WRITE", privilegesArray.getString(1));
+    } catch (LogException e) {
+      assertTrue(e.GetErrorMessage(), false);
+    }
+    
+    try {
+      acl1.SetPrivilege(new ACLPrivileges());
+      acl1.ToRequestJson();
+    } catch (LogException e) {
+      assertEquals("BadResponse", e.GetErrorCode());
+      assertEquals("ACL privilege must have at least one value", e.GetErrorMessage());
+    }*/
     }
 
     /**
