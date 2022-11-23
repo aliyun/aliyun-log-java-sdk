@@ -363,7 +363,7 @@ class ScmSampleClient {
 	
 	public void CreateMachineGroup() {
 		//Construct machineGroup type1: using ArrayList<Machine> to create machinelist
-		String groupType = "Armory";
+		String groupType = "";
 		String externalName = "testgroup";
 		String groupTopic = "testtopic";
 		

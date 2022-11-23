@@ -381,7 +381,7 @@ public class SlsClientUnitTest {
     public void TestExtractMachineGroupFromResponse() {
         JSONObject jObj = new JSONObject();
         jObj.put("groupName", "testgroup");
-        jObj.put("groupType", "Armory");
+        jObj.put("groupType", "");
         jObj.put("machineIdentifyType", "uuid");
 
         JSONObject groupAttribute = new JSONObject();
@@ -407,7 +407,7 @@ public class SlsClientUnitTest {
         }
 
         assertEquals(group.GetGroupName(), "testgroup");
-        assertEquals(group.GetGroupType(), "Armory");
+        assertEquals(group.GetGroupType(), "");
         assertEquals(group.GetMachineIdentifyType(), "uuid");
         assertEquals(group.GetExternalName(), "testgroupX");
         assertEquals(group.GetGroupTopic(), "topic");
@@ -921,7 +921,7 @@ public class SlsClientUnitTest {
 
         String testGroupName = "test_group";
         String machineIdentifyType = "uuid";
-        String groupType = "Armory";
+        String groupType = "";
         String externalName = "testgroup";
 
         ArrayList<String> machineList = new ArrayList<String>();
@@ -1206,7 +1206,7 @@ public class SlsClientUnitTest {
     @Test
     public void TestGetMachineGroup() {
         String testGroupName = "test_group";
-        String groupType = "Armory";
+        String groupType = "";
         String machineIdentifyType = "uuid";
         String externalName = "testgroup";
         String groupTopic = "groupTopic";

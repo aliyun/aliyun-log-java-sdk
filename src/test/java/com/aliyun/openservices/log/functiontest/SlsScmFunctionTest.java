@@ -463,11 +463,11 @@ public class SlsScmFunctionTest extends FunctionTest {
 	
 	private void machineGroupAPI(String testGroupName, String testConfigName) {
 		try {
-			String groupType = "Armory";
+			String groupType = "";
 			String externalName = "testgroup";
 			String groupTopic = "groupTopic1";
 			String machineIdentifyType = "userdefined";
-			
+		
 			ArrayList<String> machineList = new ArrayList<String>();
 			machineList.add(uuid1);
 			machineList.add(uuid2);
