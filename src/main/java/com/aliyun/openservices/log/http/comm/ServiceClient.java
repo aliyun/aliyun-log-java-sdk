@@ -53,6 +53,10 @@ public abstract class ServiceClient {
         this.config = config;
     }
 
+    public ClientConfiguration getClientConfiguration() {
+        return this.config;
+    }
+
     /**
      * Returns response from the service.
      *

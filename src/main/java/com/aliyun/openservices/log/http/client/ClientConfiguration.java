@@ -5,6 +5,7 @@ package com.aliyun.openservices.log.http.client;
 
 import com.aliyun.openservices.log.http.comm.Protocol;
 import com.aliyun.openservices.log.http.comm.RetryStrategy;
+import com.aliyun.openservices.log.http.signer.SignVersion;
 
 /**
  * The client configuration for accessing Aliyun Log Service.
@@ -16,6 +17,7 @@ public class ClientConfiguration {
     public static final int DEFAULT_THREAD_POOL_WAIT_TIME = 60 * 1000;
     public static final int DEFAULT_REQUEST_TIMEOUT = 60 * 1000;
     public static final boolean DEFAULT_USE_REAPER = false;
+    public static final SignVersion DEFAULT_SIGNATURE_VERSION = SignVersion.V1;
 
     private int maxConnections = 50;
     private int socketTimeout = 50 * 1000;
@@ -37,6 +39,9 @@ public class ClientConfiguration {
     private boolean connManagerShared = false;
     private RetryStrategy retryStrategy;
     private int maxErrorRetry = 3;
+    protected SignVersion signatureVersion = DEFAULT_SIGNATURE_VERSION;
+    private String region;
+    private boolean extractSettingFromEndpoint = true;
 
     public ClientConfiguration() {
     }
@@ -255,5 +260,49 @@ public class ClientConfiguration {
 
     public void setProxyWorkstation(String proxyWorkstation) {
         this.proxyWorkstation = proxyWorkstation;
+    }
+
+    /**
+     * Gets signature version
+     *
+     * @return signature version
+     */
+    public SignVersion getSignatureVersion() {
+        return signatureVersion;
+    }
+
+    /**
+     * Sets signature version for all request.
+     *
+     * @param signatureVersion
+     */
+    public void setSignatureVersion(SignVersion signatureVersion) {
+        this.signatureVersion = signatureVersion;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    /**
+     * Sets the flag of extracting setting from endpoint.
+     *
+     * @param enabled True if it's enabled; False if it's disabled.
+     */
+    public void setExtractSettingFromEndpoint(boolean enabled) {
+        this.extractSettingFromEndpoint = enabled;
+    }
+
+    /**
+     * Gets the flag of extracting setting from endpoint. By default it's enabled.
+     *
+     * @return true enabled; false disabled.
+     */
+    public boolean isExtractSettingFromEndpointEnable() {
+        return extractSettingFromEndpoint;
     }
 }

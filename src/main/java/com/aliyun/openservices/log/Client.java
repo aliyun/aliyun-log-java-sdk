@@ -8,101 +8,29 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONReader;
 import com.alibaba.fastjson.parser.Feature;
-import com.aliyun.openservices.log.common.ACL;
-import com.aliyun.openservices.log.common.Chart;
-import com.aliyun.openservices.log.common.Config;
-import com.aliyun.openservices.log.common.Consts;
-import com.aliyun.openservices.log.common.ConsumerGroup;
-import com.aliyun.openservices.log.common.Dashboard;
-import com.aliyun.openservices.log.common.Domain;
-import com.aliyun.openservices.log.common.ETLConfiguration;
-import com.aliyun.openservices.log.common.ETLV2;
-import com.aliyun.openservices.log.common.EtlJob;
-import com.aliyun.openservices.log.common.EtlMeta;
-import com.aliyun.openservices.log.common.ExternalStore;
-import com.aliyun.openservices.log.common.Index;
-import com.aliyun.openservices.log.common.InternalLogStore;
-import com.aliyun.openservices.log.common.JobSchedule;
-import com.aliyun.openservices.log.common.JobScheduleType;
-import com.aliyun.openservices.log.common.LinkStore;
-import com.aliyun.openservices.log.common.LogContent;
-import com.aliyun.openservices.log.common.LogItem;
-import com.aliyun.openservices.log.common.LogStore;
-import com.aliyun.openservices.log.common.Logging;
-import com.aliyun.openservices.log.common.Logs;
-import com.aliyun.openservices.log.common.LogtailProfile;
-import com.aliyun.openservices.log.common.Machine;
-import com.aliyun.openservices.log.common.MachineGroup;
-import com.aliyun.openservices.log.common.MachineList;
-import com.aliyun.openservices.log.common.MetricAggRules;
-import com.aliyun.openservices.log.common.OdpsShipperConfig;
-import com.aliyun.openservices.log.common.OssShipperConfig;
-import com.aliyun.openservices.log.common.ProjectConsumerGroup;
-import com.aliyun.openservices.log.common.QueriedLog;
-import com.aliyun.openservices.log.common.Resource;
-import com.aliyun.openservices.log.common.ResourceRecord;
-import com.aliyun.openservices.log.common.SavedSearch;
-import com.aliyun.openservices.log.common.Shard;
-import com.aliyun.openservices.log.common.ShipperConfig;
-import com.aliyun.openservices.log.common.ShipperTask;
-import com.aliyun.openservices.log.common.ShipperTasksStatistic;
-import com.aliyun.openservices.log.common.SqlInstance;
-import com.aliyun.openservices.log.common.SubStore;
-import com.aliyun.openservices.log.common.SubStoreKey;
-import com.aliyun.openservices.log.common.TagContent;
-import com.aliyun.openservices.log.common.TagResource;
-import com.aliyun.openservices.log.common.Topostore;
-import com.aliyun.openservices.log.common.TopostoreNode;
-import com.aliyun.openservices.log.common.TopostoreRelation;
+import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.Consts.CompressType;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
 import com.aliyun.openservices.log.common.auth.Credentials;
 import com.aliyun.openservices.log.common.auth.DefaultCredentails;
 import com.aliyun.openservices.log.common.auth.ECSRoleCredentials;
-import com.aliyun.openservices.log.common.ScheduledSQL;
-
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.http.client.ClientConfiguration;
-import com.aliyun.openservices.log.http.client.ClientConnectionContainer;
-import com.aliyun.openservices.log.http.client.ClientConnectionHelper;
-import com.aliyun.openservices.log.http.client.ClientConnectionStatus;
-import com.aliyun.openservices.log.http.client.ClientException;
-import com.aliyun.openservices.log.http.client.HttpMethod;
-import com.aliyun.openservices.log.http.client.ServiceException;
-import com.aliyun.openservices.log.http.comm.DefaultServiceClient;
-import com.aliyun.openservices.log.http.comm.RequestMessage;
-import com.aliyun.openservices.log.http.comm.ResponseMessage;
-import com.aliyun.openservices.log.http.comm.ServiceClient;
-import com.aliyun.openservices.log.http.comm.TimeoutServiceClient;
+import com.aliyun.openservices.log.http.client.*;
+import com.aliyun.openservices.log.http.comm.*;
+import com.aliyun.openservices.log.http.signer.SlsSigner;
+import com.aliyun.openservices.log.http.signer.SlsSignerBase;
 import com.aliyun.openservices.log.http.utils.CodingUtils;
-import com.aliyun.openservices.log.http.utils.DateUtil;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 import com.aliyun.openservices.log.request.*;
 import com.aliyun.openservices.log.response.*;
-
-import com.aliyun.openservices.log.util.Args;
-import com.aliyun.openservices.log.util.DigestUtils;
-import com.aliyun.openservices.log.util.GzipUtils;
-import com.aliyun.openservices.log.util.JsonUtils;
-import com.aliyun.openservices.log.util.LZ4Encoder;
-import com.aliyun.openservices.log.util.NetworkUtils;
-import com.aliyun.openservices.log.util.Utils;
-import com.aliyun.openservices.log.util.VersionInfoUtils;
+import com.aliyun.openservices.log.util.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.conn.HttpClientConnectionManager;
 
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Client class is the main class in the sdk, it implements the interfaces
@@ -126,6 +54,7 @@ public class Client implements LogService {
 	 */
 	private String realServerIP = null;
 	private String resourceOwnerAccount = null;
+	private SlsSigner signer;
 
 	public String getUserAgent() {
 		return userAgent;
@@ -289,6 +218,10 @@ public class Client implements LogService {
 		if (NetworkUtils.isIPAddr(this.hostName)) {
 			throw new IllegalArgumentException("The ip address is not supported");
 		}
+		ClientConfiguration configuration = serviceClient.getClientConfiguration();
+		if (configuration.getRegion() == null && configuration.isExtractSettingFromEndpointEnable()) {
+		    configuration.setRegion(Utils.extractRegionFromEndpoint(hostName));
+		}
 	}
 
     private void configure(String endpoint, Credentials credentials, String sourceIp) {
@@ -298,6 +231,8 @@ public class Client implements LogService {
 	    if (sourceIp == null || sourceIp.isEmpty()) {
 		    this.sourceIp = NetworkUtils.getLocalMachineIP();
 	    }
+	    ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
+	    this.signer = SlsSignerBase.createRequestSigner(clientConfiguration, credentials);
     }
 
 	public Client(String endpoint, String accessId, String accessKey, String sourceIp,
@@ -409,16 +344,6 @@ public class Client implements LogService {
 		}
 	}
 
-	public void SendRawRequest(HttpMethod method, String uri, Map<String, String> urlParameter, String rawRequest)
-			throws LogException {
-		Map<String, String> headParameter = GetCommonHeadPara("");
-		byte[] body = encodeToUtf8(rawRequest);
-		ResponseMessage response = SendData("", method, uri, urlParameter, headParameter, body);
-		System.out.println(response.GetStringBody());
-		System.out.println(response.getStatusCode());
-		System.out.println(response.getRequestId());
-	}
-
 	public TagResourcesResponse tagResources(String tagResourcesStr) throws LogException {
 		CodingUtils.assertParameterNotNull(tagResourcesStr, "tagResourcesStr");
 		Map<String, String> headParameter = GetCommonHeadPara("");
@@ -473,6 +398,20 @@ public class Client implements LogService {
 		ResponseMessage response = SendData("", HttpMethod.POST, resourceUri, urlParameter, headParameter, body);
 		Map<String, String> resHeaders = response.getHeaders();
 		return new UntagResourcesResponse(resHeaders);
+	}
+
+	public ListTagResourcesResponse listSystemTagResources(ListSystemTagResourcesRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		Map<String, String> urlParameter = request.GetAllParams();
+		Map<String, String> headParameter = GetCommonHeadPara("");
+		String resourceUri = "/systemtags";
+		ResponseMessage response = SendData("", HttpMethod.GET, resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = parseResponseBody(response, requestId);
+		List<TagResource> tagResources = ExtractTagResources(object, requestId);
+		String nextToken = object.getString("nextToken");
+		return new ListTagResourcesResponse(resHeaders, nextToken, tagResources);
 	}
 
 	protected List<TagResource> ExtractTagResources(JSONObject object, String requestId)
@@ -2157,18 +2096,14 @@ public class Client implements LogService {
 	private Map<String, String> GetCommonHeadPara(String project) {
 		HashMap<String, String> headParameter = new HashMap<String, String>();
 		headParameter.put(Consts.CONST_USER_AGENT, userAgent);
-		headParameter.put(Consts.CONST_CONTENT_LENGTH, "0");
 		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, "0");
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_PROTO_BUF);
-		headParameter.put(Consts.CONST_DATE, DateUtil.formatRfc822Date(new Date()));
 		if (!project.isEmpty()) {
 			headParameter.put(Consts.CONST_HOST, project + "." + this.hostName);
 		} else {
 			headParameter.put(Consts.CONST_HOST, this.hostName);
 		}
-		headParameter.put(Consts.CONST_X_SLS_APIVERSION,
-				Consts.DEFAULT_API_VESION);
-		headParameter.put(Consts.CONST_X_SLS_SIGNATUREMETHOD, Consts.HMAC_SHA1);
+		headParameter.put(Consts.CONST_X_SLS_APIVERSION, Consts.DEFAULT_API_VESION);
 		String securityToken = credentials.getSecurityToken();
 		if (securityToken != null && !securityToken.isEmpty()) {
 			headParameter.put(Consts.CONST_X_ACS_SECURITY_TOKEN, securityToken);
@@ -2198,14 +2133,10 @@ public class Client implements LogService {
 									 Map<String, String> parameters, Map<String, String> headers, byte[] body,
 									 Map<String, String> outputHeader, String serverIp)
 			throws LogException {
-		if (body.length > 0) {
-			headers.put(Consts.CONST_CONTENT_MD5, DigestUtils.md5Crypt(body));
-		}
 		if (resourceOwnerAccount != null && !resourceOwnerAccount.isEmpty()) {
 			headers.put(Consts.CONST_X_LOG_RESOURCEOWNERACCOUNT, resourceOwnerAccount);
 		}
-		headers.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(body.length));
-		DigestUtils.addSignature(credentials, method.toString(), headers, resourceUri, parameters);
+		signer.sign(method, headers, resourceUri, parameters, body);
 		URI uri;
 		if (serverIp == null) {
 			uri = GetHostURI(project);
@@ -2248,14 +2179,10 @@ public class Client implements LogService {
 									 Map<String, String> parameters, Map<String, String> headers, byte[] body,
 									 Map<String, String> outputHeader, String serverIp)
 			throws LogException {
-		if (body.length > 0) {
-			headers.put(Consts.CONST_CONTENT_MD5, DigestUtils.md5Crypt(body));
-		}
 		if (resourceOwnerAccount != null && !resourceOwnerAccount.isEmpty()) {
 			headers.put(Consts.CONST_X_LOG_RESOURCEOWNERACCOUNT, resourceOwnerAccount);
 		}
-		headers.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(body.length));
-		DigestUtils.addSignature(credentials, method.toString(), headers, resourceUri, parameters);
+		signer.sign(method, headers, resourceUri, parameters, body);
 		URI uri;
 		if (serverIp == null) {
 			uri = GetHostURI(project);

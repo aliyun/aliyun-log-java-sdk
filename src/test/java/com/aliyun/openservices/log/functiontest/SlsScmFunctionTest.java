@@ -467,13 +467,10 @@ public class SlsScmFunctionTest extends FunctionTest {
 			String externalName = "testgroup";
 			String groupTopic = "groupTopic1";
 			String machineIdentifyType = "userdefined";
-		
 			ArrayList<String> machineList = new ArrayList<String>();
 			machineList.add(uuid1);
 			machineList.add(uuid2);
-			
 			GroupAttribute groupAttribute = new GroupAttribute(externalName, groupTopic);
-			
 			MachineGroup group = new MachineGroup(testGroupName, "userdefined", machineList);
 			group.SetMachineIdentifyType(machineIdentifyType);
 			group.SetGroupType(groupType);

@@ -129,9 +129,13 @@ public class Consts {
     public static final String CONST_X_SLS_COUNT = "x-log-count";
     public static final String CONST_X_SLS_PROCESS = "x-log-progress";
     public static final String CONST_X_SLS_NEXT_TOKEN = "x-log-nexttoken";
-    public static final String CONST_X_SLS_CONTENTENCODING = "x-log-contentencoding";
     public static final String CONST_X_ACS_SECURITY_TOKEN = "x-acs-security-token";
     public static final String CONST_X_LOG_RESOURCEOWNERACCOUNT = "x-log-resourceowneraccount";
+    public static final String X_LOG_DATE = "x-log-date";
+    public static final String X_LOG_CONTENT_SHA256 = "x-log-content-sha256";
+    public static final String EMPTY_STRING_SHA256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    public static final String EMPTY_STRING_LENGTH = "0";
+    public static final String EMPTY_STRING = "";
 
     public static final String CONST_X_LOG_AGGQUERY = "x-log-agg-query";
     public static final String CONST_X_LOG_WHEREQUERY = "x-log-where-query";
@@ -507,4 +511,6 @@ public class Consts {
     public static final String SCHEDULED_SQL_RUNNING = "RUNNING";
 
     public static final String INVALID_LOG_TIME = "InvalidLogTime";
+    public static final String INTRANET_SUFFIX = "-intranet";
+    public static final String CROSS_DOMAIN_SUFFIX = "-share";
 }
