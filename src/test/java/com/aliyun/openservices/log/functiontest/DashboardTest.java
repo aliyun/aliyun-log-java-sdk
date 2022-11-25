@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.Chart;
 import com.aliyun.openservices.log.common.Dashboard;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.ErrorCodes;
 import com.aliyun.openservices.log.request.CreateDashboardRequest;
 import com.aliyun.openservices.log.request.DeleteChartRequest;
 import com.aliyun.openservices.log.request.DeleteDashboardRequest;
@@ -12,6 +13,7 @@ import com.aliyun.openservices.log.request.ListDashboardRequest;
 import com.aliyun.openservices.log.request.UpdateDashboardRequest;
 import com.aliyun.openservices.log.response.GetDashboardResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -49,6 +51,36 @@ public class DashboardTest extends MetaAPIBaseFunctionTest {
         assertEquals(0, response.getCount());
         assertEquals(0, response.getTotal());
         assertEquals(0, response.getDashboards().size());
+    }
+
+    @Test
+    public void testValidateDashboardName() throws Exception {
+        Dashboard dashboard = new Dashboard();
+        StringBuilder dashboardName = new StringBuilder();
+        dashboard.setDescription("Dashboard");
+        dashboard.setChartList(new ArrayList<Chart>());
+        CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(TEST_PROJECT, dashboard);
+        for (int i = 0; i < 146; ++i) {
+            dashboardName.append(randomBetween(0, 26) + 'a');
+            String tmpName = dashboardName.toString();
+            dashboard.setDashboardName(tmpName);
+            if (dashboardName.length() < 2 || dashboardName.length() > 128) {
+                try {
+                    client.createDashboard(createDashboardRequest);
+                    fail("should fail");
+                } catch (LogException ex) {
+                    Assert.assertEquals(tmpName, "InvalidDashboardName", ex.getErrorCode());
+                    if (dashboardName.length() > 128) {
+                        Assert.assertEquals("The length of dashboard name must be less than or equal to 128", ex.getMessage());
+                    } else {
+                        Assert.assertEquals("The dashboard name is invalid: " + tmpName, ex.getMessage());
+                    }
+                }
+                continue;
+            }
+            client.createDashboard(createDashboardRequest);
+            client.deleteDashboard(new DeleteDashboardRequest(TEST_PROJECT, tmpName));
+        }
     }
 
     @Test

@@ -6,7 +6,6 @@ import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.Logs;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -24,20 +23,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.Deflater;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class WebTrackingTest extends LogTest {
 
     private boolean testPutLogs(String logStoreName) {
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         StringBuilder params = new StringBuilder("APIVersion=0.6.0");
         for (int i = 0; i < 100; ++i) {
             params.append("&key").append(i).append("=").append("value").append(i);
         }
-        HttpGet httpGet = new HttpGet("http://" + TEST_PROJECT + "." + credentials.getEndpoint() + "/logstores/" + logStoreName + "/track?" + params);
+        HttpGet httpGet = new HttpGet("http://" + TEST_PROJECT + "." + TEST_ENDPOINT + "/logstores/" + logStoreName + "/track?" + params);
         try {
             HttpResponse res = httpClient.execute(httpGet);
             if (res.getStatusLine().getStatusCode() / 200 != 1) {
@@ -46,6 +42,12 @@ public class WebTrackingTest extends LogTest {
         } catch (Exception e) {
             e.printStackTrace();
             fail();
+        } finally {
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                // ignore it
+            }
         }
         return true;
     }

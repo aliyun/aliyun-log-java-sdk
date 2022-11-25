@@ -1,14 +1,18 @@
 package com.aliyun.openservices.log.functiontest;
 
 import com.aliyun.openservices.log.Client;
-import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.request.PullLogsRequest;
+import com.aliyun.openservices.log.response.GetCursorResponse;
+import com.aliyun.openservices.log.response.PullLogsResponse;
 import com.aliyun.openservices.log.util.Args;
 import org.junit.Rule;
 import org.junit.rules.Timeout;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -22,8 +26,11 @@ public abstract class FunctionTest {
     static final Random RANDOM = new Random();
     static final String PROJECT_NAME_PREFIX = "sls-sdk-testp-";
     static final Credentials credentials = Credentials.load();
+
+    static final String TEST_ENDPOINT = credentials.getEndpoint();
+
     static Client client = new Client(
-            credentials.getEndpoint(),
+            TEST_ENDPOINT,
             credentials.getAccessKeyId(),
             credentials.getAccessKey());
     @Rule
@@ -228,5 +235,51 @@ public abstract class FunctionTest {
     static void failOnError(Exception ex) {
         ex.printStackTrace();
         fail(exceptionToString(ex));
+    }
+
+    protected int writeData(Client client, String project, String logStore) {
+        int round = randomBetween(1, 10);
+        int totalLines = 0;
+        for (int i = 0; i < round; i++) {
+            List<LogItem> logGroup = new ArrayList<LogItem>(10);
+            for (int j = 0; j < 10; j++) {
+                LogItem logItem = new LogItem(getNowTimestamp());
+                logItem.PushBack("ID", "id_" + (i * 10 + j));
+                logGroup.add(logItem);
+                ++totalLines;
+            }
+            String topic = "topic_" + i;
+            try {
+                client.PutLogs(project, logStore, topic, logGroup, "");
+            } catch (LogException e) {
+                fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
+            }
+        }
+        return totalLines;
+    }
+
+    protected List<FastLogGroup> pullAllLogGroups(Client client, String project, String logStore, int shardNum) throws LogException {
+        List<FastLogGroup> groups = new ArrayList<FastLogGroup>();
+        for (int i = 0; i < shardNum; i++) {
+            pullForShard(client, project, logStore, i, groups);
+        }
+        return groups;
+    }
+
+    private void pullForShard(Client client, String project, String logStore, int shard, List<FastLogGroup> results) throws LogException {
+        GetCursorResponse cursorResponse = client.GetCursor(project, logStore, shard, Consts.CursorMode.BEGIN);
+        String cursor = cursorResponse.GetCursor();
+        while (true) {
+            PullLogsRequest request = new PullLogsRequest(project, logStore, shard, 1000, cursor);
+            PullLogsResponse response = client.pullLogs(request);
+            for (LogGroupData data : response.getLogGroups()) {
+                results.add(data.GetFastLogGroup());
+            }
+            final String nextCursor = response.getNextCursor();
+            if (cursor.equals(nextCursor)) {
+                break;
+            }
+            cursor = nextCursor;
+        }
     }
 }

@@ -13,6 +13,7 @@ public final class Credentials {
     private String accessKeyId;
     private String accessKey;
     private String aliuid;
+    private String region;
 
     public Credentials(String endpoint, String accessKeyId, String accessKey, String aliuid) {
         this.endpoint = endpoint;
@@ -53,6 +54,14 @@ public final class Credentials {
         this.aliuid = aliuid;
     }
 
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
     public static Credentials load() {
         final File file = new File(System.getProperty("user.home"), CONFIG_FILE);
         if (!file.exists()) {
@@ -65,7 +74,9 @@ public final class Credentials {
             String accessKeyId = object.getString("accessKeyId");
             String accessKey = object.getString("accessKey");
             String aliuid = object.getString("aliuid");
-            return new Credentials(endpoint, accessKeyId, accessKey, aliuid);
+            Credentials credentials = new Credentials(endpoint, accessKeyId, accessKey, aliuid);
+            credentials.setRegion(object.getString("region"));
+            return credentials;
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }

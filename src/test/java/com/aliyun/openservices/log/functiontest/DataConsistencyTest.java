@@ -51,7 +51,7 @@ public class DataConsistencyTest extends BaseDataTest {
         GetHistogramsResponse histograms = client.GetHistograms(project, logStore.GetLogStoreName(),
                 timestamp - 1800, timestamp + 1800, "", "");
         assertEquals(count * 10, histograms.GetTotalCount());
-        assertEquals(true, histograms.IsCompleted());
+        assertTrue(histograms.IsCompleted());
     }
 
     //putLogs->getContextLogs
@@ -134,7 +134,7 @@ public class DataConsistencyTest extends BaseDataTest {
         for (int i = 1; i <= 10; i++) {
             params.append("&key-").append(i).append("=").append("value-").append(i);
         }
-        HttpGet httpGet = new HttpGet("http://" + project + "." + credentials.getEndpoint() + "/logstores/" + logStore.GetLogStoreName() + "/track?" + params);
+        HttpGet httpGet = new HttpGet("http://" + project + "." + TEST_ENDPOINT + "/logstores/" + logStore.GetLogStoreName() + "/track?" + params);
         try {
             for (int i = 0; i < count; i++) {
                 HttpResponse res = httpClient.execute(httpGet);
@@ -183,8 +183,7 @@ public class DataConsistencyTest extends BaseDataTest {
     private PackInfo extractPackInfo(QueriedLog log) {
         PackInfo info = new PackInfo("", "");
         ArrayList<LogContent> contents = log.GetLogItem().GetLogContents();
-        for (int i = 0; i < contents.size(); ++i) {
-            LogContent content = contents.get(i);
+        for (LogContent content : contents) {
             if ("__tag__:__pack_id__".equals(content.GetKey())) {
                 info.packID = content.GetValue();
             } else if ("__pack_meta__".equals(content.GetKey())) {
@@ -208,7 +207,7 @@ public class DataConsistencyTest extends BaseDataTest {
         CloseableHttpClient httpclient = null;
         try {
             httpclient = HttpClients.createDefault();
-            String URL = "http://" + project + "." + credentials.getEndpoint() + "/logstores/" + logStore.GetLogStoreName() + "/track";
+            String URL = "http://" + project + "." + TEST_ENDPOINT + "/logstores/" + logStore.GetLogStoreName() + "/track";
 
             HttpPost httpPost = new HttpPost(URL);
             String body = log.toString();
@@ -243,8 +242,7 @@ public class DataConsistencyTest extends BaseDataTest {
                     return new Response(status, body);
                 }
             };
-            Response responseBody = httpclient.execute(httpPost, responseHandler);
-            return responseBody;
+            return httpclient.execute(httpPost, responseHandler);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

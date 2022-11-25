@@ -1,6 +1,9 @@
 package com.aliyun.openservices.log.util;
 
+import com.aliyun.openservices.log.common.Consts;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -104,7 +107,7 @@ public final class Utils {
         }
 
         StringBuilder sb = new StringBuilder();
-        for (int idx = 0; idx < values.size(); idx ++) {
+        for (int idx = 0; idx < values.size(); idx++) {
             if (idx == (values.size() - 1)) {
                 sb.append(values.get(idx));
             } else {
@@ -114,18 +117,32 @@ public final class Utils {
         return sb.toString();
     }
 
-    public static <T> List<T> removeNullItems(List<T> list){
+    public static <T> List<T> removeNullItems(List<T> list) {
 
         List<T> nList = new ArrayList<T>(list);
         Iterator<T> iter = nList.iterator();
-        
-        while(iter.hasNext()){
+
+        while (iter.hasNext()) {
             T v = iter.next();
-            if(v==null){
+            if (v == null) {
                 iter.remove();
             }
         }
 
         return nList;
+    }
+
+    private static String trimSuffix(String str, List<String> suffixes) {
+        for (String s : suffixes) {
+            if (str.endsWith(s)) {
+                return str.substring(0, str.length() - s.length());
+            }
+        }
+        return str;
+    }
+
+    public static String extractRegionFromEndpoint(String endpoint) {
+        String[] splits = endpoint.split("\\.");
+        return trimSuffix(splits[0], Arrays.asList(Consts.INTRANET_SUFFIX, Consts.CROSS_DOMAIN_SUFFIX));
     }
 }
