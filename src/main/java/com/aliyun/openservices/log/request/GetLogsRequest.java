@@ -64,7 +64,7 @@ public class GetLogsRequest extends Request {
 	 *            logs first
 	 */
 	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query, int offset, int line,
+						  String topic, String query, long offset, long line,
 						  boolean reverse) {
 		this(project, logStore,  from, to, topic, query);
 		SetOffset(offset);
@@ -96,7 +96,7 @@ public class GetLogsRequest extends Request {
 	 *            logs first
 	 */
 	public GetLogsRequest(String project, String logStore, int from, int to, 
-			String topic, String query, int offset, int line,
+			String topic, String query, long offset, long line,
 			boolean reverse,
 			boolean powerSql) {
 		this(project, logStore,  from, to, topic, query);
@@ -134,7 +134,7 @@ public class GetLogsRequest extends Request {
 	 *            otherwise means previous page
 	 */
 	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query, int offset, int line,
+						  String topic, String query, long offset, long line,
 						  boolean reverse,
 						  boolean powerSql,
 						  boolean forward) {
@@ -173,7 +173,7 @@ public class GetLogsRequest extends Request {
 	 *            specific shard
 	 */
 	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query, int offset, int line,
+						  String topic, String query, long offset, long line,
 						  boolean reverse,int shard) {
 		this(project, logStore,  from, to, topic, query, offset, line, reverse);
 		SetShard(shard);
@@ -206,7 +206,7 @@ public class GetLogsRequest extends Request {
 	 *            query session param
 	 */
 	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query, int offset, int line,
+						  String topic, String query, long offset, long line,
 						  boolean reverse,boolean forward,String session) {
 		this(project, logStore,  from, to, topic, query, offset, line, reverse);
 		SetForward(forward);
@@ -319,7 +319,7 @@ public class GetLogsRequest extends Request {
 	 * @param offset
 	 *            log offset
 	 */
-	public void SetOffset(int offset) {
+	public void SetOffset(long offset) {
 		SetParam(Consts.CONST_OFFSET, String.valueOf(offset));
 	}
 
@@ -328,12 +328,12 @@ public class GetLogsRequest extends Request {
 	 * 
 	 * @return offset value
 	 */
-	public int GetOffset() {
+	public long GetOffset() {
 		String offset = GetParam(Consts.CONST_OFFSET);
 		if (offset.isEmpty()) {
 			return 0;
 		} else {
-			return Integer.parseInt(offset);
+			return Long.parseLong(offset);
 		}
 	}
 
@@ -343,7 +343,7 @@ public class GetLogsRequest extends Request {
 	 * @param line
 	 *            line number
 	 */
-	public void SetLine(int line) {
+	public void SetLine(long line) {
 		SetParam(Consts.CONST_LINE, String.valueOf(line));
 	}
 
@@ -352,12 +352,12 @@ public class GetLogsRequest extends Request {
 	 * 
 	 * @return line number
 	 */
-	public int GetLine() {
+	public long GetLine() {
 		String line = GetParam(Consts.CONST_LINE);
 		if (line.isEmpty()) {
 			return 0;
 		} else {
-			return Integer.parseInt(line);
+			return Long.parseLong(line);
 		}
 	}
 

@@ -33,13 +33,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.SimpleTimeZone;
-import java.util.TreeMap;
+import java.util.*;
 
 public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
     public static final String DEFAULT_ENCODING = "UTF-8";
@@ -100,23 +94,19 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
         canonicalString.append(resourcePath).append(NEW_LINE);
 
         //Canonical Query String + "\n" +
-        TreeMap<String, String> orderMap = new TreeMap<String, String>();
         if (parameters != null) {
-            for (Map.Entry<String, String> param : parameters.entrySet()) {
-                orderMap.put(HttpUtil.urlEncode(param.getKey()), HttpUtil.urlEncode(param.getValue()));
+            TreeMap<String, String> orderMap = new TreeMap<String, String>(parameters);
+            String separator = "";
+            for (Map.Entry<String, String> param : orderMap.entrySet()) {
+                canonicalString.append(separator).append(param.getKey());
+                String value = param.getValue();
+                if (value != null && !value.isEmpty()) {
+                    canonicalString.append("=").append(HttpUtil.percentEncode(value));
+                }
+                separator = "&";
             }
         }
-        String separator = "";
-        StringBuilder canonicalPart = new StringBuilder();
-        for (Map.Entry<String, String> param : orderMap.entrySet()) {
-            canonicalPart.append(separator).append(param.getKey());
-            String value = param.getValue();
-            if (value != null && !value.isEmpty()) {
-                canonicalPart.append("=").append(value);
-            }
-            separator = "&";
-        }
-        canonicalString.append(canonicalPart).append(NEW_LINE);
+        canonicalString.append(NEW_LINE);
 
         //Canonical Headers + "\n" +
         canonicalString.append(canonicalHeaders).append(NEW_LINE);
@@ -169,7 +159,7 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
         }
     }
 
-    private byte[] buildSigningKey(HmacSHA256Hasher hasher, String secretAccessKey, String region, String date) {
+    private static byte[] buildSigningKey(HmacSHA256Hasher hasher, String secretAccessKey, String region, String date) {
         byte[] signingSecret = (SECRET_KEY_PREFIX + secretAccessKey).getBytes(CHARSET_UTF_8);
         byte[] signingDate = hasher.hash(signingSecret, date.getBytes(CHARSET_UTF_8));
         byte[] signingRegion = hasher.hash(signingDate, region.getBytes(CHARSET_UTF_8));
@@ -177,7 +167,7 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
         return hasher.hash(signingService, TERMINATOR.getBytes(CHARSET_UTF_8));
     }
 
-    private String buildAuthorization(String accessKeyId, String signature, String scope) {
+    private static String buildAuthorization(String accessKeyId, String signature, String scope) {
         String credential = "Credential=" + accessKeyId + SEPARATOR_BACKSLASH + scope;
         String sign = ",Signature=" + signature;
         return SLS4_HMAC_SHA256 + " " + credential + sign;
@@ -189,6 +179,14 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
                      String resourceUri,
                      Map<String, String> urlParams,
                      byte[] body) {
+        Date now = new Date();
+        String dateTime = getDateTime(now);
+        headers.put(Consts.CONST_AUTHORIZATION, signRequest(headers, httpMethod, resourceUri, urlParams, body, dateTime));
+    }
+
+    public String signRequest(Map<String, String> headers, HttpMethod httpMethod,
+                              String resourceUri, Map<String, String> urlParams,
+                              byte[] body, String dateTime) {
         String contentSha256;
         if (body != null && body.length > 0) {
             headers.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(body.length));
@@ -197,13 +195,8 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
             headers.put(Consts.CONST_CONTENT_LENGTH, Consts.EMPTY_STRING_LENGTH);
             contentSha256 = Consts.EMPTY_STRING_SHA256;
         }
-        headers.put(Consts.X_LOG_CONTENT_SHA256, contentSha256);
-
-        Date now = new Date();
-        String dateTime = getDateTime(now);
         headers.put(Consts.X_LOG_DATE, dateTime);
-        String date = dateTime.substring(0, 8);
-
+        headers.put(Consts.X_LOG_CONTENT_SHA256, contentSha256);
         Map<String, String> canonicalHeaders = new TreeMap<String, String>();
         StringBuilder signedHeaders = new StringBuilder();
         for (Map.Entry<String, String> header : headers.entrySet()) {
@@ -229,6 +222,7 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
         String signedHeadersStr = signedHeaders.toString();
         String canonicalRequest = buildCanonicalRequest(httpMethod.toString(),
                 resourceUri, urlParams, headersToString.toString(), signedHeadersStr, contentSha256);
+        String date = dateTime.substring(0, 8);
         String scope = buildScope(date);
         String stringToSign = buildStringToSign(canonicalRequest, dateTime, scope);
         Mac mac = getMacInstance();
@@ -242,8 +236,7 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
 //        System.out.println("signingKey:\n" + BinaryUtil.toHex(signingKey));
 //        System.out.println("signature:\n" + signature);
 //        System.out.println("authorization:\n" + authorization);
-
-        headers.put(Consts.CONST_AUTHORIZATION, authorization);
+        return authorization;
     }
 
     private static class HmacSHA256Hasher {

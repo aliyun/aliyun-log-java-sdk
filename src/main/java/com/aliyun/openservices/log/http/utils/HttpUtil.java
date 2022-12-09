@@ -44,8 +44,15 @@ public class HttpUtil {
         }
     }
 
-    public static String urlEncode(String value) {
-        return value != null ? urlEncode(value, DEFAULT_CHARSET_NAME) : "";
+    public static String percentEncode(String value) {
+        try {
+            return value != null ? URLEncoder.encode(value, DEFAULT_CHARSET_NAME)
+                    .replace("+", "%20")
+                    .replace("*", "%2A")
+                    .replace("%7E", "~") : null;
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /**

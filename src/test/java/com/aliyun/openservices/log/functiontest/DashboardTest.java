@@ -1,16 +1,11 @@
 package com.aliyun.openservices.log.functiontest;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.Chart;
 import com.aliyun.openservices.log.common.Dashboard;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.internal.ErrorCodes;
-import com.aliyun.openservices.log.request.CreateDashboardRequest;
-import com.aliyun.openservices.log.request.DeleteChartRequest;
-import com.aliyun.openservices.log.request.DeleteDashboardRequest;
-import com.aliyun.openservices.log.request.GetDashboardRequest;
-import com.aliyun.openservices.log.request.ListDashboardRequest;
-import com.aliyun.openservices.log.request.UpdateDashboardRequest;
+import com.aliyun.openservices.log.request.*;
 import com.aliyun.openservices.log.response.GetDashboardResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
 import org.junit.Assert;
@@ -199,5 +194,56 @@ public class DashboardTest extends MetaAPIBaseFunctionTest {
         searchAttr.put("timeSpanType", "custom");
         chart.setRawSearchAttr(searchAttr.toString());
         return chart;
+    }
+
+    @Test
+    public void testSpecialCharacters() throws Exception {
+        Chart chart = createChart("test-chart-1");
+        JSONObject displayAttrObj = JSONObject.parseObject("{\"yPos\":9,\"filterData\":[{\"list\":[\"\uD83D\uDE13❤\"],\"type\":\"filter\",\"listAlias\":[\"\uD83D\uDE13❤\"],\"key\":\"key\",\"listDefault\":[true]}],\"displayName\":\"测试\",\"showTitle\":false,\"bindQuery\":false,\"showBackground\":false,\"width\":6,\"logic\":\"and\",\"xPos\":0,\"showBorder\":false,\"height\":1,\"zIndex\":10}");
+        chart.setRawDisplayAttr(displayAttrObj.toString());
+        String dashboardName = "dashboardtest-special";
+        try {
+            client.deleteDashboard(new DeleteDashboardRequest(TEST_PROJECT, dashboardName));
+        } catch (LogException ex) {
+            assertEquals("DashboardNotExist", ex.GetErrorCode());
+            assertEquals("specified dashboard does not exist", ex.getMessage());
+        }
+        Dashboard dashboard = new Dashboard();
+        dashboard.setDashboardName(dashboardName);
+        dashboard.setDescription("Dashboard");
+        ArrayList<Chart> charts = new ArrayList<Chart>();
+        charts.add(chart);
+        dashboard.setChartList(charts);
+        CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(TEST_PROJECT, dashboard);
+        client.createDashboard(createDashboardRequest);
+        Dashboard dashboard1 = client.getDashboard(new GetDashboardRequest(TEST_PROJECT, dashboardName)).getDashboard();
+        Assert.assertEquals(1, dashboard1.getChartList().size());
+        Chart chart1 = dashboard1.getChartList().get(0);
+        Assert.assertEquals(chart1.getTitle(), chart.getTitle());
+        String displayAttr = chart1.getRawDisplayAttr();
+        JSONObject displayObj = JSONObject.parseObject(displayAttr);
+        Assert.assertEquals(9, displayObj.getIntValue("yPos"));
+        Assert.assertEquals(0, displayObj.getIntValue("xPos"));
+        Assert.assertEquals(1, displayObj.getIntValue("height"));
+        Assert.assertEquals(6, displayObj.getIntValue("width"));
+        Assert.assertEquals(10, displayObj.getIntValue("zIndex"));
+        Assert.assertEquals("测试", displayObj.getString("displayName"));
+        Assert.assertEquals("and", displayObj.getString("logic"));
+        Assert.assertFalse(displayObj.getBoolean("showTitle"));
+        Assert.assertFalse(displayObj.getBoolean("bindQuery"));
+        Assert.assertFalse(displayObj.getBoolean("showBackground"));
+        Assert.assertFalse(displayObj.getBoolean("showBorder"));
+        JSONArray filterData = displayObj.getJSONArray("filterData");
+        Assert.assertEquals(1, filterData.size());
+        JSONObject first = filterData.getJSONObject(0);
+        JSONArray list = first.getJSONArray("list");
+        Assert.assertEquals("\uD83D\uDE13❤", list.getString(0));
+        Assert.assertEquals("filter", first.getString("type"));
+        Assert.assertEquals("key", first.getString("key"));
+        JSONArray listDefault = first.getJSONArray("listDefault");
+        Assert.assertEquals(1, listDefault.size());
+        Assert.assertTrue(listDefault.getBoolean(0));
+        JSONArray listAlias = first.getJSONArray("listAlias");
+        Assert.assertEquals("\uD83D\uDE13❤", listAlias.getString(0));
     }
 }

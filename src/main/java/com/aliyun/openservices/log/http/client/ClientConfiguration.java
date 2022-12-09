@@ -41,7 +41,6 @@ public class ClientConfiguration {
     private int maxErrorRetry = 3;
     protected SignVersion signatureVersion = DEFAULT_SIGNATURE_VERSION;
     private String region;
-    private boolean extractSettingFromEndpoint = true;
 
     public ClientConfiguration() {
     }
@@ -286,23 +285,5 @@ public class ClientConfiguration {
 
     public void setRegion(String region) {
         this.region = region;
-    }
-
-    /**
-     * Sets the flag of extracting setting from endpoint.
-     *
-     * @param enabled True if it's enabled; False if it's disabled.
-     */
-    public void setExtractSettingFromEndpoint(boolean enabled) {
-        this.extractSettingFromEndpoint = enabled;
-    }
-
-    /**
-     * Gets the flag of extracting setting from endpoint. By default it's enabled.
-     *
-     * @return true enabled; false disabled.
-     */
-    public boolean isExtractSettingFromEndpointEnable() {
-        return extractSettingFromEndpoint;
     }
 }
