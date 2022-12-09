@@ -1,13 +1,6 @@
 package com.aliyun.openservices.log.util;
 
-import com.aliyun.openservices.log.common.Consts;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class Utils {
 
@@ -130,19 +123,5 @@ public final class Utils {
         }
 
         return nList;
-    }
-
-    private static String trimSuffix(String str, List<String> suffixes) {
-        for (String s : suffixes) {
-            if (str.endsWith(s)) {
-                return str.substring(0, str.length() - s.length());
-            }
-        }
-        return str;
-    }
-
-    public static String extractRegionFromEndpoint(String endpoint) {
-        String[] splits = endpoint.split("\\.");
-        return trimSuffix(splits[0], Arrays.asList(Consts.INTRANET_SUFFIX, Consts.CROSS_DOMAIN_SUFFIX));
     }
 }

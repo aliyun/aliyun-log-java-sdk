@@ -115,7 +115,7 @@ public class Client implements LogService {
 		this.resourceOwnerAccount = resourceOwnerAccount;
 	}
 
-    public HttpClientConnectionManager getConnectionManager() {
+	public HttpClientConnectionManager getConnectionManager() {
         return serviceClient.getConnectionManager();
     }
 
@@ -217,10 +217,6 @@ public class Client implements LogService {
 		}
 		if (NetworkUtils.isIPAddr(this.hostName)) {
 			throw new IllegalArgumentException("The ip address is not supported");
-		}
-		ClientConfiguration configuration = serviceClient.getClientConfiguration();
-		if (configuration.getRegion() == null && configuration.isExtractSettingFromEndpointEnable()) {
-		    configuration.setRegion(Utils.extractRegionFromEndpoint(hostName));
 		}
 	}
 
@@ -741,13 +737,13 @@ public class Client implements LogService {
 		return GetLogs(request);
 	}
 	public GetLogsResponse GetLogs(String project, String logStore, int from,
-								   int to, String topic, String query, int line, int offset,
+								   int to, String topic, String query, long line, long offset,
 								   boolean reverse) throws LogException
 	{
 		return GetLogs(project,logStore,from,to,topic,query,line,offset,reverse,false);
 	}
 	public GetLogsResponse GetLogs(String project, String logStore, int from,
-			int to, String topic, String query, int line, int offset,
+			int to, String topic, String query, long line, long offset,
 			boolean reverse, boolean powerSql) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
@@ -758,7 +754,7 @@ public class Client implements LogService {
 		return GetLogs(request);
 	}
 	public GetLogsResponse 	GetLogs(String project, String logStore, int from,
-									  int to, String topic, String query, int line, int offset,
+									  int to, String topic, String query, long line, long offset,
 									  boolean reverse,
 									  boolean powerSql,
 									  boolean forward) throws LogException {
@@ -772,7 +768,7 @@ public class Client implements LogService {
 	}
 
 	public GetLogsResponse GetLogs(String project, String logStore, int from,
-								   int to, String topic, String query, int line, int offset,
+								   int to, String topic, String query, long line, long offset,
 								   boolean reverse, int shard) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
@@ -784,7 +780,7 @@ public class Client implements LogService {
 	}
 
 	public GetLogsResponse GetLogs(String project, String logStore, int from,
-									  int to, String topic, String query, int line, int offset,
+									  int to, String topic, String query, long line, long offset,
 									  boolean reverse, boolean forward, String session) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");

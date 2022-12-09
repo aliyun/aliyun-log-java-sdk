@@ -137,7 +137,7 @@ public interface LogService {
 	 *             if project or logstore is empty
 	 */
     GetLogsResponse GetLogs(String project, String logStore, int from,
-                            int to, String topic, String query, int line, int offset,
+                            int to, String topic, String query, long line, long offset,
                             boolean reverse,
 							boolean powerSql) throws LogException;
 
@@ -182,7 +182,7 @@ public interface LogService {
 	 *             if project or logstore is empty
 	 */
 	GetLogsResponse GetLogs(String project, String logStore, int from,
-							int to, String topic, String query, int line, int offset,
+							int to, String topic, String query, long line, long offset,
 							boolean reverse,
 							boolean powerSql,
 							boolean forward) throws LogException;
@@ -228,7 +228,7 @@ public interface LogService {
 	 *             if project or logstore is empty
 	 */
 	GetLogsResponse GetLogs(String project, String logStore, int from,
-							int to, String topic, String query, int line, int offset,
+							int to, String topic, String query, long line, long offset,
 							boolean reverse, int shard) throws LogException;
 
 	/**
@@ -272,7 +272,7 @@ public interface LogService {
 	 *             if project or logstore is empty
 	 */
 	GetLogsResponse GetLogs(String project, String logStore, int from,
-							int to, String topic, String query, int line, int offset,
+							int to, String topic, String query, long line, long offset,
 							boolean reverse, boolean forward, String session) throws LogException;
 
 	/**

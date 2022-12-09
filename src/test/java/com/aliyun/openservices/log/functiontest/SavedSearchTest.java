@@ -1,21 +1,18 @@
 package com.aliyun.openservices.log.functiontest;
 
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.SavedSearch;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.request.CreateSavedSearchRequest;
-import com.aliyun.openservices.log.request.DeleteSavedSearchRequest;
-import com.aliyun.openservices.log.request.GetSavedSearchRequest;
-import com.aliyun.openservices.log.request.ListSavedSearchRequest;
-import com.aliyun.openservices.log.request.UpdateSavedSearchRequest;
+import com.aliyun.openservices.log.request.*;
 import com.aliyun.openservices.log.response.GetSavedSearchResponse;
 import com.aliyun.openservices.log.response.ListSavedSearchResponse;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class SavedSearchTest extends MetaAPIBaseFunctionTest {
 
@@ -100,5 +97,32 @@ public class SavedSearchTest extends MetaAPIBaseFunctionTest {
             assertEquals(ex.GetErrorMessage(), "specified savedsearch does not exist");
             assertEquals(ex.GetErrorCode(), "SavedSearchNotExist");
         }
+    }
+
+    @Test
+    public void testSpecialCharacters() throws Exception {
+        SavedSearch savedSearch = new SavedSearch();
+        savedSearch.setSavedSearchName("savedsearch-special");
+        savedSearch.setLogstore("logstore-1");
+        savedSearch.setDisplayName("savedsearch-special");
+        savedSearch.setSearchQuery("\uD83D\uDE13❤");
+        savedSearch.setTopic("test-topic111");
+
+        client.createSavedSearch(new CreateSavedSearchRequest(TEST_PROJECT, savedSearch));
+        SavedSearch savedSearch1 = client.getSavedSearch(new GetSavedSearchRequest(TEST_PROJECT, savedSearch.getSavedSearchName()))
+                .getSavedSearch();
+        Assert.assertEquals(savedSearch.getSavedSearchName(), savedSearch1.getSavedSearchName());
+        Assert.assertEquals(savedSearch.getSearchQuery(), savedSearch1.getSearchQuery());
+        Assert.assertEquals(savedSearch.getDisplayName(), savedSearch1.getDisplayName());
+        Assert.assertEquals(savedSearch.getLogstore(), savedSearch1.getLogstore());
+        Assert.assertEquals(savedSearch.getTopic(), savedSearch1.getTopic());
+        String rawJson = savedSearch1.getRawSavedSearchAttr();
+        JSONObject object = JSONObject.parseObject(rawJson);
+        Assert.assertEquals(5, object.size());
+        Assert.assertEquals(savedSearch.getSavedSearchName(), object.getString(Consts.CONST_SAVEDSEARCH_NAME));
+        Assert.assertEquals(savedSearch.getSearchQuery(), object.getString(Consts.CONST_SAVEDSEARCH_QUERY));
+        Assert.assertEquals(savedSearch.getDisplayName(), object.getString(Consts.CONST_SAVEDSEARCH_DISPLAYNAME));
+        Assert.assertEquals(savedSearch.getLogstore(), object.getString(Consts.LOGSTORE_KEY));
+        Assert.assertEquals(savedSearch.getTopic(), object.getString(Consts.CONST_TOPIC));
     }
 }
