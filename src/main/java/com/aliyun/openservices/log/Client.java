@@ -749,6 +749,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
 		CodingUtils.assertParameterNotNull(query, "query");
+		CodingUtils.validateOffset(offset);
 		GetLogsRequest request = new GetLogsRequest(project, logStore, from,
 				to, topic, query, offset, line, reverse,powerSql);
 		return GetLogs(request);
@@ -762,6 +763,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
 		CodingUtils.assertParameterNotNull(query, "query");
+		CodingUtils.validateOffset(offset);
 		GetLogsRequest request = new GetLogsRequest(project, logStore, from,
 				to, topic, query, offset, line, reverse,powerSql, forward);
 		return GetLogs(request);
@@ -774,6 +776,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
 		CodingUtils.assertParameterNotNull(query, "query");
+		CodingUtils.validateOffset(offset);
 		GetLogsRequest request = new GetLogsRequest(project, logStore, from,
 				to, topic, query, offset, line, reverse, shard);
 		return GetLogs(request);
@@ -786,6 +789,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
 		CodingUtils.assertParameterNotNull(query, "query");
+		CodingUtils.validateOffset(offset);
 		GetLogsRequest request = new GetLogsRequest(project, logStore, from,
 				to, topic, query, offset, line, reverse, forward, session);
 		return GetLogs(request);
@@ -2272,8 +2276,8 @@ public class Client implements LogService {
         Map<String, String> headParameter = GetCommonHeadPara(project);
         byte[] body = encodeToUtf8(internalLogStore.ToRequestString());
         headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-        String resourceUri = "/logstores/" + internalLogStore.GetLogStoreName() + "?type=inner";
-        Map<String, String> urlParameter = new HashMap<String, String>();
+        String resourceUri = "/logstores/" + internalLogStore.GetLogStoreName();
+        Map<String, String> urlParameter = Collections.singletonMap("type", "inner");
         ResponseMessage response = SendData(project, HttpMethod.PUT,
                 resourceUri, urlParameter, headParameter, body);
         Map<String, String> resHeaders = response.getHeaders();
@@ -2287,8 +2291,8 @@ public class Client implements LogService {
         Map<String, String> headParameter = GetCommonHeadPara(project);
         byte[] body = encodeToUtf8(internalLogStore.ToRequestString());
         headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-        String resourceUri = "/logstores?type=inner";
-        Map<String, String> urlParameter = new HashMap<String, String>();
+        String resourceUri = "/logstores";
+        Map<String, String> urlParameter = Collections.singletonMap("type", "inner");
         ResponseMessage response = SendData(project, HttpMethod.POST,
                 resourceUri, urlParameter, headParameter, body);
         Map<String, String> resHeaders = response.getHeaders();
@@ -4987,7 +4991,7 @@ public class Client implements LogService {
 	@Override
 	public DeleteResourceResponse deleteResource(DeleteResourceRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
-		CodingUtils.validateResource(request.getResourceName());
+		CodingUtils.assertStringNotNullOrEmpty(request.getResourceName(), "resourceName");
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		String resourceUri = String.format(Consts.CONST_RESOURCE_NAME_URI, request.getResourceName());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
@@ -4998,7 +5002,7 @@ public class Client implements LogService {
 	@Override
 	public GetResourceResponse getResource(GetResourceRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
-		CodingUtils.validateResource(request.getResourceName());
+		CodingUtils.assertStringNotNullOrEmpty(request.getResourceName(), "resourceName");
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		String resourceUri = String.format(Consts.CONST_RESOURCE_NAME_URI, request.getResourceName());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
@@ -5065,7 +5069,7 @@ public class Client implements LogService {
 	@Override
 	public CreateResourceRecordResponse createResourceRecord(CreateResourceRecordRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
-		CodingUtils.validateResource(request.getResourceName());
+		CodingUtils.assertStringNotNullOrEmpty(request.getResourceName(), "resourceName");
 		CodingUtils.assertParameterNotNull(request.getRecord(), "record");
 		request.getRecord().checkForCreate();
 
@@ -5081,7 +5085,7 @@ public class Client implements LogService {
 	@Override
 	public UpsertResourceRecordResponse upsertResourceRecord(UpsertResourceRecordRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
-		CodingUtils.validateResource(request.getResourceName());
+		CodingUtils.assertStringNotNullOrEmpty(request.getResourceName(), "resourceName");
 		CodingUtils.assertParameterNotNull(request.getRecords(), "records");
 		for (ResourceRecord r: request.getRecords()) {
 			CodingUtils.assertParameterNotNull(r, "record");
@@ -5100,9 +5104,9 @@ public class Client implements LogService {
 	@Override
 	public UpdateResourceRecordResponse updateResourceRecord(UpdateResourceRecordRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
-		CodingUtils.validateResource(request.getResourceName());
+		CodingUtils.assertStringNotNullOrEmpty(request.getResourceName(), "resourceName");
 		CodingUtils.assertParameterNotNull(request.getRecord(), "record");
-		CodingUtils.validateRecordId(request.getRecord().getId());
+		CodingUtils.assertStringNotNullOrEmpty(request.getRecord().getId(), "recordId");
 		request.getRecord().checkForUpdate();
 
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
@@ -5117,7 +5121,7 @@ public class Client implements LogService {
 	@Override
 	public DeleteResourceRecordResponse deleteResourceRecord(DeleteResourceRecordRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
-		CodingUtils.validateResource(request.getResourceName());
+		CodingUtils.assertStringNotNullOrEmpty(request.getResourceName(), "resourceName");
 		CodingUtils.assertParameterNotNull(request.getRecordIds(), "recordIds");
 		for (String id: request.getRecordIds()) {
 			CodingUtils.assertStringNotNullOrEmpty(id, "recordId");
@@ -5135,8 +5139,8 @@ public class Client implements LogService {
 	@Override
 	public GetResourceRecordResponse getResourceRecord(GetResourceRecordRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
-		CodingUtils.validateResource(request.getResourceName());
-		CodingUtils.validateRecordId(request.getRecordId());
+		CodingUtils.assertStringNotNullOrEmpty(request.getResourceName(), "resourceName");
+		CodingUtils.assertStringNotNullOrEmpty(request.getRecordId(), "recordId");
 
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		String resourceUri = String.format(Consts.CONST_RESOURCE_RECORD_ID_URI,
@@ -5163,7 +5167,7 @@ public class Client implements LogService {
 	@Override
 	public ListResourceRecordResponse listResourceRecord(ListResourceRecordRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
-		CodingUtils.validateResource(request.getResourceName());
+		CodingUtils.assertStringNotNullOrEmpty(request.getResourceName(), "resourceName");
 
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		String resourceUri = String.format(Consts.CONST_RESOURCE_RECORD_URI, request.getResourceName());

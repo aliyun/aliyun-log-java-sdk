@@ -24,6 +24,7 @@ public class CodingUtils {
     private static final Pattern RESOURCE_PATTERN = Pattern.compile("^[a-z][0-9a-z_.]{1,125}[0-9a-z]$");
     private static final Pattern RECORD_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9_:.-]{0,63}$");
     private static final Pattern ETL_JOB_PATTERN = Pattern.compile("^[0-9a-z][0-9a-z_-]{0,62}[0-9a-z]$");
+    private static final int MAX_OFFSET = Integer.MAX_VALUE;
 
     public static void assertParameterNotNull(Object param, String paramName) throws LogException {
         if (param == null) {
@@ -126,6 +127,13 @@ public class CodingUtils {
         assertParameterNotNull(etlJobName, "etlJobName");
         if (!ETL_JOB_PATTERN.matcher(etlJobName).matches()) {
             throw new LogException(ErrorCodes.INVALID_PARAMETER, "Invalid etlJobName: " + etlJobName, "");
+        }
+    }
+
+    public static void validateOffset(long offset) throws LogException {
+        assertParameterNotNull(offset, "offset");
+        if (offset > MAX_OFFSET) {
+            throw new LogException(ErrorCodes.INVALID_PARAMETER, "Up to " + MAX_OFFSET + " numbers of logs are supported to search", "");
         }
     }
 }

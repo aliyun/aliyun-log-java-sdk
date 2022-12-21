@@ -39,8 +39,8 @@ public class SignerV4Test {
         SlsV4Signer signer2 = new SlsV4Signer(new DefaultCredentails("acsddda21dsd", "zxasdasdasw2"),
                 "cn-shanghai");
 
-        Assert.assertEquals(signer2.signRequest(new HashMap<>(),
-                        HttpMethod.POST, "/logstores", new HashMap<>(), body,
+        Assert.assertEquals(signer2.signRequest(new HashMap<String, String>(),
+                        HttpMethod.POST, "/logstores", new HashMap<String, String>(), body,
                         "20220808T032330Z"),
                 "SLS4-HMAC-SHA256 Credential=acsddda21dsd/20220808/cn-shanghai/sls/aliyun_v4_request,Signature=" +
                         "8a10a5e723cb2e75964816de660b2c16a58af8bc0261f7f0722d832468c76ce8");

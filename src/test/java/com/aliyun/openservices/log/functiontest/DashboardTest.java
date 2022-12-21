@@ -246,4 +246,23 @@ public class DashboardTest extends MetaAPIBaseFunctionTest {
         JSONArray listAlias = first.getJSONArray("listAlias");
         Assert.assertEquals("\uD83D\uDE13❤", listAlias.getString(0));
     }
+
+    @Test
+    public void testAttributeNotMissing() throws Exception {
+        Chart chart = createChart("test-chart-1");
+        JSONObject displayAttrObj = JSONObject.parseObject("{\"yPos\":9,\"filterData\":[{\"list\":[\"\uD83D\uDE13❤\"],\"type\":\"filter\",\"listAlias\":[\"\uD83D\uDE13❤\"],\"key\":\"key\",\"listDefault\":[true]}],\"displayName\":\"测试\",\"showTitle\":false,\"bindQuery\":false,\"showBackground\":false,\"width\":6,\"logic\":\"and\",\"xPos\":0,\"showBorder\":false,\"height\":1,\"zIndex\":10}");
+        chart.setRawDisplayAttr(displayAttrObj.toString());
+        String dashboardName = "dashboardtest-attribute-not-missing";
+        Dashboard dashboard = new Dashboard();
+        dashboard.setDashboardName(dashboardName);
+        dashboard.setDescription("Dashboard");
+        dashboard.setAttribute("{\"key\":\"xxxxx\"}");
+        ArrayList<Chart> charts = new ArrayList<Chart>();
+        charts.add(chart);
+        dashboard.setChartList(charts);
+        CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(TEST_PROJECT, dashboard);
+        client.createDashboard(createDashboardRequest);
+        Dashboard dashboard1 = client.getDashboard(new GetDashboardRequest(TEST_PROJECT, dashboardName)).getDashboard();
+        Assert.assertEquals(dashboard1.getAttribute(), dashboard.getAttribute());
+    }
 }
