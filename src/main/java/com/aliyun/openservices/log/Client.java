@@ -6098,8 +6098,7 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(projectName, HttpMethod.GET,
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
-		GetProjectPolicyReponse getProjectPolicyReponse = new GetProjectPolicyReponse(resHeaders, response.GetStringBody());
-		return getProjectPolicyReponse;
+		return new GetProjectPolicyReponse(resHeaders, response.GetStringBody());
 	}
 
 	@Override
@@ -6114,4 +6113,42 @@ public class Client implements LogService {
 		return new DeleteProjectPolicyReponse(resHeaders);
 	}
 
+	@Override
+	public SetProjectCnameResponse setProjectCname(SetProjectCnameRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.POST,
+				Consts.CONST_CNAME_URI, Collections.emptyMap(), headParameter, request.marshal().toString());
+		SetProjectCnameResponse addCnameResponse = new SetProjectCnameResponse(response.getHeaders());
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = parseResponseBody(response, requestId);
+		addCnameResponse.setCertId(object.getString("certId"));
+		return addCnameResponse;
+	}
+
+	@Override
+	public ListProjectCnameResponse listProjectCname(String project) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		ResponseMessage response = SendData(project, HttpMethod.GET,
+				Consts.CONST_CNAME_URI, Collections.emptyMap(), headParameter);
+		ListProjectCnameResponse listCnameResponse = new ListProjectCnameResponse(response.getHeaders());
+		String requestId = GetRequestId(response.getHeaders());
+		JSONArray result = ParseResponseMessageToArray(response, requestId);
+		listCnameResponse.unmarshal(result);
+		return listCnameResponse;
+	}
+
+	@Override
+	public VoidResponse deleteProjectCname(String project, String domain) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(domain, "domain");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		ResponseMessage response = SendData(project, HttpMethod.DELETE,
+				Consts.CONST_CNAME_URI + "/" + domain, Collections.emptyMap(), headParameter);
+		return new VoidResponse(response.getHeaders());
+	}
 }

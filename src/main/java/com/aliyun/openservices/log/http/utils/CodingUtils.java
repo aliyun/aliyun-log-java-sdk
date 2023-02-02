@@ -136,4 +136,8 @@ public class CodingUtils {
             throw new LogException(ErrorCodes.INVALID_PARAMETER, "Up to " + MAX_OFFSET + " numbers of logs are supported to search", "");
         }
     }
+
+    public static boolean isNullOrEmpty(String text) {
+        return text == null || text.isEmpty();
+    }
 }
