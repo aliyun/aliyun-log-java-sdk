@@ -511,6 +511,5 @@ public class Consts {
     public static final String SCHEDULED_SQL_RUNNING = "RUNNING";
 
     public static final String INVALID_LOG_TIME = "InvalidLogTime";
-    public static final String INTRANET_SUFFIX = "-intranet";
-    public static final String CROSS_DOMAIN_SUFFIX = "-share";
+    public static final String CONST_CNAME_URI = "/cname";
 }

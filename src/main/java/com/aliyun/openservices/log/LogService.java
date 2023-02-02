@@ -3889,4 +3889,8 @@ public interface LogService {
 	SetProjectPolicyResponse setProjectPolicy(String projectName, String policyText) throws LogException;
 	GetProjectPolicyReponse getProjectPolicy(String projectName) throws LogException;
 	DeleteProjectPolicyReponse deleteProjectPolicy(String projectName) throws LogException;
+
+	SetProjectCnameResponse setProjectCname(SetProjectCnameRequest request) throws LogException;
+	ListProjectCnameResponse listProjectCname(String project) throws LogException;
+	VoidResponse deleteProjectCname(String project, String domain) throws LogException;
 }
