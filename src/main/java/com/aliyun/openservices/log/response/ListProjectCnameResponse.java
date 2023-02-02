@@ -26,7 +26,7 @@ public class ListProjectCnameResponse extends Response {
 
     public void unmarshal(JSONArray marshalled) {
         int n = marshalled.size();
-        cnameConfigurations = new ArrayList<>(n);
+        cnameConfigurations = new ArrayList<CnameConfiguration>(n);
         for (int i = 0; i < n; ++i) {
             JSONObject item = marshalled.getJSONObject(i);
             CnameConfiguration cnameConfiguration = new CnameConfiguration();

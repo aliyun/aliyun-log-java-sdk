@@ -6119,7 +6119,7 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 		ResponseMessage response = SendData(request.GetProject(), HttpMethod.POST,
-				Consts.CONST_CNAME_URI, Collections.emptyMap(), headParameter, request.marshal().toString());
+				Consts.CONST_CNAME_URI, Collections.<String, String>emptyMap(), headParameter, request.marshal().toString());
 		SetProjectCnameResponse addCnameResponse = new SetProjectCnameResponse(response.getHeaders());
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = parseResponseBody(response, requestId);
@@ -6133,7 +6133,7 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 		ResponseMessage response = SendData(project, HttpMethod.GET,
-				Consts.CONST_CNAME_URI, Collections.emptyMap(), headParameter);
+				Consts.CONST_CNAME_URI, Collections.<String, String>emptyMap(), headParameter);
 		ListProjectCnameResponse listCnameResponse = new ListProjectCnameResponse(response.getHeaders());
 		String requestId = GetRequestId(response.getHeaders());
 		JSONArray result = ParseResponseMessageToArray(response, requestId);
@@ -6148,7 +6148,7 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
-				Consts.CONST_CNAME_URI + "/" + domain, Collections.emptyMap(), headParameter);
+				Consts.CONST_CNAME_URI + "/" + domain, Collections.<String, String>emptyMap(), headParameter);
 		return new VoidResponse(response.getHeaders());
 	}
 }
