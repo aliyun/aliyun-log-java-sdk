@@ -11,7 +11,7 @@
 
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.78</version>
+    <version>0.6.79</version>
     <packaging>jar</packaging>
 
     <name>Aliyun LOG Java SDK</name>
@@ -20,10 +20,8 @@
 
     <licenses>
         <license>
-            <name/>
-            <url/>
-            <distribution>repo</distribution>
-            <comments>Copyright (C) Alibaba Cloud Computing. All rights reserved.</comments>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
     <scm>
