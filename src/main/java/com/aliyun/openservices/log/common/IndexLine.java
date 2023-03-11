@@ -10,6 +10,7 @@ import com.aliyun.openservices.log.exception.LogException;
 
 public class IndexLine {
 	private List<String> token = new ArrayList<String>();
+	private List<String> optionToken = new ArrayList<String>();
 	private boolean caseSensitive;
 	private boolean chn;
 	private List<String> includeKeys = new ArrayList<String>();
@@ -24,9 +25,15 @@ public class IndexLine {
 		this.caseSensitive = caseSensitive;
 		this.chn = false;
 	}
+
+	public IndexLine(List<String> token, List<String> optionToken, boolean caseSensitive) {
+		this(token, caseSensitive);
+		this.optionToken = optionToken;
+	}
 	
 	public IndexLine(IndexLine other) {
 		SetToken(other.GetToken());
+		SetOptionToken(other.GetOptionToken());
 		this.caseSensitive = other.GetCaseSensitive();
 		this.chn = other.GetChn();
 		SetIncludeKeys(other.GetIncludeKeys());
@@ -38,6 +45,12 @@ public class IndexLine {
 	 */
 	public List<String> GetToken() {
 		return token;
+	}
+	/**
+	 * @return the optionToken
+	 */
+	public List<String> GetOptionToken() {
+		return optionToken;
 	}
 	/**
 	 * @return the caseSensitive
@@ -56,6 +69,12 @@ public class IndexLine {
 	 */
 	public void SetToken(List<String> token) {
 		this.token = new ArrayList<String>(token);
+	}
+	/**
+	 * @param optionToken the option token to set
+	 */
+	public void SetOptionToken(List<String> optionToken) {
+		this.optionToken = new ArrayList<String>(optionToken);
 	}
 	/**
 	 * @param caseSensitive the caseSensitive to set
@@ -103,6 +122,12 @@ public class IndexLine {
 		JSONArray tokenDict = new JSONArray();
 		tokenDict.addAll(token);
 		line.put("token", tokenDict);
+
+		if (!optionToken.isEmpty()) {
+			JSONArray optionTokenDict = new JSONArray();
+			optionTokenDict.addAll(optionToken);
+			line.put("option_token", optionTokenDict);
+		}
 		
 		if (includeKeys.size() > 0) {
 			JSONArray includeKeysDict = new JSONArray();

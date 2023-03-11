@@ -124,5 +124,49 @@ public class SavedSearchTest extends MetaAPIBaseFunctionTest {
         Assert.assertEquals(savedSearch.getDisplayName(), object.getString(Consts.CONST_SAVEDSEARCH_DISPLAYNAME));
         Assert.assertEquals(savedSearch.getLogstore(), object.getString(Consts.LOGSTORE_KEY));
         Assert.assertEquals(savedSearch.getTopic(), object.getString(Consts.CONST_TOPIC));
+        client.deleteSavedSearch(new DeleteSavedSearchRequest(TEST_PROJECT, savedSearch.getSavedSearchName()));
+    }
+
+
+    static String randomString(int maxSize) {
+        StringBuilder builder = new StringBuilder(maxSize);
+        String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        for (int i = 0; i < maxSize; i++) {
+            builder.append(CHARS.charAt(randomInt(CHARS.length())));
+        }
+        return builder.toString();
+    }
+
+    @Test
+    public void testPayloadLengthBeyondLimit() throws Exception {
+        SavedSearch savedSearch = new SavedSearch();
+        savedSearch.setSavedSearchName("savedsearch-special");
+        savedSearch.setLogstore("logstore-1");
+        savedSearch.setDisplayName("savedsearch-special");
+        String bigQuery = randomString(65535);
+        savedSearch.setSearchQuery(bigQuery);
+        savedSearch.setTopic("test-topic111");
+
+        try {
+            client.createSavedSearch(new CreateSavedSearchRequest(TEST_PROJECT, savedSearch));
+            Assert.fail("Should fail as too long");
+        } catch (LogException ex) {
+            Assert.assertEquals(400, ex.getHttpCode());
+            Assert.assertEquals("PostBodyInvalid", ex.getErrorCode());
+            Assert.assertEquals("The savedsearch configuration is too long.", ex.GetErrorMessage());
+        }
+        savedSearch.setSearchQuery(randomString(100));
+        // OK
+        client.createSavedSearch(new CreateSavedSearchRequest(TEST_PROJECT, savedSearch));
+        savedSearch.setSearchQuery(bigQuery);
+        try {
+            client.updateSavedSearch(new UpdateSavedSearchRequest(TEST_PROJECT, savedSearch));
+            Assert.fail("Should fail as too long");
+        } catch (LogException ex) {
+            Assert.assertEquals(400, ex.getHttpCode());
+            Assert.assertEquals("PostBodyInvalid", ex.getErrorCode());
+            Assert.assertEquals("The savedsearch configuration is too long.", ex.GetErrorMessage());
+        }
+        client.deleteSavedSearch(new DeleteSavedSearchRequest(TEST_PROJECT, savedSearch.getSavedSearchName()));
     }
 }

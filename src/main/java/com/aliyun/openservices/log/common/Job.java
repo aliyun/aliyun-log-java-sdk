@@ -40,6 +40,12 @@ public class Job implements Serializable {
     private String description;
 
     /**
+     * The scheduleId of job
+     */
+    @JSONField
+    private String scheduleId;
+
+    /**
      * The time of job create time.
      */
     private Date createTime;
@@ -135,6 +141,14 @@ public class Job implements Serializable {
         this.description = description;
     }
 
+    public String getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(String scheduleId) {
+        this.scheduleId = scheduleId;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -185,6 +199,7 @@ public class Job implements Serializable {
             status = value.getString("status");
         }
         description = JsonUtils.readOptionalString(value, "description");
+        scheduleId = JsonUtils.readOptionalString(value, "scheduleId");
         if (value.containsKey("createTime")) {
             createTime = Utils.timestampToDate(value.getLong("createTime"));
         }
