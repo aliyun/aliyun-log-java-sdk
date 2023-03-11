@@ -53,4 +53,12 @@ public class LogContent implements Serializable {
 	public String GetValue() {
 		return mValue;
 	}
+
+	public String getKey() {
+		return mKey;
+	}
+
+	public String getValue() {
+		return mValue;
+	}
 }

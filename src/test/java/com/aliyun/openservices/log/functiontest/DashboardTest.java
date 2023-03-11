@@ -56,7 +56,7 @@ public class DashboardTest extends MetaAPIBaseFunctionTest {
         dashboard.setChartList(new ArrayList<Chart>());
         CreateDashboardRequest createDashboardRequest = new CreateDashboardRequest(TEST_PROJECT, dashboard);
         for (int i = 0; i < 146; ++i) {
-            dashboardName.append(randomBetween(0, 26) + 'a');
+            dashboardName.append((char) (randomBetween(0, 26) + 'a'));
             String tmpName = dashboardName.toString();
             dashboard.setDashboardName(tmpName);
             if (dashboardName.length() < 2 || dashboardName.length() > 128) {

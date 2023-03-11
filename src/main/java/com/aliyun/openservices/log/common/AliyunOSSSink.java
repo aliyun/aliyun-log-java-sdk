@@ -18,6 +18,16 @@ public class AliyunOSSSink extends DataSink {
     private String compressionType;
     private ExportContentDetail contentDetail;
 
+    public int getDelaySeconds() {
+        return delaySeconds;
+    }
+
+    public void setDelaySeconds(int delaySeconds) {
+        this.delaySeconds = delaySeconds;
+    }
+
+    private int delaySeconds;
+
     public AliyunOSSSink() { super(DataSinkType.ALIYUN_OSS); }
 
     public AliyunOSSSink(String roleArn, String bucket, String prefix,
@@ -145,6 +155,7 @@ public class AliyunOSSSink extends DataSink {
         pathFormatType = JsonUtils.readOptionalString(value, "pathFormatType", "time");
         bufferSize = value.getIntValue("bufferSize");
         bufferInterval = value.getIntValue("bufferInterval");
+        delaySeconds = value.getIntValue("delaySeconds");
         timeZone = value.getString("timeZone");
         compressionType = value.getString("compressionType");
         contentType = value.getString("contentType");

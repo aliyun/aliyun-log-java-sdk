@@ -846,7 +846,7 @@ public class Client implements LogService {
 		GetLogsResponse getLogsResponse = new GetLogsResponse(resHeaders);
 		String requestId = GetRequestId(resHeaders);
 		JSONArray object = ParseResponseMessageToArrayWithFastJson(response, requestId);
-		extractLogsWithFastJson(getLogsResponse, object, requestId);
+		getLogsResponse.setLogs(QueryResult.parseData(object, requestId));
 		return getLogsResponse;
 	}
 
@@ -870,25 +870,6 @@ public class Client implements LogService {
 					requestId);
 		}
 	}
-
-	private void extractLogsWithFastJson(BasicGetLogsResponse response,
-										 JSONArray logs,
-										 String requestId) throws LogException {
-		if (logs == null) {
-			return;
-		}
-		try {
-			for (int i = 0; i < logs.size(); i++) {
-				JSONObject jsonObject = logs.getJSONObject(i);
-				if (jsonObject != null) {
-					response.addLog(extractLogFromJSON(jsonObject, requestId));
-				}
-			}
-		} catch (JSONException e) {
-			// ignore;
-		}
-	}
-
 
 	private GetLogsResponse ParseResponseWithFastJsonStreamResolve(ResponseMessage response) throws LogException {
 		Map<String, String> resHeaders = response.getHeaders();
@@ -963,28 +944,6 @@ public class Client implements LogService {
 		return new QueriedLog(source, logItem);
 	}
 
-	private QueriedLog extractLogFromJSON(JSONObject log, String requestId) throws JSONException, LogException {
-		String source = "";
-		LogItem logItem = new LogItem();
-		Set<String> keySet = log.keySet();
-		for (String key:keySet) {
-			String value = log.getString(key);
-			if (key.equals(Consts.CONST_RESULT_SOURCE)) {
-				source = value;
-			} else if (key.equals(Consts.CONST_RESULT_TIME)) {
-				try {
-					logItem.mLogTime = Integer.parseInt(value);
-				} catch (NumberFormatException ex) {
-					throw new LogException(Consts.INVALID_LOG_TIME,
-							"The field __time__ is invalid in your query result: " + value, requestId);
-				}
-			} else {
-				logItem.PushBack(key, value);
-			}
-		}
-		return new QueriedLog(source, logItem);
-	}
-
 	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
@@ -1003,6 +962,19 @@ public class Client implements LogService {
 //		extractLogsWithFastJson(getLogsResponse, object, requestId);
 		return ParseResponseWithFastJsonStreamResolve(response);
 	}
+	public GetLogsResponseV2 GetLogsV2(GetLogsRequestV2 request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		Map<String, String> urlParameter = request.GetAllParams();
+		String project = request.GetProject();
+		String logstore = request.getLogstore();
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		headParameter.put(Consts.CONST_ACCEPT_ENCODING, request.getAcceptEncoding());
+		CodingUtils.validateLogstore(logstore);
+		String resourceUri = "/logstores/" + logstore + "/logs";
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, urlParameter, headParameter, request.getRequestBody());
+		return GetLogsResponseV2.deserializeFrom(response);
+	}
 
 	public GetContextLogsResponse getContextLogs(GetContextLogsRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -1018,7 +990,7 @@ public class Client implements LogService {
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = parseResponseBody(response, requestId);
 		GetContextLogsResponse logsResponse = new GetContextLogsResponse(resHeaders, object);
-		extractLogsWithFastJson(logsResponse, object.getJSONArray("logs"), requestId);
+		logsResponse.setLogs(QueryResult.parseData(object.getJSONArray("logs"), requestId));
 		return logsResponse;
 	}
 
