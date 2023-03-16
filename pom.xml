@@ -185,11 +185,11 @@
                         </excludes>
                     </artifactSet>
                     <relocations>
-                        <relocsation>
+                        <relocation>
                             <pattern>com.google.protobuf</pattern>
                             <shadedPattern>com.aliyun.log.thirdparty.com.google.protobuf
                             </shadedPattern>
-                        </relocsation>
+                        </relocation>
                         <relocation>
                             <pattern>org.apache.http</pattern>
                             <shadedPattern>com.aliyun.log.thirdparty.org.apache.http</shadedPattern>
