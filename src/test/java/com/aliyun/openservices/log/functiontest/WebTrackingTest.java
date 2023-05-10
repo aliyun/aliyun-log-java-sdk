@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 
 public class WebTrackingTest extends LogTest {
 
-    private boolean testPutLogs(String logStoreName) {
+    private boolean testGetWebtracking(String logStoreName) {
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         StringBuilder params = new StringBuilder("APIVersion=0.6.0");
         for (int i = 0; i < 100; ++i) {
@@ -79,21 +79,21 @@ public class WebTrackingTest extends LogTest {
         logStore.setAppendMeta(true);
         createOrUpdateLogStore(TEST_PROJECT, logStore);
 
-        assertTrue(testPutLogs(logStoreName));
+        assertTrue(testGetWebtracking(logStoreName));
         waitForSeconds(3);
         assertEquals(1, countLogGroupWithClientIpTag(TEST_PROJECT, logStoreName, 2));
 
         logStore.setEnableWebTracking(false);
         client.UpdateLogStore(TEST_PROJECT, logStore);
         waitOneMinutes();
-        assertFalse(testPutLogs(logStoreName));
+        assertFalse(testGetWebtracking(logStoreName));
         waitForSeconds(3);
         assertEquals(1, countLogGroupWithClientIpTag(TEST_PROJECT, logStoreName, 2));
 
         logStore.setEnableWebTracking(true);
         client.UpdateLogStore(TEST_PROJECT, logStore);
         waitOneMinutes();
-        assertTrue(testPutLogs(logStoreName));
+        assertTrue(testGetWebtracking(logStoreName));
         waitForSeconds(3);
         assertEquals(2, countLogGroupWithClientIpTag(TEST_PROJECT, logStoreName, 2));
     }
@@ -233,7 +233,7 @@ public class WebTrackingTest extends LogTest {
     private Response postTestLogs(String logStoreName, JSONObject log, boolean compress) {
         try {
             CloseableHttpClient httpclient = HttpClients.createDefault();
-            String URL = "http://" + TEST_PROJECT + "." + credentials.getEndpoint() + "/logstores/" + logStoreName + "/track";
+            String URL = "http://" + TEST_PROJECT + "." + TEST_ENDPOINT + "/logstores/" + logStoreName + "/track";
 
             HttpPost httpPost = new HttpPost(URL);
             String body = log.toString();
@@ -264,5 +264,53 @@ public class WebTrackingTest extends LogTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    public void testProjectPolicyRejectWebtracking() throws Exception {
+        String logStoreName = "logstore-webtracking";
+        LogStore logStore = new LogStore();
+        logStore.SetTtl(1);
+        logStore.SetShardCount(1);
+        logStore.SetLogStoreName(logStoreName);
+        logStore.setEnableWebTracking(true);
+        client.CreateLogStore(TEST_PROJECT, logStore);
+        String policyText = "{" +
+                "   \"Version\": \"1\",\n" +
+                "   \"Statement\": [{" +
+                "       \"Action\": [\"log:WebTracking\", \"log:PutWebTracking\"]," +
+                "       \"Resource\": \"*\",\n" +
+                "       \"Condition\": {" +
+                "         \"NotIpAddress\": {" +
+                "            \"acs:SourceIp\": [\"10.0.0.1\"]" +
+                "          }" +
+                "       }," +
+                "       \"Effect\": \"Deny\"" +
+                "   }]" +
+                " }";
+        client.setProjectPolicy(TEST_PROJECT, policyText);
+        waitForSeconds(60);
+
+        JSONObject object = new JSONObject();
+        object.put("__topic__", "test-topic");
+        object.put("__source__", "test-source");
+        JSONObject tags = new JSONObject();
+        tags.put("tag1", "hello");
+        object.put("__tags__", tags);
+        JSONArray array = new JSONArray();
+        JSONObject log = new JSONObject();
+        log.put("field1", "value1");
+        log.put("__time__", System.currentTimeMillis() / 1000);
+        array.add(log);
+        object.put("__logs__", array);
+        Response response = postTestLogs(logStoreName, object, true);
+        assertEquals(401, response.status);
+        assertFalse(testGetWebtracking(logStoreName));
+
+        client.deleteProjectPolicy(TEST_PROJECT);
+        waitOneMinutes();
+        response = postTestLogs(logStoreName, object, true);
+        assertEquals(200, response.status);
+        assertTrue(testGetWebtracking(logStoreName));
     }
 }

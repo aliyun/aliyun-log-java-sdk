@@ -548,6 +548,7 @@ public class SlsClientUnitTest {
 
         outputDetail.SetEndpoint("ay42");
         outputDetail.SetLogstoreName("perfcounter");
+        outputDetail.SetCompressType("lz4");
         config.SetOutputDetail(outputDetail);
 
         String project = "test-project";
@@ -723,10 +724,7 @@ public class SlsClientUnitTest {
 
         config.SetInputDetail(inputDetail);
 
-        ConfigOutputDetail outputDetail = new ConfigOutputDetail();
-
-        outputDetail.SetEndpoint("ay42");
-        outputDetail.SetLogstoreName("perfcounter");
+        ConfigOutputDetail outputDetail = new ConfigOutputDetail("ay42","perfcounter","lz4");
         config.SetOutputDetail(outputDetail);
 
         JSONObject configDict = new JSONObject();

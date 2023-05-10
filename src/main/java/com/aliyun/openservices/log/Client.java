@@ -32,6 +32,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
+import static com.aliyun.openservices.log.common.Consts.CONST_LOGSTORE_REPLICATION;
+
 /**
  * Client class is the main class in the sdk, it implements the interfaces
  * defined in LogService. It can be used to send request to the log service
@@ -3157,7 +3159,6 @@ public class Client implements LogService {
 	    CodingUtils.assertStringNotNullOrEmpty(project, "project");
 	    String logStore = request.GetLogStore();
 		CodingUtils.validateLogstore(logStore);
-
 	    Map<String, String> headParameter = GetCommonHeadPara(project);
         String resourceUri = "/logstores/" + logStore + "/index";
         Map<String, String> urlParameter = request.GetAllParams();
@@ -3169,19 +3170,19 @@ public class Client implements LogService {
 
 	@Override
 	public CreateShipperResponse CreateShipper(String project, String logStore,
-			String shipperName, ShipperConfig shipConfig) throws LogException {
+											   String shipperName, ShipperConfig shipConfig) throws LogException {
 		CodingUtils.assertParameterNotNull(project, "project");
 		CodingUtils.validateLogstore(logStore);
 		CodingUtils.assertParameterNotNull(shipperName, "shipperName");
 		CodingUtils.assertParameterNotNull(shipConfig, "shipConfig");
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
-        headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-        String resourceUri = "/logstores/" + logStore + "/shipper";
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = "/logstores/" + logStore + "/shipper";
 		JSONObject jsonBody = new JSONObject();
-        jsonBody.put("shipperName", shipperName);
-        jsonBody.put("targetType", shipConfig.GetShipperType());
-        jsonBody.put("targetConfiguration", shipConfig.GetJsonObj());
+		jsonBody.put("shipperName", shipperName);
+		jsonBody.put("targetType", shipConfig.GetShipperType());
+		jsonBody.put("targetConfiguration", shipConfig.GetJsonObj());
 		byte[] body = encodeToUtf8(jsonBody.toString());
 		Map<String, String> urlParameter = new HashMap<String, String>();
 		ResponseMessage response = SendData(project, HttpMethod.POST,
@@ -3192,18 +3193,18 @@ public class Client implements LogService {
 
 	@Override
 	public UpdateShipperResponse UpdateShipper(String project, String logStore,
-			String shipperName, ShipperConfig shipConfig) throws LogException {
+											   String shipperName, ShipperConfig shipConfig) throws LogException {
 		CodingUtils.assertParameterNotNull(project, "project");
 		CodingUtils.validateLogstore(logStore);
 		CodingUtils.validateShipper(shipperName);
 		CodingUtils.assertParameterNotNull(shipConfig, "shipConfig");
-		Map<String, String> headParameter = GetCommonHeadPara(project);
-        String resourceUri = "/logstores/" + logStore + "/shipper/" + shipperName;
-		JSONObject jsonBody = new JSONObject();
-        jsonBody.put("shipperName", shipperName);
-        jsonBody.put("targetType", shipConfig.GetShipperType());
-        jsonBody.put("targetConfiguration", shipConfig.GetJsonObj());
 
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/logstores/" + logStore + "/shipper/" + shipperName;
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("shipperName", shipperName);
+		jsonBody.put("targetType", shipConfig.GetShipperType());
+		jsonBody.put("targetConfiguration", shipConfig.GetJsonObj());
 		byte[] body = encodeToUtf8(jsonBody.toString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 		Map<String, String> urlParameter = new HashMap<String, String>();
@@ -3700,7 +3701,7 @@ public class Client implements LogService {
 		jsonBody.put("resourceGroupId", resourceGroupId);
 		byte[] body = encodeToUtf8(jsonBody.toString());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-		ResponseMessage response = SendData(resourceId, HttpMethod.PUT, resourceUri, urlParameter, headParameter, body);
+		ResponseMessage response = SendData("", HttpMethod.PUT, resourceUri, urlParameter, headParameter, body);
 		Map<String, String> resHeaders = response.getHeaders();
 		return new ChangeResourceGroupResponse(resHeaders);
 	}
@@ -4856,16 +4857,18 @@ public class Client implements LogService {
 			for(Map.Entry<String, String> kv: request.GetParam().entrySet()){
 				listRelationReq.SetParam(kv.getKey(), kv.getValue());
 			}
+			listRelationReq.setOffset(relationOffset);
 
 			ListTopostoreRelationResponse listRelationResp = this.listTopostoreRelation(listRelationReq);
 	
 			relationTotal = listRelationResp.getTotal();
+
+			relationOffset += listRelationResp.getCount();
 			
 			for(TopostoreRelation relation: listRelationResp.getTopostoreRelations()){
 				String srcNodeId = relation.getSrcNodeId();
 				String dstNodeId = relation.getDstNodeId();
 	
-				relationOffset++;
 				if (!nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_IN).containsKey(dstNodeId)){
 					nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_IN).put(dstNodeId, new ArrayList<TopostoreRelation>());
 				}
@@ -5262,6 +5265,64 @@ public class Client implements LogService {
 	public DisableReportResponse disableReport(DisableReportRequest request) throws LogException {
 		ResponseMessage responseMessage = send(request);
 		return new DisableReportResponse(responseMessage.getHeaders());
+	}
+
+	@Override
+	public SetLogstoreReplicationResponse setLogstoreReplication(String project, String logStore, boolean enable)
+			throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+
+		SetLogstoreReplicationRequest request = new SetLogstoreReplicationRequest(project, logStore, enable);
+		return setLogstoreReplication(request);
+	}
+
+	@Override
+	public SetLogstoreReplicationResponse setLogstoreReplication(SetLogstoreReplicationRequest request)
+			throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		String logStore = request.getLogStore();
+		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/logstores/" + logStore + "/" + Consts.CONST_LOGSTORE_REPLICATION_URI;
+		Map<String, String> urlParameter = request.GetAllParams();
+		JSONObject requestBodyJsonObject = new JSONObject();
+		requestBodyJsonObject.put(CONST_LOGSTORE_REPLICATION, request.getEnable());
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, urlParameter, headParameter, requestBodyJsonObject.toString());
+		return new SetLogstoreReplicationResponse(response.getHeaders());
+	}
+
+	@Override
+	public GetLogstoreReplicationResponse getLogstoreReplication(String project, String logStore)
+			throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+
+		GetLogstoreReplicationRequest request = new GetLogstoreReplicationRequest(project, logStore);
+		return getLogstoreReplication(request);
+	}
+
+	@Override
+	public GetLogstoreReplicationResponse getLogstoreReplication(GetLogstoreReplicationRequest request)
+			throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		String logStore = request.getLogStore();
+		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/logstores/" + logStore + "/" + Consts.CONST_LOGSTORE_REPLICATION_URI;
+		Map<String, String> urlParameter = request.GetAllParams();
+		ResponseMessage response = SendData(project, HttpMethod.GET,
+				resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		String requestId = GetRequestId(resHeaders);
+		JSONObject object = parseResponseBody(response, requestId);
+		boolean enable = object.getBoolean(CONST_LOGSTORE_REPLICATION);
+		return new GetLogstoreReplicationResponse(response.getHeaders(), enable);
 	}
 
 	@Override

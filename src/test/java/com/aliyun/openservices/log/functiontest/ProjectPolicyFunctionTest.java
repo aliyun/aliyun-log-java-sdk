@@ -135,11 +135,7 @@ public class ProjectPolicyFunctionTest extends MetaAPIBaseFunctionTest {
             }
             LogStore logStore = new LogStore("logstore1", 1, 1);
             client.CreateLogStore(projectName, logStore);
-            try {
-                TimeUnit.MINUTES.sleep(1);
-            } catch (InterruptedException ex) {
-                Assert.fail(ex.getMessage());
-            }
+            waitOneMinutes();
             try {
                 client.GetCursor(projectName, logStore.GetLogStoreName(), 0, Consts.CursorMode.BEGIN);
                 Assert.fail("GetCursor should fail");

@@ -16,6 +16,9 @@ public class PullLogsRequest extends Request {
     private int count;
     private String cursor;
     private String endCursor;
+    private String query;
+    private String pullMode;
+    private boolean responseWithMeta;
 
     /**
      * Construct a get cursor request
@@ -47,6 +50,25 @@ public class PullLogsRequest extends Request {
         setCount(count);
         setCursor(cursor);
         setEndCursor(endCursor);
+    }
+
+    /**
+     * Construct a PullLogsRequest
+     *
+     * @param project   project name
+     * @param logStore  log store name
+     * @param shardId   shard id
+     * @param cursor    current cursor
+     * @param count     LogGroup number
+     * @param endCursor the end cursor
+     * @param query     query
+     */
+    public PullLogsRequest(String project, String logStore, int shardId, int count, String cursor, String endCursor,
+            String query, String pullmode, boolean responseWithMeta) {
+        this(project, logStore, shardId, count, cursor, endCursor);
+        setQuery(query);
+        setPullMode(pullmode);
+        setResponseWithMeta(responseWithMeta);
     }
 
     public String getLogStore() {
@@ -93,6 +115,22 @@ public class PullLogsRequest extends Request {
         this.endCursor = endCursor;
     }
 
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    public void setPullMode(String pullMode) {
+        this.pullMode = pullMode;
+    }
+
+    public void setResponseWithMeta(boolean responseWithMeta) {
+        this.responseWithMeta = responseWithMeta;
+    }
+
     @Override
     public Map<String, String> GetAllParams() {
         SetParam(Consts.CONST_TYPE, Consts.CONST_TYPE_LOG);
@@ -101,6 +139,15 @@ public class PullLogsRequest extends Request {
         if (endCursor != null && !endCursor.isEmpty()) {
             SetParam(Consts.CONST_END_CURSOR, endCursor);
         }
+        if (pullMode != null && !pullMode.isEmpty()) {
+            SetParam(Consts.CONST_PULL_MODE, pullMode);
+            SetParam(Consts.CONST_RESPONSE_WITH_META, String.valueOf(responseWithMeta));
+        }
+
+        if (query != null && !query.isEmpty()) {
+            SetParam(Consts.CONST_QUERY, query);
+        }
+
         return super.GetAllParams();
     }
 }

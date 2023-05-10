@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.functiontest;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.EncryptConfig;
 import com.aliyun.openservices.log.common.OdpsShipperConfig;
 import com.aliyun.openservices.log.common.OssShipperConfig;
 import com.aliyun.openservices.log.common.OssShipperCsvStorageDetail;
@@ -84,7 +85,6 @@ public class ShipperTest extends JobIntgTest {
         ShipperConfig shipConfig = new OdpsShipperConfig(odpsEndPoint,
                 odpsProject, odpsTable, logFieldsList, partitionColumn,
                 partitionTimeFormat);
-
         try {
             client.CreateShipper(TEST_PROJECT, TEST_LOGSTORE, "invalid-shipper-name-$@#", shipConfig);
             fail("Invalid shipper name should fail");
@@ -129,12 +129,12 @@ public class ShipperTest extends JobIntgTest {
         String odpsProjectString = odpsJson.getString("odpsProject");
         assertEquals("dpdefault_925366", odpsProjectString);
 
-        int startTime = (int) (System.currentTimeMillis() / 1000.0 - 7200);
-        int endTime = (int) (System.currentTimeMillis() / 1000.0);
+        int startTime = (int)(System.currentTimeMillis() / 1000.0 - 7200);
+        int endTime = (int)(System.currentTimeMillis() / 1000.0);
         List<String> shipperTask = new ArrayList<String>();
         GetShipperTasksResponse taskRes = client.GetShipperTasks(TEST_PROJECT, TEST_LOGSTORE, shipperName, startTime, endTime, "", 0, 10);
         assertEquals(0, taskRes.GetTotalTask());
-        for (ShipperTask shipperTaskString : taskRes.GetShipperTasks()) {
+        for (ShipperTask shipperTaskString: taskRes.GetShipperTasks()) {
             if ("fail".equals(shipperTaskString.GetTaskStatus())) {
                 shipperTask.add(shipperTaskString.GetTaskId());
             }
@@ -181,12 +181,12 @@ public class ShipperTest extends JobIntgTest {
         JSONObject detailObj = storageObj.getJSONObject("detail");
         assertFalse(Boolean.parseBoolean(detailObj.get("enableTag").toString()));
 
-        int startTime = (int) (System.currentTimeMillis() / 1000.0 - 7200);
-        int endTime = (int) (System.currentTimeMillis() / 1000.0);
+        int startTime = (int)(System.currentTimeMillis() / 1000.0 - 7200);
+        int endTime = (int)(System.currentTimeMillis() / 1000.0);
         List<String> shipperTask = new ArrayList<String>();
         GetShipperTasksResponse taskRes = client.GetShipperTasks(TEST_PROJECT, TEST_LOGSTORE, shipperName, startTime, endTime, "", 0, 10);
         assertEquals(0, taskRes.GetTotalTask());
-        for (ShipperTask shipperTaskString : taskRes.GetShipperTasks()) {
+        for (ShipperTask shipperTaskString: taskRes.GetShipperTasks()) {
             if ("fail".equals(shipperTaskString.GetTaskStatus())) {
                 shipperTask.add(shipperTaskString.GetTaskId());
             }
@@ -235,12 +235,12 @@ public class ShipperTest extends JobIntgTest {
         JSONArray columnsArray = detailObj.getJSONArray("columns");
         assertEquals(5, columnsArray.size());
 
-        int startTime = (int) (System.currentTimeMillis() / 1000.0 - 7200);
-        int endTime = (int) (System.currentTimeMillis() / 1000.0);
+        int startTime = (int)(System.currentTimeMillis() / 1000.0 - 7200);
+        int endTime = (int)(System.currentTimeMillis() / 1000.0);
         List<String> shipperTask = new ArrayList<String>();
         GetShipperTasksResponse taskRes = client.GetShipperTasks(TEST_PROJECT, TEST_LOGSTORE, shipperName, startTime, endTime, "", 0, 10);
         assertEquals(0, taskRes.GetTotalTask());
-        for (ShipperTask shipperTaskString : taskRes.GetShipperTasks()) {
+        for (ShipperTask shipperTaskString: taskRes.GetShipperTasks()) {
             if ("fail".equals(shipperTaskString.GetTaskStatus())) {
                 shipperTask.add(shipperTaskString.GetTaskId());
             }
@@ -312,12 +312,12 @@ public class ShipperTest extends JobIntgTest {
         assertTrue(columnsList.contains("project_name"));
         assertTrue(columnsList.contains("logstore"));
 
-        int startTime = (int) (System.currentTimeMillis() / 1000.0 - 7200);
-        int endTime = (int) (System.currentTimeMillis() / 1000.0);
+        int startTime = (int)(System.currentTimeMillis() / 1000.0 - 7200);
+        int endTime = (int)(System.currentTimeMillis() / 1000.0);
         List<String> shipperTask = new ArrayList<String>();
         GetShipperTasksResponse taskRes = client.GetShipperTasks(TEST_PROJECT, TEST_LOGSTORE, shipperName, startTime, endTime, "", 0, 10);
         assertEquals(0, taskRes.GetTotalTask());
-        for (ShipperTask shipperTaskString : taskRes.GetShipperTasks()) {
+        for (ShipperTask shipperTaskString: taskRes.GetShipperTasks()) {
             if ("fail".equals(shipperTaskString.GetTaskStatus())) {
                 shipperTask.add(shipperTaskString.GetTaskId());
             }
@@ -329,6 +329,24 @@ public class ShipperTest extends JobIntgTest {
         assertEquals(1, listShipperResponse.GetTotal());
 
         client.DeleteShipper(TEST_PROJECT, TEST_LOGSTORE, shipperName);
+    }
+
+
+    @Test
+    public void testCreateJsonOssShipperKms() throws LogException {
+        String shipperName = "ossjsonshipper";
+        try {
+            client.DeleteShipper(TEST_PROJECT, TEST_LOGSTORE, shipperName);
+        } catch (LogException ex) {
+            assertEquals(ex.GetErrorMessage(), "ShipperNotExist", ex.GetErrorCode());
+        }
+        OssShipperConfig ossConfig = new OssShipperConfig(ossBucket, ossPrefix, roleArn, bufferInterval, bufferSize, compressType, pathFormat, "json", "");
+        OssShipperJsonStorageDetail detail = (OssShipperJsonStorageDetail) ossConfig.GetStorageDetail();
+        detail.setEnableTag(false);
+        EncryptConfig encryptConfig = new EncryptConfig("KMS", "SM4", "*");
+        ossConfig.setEncryptConf(encryptConfig);
+        client.CreateShipper(TEST_PROJECT, TEST_LOGSTORE, shipperName, ossConfig);
+        GetShipperResponse response = client.GetShipperConfig(TEST_PROJECT, TEST_LOGSTORE, shipperName);
     }
 
 }

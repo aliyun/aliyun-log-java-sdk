@@ -19,13 +19,15 @@ public class ConfigOutputDetail implements Serializable {
 	private static final long serialVersionUID = -8032121726921069455L;
 	private String endpoint = "";
 	private String logstoreName = "";
+	private String compressType = "";
 	
 	public JSONObject ToJsonObject() {
 		JSONObject jsonObj = new JSONObject();
 		
 		jsonObj.put("endpoint", endpoint);
 		jsonObj.put("logstoreName", logstoreName);
-		
+		jsonObj.put("compressType", compressType);
+
 		return jsonObj;
 	}
 	
@@ -39,6 +41,9 @@ public class ConfigOutputDetail implements Serializable {
 				this.endpoint = outputDetail.getString("endpoint");
 			}
 			this.logstoreName = outputDetail.getString("logstoreName");
+			if (outputDetail.containsKey("compressType")) {
+				this.compressType = outputDetail.getString("compressType");
+			}
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateOutputDetail",
 					e.getMessage(), e, "");
@@ -61,11 +66,18 @@ public class ConfigOutputDetail implements Serializable {
 		this.endpoint = endpoint;
 		this.logstoreName = logstoreName;
 	}
+
+	public ConfigOutputDetail(String endpoint, String logstoreName, String compressType) {
+		this.endpoint = endpoint;
+		this.logstoreName = logstoreName;
+		this.compressType = compressType;
+	}
 	
 	public ConfigOutputDetail(ConfigOutputDetail outputDetail) {
 		super();
 		this.endpoint = outputDetail.GetEndpoint();
 		this.logstoreName = outputDetail.GetLogstoreName();
+		this.compressType = outputDetail.GetCompressType();
 	}
 
 	public String GetEndpoint() {
@@ -83,6 +95,12 @@ public class ConfigOutputDetail implements Serializable {
 	public void SetLogstoreName(String logstoreName) {
 		this.logstoreName = logstoreName;
 	}
-	
-	
+
+	public String GetCompressType() {
+		return compressType;
+	}
+
+	public void SetCompressType(String compressType) {
+		this.compressType = compressType;
+	}
 }

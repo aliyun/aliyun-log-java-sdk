@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.response;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.util.LZ4Encoder;
 import com.aliyun.openservices.log.common.LogGroupData;
+import com.aliyun.openservices.log.common.LogGroupMeta;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.VarintUtil;
@@ -11,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 public class PullLogsResponse extends Response {
 
     private static final long serialVersionUID = -2027711570684362279L;
@@ -19,6 +19,7 @@ public class PullLogsResponse extends Response {
     private int rawSize;
     private int count;
     private byte[] rawData;
+    private LogGroupMeta logGroupMeta;
 
     /**
      * Construct the response with http headers
@@ -55,7 +56,8 @@ public class PullLogsResponse extends Response {
             parseFastLogGroupList(uncompressedData);
         }
         if (logGroups.size() != count) {
-            throw new LogException("LogGroupCountNotMatch", "LogGroup count does match with the count in header message", GetRequestId());
+            throw new LogException("LogGroupCountNotMatch",
+                    "LogGroup count does match with the count in header message", GetRequestId());
         }
     }
 
@@ -92,6 +94,9 @@ public class PullLogsResponse extends Response {
                 }
                 if (index == 1) {
                     logGroups.add(new LogGroupData(uncompressedData, value[2], value[1], GetRequestId()));
+                } else if (index == 2) {
+                    logGroupMeta = new LogGroupMeta(uncompressedData, value[2], value[1], count, GetRequestId());
+                    logGroupMeta.parseMeta();
                 }
                 pos = value[1] + value[2];
             } else if (mode == 5) {
@@ -157,5 +162,10 @@ public class PullLogsResponse extends Response {
 
     public byte[] getRawData() {
         return rawData;
+    }
+
+    public LogGroupMeta getLogGroupMeta() throws LogException {
+        parseLogGroupsIfNeeded();
+        return logGroupMeta;
     }
 }

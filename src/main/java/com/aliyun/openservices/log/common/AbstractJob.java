@@ -25,9 +25,13 @@ abstract class AbstractJob {
     @JSONField
     private boolean recyclable;
 
+    @JSONField
+    private String adminAttribute;
+
     private Date createTime;
 
     private Date lastModifiedTime;
+
 
     public String getName() {
         return name;
@@ -77,6 +81,10 @@ abstract class AbstractJob {
         this.createTime = createTime;
     }
 
+    public void setAdminAttribute(String adminAttr) {this.adminAttribute = adminAttr;}
+
+    public String getAdminAttribute() {return adminAttribute;}
+
     public Date getLastModifiedTime() {
         return lastModifiedTime;
     }
@@ -92,6 +100,7 @@ abstract class AbstractJob {
         type = JobType.fromString(value.getString("type"));
         displayName = JsonUtils.readOptionalString(value, "displayName");
         description = JsonUtils.readOptionalString(value, "description");
+        adminAttribute = JsonUtils.readOptionalString(value,"adminAttribute");
         recyclable = JsonUtils.readBool(value, "recyclable", false);
         if (value.containsKey("createTime")) {
             createTime = Utils.timestampToDate(value.getLong("createTime"));

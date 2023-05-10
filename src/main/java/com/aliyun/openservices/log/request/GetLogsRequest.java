@@ -439,4 +439,28 @@ public class GetLogsRequest extends Request {
 			return Boolean.parseBoolean(forward);
 		}
 	}
+
+	/**
+	 * Set request accurate flag
+	 *
+	 * @param accurate
+	 *            accurate flag
+	 */
+	public void SetAccurate(boolean accurate) {
+		SetParam(Consts.CONST_ACCURATE, String.valueOf(accurate));
+	}
+
+	/**
+	 * Get request accurate flag
+	 *
+	 * @return accurate flag
+	 */
+	public boolean GetAccurate() {
+		String accurate = GetParam(Consts.CONST_ACCURATE);
+		if (accurate.isEmpty()) {
+			return false;
+		} else {
+			return Boolean.parseBoolean(accurate);
+		}
+	}
 }

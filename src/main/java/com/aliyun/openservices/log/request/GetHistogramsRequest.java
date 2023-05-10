@@ -20,7 +20,7 @@ public class GetHistogramsRequest extends Request {
 	private String mLogStore;
 
 	/**
-	 * Construct a the request with full parameters
+	 * Construct a request with full parameters
 	 * 
 	 * @param project
 	 *            sls project
@@ -44,6 +44,30 @@ public class GetHistogramsRequest extends Request {
 		SetFromTime(from);
 		SetToTime(to);
 		SetParam(Consts.CONST_TYPE, Consts.CONST_TYPE_HISTOGRAM);
+	}
+
+	/**
+	 * Construct a request
+	 *
+	 * @param project
+	 *            sls project
+	 * @param logStore
+	 *            the logstore in the project
+	 * @param topic
+	 *            the topic of the logstore
+	 * @param query
+	 *            user defined query
+	 * @param from
+	 *            the begin time
+	 * @param to
+	 *            the end time
+	 * @param accurate
+	 * 			  accurate flag
+	 */
+	public GetHistogramsRequest(String project, String logStore, String topic,
+								String query, int from, int to, boolean accurate) {
+		this(project, logStore, topic, query, from, to);
+		SetAccurate(accurate);
 	}
 
 	/**
@@ -144,6 +168,30 @@ public class GetHistogramsRequest extends Request {
 			return Integer.parseInt(to);
 		}
 
+	}
+
+	/**
+	 * Set request accurate flag
+	 *
+	 * @param accurate
+	 *            accurate flag
+	 */
+	public void SetAccurate(boolean accurate) {
+		SetParam(Consts.CONST_ACCURATE, String.valueOf(accurate));
+	}
+
+	/**
+	 * Get request accurate flag
+	 *
+	 * @return accurate flag
+	 */
+	public boolean GetAccurate() {
+		String accurate = GetParam(Consts.CONST_ACCURATE);
+		if (accurate.isEmpty()) {
+			return false;
+		} else {
+			return Boolean.parseBoolean(accurate);
+		}
 	}
 
 }

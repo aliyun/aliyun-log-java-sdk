@@ -160,6 +160,7 @@ public class Consts {
     public static final String CONST_FORWARD = "forward";
     public static final String CONST_SHARD = "shard";
     public static final String CONST_SESSION = "session";
+    public static final String CONST_ACCURATE = "accurate";
     public static final String CONST_QUERY = "query";
     public static final String CONST_TOKEN = "token";
     public static final String CONST_CURSOR = "cursor";
@@ -177,6 +178,8 @@ public class Consts {
     public static final String CONST_ACTION_SPLIT = "split";
     public static final String CONST_ACTION_MERGE = "merge";
     public static final String CONST_ROUTE_KEY = "key";
+    public static final String CONST_PULL_MODE = "pullMode";
+    public static final String CONST_RESPONSE_WITH_META = "responseWithMeta";
 
     // context logs
     public static final String CONST_PACK_META = "pack_meta";
@@ -512,4 +515,8 @@ public class Consts {
 
     public static final String INVALID_LOG_TIME = "InvalidLogTime";
     public static final String CONST_CNAME_URI = "/cname";
+
+    // data replication
+    public static final String CONST_LOGSTORE_REPLICATION_URI = "replication";
+    public static final String CONST_LOGSTORE_REPLICATION = "enableReplication";
 }

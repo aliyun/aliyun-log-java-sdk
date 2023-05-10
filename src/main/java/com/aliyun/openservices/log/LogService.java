@@ -3066,6 +3066,15 @@ public interface LogService {
 
     DisableReportResponse disableReport(DisableReportRequest request) throws LogException;
 
+	SetLogstoreReplicationResponse setLogstoreReplication(String project, String logStore, boolean enable)
+			throws LogException;
+	SetLogstoreReplicationResponse setLogstoreReplication(SetLogstoreReplicationRequest request)
+			throws LogException;
+	GetLogstoreReplicationResponse getLogstoreReplication(String project, String logStore)
+			throws LogException;
+	GetLogstoreReplicationResponse getLogstoreReplication(GetLogstoreReplicationRequest request)
+			throws LogException;
+
 	CreateDashboardResponse createDashboard(CreateDashboardRequest request) throws LogException;
 	UpdateDashboardResponse updateDashboard(UpdateDashboardRequest request) throws LogException;
 	DeleteDashboardResponse deleteDashboard(DeleteDashboardRequest request) throws LogException;

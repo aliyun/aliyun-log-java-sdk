@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.Topostore;
@@ -768,6 +769,21 @@ public class ClientTopostoreTest {
 
         resp = client.listTopostoreNodeRelations(request7);
         listNodeRelationResultCheck(resp, new ArrayList<String>(), new ArrayList<String>());
+    }
+
+    @Test
+    public void testListTopostoreNodeRelations222() throws LogException{
+        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
+        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
+        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+
+        Client client = new Client(endpoint, accessKeyId, accessKeySecret);
+        String  s = "        {\"depth\":1,\"direction\":\"both\",\"from\":0,\"nodeIds\":[\"sls-mall_trace-type_sls-mall\"],\"nodeProperities\":{},\"nodeTypes\":[],\"to\":0,\"topostoreName\":\"SLS_DEFAULT_DATA_EXPRESSION\"}\n";
+
+        ListTopostoreNodeRelationRequest req = JSONObject.parseObject(s, ListTopostoreNodeRelationRequest.class);
+        ListTopostoreNodeRelationResponse res = client.listTopostoreNodeRelations(req);
+
+        System.out.println(JSON.toJSONString(res.getRelations()));
     }
 
     private void listNodeRelationResultCheck(ListTopostoreNodeRelationResponse resp, List<String> expectNodes, List<String> expectRelations){
