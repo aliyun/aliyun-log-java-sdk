@@ -1,12 +1,12 @@
 package com.aliyun.openservices.log.common;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * LogGroupMeta is the basic data structure for send, contains rawDataSize and
@@ -18,7 +18,8 @@ import com.aliyun.openservices.log.exception.LogException;
 
 public class LogGroupMeta implements Serializable {
     private List<Long> cursorIdList;
-    private long rawDataSize = 0;
+    private int rawDataSize = 0;
+    private int rawLogGroupCount = 0;
     private byte[] rawBytes = null;
     private int offset;
     private int length;
@@ -38,8 +39,12 @@ public class LogGroupMeta implements Serializable {
         return cursorIdList;
     }
 
-    public long getRawDataSize() {
+    public int getRawDataSize() {
         return rawDataSize;
+    }
+
+    public int getRawLogGroupCount() {
+        return rawLogGroupCount;
     }
 
     public void parseMeta() throws LogException {
@@ -49,7 +54,8 @@ public class LogGroupMeta implements Serializable {
         String meta = new String(rawBytes, offset, length);
         try {
             JSONObject object = JSONObject.parseObject(meta);
-            rawDataSize = object.getLong("rawDataSize");
+            rawDataSize = object.getIntValue("rawDataSize");
+            rawLogGroupCount = object.getIntValue("rawLogGroupCount");
             JSONArray cursorIdList = object.getJSONArray("cursorIdList");
             if (cursorIdList != null) {
                 for (int i = 0; i < cursorIdList.size(); i++) {
