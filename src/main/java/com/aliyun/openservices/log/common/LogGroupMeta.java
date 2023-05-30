@@ -1,12 +1,12 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.aliyun.openservices.log.exception.LogException;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.exception.LogException;
 
 /**
  * LogGroupMeta is the basic data structure for send, contains rawDataSize and

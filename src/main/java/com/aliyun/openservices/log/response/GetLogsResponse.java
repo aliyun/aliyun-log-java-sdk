@@ -3,22 +3,31 @@
  */
 package com.aliyun.openservices.log.response;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.QueriedLog;
 import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.common.QueryResult;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.http.comm.ResponseMessage;
+import com.aliyun.openservices.log.internal.ErrorCodes;
+import com.aliyun.openservices.log.util.GzipUtils;
+import com.aliyun.openservices.log.util.LZ4Encoder;
 
 
 /**
  * The response of the GetLog API from sls server
- * 
+ *
  * @author sls_dev
- * 
+ *
  */
 public class GetLogsResponse extends BasicGetLogsResponse {
 
@@ -47,10 +56,13 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 
 	private ArrayList<String> mKeys;
 	private ArrayList<ArrayList<String>> mTerms;
+	private List<List<LogContent>> mHighlights;
+
+	private String rawQueryResult;
 
 	/**
 	 * Construct the response with http headers
-	 * 
+	 *
 	 * @param headers
 	 *            http headers
 	 */
@@ -104,15 +116,14 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 					mTerms.add(list);
 				}
 			}
-			
+
 			if (object.containsKey("limited")) {
 				mLimited = Long.parseLong(object.getString("limited"));
 			}
-			
+
 			if (object.containsKey("marker")) {
 				mMarker = object.getString("marker");
 			}
-
 
 			if (object.containsKey("mode")) {
 				mQueryMode = object.getIntValue("mode");
@@ -143,7 +154,67 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 			if (object.containsKey("scanBytes")) {
 				mScanBytes = object.getLongValue("scanBytes");
 			}
+
+			JSONArray highlights = object.getJSONArray("highlights");
+			if (highlights != null) {
+				mHighlights = new ArrayList<List<LogContent>>(highlights.size());
+				for (int i = 0; i < highlights.size(); ++i) {
+					JSONObject jsonObject = highlights.getJSONObject(i);
+					if (jsonObject == null) {
+						mHighlights.add(new ArrayList<LogContent>());
+					} else {
+						ArrayList<LogContent> logContents = new ArrayList<LogContent>(jsonObject.size());
+						Set<String> keySey = jsonObject.keySet();
+						for (String key : keySey) {
+							String value = jsonObject.getString(key);
+							logContents.add(new LogContent(key, value));
+						}
+						mHighlights.add(logContents);
+					}
+				}
+			}
 		}
+	}
+
+    public GetLogsResponse(Map<String, String> headers, QueryResult result) {
+        super(headers);
+        mIsCompleted = result.isCompleted();
+        setAggQuery(result.getAggQuery());
+        setWhereQuery(result.getWhereQuery());
+        setHasSQL(result.isHasSQL());
+        setProcessedRow(result.getProcessedRows());
+        setElapsedMilliSecond(result.getElapsedMillisecond());
+        setCpuCores(result.getCpuCores());
+        setCpuSec(result.getCpuSec());
+        mKeys = new ArrayList<String>(result.getKeys());
+        List<QueryResult.Term> terms = result.getTerms();
+        mTerms = new ArrayList<ArrayList<String>>();
+        for (QueryResult.Term term : terms) {
+            ArrayList<String> list = new ArrayList<String>();
+            list.add(term.getKey());
+            list.add(term.getTerm());
+            mTerms.add(list);
+        }
+        setmLimited(result.getLimited());
+        setmMarker(result.getMarker());
+        mQueryMode = result.getQueryMode();
+        mIsPhraseQuery = result.isPhraseQuery();
+        QueryResult.PhraseQueryInfo queryInfo = result.getPhraseQueryInfo();
+        if (queryInfo != null) {
+            mScanAll = queryInfo.isScanAll();
+            mBeginOffset = queryInfo.getBeginOffset();
+            mEndOffset = queryInfo.getEndOffset();
+            mEndTime = queryInfo.getEndTime();
+        }
+        mShard = result.getShard();
+        mScanBytes = result.getScanBytes();
+		mHighlights = result.getHighlights();
+		this.logs = (ArrayList<QueriedLog>) result.getLogs();
+    }
+
+	public GetLogsResponse(Map<String, String> headers, String rawQueryResult) {
+		super(headers);
+		this.rawQueryResult = rawQueryResult;
 	}
 
 	public boolean IsPhraseQuery() {
@@ -175,7 +246,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 	}
 
 	public int GetQueryMode() { return mQueryMode; }
-	
+
 	public String getmMarker() {
 		return mMarker;
 	}
@@ -191,13 +262,12 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 	public void setmLimited(long mLimited) {
 		this.mLimited = mLimited;
 	}
-	
+
 	public void setAggQuery(String mAggQuery) {
 		this.mAggQuery = mAggQuery;
 	}
 
 	public String getAggQuery() {
-
 		return mAggQuery;
 	}
 
@@ -213,21 +283,17 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 		this.mCpuSec = mCpuSec;
 	}
 
-	public double getCpuSec()
-	{
+	public double getCpuSec() {
 		return this.mCpuSec;
 	}
-	public long getCpuCores()
-	{
+	public long getCpuCores() {
 		return this.mCpuCores;
 	}
 	public void setCpuCores(long mCpuCores) {
 		this.mCpuCores = mCpuCores;
 	}
 
-
 	public long getProcessedRow() {
-
 		return mProcessedRow;
 	}
 
@@ -255,7 +321,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 
 	/**
 	 * Set process status to the response
-	 * 
+	 *
 	 * @param processStatus
 	 *            process status(Complete/InComplete only)
 	 */
@@ -265,7 +331,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 
 	/**
 	 * Check if the GetHistogram is completed
-	 * 
+	 *
 	 * @return true if the query is complete in the sls server
 	 */
 	public boolean IsCompleted() {
@@ -274,7 +340,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 
 	/**
 	 * Set all the log data to the response
-	 * 
+	 *
 	 * @param logs
 	 *            log datas
 	 */
@@ -284,7 +350,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 
 	/**
 	 * Add one log to the response
-	 * 
+	 *
 	 * @param log
 	 *            log data to add
 	 * @deprecated Use addLog(QueriedLog log) instead.
@@ -298,7 +364,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 	 * Get all logs from the response
 	 *
 	 * @deprecated Use getLogs() instead.
-	 * 
+	 *
 	 * @return all log data
 	 */
 	@Deprecated
@@ -308,7 +374,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 
 	/**
 	 * Get log number from the response
-	 * 
+	 *
 	 * @return log number
 	 */
 	public int GetCount() {
@@ -333,4 +399,48 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 		return mTerms;
 	}
 
+	public List<List<LogContent>> getHighlights() {
+		return mHighlights;
+	}
+
+	public String getRawQueryResult() {
+		return rawQueryResult;
+	}
+
+	public static GetLogsResponse deserializeFrom(ResponseMessage response, boolean deserialize) throws LogException {
+		byte[] rawData = response.GetRawBody();
+		Map<String, String> headers = response.getHeaders();
+		String compressType = headers.get(Consts.CONST_X_SLS_COMPRESSTYPE);
+		String rawSizeStr = headers.get(Consts.CONST_X_SLS_BODYRAWSIZE);
+		String requestId = response.getRequestId();
+		if (compressType != null && rawSizeStr != null) {
+			int rawSize = Integer.parseInt(rawSizeStr);
+			Consts.CompressType type = Consts.CompressType.fromString(compressType);
+			switch (type) {
+				case LZ4:
+					rawData = LZ4Encoder.decompressFromLhLz4Chunk(rawData, rawSize);
+					break;
+				case GZIP:
+					try {
+						rawData = GzipUtils.uncompress(rawData);
+					} catch (Exception ex) {
+						throw new LogException(ErrorCodes.BAD_RESPONSE, "Fail to uncompress GZIP data", requestId);
+					}
+					break;
+				default:
+					throw new LogException(ErrorCodes.BAD_RESPONSE, "The compress type is not supported: " + compressType, requestId);
+			}
+		}
+		try {
+			String data = new String(rawData, Consts.UTF_8_ENCODING);
+			if (deserialize) {
+				QueryResult result = new QueryResult();
+				result.deserializeFrom(data, requestId);
+				return new GetLogsResponse(response.getHeaders(), result);
+			}
+			return new GetLogsResponse(response.getHeaders(), data);
+		} catch (UnsupportedEncodingException ex) {
+			throw new LogException(ErrorCodes.ENCODING_EXCEPTION, ex.getMessage(), response.getRequestId());
+		}
+	}
 }

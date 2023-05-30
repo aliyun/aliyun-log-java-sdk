@@ -6,7 +6,6 @@ package com.aliyun.openservices.log;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONReader;
 import com.alibaba.fastjson.parser.Feature;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.Consts.CompressType;
@@ -203,6 +202,7 @@ public class Client implements LogService {
 
     public synchronized void setEndpoint(String endpoint) {
 		Args.notNullOrEmpty(endpoint, "endpoint");
+		endpoint = endpoint.trim();
 		if (endpoint.startsWith("http://")) {
 			this.hostName = endpoint.substring(7);
 			this.httpType = "http://";
@@ -283,7 +283,7 @@ public class Client implements LogService {
 		try {
 			return new URI(endPointUrl);
 		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException(ErrorCodes.ENDPOINT_INVALID, e);
+			throw new IllegalArgumentException("Invalid endpoint: " + endPointUrl, e);
 		}
 	}
 
@@ -797,7 +797,6 @@ public class Client implements LogService {
 		return GetLogs(request);
 	}
 
-
 	public GetLogsResponse executeLogstoreSql(String project, String logStore, int from,
 											  int to, String sql, boolean powerSql) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -868,102 +867,36 @@ public class Client implements LogService {
 			return (JSONArray) JSONObject.parse(returnStr, Feature.DisableSpecialKeyDetect);
 		} catch (com.alibaba.fastjson.JSONException e) {
 			throw new LogException(ErrorCodes.BAD_RESPONSE,
-					"The response is not valid json string : " + returnStr, e,
-					requestId);
+					"The response is not valid json string : " + returnStr, e, requestId);
 		}
 	}
 
-	private GetLogsResponse ParseResponseWithFastJsonStreamResolve(ResponseMessage response) throws LogException {
-		Map<String, String> resHeaders = response.getHeaders();
-		String requestId = GetRequestId(resHeaders);
-		GetLogsResponse getLogsResponse = null;
-		JSONReader reader = null;
-		try {
-			int statusCode = response.getStatusCode();
-			if (statusCode != Consts.CONST_HTTP_OK) {
-				try {
-					ExtractResponseBody(response);
-					JSONObject object = parseResponseBody(response, requestId);
-					ErrorCheck(object, requestId, statusCode);
-				} catch (LogException ex) {
-					ex.setHttpCode(response.getStatusCode());
-					throw ex;
-				}
-			}
-			if (response.getContent() == null) {
-				return getLogsResponse;
-			}
-			getLogsResponse = new GetLogsResponse(resHeaders);
-			reader = new JSONReader(new InputStreamReader(response.getContent(), Consts.UTF_8_ENCODING));
-			reader.startArray();
-			while (reader.hasNext()) {
-				getLogsResponse.addLog(extractLogFromReader(reader, requestId));
-				//getLogsResponse.addLog(new QueriedLog(source, logItem));
-			}
-			reader.endArray();
-		} catch (com.alibaba.fastjson.JSONException e) {
-			throw new LogException(ErrorCodes.BAD_RESPONSE, "resolve json error: ", e, requestId);
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response is not valid utf-8 string: ", e, requestId);
-		} finally {
-			try {
-				if (response != null) {
-					response.close();
-				}
-			} catch (IOException ignore) {
-			}
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (Exception ignore) {
-			}
-		}
-		return getLogsResponse;
+	public GetLogsResponse GetRawLogs(GetLogsRequest request) throws LogException {
+		return getLogsInternal(request, false);
 	}
 
-	private QueriedLog extractLogFromReader(JSONReader reader, String requestId) throws JSONException, LogException {
-		reader.startObject();
-		String source = "";
-		LogItem logItem = new LogItem();
-		while (reader.hasNext()) {
-			String key = reader.readString();
-			String value = reader.readString();
-			if (key.equals(Consts.CONST_RESULT_SOURCE)) {
-				source = value;
-			} else if (key.equals(Consts.CONST_RESULT_TIME)) {
-				try {
-					logItem.mLogTime = Integer.parseInt(value);
-				} catch (NumberFormatException ex) {
-					throw new LogException(Consts.INVALID_LOG_TIME,
-							"The field __time__ is invalid in your query result: " + value, requestId);
-				}
-			} else {
-				logItem.PushBack(key, value);
-			}
-		}
-		reader.endObject();
-		return new QueriedLog(source, logItem);
-	}
-
-	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException {
+	private GetLogsResponse getLogsInternal(GetLogsRequest request, boolean deserialize) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
 		String project = request.GetProject();
 		String logStore = request.GetLogStore();
-		Map<String, String> headParameter = GetCommonHeadPara(project);
 		CodingUtils.validateLogstore(logStore);
-		String resourceUri = "/logstores/" + logStore + "/index";
-		ResponseMessage response = SendDataWithResolveResponse(project, HttpMethod.GET,
-				resourceUri, urlParameter, headParameter);
-//		Map<String, String> resHeaders = response.getHeaders();
-//		String requestId = GetRequestId(resHeaders);
-//		GetLogsResponse getLogsResponse = new GetLogsResponse(resHeaders);
-//		ParseResponseWithFastJsonStreamResolve(response, getLogsResponse, requestId);
-//		JSONArray object = ParseResponseMessageToArrayWithFastJson(response, requestId);
-//		extractLogsWithFastJson(getLogsResponse, object, requestId);
-		return ParseResponseWithFastJsonStreamResolve(response);
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		CompressType compressType = request.getCompressType();
+		if (compressType != null && compressType != CompressType.NONE) {
+			headParameter.put(Consts.CONST_ACCEPT_ENCODING, compressType.toString());
+		}
+		String resourceUri = "/logstores/" + logStore + "/logs";
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, urlParameter, headParameter, request.getRequestBody());
+		return GetLogsResponse.deserializeFrom(response, deserialize);
 	}
+
+	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException {
+		return getLogsInternal(request, true);
+	}
+
+	@Deprecated
 	public GetLogsResponseV2 GetLogsV2(GetLogsRequestV2 request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
@@ -1053,8 +986,7 @@ public class Client implements LogService {
 		return GetCursor(request);
 	}
 
-	public GetCursorResponse GetCursor(GetCursorRequest request)
-			throws LogException {
+	public GetCursorResponse GetCursor(GetCursorRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -6183,5 +6115,134 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(project, HttpMethod.DELETE,
 				Consts.CONST_CNAME_URI + "/" + domain, Collections.<String, String>emptyMap(), headParameter);
 		return new VoidResponse(response.getHeaders());
+	}
+
+	@Override
+	public CreateLogStoreResponse createEventStore(CreateLogStoreRequest request) throws LogException {
+		return createEventStore(request.GetProject(), request.GetLogStore(), null);
+	}
+
+	@Override
+	public CreateLogStoreResponse createEventStore(String project, LogStore logStore, Index index) throws LogException {
+		logStore.setTelemetryType(Consts.EVENT_STORE_TELEMETRY_TYPE);
+		CreateLogStoreResponse createLogStoreResponse = CreateLogStore(project, logStore);
+
+		if (index == null) {
+			index = new Index();
+			index.FromJsonString(Consts.EVENT_STORE_INDEX);
+			index.SetTtl(logStore.GetTtl());
+		}
+		CreateIndex(project, logStore.GetLogStoreName(), index);
+
+		return createLogStoreResponse;
+	}
+
+	@Override
+	public UpdateLogStoreResponse updateEventStore(UpdateLogStoreRequest request) throws LogException {
+		request.GetLogStore().setTelemetryType(Consts.EVENT_STORE_TELEMETRY_TYPE);
+		return UpdateLogStore(request);
+	}
+
+	@Override
+	public DeleteLogStoreResponse deleteEventStore(DeleteLogStoreRequest request) throws LogException {
+		return DeleteLogStore(request);
+	}
+
+	@Override
+	public GetLogStoreResponse getEventStore(GetLogStoreRequest request) throws LogException {
+		return GetLogStore(request);
+	}
+
+	@Override
+	public ListLogStoresResponse listEventStores(ListLogStoresRequest request) throws LogException {
+		request.SetTelemetryType(Consts.EVENT_STORE_TELEMETRY_TYPE);
+		return ListLogStores(request);
+	}
+
+	@Override
+	public CreateMetricsConfigResponse createMetricsConfig(CreateMetricsConfigRequest request) throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(request.getMetricsName(), "metrics");
+		String config = JSONObject.toJSONString(request.getMetricsConfig());
+		CodingUtils.assertStringNotNullOrEmpty(config, "metricsConfig");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/metricsconfigs";
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("metricStore", request.getMetricsName());
+		jsonBody.put("metricsConfigDetail", config);
+		byte[] body = encodeToUtf8(jsonBody.toString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, urlParameter, headParameter, body);
+		Map<String, String> resHeaders = response.getHeaders();
+		return new CreateMetricsConfigResponse(resHeaders);
+	}
+	@Override
+	public UpdateMetricsConfigResponse updateMetricsConfig(UpdateMetricsConfigRequest request) throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(request.getMetricsName(), "metrics");
+		String config = JSONObject.toJSONString(request.getMetricsConfig());
+		CodingUtils.assertStringNotNullOrEmpty(config, "metricsConfig");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/metricsconfigs/" + request.getMetricsName();
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("metricStore", request.getMetricsName());
+		jsonBody.put("metricsConfigDetail", config);
+		byte[] body = encodeToUtf8(jsonBody.toString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.PUT,
+				resourceUri, urlParameter, headParameter, body);
+		Map<String, String> resHeaders = response.getHeaders();
+		return new UpdateMetricsConfigResponse(resHeaders);
+	}
+	@Override
+	public DeleteMetricsConfigResponse deleteMetricsConfig(DeleteMetricsConfigRequest request) throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(request.getMetricsName(), "metrics");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/metricsconfigs/" + request.getMetricsName();
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.DELETE,
+				resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		return new DeleteMetricsConfigResponse(resHeaders);
+	}
+	@Override
+	public GetMetricsConfigResponse getMetricsConfig(GetMetricsConfigRequest request) throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(request.getMetricsName(), "metrics");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/metricsconfigs/" + request.getMetricsName();
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.GET,
+				resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		GetMetricsConfigResponse getMetricsConfigResponse = new GetMetricsConfigResponse(resHeaders);
+		String requestId = GetRequestId(resHeaders);
+		JSONObject object = parseResponseBody(response, requestId);
+		getMetricsConfigResponse.fromJsonObject(object);
+		return getMetricsConfigResponse;
+	}
+	@Override
+	public ListMetricsConfigResponse listMetricsConfig(ListMetricsConfigRequest request) throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		String resourceUri = "/metricsconfigs";
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		Map<String, String> urlParameter = request.GetAllParams();
+		ResponseMessage response = SendData(project, HttpMethod.GET,
+				resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		String requestId = GetRequestId(resHeaders);
+		JSONObject object = parseResponseBody(response, requestId);
+		ListMetricsConfigResponse listMetricsConfigResponse = new ListMetricsConfigResponse(resHeaders);
+		listMetricsConfigResponse.fromJSON(object);
+		return listMetricsConfigResponse;
 	}
 }

@@ -8,6 +8,7 @@ import com.aliyun.openservices.log.common.QueryResult;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.comm.ResponseMessage;
 import com.aliyun.openservices.log.internal.ErrorCodes;
+import com.aliyun.openservices.log.util.GzipUtils;
 import com.aliyun.openservices.log.util.LZ4Encoder;
 
 import java.io.UnsupportedEncodingException;
@@ -41,9 +42,25 @@ public class GetLogsResponseV2 extends Response {
     public static GetLogsResponseV2 deserializeFrom(ResponseMessage response) throws LogException {
         byte[] rawData = response.GetRawBody();
         Map<String, String> headers = response.getHeaders();
-        if (headers.containsKey(Consts.CONST_X_SLS_BODYRAWSIZE)) {
-            int rawSize = Integer.parseInt(headers.get(Consts.CONST_X_SLS_BODYRAWSIZE));
-            rawData = LZ4Encoder.decompressFromLhLz4Chunk(rawData, rawSize);
+        String compressType = headers.get(Consts.CONST_X_SLS_COMPRESSTYPE);
+        String rawSizeStr = headers.get(Consts.CONST_X_SLS_BODYRAWSIZE);
+        if (compressType != null && rawSizeStr != null) {
+            int rawSize = Integer.parseInt(rawSizeStr);
+            Consts.CompressType type = Consts.CompressType.fromString(compressType);
+            switch (type) {
+                case LZ4:
+                    rawData = LZ4Encoder.decompressFromLhLz4Chunk(rawData, rawSize);
+                    break;
+                case GZIP:
+                    try {
+                        rawData = GzipUtils.uncompress(rawData);
+                    } catch (Exception ex) {
+                        throw new LogException("InvalidResponse", "Fail to uncompress GZIP data", response.getRequestId());
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
         try {
             String data = new String(rawData, Consts.UTF_8_ENCODING);

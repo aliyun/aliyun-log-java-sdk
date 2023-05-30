@@ -171,6 +171,7 @@ public class ClientTest {
                 TEST_ACCESS_KEY);
         client.GetHostURI("abc");
         client.setEndpoint("https://abc////////////");
+        client.setEndpoint("mock-sls.aliyun-inc.com "); // trim
         URI uri = client.GetHostURI("");
         assertEquals("https://abc", uri.toString());
         List<String> invalidEndpoints = Arrays.asList(

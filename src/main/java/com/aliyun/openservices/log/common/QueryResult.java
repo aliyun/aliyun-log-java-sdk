@@ -15,34 +15,25 @@ public class QueryResult {
     private static final String METADATA_KEY = "meta";
     private static final String DATA_KEY = "data";
 
-    private String progress;
-    private String aggQuery;
-    private String whereQuery;
-    private boolean isCompleted;
-    private boolean hasSQL;
-    private long processedRows;
-    private long elapsedMillisecond;
-    private double cpuSec;
-    private long cpuCores;
+    private String aggQuery = "";
+    private String whereQuery = "";
+    private boolean isCompleted = false;
+    private boolean hasSQL = false;
+    private long processedRows = 0;
+    private long elapsedMillisecond = 0;
+    private double cpuSec = 0;
+    private long cpuCores = 0;
     private List<String> keys;
     private List<Term> terms;
-    private long limited;
-    private String marker;
-    private int queryMode;
+    private long limited = 0;
+    private String marker = "";
+    private int queryMode = 0;
     private boolean isPhraseQuery = false;
     private PhraseQueryInfo phraseQueryInfo;
-    private int shard;
+    private int shard = 0;
     private long scanBytes = 0;
-
+    private List<List<LogContent>> highlights;
     private List<QueriedLog> logs;
-
-    public String getProgress() {
-        return progress;
-    }
-
-    public void setProgress(String progress) {
-        this.progress = progress;
-    }
 
     public String getAggQuery() {
         return aggQuery;
@@ -184,6 +175,14 @@ public class QueryResult {
         this.scanBytes = scanBytes;
     }
 
+    public List<List<LogContent>> getHighlights() {
+        return highlights;
+    }
+
+    public void setHighlights(List<List<LogContent>> highlights) {
+        this.highlights = highlights;
+    }
+
     public List<QueriedLog> getLogs() {
         return logs;
     }
@@ -292,14 +291,30 @@ public class QueryResult {
             if (queryMode == 1)
                 isPhraseQuery = true;
         }
-        if (asJsonObj.containsKey("phraseQueryInfo")) {
-            setPhraseQueryInfo(PhraseQueryInfo.deserializeFrom(asJsonObj.getJSONObject("phraseQueryInfo")));
-        }
+        setPhraseQueryInfo(PhraseQueryInfo.deserializeFrom(asJsonObj.getJSONObject("phraseQueryInfo")));
         if (asJsonObj.containsKey("shard")) {
             shard = asJsonObj.getIntValue("shard");
         }
         if (asJsonObj.containsKey("scanBytes")) {
             scanBytes = asJsonObj.getLongValue("scanBytes");
+        }
+        JSONArray jsonArray = asJsonObj.getJSONArray("highlights");
+        if (jsonArray != null) {
+            highlights = new ArrayList<List<LogContent>>(jsonArray.size());
+            for (int i = 0; i < jsonArray.size(); ++i) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                if (jsonObject == null) {
+                    highlights.add(new ArrayList<LogContent>());
+                } else {
+                    List<LogContent> logContents = new ArrayList<LogContent>(jsonObject.size());
+                    Set<String> keySey = jsonObject.keySet();
+                    for (String key : keySey) {
+                        String value = jsonObject.getString(key);
+                        logContents.add(new LogContent(key, value));
+                    }
+                    highlights.add(logContents);
+                }
+            }
         }
     }
 
@@ -322,10 +337,10 @@ public class QueryResult {
     }
 
     public static class PhraseQueryInfo {
-        private boolean scanAll;
-        private long beginOffset;
-        private long endOffset;
-        private long endTime;
+        private boolean scanAll = false;
+        private long beginOffset = 0;
+        private long endOffset = 0;
+        private long endTime = 0;
 
         public void setScanAll(boolean scanAll) {
             this.scanAll = scanAll;
@@ -360,10 +375,10 @@ public class QueryResult {
         }
 
         public static PhraseQueryInfo deserializeFrom(JSONObject asJson) {
-            if (asJson == null) {
-                return null;
-            }
             PhraseQueryInfo queryInfo = new PhraseQueryInfo();
+            if (asJson == null) {
+                return queryInfo;
+            }
             if (asJson.containsKey("scanAll")) {
                 queryInfo.setScanAll(asJson.getBooleanValue("scanAll"));
             }

@@ -3902,4 +3902,17 @@ public interface LogService {
 	SetProjectCnameResponse setProjectCname(SetProjectCnameRequest request) throws LogException;
 	ListProjectCnameResponse listProjectCname(String project) throws LogException;
 	VoidResponse deleteProjectCname(String project, String domain) throws LogException;
+
+	CreateLogStoreResponse createEventStore(CreateLogStoreRequest request) throws LogException;
+	CreateLogStoreResponse createEventStore(String project, LogStore logStore, Index index) throws LogException;
+	UpdateLogStoreResponse updateEventStore(UpdateLogStoreRequest request) throws LogException;
+	DeleteLogStoreResponse deleteEventStore(DeleteLogStoreRequest request) throws LogException;
+	GetLogStoreResponse getEventStore(GetLogStoreRequest request) throws LogException;
+	ListLogStoresResponse listEventStores(ListLogStoresRequest request) throws LogException;
+
+	CreateMetricsConfigResponse createMetricsConfig(CreateMetricsConfigRequest request) throws LogException;
+	UpdateMetricsConfigResponse updateMetricsConfig(UpdateMetricsConfigRequest request) throws LogException;
+	DeleteMetricsConfigResponse deleteMetricsConfig(DeleteMetricsConfigRequest request) throws LogException;
+	GetMetricsConfigResponse getMetricsConfig(GetMetricsConfigRequest request) throws LogException;
+	ListMetricsConfigResponse listMetricsConfig(ListMetricsConfigRequest request) throws LogException;
 }

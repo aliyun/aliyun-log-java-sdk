@@ -22,7 +22,9 @@ public class ToGeneralSerializer implements ObjectSerializer {
             return;
         }
 
-        if (object instanceof IngestionGeneralSource || object instanceof ExportGeneralSink) {
+        if (object instanceof IngestionGeneralSource
+                || object instanceof ExportGeneralSink
+                || object instanceof GeneralJobConfiguration) {
             out.write(object.toString());
         } else {
             out.write(JSONObject.toJSONString(object));

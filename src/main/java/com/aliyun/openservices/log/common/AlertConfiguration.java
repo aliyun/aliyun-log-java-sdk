@@ -1,6 +1,5 @@
 package com.aliyun.openservices.log.common;
 
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -84,9 +83,14 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     private GroupConfiguration groupConfiguration;
     @JSONField
     private PolicyConfiguration policyConfiguration;
-
     @JSONField
     private List<String> tags;
+    @JSONField
+    private SinkEventStoreConfiguration sinkEventStore;
+    @JSONField
+    private SinkCmsConfiguration sinkCms;
+    @JSONField
+    private SinkAlerthubConfiguration sinkAlerthub;
 
     public String getCondition() {
         return condition;
@@ -269,6 +273,21 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         if (value.containsKey("tags")) {
             tags = JsonUtils.readStringList(value, "tags");
         }
+
+        if (value.containsKey("sinkEventStore") && value.getJSONObject("sinkEventStore") != null) {
+            sinkEventStore = new SinkEventStoreConfiguration();
+            sinkEventStore.deserialize(value.getJSONObject("sinkEventStore"));
+        }
+
+        if (value.containsKey("sinkCms") && value.getJSONObject("sinkCms") != null) {
+            sinkCms = new SinkCmsConfiguration();
+            sinkCms.deserialize(value.getJSONObject("sinkCms"));
+        }
+
+        if (value.containsKey("sinkAlerthub") && value.getJSONObject("sinkAlerthub") != null) {
+            sinkAlerthub = new SinkAlerthubConfiguration();
+            sinkAlerthub.deserialize(value.getJSONObject("sinkAlerthub"));
+        }
     }
 
     @Deprecated
@@ -437,6 +456,30 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public SinkEventStoreConfiguration getSinkEventStore() {
+        return sinkEventStore;
+    }
+
+    public void setSinkEventStore(SinkEventStoreConfiguration sinkEventStore) {
+        this.sinkEventStore = sinkEventStore;
+    }
+
+    public SinkCmsConfiguration getSinkCms() {
+        return sinkCms;
+    }
+
+    public void setSinkCms(SinkCmsConfiguration sinkCms) {
+        this.sinkCms = sinkCms;
+    }
+
+    public SinkAlerthubConfiguration getSinkAlerthub() {
+        return sinkAlerthub;
+    }
+
+    public void setSinkAlerthub(SinkAlerthubConfiguration sinkAlerthub) {
+        this.sinkAlerthub = sinkAlerthub;
     }
 
     public enum Severity {
@@ -853,4 +896,98 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
     }
 
+    public static class SinkEventStoreConfiguration {
+        @JSONField
+        private boolean enabled;
+        @JSONField
+        private String endpoint;
+        @JSONField
+        private String project;
+        @JSONField
+        private String eventStore;
+        @JSONField
+        private String roleArn;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public String getEndpoint() {
+            return endpoint;
+        }
+
+        public void setEndpoint(String endpoint) {
+            this.endpoint = endpoint;
+        }
+
+        public String getProject() {
+            return project;
+        }
+
+        public void setProject(String project) {
+            this.project = project;
+        }
+
+        public String getEventStore() {
+            return eventStore;
+        }
+
+        public void setEventStore(String eventStore) {
+            this.eventStore = eventStore;
+        }
+
+        public String getRoleArn() {
+            return roleArn;
+        }
+
+        public void setRoleArn(String roleArn) {
+            this.roleArn = roleArn;
+        }
+
+        public void deserialize(JSONObject value) {
+            setEnabled(JsonUtils.readBool(value,"enabled", false));
+            setEndpoint(JsonUtils.readOptionalString(value, "endpoint"));
+            setProject(JsonUtils.readOptionalString(value, "project"));
+            setEventStore(JsonUtils.readOptionalString(value, "eventStore"));
+            setRoleArn(JsonUtils.readOptionalString(value, "roleArn"));
+        }
+    }
+
+    public static class SinkCmsConfiguration {
+        @JSONField
+        private boolean enabled;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public void deserialize(JSONObject value) {
+            setEnabled(JsonUtils.readBool(value,"enabled", false));
+        }
+    }
+
+    public static class SinkAlerthubConfiguration {
+        @JSONField
+        private boolean enabled;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public void deserialize(JSONObject value) {
+            setEnabled(JsonUtils.readBool(value,"enabled", false));
+        }
+    }
 }
