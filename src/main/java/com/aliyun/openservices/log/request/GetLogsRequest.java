@@ -256,7 +256,7 @@ public class GetLogsRequest extends Request {
 	 *            topic name
 	 */
 	public void SetTopic(String topic) {
-		this.topic = topic;
+		this.topic = topic == null ? "" : topic;
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class GetLogsRequest extends Request {
 	 *            user define query
 	 */
 	public void SetQuery(String query) {
-		this.query = query;
+		this.query = query == null ? "" : query;
 	}
 
 	/**
