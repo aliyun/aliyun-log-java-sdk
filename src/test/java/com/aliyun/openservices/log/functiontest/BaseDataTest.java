@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.functiontest;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateIndexRequest;
+import com.aliyun.openservices.log.request.GetLogsRequest;
 import com.aliyun.openservices.log.request.PullLogsRequest;
 import com.aliyun.openservices.log.request.PutLogsRequest;
 import com.aliyun.openservices.log.response.GetCursorResponse;
@@ -97,8 +98,10 @@ public abstract class BaseDataTest extends FunctionTest {
         int totalSize = 0;
         int size;
         do {
-            GetLogsResponse logs = client.GetLogs(project, logStore.GetLogStoreName(), timestamp - 1800,
-                    timestamp + 1800, "", "", 100, totalSize, true);
+            GetLogsRequest getLogsRequest = new GetLogsRequest(project, logStore.GetLogStoreName(), timestamp - 1800,
+                    timestamp + 1800, "", "", totalSize, 100, true);
+            getLogsRequest.setCompressType(randomFrom(Consts.CompressType.values()));
+            GetLogsResponse logs = client.GetLogs(getLogsRequest);
             size = logs.GetCount();
             totalSize += size;
             for (QueriedLog log : logs.getLogs()) {
@@ -116,15 +119,48 @@ public abstract class BaseDataTest extends FunctionTest {
         return totalSize;
     }
 
+    protected void verifySQLQuery(int totalSize) throws LogException {
+        GetLogsRequest getLogsRequest = new GetLogsRequest(project, logStore.GetLogStoreName(), timestamp - 1800,
+                timestamp + 1800, "", "* | select * limit " + totalSize);
+        while (true) {
+            getLogsRequest.setCompressType(randomFrom(Consts.CompressType.values()));
+            GetLogsResponse response = client.GetLogs(getLogsRequest);
+            if (!response.IsCompleted()) {
+                System.out.println("Query result is not complete, wait 15s");
+                waitForSeconds(15);
+                continue;
+            }
+            if (response.GetCount() != totalSize) {
+                throw new RuntimeException("response count is " + response.GetCount() + " but expect " + totalSize);
+            }
+            for (QueriedLog log : response.getLogs()) {
+                for (LogContent mContent : log.mLogItem.mContents) {
+                    String mKey = mContent.mKey;
+                    String mValue = mContent.mValue;
+                    if (mKey.startsWith("key-")) {
+                        if (mValue.startsWith("value-")) {
+                            if (!mKey.substring(4).equals(mValue.substring(6))) {
+                                throw new RuntimeException("Inconsistent data");
+                            }
+                        } else if (!mValue.equals("null")) {
+                            throw new RuntimeException("Inconsistent data");
+                        }
+                    }
+                }
+            }
+            break;
+        }
+    }
+
     protected void enableIndex() throws LogException {
         Index index = new Index();
         index.SetTtl(7);
-        index.setMaxTextLen(0);
+        index.setMaxTextLen(2048);
         index.setLogReduceEnable(false);
         List<String> list = Arrays.asList(",", " ", "'", "\"", ";", "=", "(", ")", "[", "]", "{", "}", "?", "@", "&", "<", ">", "/", ":", "\n", "\t", "\r");
         IndexKeys indexKeys = new IndexKeys();
         for (int i = 1; i <= 10; i++) {
-            indexKeys.AddKey("key-"+i, new IndexKey(list,false, "text", ""));
+            indexKeys.AddKey("key-" + i, new IndexKey(list, false, "text", ""));
         }
         index.SetKeys(indexKeys);
         try {

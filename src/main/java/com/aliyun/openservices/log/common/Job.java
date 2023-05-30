@@ -183,8 +183,10 @@ public class Job implements Serializable {
                 return new RebuildIndexConfiguration();
             case SCHEDULED_SQL:
                 return new ScheduledSQLConfiguration();
+            case DOWN_SAMPLING:
+                return new JobDownSamplingConfiguration();
             default:
-                return null;
+                return new GeneralJobConfiguration();
         }
     }
 

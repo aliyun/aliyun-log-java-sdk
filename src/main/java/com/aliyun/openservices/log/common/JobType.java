@@ -13,7 +13,9 @@ public enum JobType implements JSONSerializable {
     REBUILD_INDEX("RebuildIndex"),
     AUDIT_JOB("AuditJob"),
     EXPORT("Export"),
-    SCHEDULED_SQL("ScheduledSQL");
+    SCHEDULED_SQL("ScheduledSQL"),
+
+    DOWN_SAMPLING("DownSampling");
 
     private final String value;
 

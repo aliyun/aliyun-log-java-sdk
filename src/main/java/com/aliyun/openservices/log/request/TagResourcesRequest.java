@@ -42,4 +42,8 @@ public class TagResourcesRequest implements Serializable {
     public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
+
+    public static String genResourceId(String project, String subResourceId) {
+        return project + "#" + subResourceId;
+    }
 }

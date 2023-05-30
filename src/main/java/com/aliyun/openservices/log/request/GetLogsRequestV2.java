@@ -23,6 +23,8 @@ public class GetLogsRequestV2 extends Request {
     private boolean forward;
     private int shard = DEFAULT_SHARD;
     private String session;
+    private boolean accurate;
+    private boolean highlight;
 
     // lz4, zstd, zip, deflate, TODO expose this parameter
     private String acceptEncoding = Consts.CONST_LZ4;
@@ -135,6 +137,22 @@ public class GetLogsRequestV2 extends Request {
         return shard;
     }
 
+    public void SetAccurate(boolean accurate) {
+        this.accurate = accurate;
+    }
+
+    public boolean GetAccurate() {
+        return accurate;
+    }
+
+    public void SetNeedHighlight(boolean highlight) {
+        this.highlight = highlight;
+    }
+
+    public boolean GetNeedHighlight() {
+        return highlight;
+    }
+
     public void setShard(int shard) {
         Args.check(shard >= 0, "shard must be >= 0");
         this.shard = shard;
@@ -172,6 +190,8 @@ public class GetLogsRequestV2 extends Request {
         body.put(Consts.CONST_TOPIC, topic);
         body.put(Consts.CONST_QUERY, query);
         body.put(Consts.CONST_FORWARD, forward);
+        body.put(Consts.CONST_ACCURATE, accurate);
+        body.put(Consts.CONST_HIGHLIGHT, highlight);
         return body.toString();
     }
 }
