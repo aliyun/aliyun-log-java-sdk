@@ -3909,6 +3909,8 @@ public interface LogService {
 	DeleteLogStoreResponse deleteEventStore(DeleteLogStoreRequest request) throws LogException;
 	GetLogStoreResponse getEventStore(GetLogStoreRequest request) throws LogException;
 	ListLogStoresResponse listEventStores(ListLogStoresRequest request) throws LogException;
+	VoidResponse updateLogStoreMeteringMode(UpdateLogStoreMeteringModeRequest request) throws LogException;
+	GetLogStoreMeteringModeResponse getLogStoreMeteringMode(GetLogStoreMeteringModeRequest request) throws LogException;
 
 	CreateMetricsConfigResponse createMetricsConfig(CreateMetricsConfigRequest request) throws LogException;
 	UpdateMetricsConfigResponse updateMetricsConfig(UpdateMetricsConfigRequest request) throws LogException;

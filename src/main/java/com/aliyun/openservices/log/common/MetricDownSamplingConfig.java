@@ -1,10 +1,13 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
+/**
+ * @author xizongzheng.xzz
+ */
 public class MetricDownSamplingConfig {
     @JSONField(name = "base")
     private MetricDownSamplingStatus base;
@@ -15,29 +18,32 @@ public class MetricDownSamplingConfig {
     public MetricDownSamplingStatus getBase() {
         return base;
     }
+
     public void setBase(MetricDownSamplingStatus base) {
         this.base = base;
     }
+
     public List<MetricDownSamplingStatus> getDownsampling() {
         return downsampling;
     }
+
     public void setDownsampling(List<MetricDownSamplingStatus> downsampling) {
         this.downsampling = downsampling;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
 
-        MetricDownSamplingConfig that = (MetricDownSamplingConfig) o;
+        MetricDownSamplingConfig that = (MetricDownSamplingConfig)o;
 
-        if (base != null ? !base.equals(that.base) : that.base != null) return false;
-        if (downsampling == null) return that.downsampling == null;
-        if (that.downsampling == null) return false;
-        if (downsampling.size() != that.downsampling.size()) return false;
+        if (base != null ? !base.equals(that.base) : that.base != null) {return false;}
+        if (downsampling == null) {return that.downsampling == null;}
+        if (that.downsampling == null) {return false;}
+        if (downsampling.size() != that.downsampling.size()) {return false;}
         for (int i = 0; i < downsampling.size(); i++) {
-            if (!downsampling.get(i).equals(that.downsampling.get(i))) return false;
+            if (!downsampling.get(i).equals(that.downsampling.get(i))) {return false;}
         }
         return true;
     }
@@ -59,12 +65,12 @@ public class MetricDownSamplingConfig {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {return true;}
+            if (o == null || getClass() != o.getClass()) {return false;}
 
-            MetricDownSamplingStatus that = (MetricDownSamplingStatus) o;
+            MetricDownSamplingStatus that = (MetricDownSamplingStatus)o;
 
-            if (ttl != that.ttl) return false;
+            if (ttl != that.ttl) {return false;}
             return resolutionSeconds == that.resolutionSeconds;
         }
 
@@ -78,6 +84,7 @@ public class MetricDownSamplingConfig {
         public boolean isTtlDifferent(MetricDownSamplingStatus status) {
             return ttl != status.ttl;
         }
+
         public boolean isResolutionSecondsDifferent(MetricDownSamplingStatus status) {
             return resolutionSeconds != status.resolutionSeconds;
         }
@@ -85,18 +92,23 @@ public class MetricDownSamplingConfig {
         public long getCreateTime() {
             return createTime;
         }
+
         public void setCreateTime(long createTime) {
             this.createTime = createTime;
         }
+
         public int getTtl() {
             return ttl;
         }
+
         public void setTtl(int ttl) {
             this.ttl = ttl;
         }
+
         public int getResolutionSeconds() {
             return resolutionSeconds;
         }
+
         public void setResolutionSeconds(int resolutionSeconds) {
             this.resolutionSeconds = resolutionSeconds;
         }

@@ -26,6 +26,7 @@ public class ExportOSSTest {
 
     private static final String logStore = "test";
 
+    private static final String ossEndpoint = "test";
     @Test
     public void testOssSink() throws LogException {
         createOssExportJob();
@@ -92,7 +93,8 @@ public class ExportOSSTest {
         ossSink.setBufferSize(255);
         ossSink.setBufferInterval(300);
         ossSink.setContentType("json");
-        ossSink.setDelaySeconds(15 * 24 * 3600);
+        // ossSink.setDelaySeconds(15 * 24 * 3600);
+        ossSink.setEndpoint(ossEndpoint);
 
         ExportContentJsonDetail jsonDetail = new ExportContentJsonDetail();
         jsonDetail.setEnableTag(true);

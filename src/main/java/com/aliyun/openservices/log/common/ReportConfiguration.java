@@ -25,6 +25,12 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
     @JSONField
     private String language;
 
+    /**
+     * Extra parameters passed to dashboard-render-service, which is encoded into base64
+     */
+    @JSONField
+    private String extraParams;
+
     @JSONField
     private boolean customizePeriod;
 
@@ -59,6 +65,14 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getExtraParams() {
+        return extraParams;
+    }
+
+    public void setExtraParams(String extraParams) {
+        this.extraParams = extraParams;
     }
 
     public boolean getCustomizePeriod() {
@@ -105,6 +119,7 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
         enableWatermark = JsonUtils.readBool(value, "enableWatermark", false);
         allowAnonymousAccess = JsonUtils.readBool(value, "allowAnonymousAccess", false);
         language = JsonUtils.readOptionalString(value, "language");
+        extraParams = JsonUtils.readOptionalString(value, "extraParams");
         customizePeriod = JsonUtils.readBool(value, "customizePeriod", false);
         attachCsv = JsonUtils.readBool(value, "attachCsv", false);
         if (customizePeriod) {
@@ -126,6 +141,9 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
         if (getAttachCsv() != that.getAttachCsv()) return false;
         if (getLanguage() != null ? !getLanguage().equals(that.getLanguage()) : that.getLanguage() != null)
             return false;
+        if (getExtraParams() != null ? !getExtraParams().equals(that.getExtraParams()) : that.getExtraParams() != null) {
+            return false;
+        }
         return getPeriod() != null ? getPeriod().equals(that.getPeriod()) : that.getPeriod() == null;
     }
 
@@ -134,6 +152,7 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
         int result = (getEnableWatermark() ? 1 : 0);
         result = 31 * result + (getAllowAnonymousAccess() ? 1 : 0);
         result = 31 * result + (getLanguage() != null ? getLanguage().hashCode() : 0);
+        result = 31 * result + (getExtraParams() != null ? getExtraParams().hashCode() : 0);
         result = 31 * result + (getCustomizePeriod() ? 1 : 0);
         result = 31 * result + (getAttachCsv() ? 1 : 0);
         result = 31 * result + (getPeriod() != null ? getPeriod().hashCode() : 0);
@@ -146,6 +165,7 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
                 "enableWatermark=" + enableWatermark +
                 ", allowAnonymousAccess=" + allowAnonymousAccess +
                 ", language='" + language + '\'' +
+                ", extraParams='" + extraParams + '\'' +
                 ", customizePeriod=" + customizePeriod +
                 ", attachCsv=" + attachCsv +
                 ", period=" + period +

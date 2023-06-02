@@ -1,9 +1,14 @@
 package com.aliyun.openservices.log.functiontest;
 
+import java.util.List;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.MetricDownSamplingConfig;
+import com.aliyun.openservices.log.common.MetricDownSamplingConfig.MetricDownSamplingStatus;
+import com.aliyun.openservices.log.common.MetricParallelConfig;
 import com.aliyun.openservices.log.common.MetricsConfig;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.*;
@@ -20,7 +25,38 @@ public class MetricsConfigFunctionTest extends FunctionTest {
     static String LOGSTOREEXIST = "logstore_exist";
     static String METRICSEXIST = "metrics_exist";
     static String METRICSNOTEXIST = "metrics_notexist";
-    static String CONFIG_STRING = "{\"project\":\"xzz-test\",\"metricStore\":\"xzz-test-metric\",\"downSamplingConfig\":{\"base\":{\"create_time\":12345678901,\"ttl\":7,\"resolution_seconds\":30},\"downsampling\":[{\"create_time\":12345678902,\"ttl\":30,\"resolution_seconds\":300},{\"create_time\":12345678903,\"ttl\":365,\"resolution_seconds\":3600},{\"create_time\":12345678904,\"ttl\":3650,\"resolution_seconds\":86400}]}}";
+    static String CONFIG_STRING = "{\n"
+        + "    \"query_cache_config\" : {\n"
+        + "        \"enable\" : true\n"
+        + "    },\n"
+        + "    \"parallel_config\" : {\n"
+        + "        \"enable\" : true,\n"
+        + "        \"mode\" : \"static\",\n"
+        + "        \"time_piece_interval\" : 86400,\n"
+        + "        \"time_piece_count\" : 8,\n"
+        + "        \"parallel_count_per_host\" : 2,\n"
+        + "        \"total_parallel_count\" : 64\n"
+        + "    },\n"
+        + "    \"downsampling_config\": {\n"
+        + "        \"base\": {\n"
+        + "            \"create_time\": 12345678901,\n"
+        + "            \"ttl\": 7,\n"
+        + "            \"resolution_seconds\": 30\n"
+        + "        },\n"
+        + "        \"downsampling\": [\n"
+        + "            {\n"
+        + "                \"create_time\": 12345678903,\n"
+        + "                \"ttl\": 365,\n"
+        + "                \"resolution_seconds\": 3600\n"
+        + "            },\n"
+        + "            {\n"
+        + "                \"create_time\": 12345678904,\n"
+        + "                \"ttl\": 3650,\n"
+        + "                \"resolution_seconds\": 86400\n"
+        + "            }\n"
+        + "        ]\n"
+        + "    }\n"
+        + "}";
     static MetricsConfig CONFIG = JSONObject.parseObject(CONFIG_STRING, MetricsConfig.class);
     static String CONFIGWRONG_STRING = "wrong";
     static String PROJECTNOTEXISTERROR = "ProjectNotExist";
@@ -39,6 +75,29 @@ public class MetricsConfigFunctionTest extends FunctionTest {
     @After
     public void clearData() throws LogException {
         client.DeleteProject(PROJECTEXIST);
+    }
+
+    @Test
+    public void testMetricsConfigValue() {
+        Assert.assertTrue(CONFIG.getQueryCacheConfig().isEnable());
+        MetricParallelConfig parallelConfig = CONFIG.getParallelConfig();
+        Assert.assertTrue(parallelConfig.isEnable());
+        Assert.assertEquals(parallelConfig.getMode(), "static");
+        Assert.assertEquals(parallelConfig.getTimePieceInterval(), 86400);
+        Assert.assertEquals(parallelConfig.getTimePieceCount(), 8);
+        Assert.assertEquals(parallelConfig.getParallelCountPerHost(), 2);
+        Assert.assertEquals(parallelConfig.getTotalParallelCount(), 64);
+        MetricDownSamplingConfig downSamplingConfig = CONFIG.getDownSamplingConfig();
+        MetricDownSamplingStatus base = downSamplingConfig.getBase();
+        List<MetricDownSamplingStatus> downsampling = downSamplingConfig.getDownsampling();
+
+        Assert.assertEquals(base.getTtl(), 7);
+        Assert.assertEquals(base.getResolutionSeconds(), 30);
+        Assert.assertEquals(base.getCreateTime(), 12345678901L);
+        Assert.assertEquals(downsampling.size(), 2);
+        Assert.assertEquals(downsampling.get(1).getTtl(), 3650);
+        Assert.assertEquals(downsampling.get(1).getResolutionSeconds(), 86400);
+        Assert.assertEquals(downsampling.get(1).getCreateTime(), 12345678904L);
     }
 
     @Test
@@ -200,6 +259,11 @@ public class MetricsConfigFunctionTest extends FunctionTest {
             GetMetricsConfigResponse response = client.getMetricsConfig(new GetMetricsConfigRequest(PROJECTEXIST, METRICSEXIST));
             boolean isEquals = CONFIG.equals(response.getMetricsConfig());
             Assert.assertTrue(isEquals);
+        } catch (LogException e) {
+            Assert.fail("should not fail");
+        }
+        try {
+            client.deleteMetricsConfig(new DeleteMetricsConfigRequest(PROJECTEXIST, METRICSEXIST));
         } catch (LogException e) {
             Assert.fail("should not fail");
         }
