@@ -17,6 +17,7 @@ public class AliyunOSSSink extends DataSink {
     private String contentType;
     private String compressionType;
     private ExportContentDetail contentDetail;
+    private String endpoint;
 
     public int getDelaySeconds() {
         return delaySeconds;
@@ -25,6 +26,9 @@ public class AliyunOSSSink extends DataSink {
     public void setDelaySeconds(int delaySeconds) {
         this.delaySeconds = delaySeconds;
     }
+
+    public String getEndpoint() { return endpoint; }
+    public void setEndpoint(String endpoint) { this.endpoint = endpoint; };
 
     private int delaySeconds;
 
@@ -156,6 +160,7 @@ public class AliyunOSSSink extends DataSink {
         bufferSize = value.getIntValue("bufferSize");
         bufferInterval = value.getIntValue("bufferInterval");
         delaySeconds = value.getIntValue("delaySeconds");
+        endpoint = value.getString("endpoint");
         timeZone = value.getString("timeZone");
         compressionType = value.getString("compressionType");
         contentType = value.getString("contentType");
