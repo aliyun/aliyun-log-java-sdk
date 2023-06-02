@@ -1,5 +1,6 @@
 package com.aliyun.openservices.log.request;
 
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 
 /**
@@ -12,6 +13,23 @@ public class GetLogsRequest extends Request {
 	private static final long serialVersionUID = -484272901258629068L;
 
 	private String mLogStore;
+
+	private int from;
+	private int to;
+	private String topic;
+	private String query;
+	private Long offset;
+	private Long line;
+	private Boolean reverse;
+	private Boolean powerSql;
+	private Boolean forward;
+	private Integer shard;
+	private String session;
+	private Boolean accurate;
+	private Boolean needHighlight;
+
+	// lz4, zstd, zip, deflate
+    private Consts.CompressType compressType = Consts.CompressType.LZ4;
 
 	/**
 	 * Construct a the request
@@ -30,14 +48,13 @@ public class GetLogsRequest extends Request {
 	 *            user query
 	 */
 	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query) {
+			String topic, String query) {
 		super(project);
 		mLogStore = logStore;
 		SetTopic(topic);
 		SetQuery(query);
 		SetFromTime(from);
 		SetToTime(to);
-		SetParam(Consts.CONST_TYPE, Consts.CONST_TYPE_LOG);
 	}
 	/**
 	 * Construct a the request
@@ -96,9 +113,9 @@ public class GetLogsRequest extends Request {
 	 *            logs first
 	 */
 	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query, long offset, long line,
-						  boolean reverse,
-						  boolean powerSql) {
+			String topic, String query, long offset, long line,
+			boolean reverse,
+			boolean powerSql) {
 		this(project, logStore,  from, to, topic, query);
 		SetOffset(offset);
 		SetLine(line);
@@ -239,7 +256,7 @@ public class GetLogsRequest extends Request {
 	 *            topic name
 	 */
 	public void SetTopic(String topic) {
-		SetParam(Consts.CONST_TOPIC, topic);
+		this.topic = topic == null ? "" : topic;
 	}
 
 	/**
@@ -248,7 +265,7 @@ public class GetLogsRequest extends Request {
 	 * @return topic name
 	 */
 	public String GetTopic() {
-		return GetParam(Consts.CONST_TOPIC);
+		return topic;
 	}
 
 	/**
@@ -258,7 +275,7 @@ public class GetLogsRequest extends Request {
 	 *            user define query
 	 */
 	public void SetQuery(String query) {
-		SetParam(Consts.CONST_QUERY, query);
+		this.query = query == null ? "" : query;
 	}
 
 	/**
@@ -267,7 +284,7 @@ public class GetLogsRequest extends Request {
 	 * @return query
 	 */
 	public String GetQuery() {
-		return GetParam(Consts.CONST_QUERY);
+		return query;
 	}
 
 	/**
@@ -277,7 +294,7 @@ public class GetLogsRequest extends Request {
 	 *            begin time
 	 */
 	public void SetFromTime(int from) {
-		SetParam(Consts.CONST_FROM, String.valueOf(from));
+		this.from = from;
 	}
 
 	/**
@@ -286,16 +303,11 @@ public class GetLogsRequest extends Request {
 	 * @return begin time
 	 */
 	public int GetFromTime() {
-		String from = GetParam(Consts.CONST_FROM);
-		if (from.isEmpty()) {
-			return 0;
-		} else {
-			return Integer.parseInt(from);
-		}
+		return from;
 	}
 
 	public void SetToTime(int to) {
-		SetParam(Consts.CONST_TO, String.valueOf(to));
+		this.to = to;
 	}
 
 	/**
@@ -304,13 +316,7 @@ public class GetLogsRequest extends Request {
 	 * @return end time
 	 */
 	public int GetToTime() {
-		String to = GetParam(Consts.CONST_TO);
-		if (to.isEmpty()) {
-			return 0;
-		} else {
-			return Integer.parseInt(to);
-		}
-
+		return to;
 	}
 
 	/**
@@ -320,7 +326,7 @@ public class GetLogsRequest extends Request {
 	 *            log offset
 	 */
 	public void SetOffset(long offset) {
-		SetParam(Consts.CONST_OFFSET, String.valueOf(offset));
+		this.offset = offset;
 	}
 
 	/**
@@ -329,12 +335,7 @@ public class GetLogsRequest extends Request {
 	 * @return offset value
 	 */
 	public long GetOffset() {
-		String offset = GetParam(Consts.CONST_OFFSET);
-		if (offset.isEmpty()) {
-			return 0;
-		} else {
-			return Long.parseLong(offset);
-		}
+		return offset != null ? offset : 0;
 	}
 
 	/**
@@ -344,7 +345,7 @@ public class GetLogsRequest extends Request {
 	 *            line number
 	 */
 	public void SetLine(long line) {
-		SetParam(Consts.CONST_LINE, String.valueOf(line));
+		this.line = line;
 	}
 
 	/**
@@ -353,12 +354,7 @@ public class GetLogsRequest extends Request {
 	 * @return line number
 	 */
 	public long GetLine() {
-		String line = GetParam(Consts.CONST_LINE);
-		if (line.isEmpty()) {
-			return 0;
-		} else {
-			return Long.parseLong(line);
-		}
+		return line != null ? line : 0;
 	}
 
 	/**
@@ -368,7 +364,7 @@ public class GetLogsRequest extends Request {
 	 *            reverse flag
 	 */
 	public void SetReverse(boolean reverse) {
-		SetParam(Consts.CONST_REVERSE, String.valueOf(reverse));
+		this.reverse = reverse;
 	}
 
 	/**
@@ -377,12 +373,7 @@ public class GetLogsRequest extends Request {
 	 * @return reverse flag
 	 */
 	public boolean GetReverse() {
-		String reverse = GetParam(Consts.CONST_REVERSE);
-		if (reverse.isEmpty()) {
-			return false;
-		} else {
-			return Boolean.parseBoolean(reverse);
-		}
+		return reverse != null && reverse;
 	}
 
 	/**
@@ -392,15 +383,15 @@ public class GetLogsRequest extends Request {
 	 *            powerSql flag
 	 */
 	public void SetPowerSql(boolean powerSql) {
-		SetParam(Consts.CONST_POWER_SQL, String.valueOf(powerSql));
+		this.powerSql = powerSql;
 	}
 
 	public void SetShard(int shard) {
-		SetParam(Consts.CONST_SHARD, String.valueOf(shard));
+		this.shard = shard;
 	}
 	public void SetSession(String session) {
 		if (session != null)
-			SetParam(Consts.CONST_SESSION, session);
+			this.session = session;
 	}
 	/**
 	 * Get request powerSql flag
@@ -408,12 +399,7 @@ public class GetLogsRequest extends Request {
 	 * @return powerSql flag
 	 */
 	public boolean GetPowerSql() {
-		String powerSql = GetParam(Consts.CONST_POWER_SQL);
-		if (powerSql.isEmpty()) {
-			return false;
-		} else {
-			return Boolean.parseBoolean(powerSql);
-		}
+		return powerSql != null && powerSql;
 	}
 
 	/**
@@ -423,7 +409,7 @@ public class GetLogsRequest extends Request {
 	 *            forward flag
 	 */
 	public void SetForward(boolean forward) {
-		SetParam(Consts.CONST_FORWARD, String.valueOf(forward));
+		this.forward = forward;
 	}
 
 	/**
@@ -432,12 +418,7 @@ public class GetLogsRequest extends Request {
 	 * @return forward flag
 	 */
 	public boolean GetForward() {
-		String forward = GetParam(Consts.CONST_FORWARD);
-		if (forward.isEmpty()) {
-			return false;
-		} else {
-			return Boolean.parseBoolean(forward);
-		}
+		return forward != null && forward;
 	}
 
 	/**
@@ -447,7 +428,7 @@ public class GetLogsRequest extends Request {
 	 *            accurate flag
 	 */
 	public void SetAccurate(boolean accurate) {
-		SetParam(Consts.CONST_ACCURATE, String.valueOf(accurate));
+		this.accurate = accurate;
 	}
 
 	/**
@@ -456,24 +437,46 @@ public class GetLogsRequest extends Request {
 	 * @return accurate flag
 	 */
 	public boolean GetAccurate() {
-		String accurate = GetParam(Consts.CONST_ACCURATE);
-		if (accurate.isEmpty()) {
-			return false;
-		} else {
-			return Boolean.parseBoolean(accurate);
-		}
+		return accurate != null && accurate;
 	}
 
+    public Consts.CompressType getCompressType() {
+        return compressType;
+    }
+
+    public void setCompressType(Consts.CompressType compressType) {
+        this.compressType = compressType;
+    }
+
 	public void SetNeedHighlight(boolean needHighlight) {
-		SetParam(Consts.CONST_HIGHLIGHT, String.valueOf(needHighlight));
+		this.needHighlight = needHighlight;
 	}
 
 	public boolean GetNeedHighlight() {
-		String needHighlight = GetParam(Consts.CONST_HIGHLIGHT);
-		if (needHighlight.isEmpty()) {
-			return false;
-		} else {
-			return Boolean.parseBoolean(needHighlight);
-		}
+		return needHighlight != null && needHighlight;
+	}
+
+    private static void addParameterIfNotNull(JSONObject dest, String key, Object value) {
+        if (value != null) {
+            dest.put(key, value);
+        }
+    }
+
+	public String getRequestBody() {
+        JSONObject body = new JSONObject();
+        body.put(Consts.CONST_FROM, from);
+        body.put(Consts.CONST_TO, to);
+        body.put(Consts.CONST_TOPIC, topic);
+        body.put(Consts.CONST_QUERY, query);
+        addParameterIfNotNull(body, Consts.CONST_LINE, line);
+        addParameterIfNotNull(body, Consts.CONST_OFFSET, offset);
+        addParameterIfNotNull(body, Consts.CONST_REVERSE, reverse);
+        addParameterIfNotNull(body, Consts.CONST_POWER_SQL, powerSql);
+        addParameterIfNotNull(body, Consts.CONST_SESSION, session);
+        addParameterIfNotNull(body, Consts.CONST_SHARD, shard);
+        addParameterIfNotNull(body, Consts.CONST_ACCURATE, accurate);
+        addParameterIfNotNull(body, Consts.CONST_FORWARD, forward);
+		addParameterIfNotNull(body, Consts.CONST_HIGHLIGHT, needHighlight);
+        return body.toString();
 	}
 }
