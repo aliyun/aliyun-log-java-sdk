@@ -6,7 +6,6 @@ package com.aliyun.openservices.log;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONReader;
 import com.alibaba.fastjson.parser.Feature;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.Consts.CompressType;
@@ -872,96 +871,29 @@ public class Client implements LogService {
 		}
 	}
 
-	private GetLogsResponse ParseResponseWithFastJsonStreamResolve(ResponseMessage response) throws LogException {
-		Map<String, String> resHeaders = response.getHeaders();
-		String requestId = GetRequestId(resHeaders);
-		GetLogsResponse getLogsResponse = null;
-		JSONReader reader = null;
-		try {
-			int statusCode = response.getStatusCode();
-			if (statusCode != Consts.CONST_HTTP_OK) {
-				try {
-					ExtractResponseBody(response);
-					JSONObject object = parseResponseBody(response, requestId);
-					ErrorCheck(object, requestId, statusCode);
-				} catch (LogException ex) {
-					ex.setHttpCode(response.getStatusCode());
-					throw ex;
-				}
-			}
-			if (response.getContent() == null) {
-				return getLogsResponse;
-			}
-			getLogsResponse = new GetLogsResponse(resHeaders);
-			reader = new JSONReader(new InputStreamReader(response.getContent(), Consts.UTF_8_ENCODING));
-			reader.startArray();
-			while (reader.hasNext()) {
-				getLogsResponse.addLog(extractLogFromReader(reader, requestId));
-				//getLogsResponse.addLog(new QueriedLog(source, logItem));
-			}
-			reader.endArray();
-		} catch (com.alibaba.fastjson.JSONException e) {
-			throw new LogException(ErrorCodes.BAD_RESPONSE, "resolve json error: ", e, requestId);
-		} catch (UnsupportedEncodingException e) {
-			throw new LogException(ErrorCodes.BAD_RESPONSE, "The response is not valid utf-8 string: ", e, requestId);
-		} finally {
-			try {
-				if (response != null) {
-					response.close();
-				}
-			} catch (IOException ignore) {
-			}
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (Exception ignore) {
-			}
-		}
-		return getLogsResponse;
+	public GetLogsResponse GetRawLogs(GetLogsRequest request) throws LogException {
+		return getLogsInternal(request, false);
 	}
 
-	private QueriedLog extractLogFromReader(JSONReader reader, String requestId) throws JSONException, LogException {
-		reader.startObject();
-		String source = "";
-		LogItem logItem = new LogItem();
-		while (reader.hasNext()) {
-			String key = reader.readString();
-			String value = reader.readString();
-			if (key.equals(Consts.CONST_RESULT_SOURCE)) {
-				source = value;
-			} else if (key.equals(Consts.CONST_RESULT_TIME)) {
-				try {
-					logItem.mLogTime = Integer.parseInt(value);
-				} catch (NumberFormatException ex) {
-					throw new LogException(Consts.INVALID_LOG_TIME,
-							"The field __time__ is invalid in your query result: " + value, requestId);
-				}
-			} else {
-				logItem.PushBack(key, value);
-			}
-		}
-		reader.endObject();
-		return new QueriedLog(source, logItem);
-	}
-
-	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException {
+	private GetLogsResponse getLogsInternal(GetLogsRequest request, boolean deserialize) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
 		String project = request.GetProject();
 		String logStore = request.GetLogStore();
-		Map<String, String> headParameter = GetCommonHeadPara(project);
 		CodingUtils.validateLogstore(logStore);
-		String resourceUri = "/logstores/" + logStore + "/index";
-		ResponseMessage response = SendDataWithResolveResponse(project, HttpMethod.GET,
-				resourceUri, urlParameter, headParameter);
-//		Map<String, String> resHeaders = response.getHeaders();
-//		String requestId = GetRequestId(resHeaders);
-//		GetLogsResponse getLogsResponse = new GetLogsResponse(resHeaders);
-//		ParseResponseWithFastJsonStreamResolve(response, getLogsResponse, requestId);
-//		JSONArray object = ParseResponseMessageToArrayWithFastJson(response, requestId);
-//		extractLogsWithFastJson(getLogsResponse, object, requestId);
-		return ParseResponseWithFastJsonStreamResolve(response);
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		CompressType compressType = request.getCompressType();
+		if (compressType != null && compressType != CompressType.NONE) {
+			headParameter.put(Consts.CONST_ACCEPT_ENCODING, compressType.toString());
+		}
+		String resourceUri = "/logstores/" + logStore + "/logs";
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, urlParameter, headParameter, request.getRequestBody());
+		return GetLogsResponse.deserializeFrom(response, deserialize);
+	}
+
+	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException {
+		return getLogsInternal(request, true);
 	}
 
 	@Deprecated
