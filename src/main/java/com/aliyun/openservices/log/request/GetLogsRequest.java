@@ -1,479 +1,421 @@
 package com.aliyun.openservices.log.request;
 
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 
 /**
  * The Request used to get data of a query from sls server
  *
  * @author sls_dev
- *
  */
 public class GetLogsRequest extends Request {
-	private static final long serialVersionUID = -484272901258629068L;
+    private static final long serialVersionUID = -484272901258629068L;
 
-	private String mLogStore;
+    private String mLogStore;
 
-	/**
-	 * Construct a the request
-	 *
-	 * @param project
-	 *            project name
-	 * @param logStore
-	 *            log store name of a project
-	 * @param from
-	 *            begin time
-	 * @param to
-	 *            end time
-	 * @param topic
-	 *            topic name of a log store
-	 * @param query
-	 *            user query
-	 */
-	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query) {
-		super(project);
-		mLogStore = logStore;
-		SetTopic(topic);
-		SetQuery(query);
-		SetFromTime(from);
-		SetToTime(to);
-		SetParam(Consts.CONST_TYPE, Consts.CONST_TYPE_LOG);
-	}
-	/**
-	 * Construct a the request
-	 *
-	 * @param project
-	 *            project name
-	 * @param logStore
-	 *            log store name of a project
-	 * @param from
-	 *            begin time
-	 * @param to
-	 *            end time
-	 * @param topic
-	 *            topic name of a log store
-	 * @param query
-	 *            user query
-	 * @param offset
-	 *            the log offset to return
-	 * @param line
-	 *            how many lines to get, the max lines is decided by
-	 *            the sls backend server
-	 * @param reverse
-	 *            if reverse is set to true, the query will return the latest
-	 *            logs first
-	 */
-	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query, long offset, long line,
-						  boolean reverse) {
-		this(project, logStore,  from, to, topic, query);
-		SetOffset(offset);
-		SetLine(line);
-		SetReverse(reverse);
-	}
-	/**
-	 * Construct a the request
-	 *
-	 * @param project
-	 *            project name
-	 * @param logStore
-	 *            log store name of a project
-	 * @param from
-	 *            begin time
-	 * @param to
-	 *            end time
-	 * @param topic
-	 *            topic name of a log store
-	 * @param query
-	 *            user query
-	 * @param offset
-	 *            the log offset to return
-	 * @param line
-	 *            how many lines to get, the max lines is decided by
-	 *            the sls backend server
-	 * @param reverse
-	 *            if reverse is set to true, the query will return the latest
-	 *            logs first
-	 */
-	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query, long offset, long line,
-						  boolean reverse,
-						  boolean powerSql) {
-		this(project, logStore,  from, to, topic, query);
-		SetOffset(offset);
-		SetLine(line);
-		SetReverse(reverse);
-		SetPowerSql(powerSql);
-	}
+    private int from;
+    private int to;
+    private String topic;
+    private String query;
+    private Long offset;
+    private Long line;
+    private Boolean reverse;
+    private Boolean powerSql;
+    private Boolean forward;
+    private Integer shard;
+    private String session;
+    private Boolean accurate;
+    private Boolean needHighlight;
 
-	/**
-	 * Construct a the request
-	 *
-	 * @param project
-	 *            project name
-	 * @param logStore
-	 *            log store name of a project
-	 * @param from
-	 *            begin time
-	 * @param to
-	 *            end time
-	 * @param topic
-	 *            topic name of a log store
-	 * @param query
-	 *            user query
-	 * @param offset
-	 *            the log offset to return
-	 * @param line
-	 *            how many lines to get, the max lines is decided by
-	 *            the sls backend server
-	 * @param reverse
-	 *            if reverse is set to true, the query will return the latest
-	 *            logs first
-	 * @param forward
-	 *            only usable when phrase query, forward is ture means next page,
-	 *            otherwise means previous page
-	 */
-	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query, long offset, long line,
-						  boolean reverse,
-						  boolean powerSql,
-						  boolean forward) {
-		this(project, logStore,  from, to, topic, query);
-		SetOffset(offset);
-		SetLine(line);
-		SetReverse(reverse);
-		SetPowerSql(powerSql);
-		SetForward(forward);
-	}
+    // lz4, zstd, zip, deflate
+    private Consts.CompressType compressType = Consts.CompressType.LZ4;
 
-	/**
-	 * Construct a the request
-	 *
-	 * @param project
-	 *            project name
-	 * @param logStore
-	 *            log store name of a project
-	 * @param from
-	 *            begin time
-	 * @param to
-	 *            end time
-	 * @param topic
-	 *            topic name of a log store
-	 * @param query
-	 *            user query
-	 * @param offset
-	 *            the log offset to return
-	 * @param line
-	 *            how many lines to get, the max lines is decided by
-	 *            the sls backend server
-	 * @param reverse
-	 *            if reverse is set to true, the query will return the latest
-	 *            logs first
-	 * @param shard
-	 *            specific shard
-	 */
-	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query, long offset, long line,
-						  boolean reverse,int shard) {
-		this(project, logStore,  from, to, topic, query, offset, line, reverse);
-		SetShard(shard);
-	}
+    /**
+     * Construct a the request
+     *
+     * @param project  project name
+     * @param logStore log store name of a project
+     * @param from     begin time
+     * @param to       end time
+     * @param topic    topic name of a log store
+     * @param query    user query
+     */
+    public GetLogsRequest(String project, String logStore, int from, int to,
+                          String topic, String query) {
+        super(project);
+        mLogStore = logStore;
+        SetTopic(topic);
+        SetQuery(query);
+        SetFromTime(from);
+        SetToTime(to);
+    }
 
-	/**
-	 * Construct a the request
-	 *
-	 * @param project
-	 *            project name
-	 * @param logStore
-	 *            log store name of a project
-	 * @param from
-	 *            begin time
-	 * @param to
-	 *            end time
-	 * @param topic
-	 *            topic name of a log store
-	 * @param query
-	 *            user query
-	 * @param offset
-	 *            the log offset to return
-	 * @param line
-	 *            how many lines to get, the max lines is decided by
-	 *            the sls backend server
-	 * @param reverse
-	 *            if reverse is set to true, the query will return the latest
-	 *            logs first
-	 * @param session
-	 *            query session param
-	 */
-	public GetLogsRequest(String project, String logStore, int from, int to,
-						  String topic, String query, long offset, long line,
-						  boolean reverse,boolean forward,String session) {
-		this(project, logStore,  from, to, topic, query, offset, line, reverse);
-		SetForward(forward);
-		SetSession(session);
-	}
+    /**
+     * Construct a the request
+     *
+     * @param project  project name
+     * @param logStore log store name of a project
+     * @param from     begin time
+     * @param to       end time
+     * @param topic    topic name of a log store
+     * @param query    user query
+     * @param offset   the log offset to return
+     * @param line     how many lines to get, the max lines is decided by
+     *                 the sls backend server
+     * @param reverse  if reverse is set to true, the query will return the latest
+     *                 logs first
+     */
+    public GetLogsRequest(String project, String logStore, int from, int to,
+                          String topic, String query, long offset, long line,
+                          boolean reverse) {
+        this(project, logStore, from, to, topic, query);
+        SetOffset(offset);
+        SetLine(line);
+        SetReverse(reverse);
+    }
 
-	/**
-	 * Set log store
-	 *
-	 * @param logStore
-	 *            log store name
-	 */
-	public void SetLogStore(String logStore) {
-		mLogStore = logStore;
-	}
+    /**
+     * Construct a the request
+     *
+     * @param project  project name
+     * @param logStore log store name of a project
+     * @param from     begin time
+     * @param to       end time
+     * @param topic    topic name of a log store
+     * @param query    user query
+     * @param offset   the log offset to return
+     * @param line     how many lines to get, the max lines is decided by
+     *                 the sls backend server
+     * @param reverse  if reverse is set to true, the query will return the latest
+     *                 logs first
+     */
+    public GetLogsRequest(String project, String logStore, int from, int to,
+                          String topic, String query, long offset, long line,
+                          boolean reverse,
+                          boolean powerSql) {
+        this(project, logStore, from, to, topic, query);
+        SetOffset(offset);
+        SetLine(line);
+        SetReverse(reverse);
+        SetPowerSql(powerSql);
+    }
 
-	/**
-	 * Get log store name
-	 *
-	 * @return log store name
-	 */
-	public String GetLogStore() {
-		return mLogStore;
-	}
+    /**
+     * Construct a the request
+     *
+     * @param project  project name
+     * @param logStore log store name of a project
+     * @param from     begin time
+     * @param to       end time
+     * @param topic    topic name of a log store
+     * @param query    user query
+     * @param offset   the log offset to return
+     * @param line     how many lines to get, the max lines is decided by
+     *                 the sls backend server
+     * @param reverse  if reverse is set to true, the query will return the latest
+     *                 logs first
+     * @param forward  only usable when phrase query, forward is ture means next page,
+     *                 otherwise means previous page
+     */
+    public GetLogsRequest(String project, String logStore, int from, int to,
+                          String topic, String query, long offset, long line,
+                          boolean reverse,
+                          boolean powerSql,
+                          boolean forward) {
+        this(project, logStore, from, to, topic, query);
+        SetOffset(offset);
+        SetLine(line);
+        SetReverse(reverse);
+        SetPowerSql(powerSql);
+        SetForward(forward);
+    }
 
-	/**
-	 * Set topic of the log store
-	 *
-	 * @param topic
-	 *            topic name
-	 */
-	public void SetTopic(String topic) {
-		SetParam(Consts.CONST_TOPIC, topic);
-	}
+    /**
+     * Construct a the request
+     *
+     * @param project  project name
+     * @param logStore log store name of a project
+     * @param from     begin time
+     * @param to       end time
+     * @param topic    topic name of a log store
+     * @param query    user query
+     * @param offset   the log offset to return
+     * @param line     how many lines to get, the max lines is decided by
+     *                 the sls backend server
+     * @param reverse  if reverse is set to true, the query will return the latest
+     *                 logs first
+     * @param shard    specific shard
+     */
+    public GetLogsRequest(String project, String logStore, int from, int to,
+                          String topic, String query, long offset, long line,
+                          boolean reverse, int shard) {
+        this(project, logStore, from, to, topic, query, offset, line, reverse);
+        SetShard(shard);
+    }
 
-	/**
-	 * Get Topic
-	 *
-	 * @return topic name
-	 */
-	public String GetTopic() {
-		return GetParam(Consts.CONST_TOPIC);
-	}
+    /**
+     * Construct a the request
+     *
+     * @param project  project name
+     * @param logStore log store name of a project
+     * @param from     begin time
+     * @param to       end time
+     * @param topic    topic name of a log store
+     * @param query    user query
+     * @param offset   the log offset to return
+     * @param line     how many lines to get, the max lines is decided by
+     *                 the sls backend server
+     * @param reverse  if reverse is set to true, the query will return the latest
+     *                 logs first
+     * @param session  query session param
+     */
+    public GetLogsRequest(String project, String logStore, int from, int to,
+                          String topic, String query, long offset, long line,
+                          boolean reverse, boolean forward, String session) {
+        this(project, logStore, from, to, topic, query, offset, line, reverse);
+        SetForward(forward);
+        SetSession(session);
+    }
 
-	/**
-	 * Set query
-	 *
-	 * @param query
-	 *            user define query
-	 */
-	public void SetQuery(String query) {
-		SetParam(Consts.CONST_QUERY, query);
-	}
+    /**
+     * Set log store
+     *
+     * @param logStore log store name
+     */
+    public void SetLogStore(String logStore) {
+        mLogStore = logStore;
+    }
 
-	/**
-	 * Get Query
-	 *
-	 * @return query
-	 */
-	public String GetQuery() {
-		return GetParam(Consts.CONST_QUERY);
-	}
+    /**
+     * Get log store name
+     *
+     * @return log store name
+     */
+    public String GetLogStore() {
+        return mLogStore;
+    }
 
-	/**
-	 * Set begin time
-	 *
-	 * @param from
-	 *            begin time
-	 */
-	public void SetFromTime(int from) {
-		SetParam(Consts.CONST_FROM, String.valueOf(from));
-	}
+    /**
+     * Set topic of the log store
+     *
+     * @param topic topic name
+     */
+    public void SetTopic(String topic) {
+        this.topic = topic == null ? "" : topic;
+    }
 
-	/**
-	 * Get begin time,
-	 *
-	 * @return begin time
-	 */
-	public int GetFromTime() {
-		String from = GetParam(Consts.CONST_FROM);
-		if (from.isEmpty()) {
-			return 0;
-		} else {
-			return Integer.parseInt(from);
-		}
-	}
+    /**
+     * Get Topic
+     *
+     * @return topic name
+     */
+    public String GetTopic() {
+        return topic;
+    }
 
-	public void SetToTime(int to) {
-		SetParam(Consts.CONST_TO, String.valueOf(to));
-	}
+    /**
+     * Set query
+     *
+     * @param query user define query
+     */
+    public void SetQuery(String query) {
+        this.query = query == null ? "" : query;
+    }
 
-	/**
-	 * Get end time
-	 *
-	 * @return end time
-	 */
-	public int GetToTime() {
-		String to = GetParam(Consts.CONST_TO);
-		if (to.isEmpty()) {
-			return 0;
-		} else {
-			return Integer.parseInt(to);
-		}
+    /**
+     * Get Query
+     *
+     * @return query
+     */
+    public String GetQuery() {
+        return query;
+    }
 
-	}
+    /**
+     * Set begin time
+     *
+     * @param from begin time
+     */
+    public void SetFromTime(int from) {
+        this.from = from;
+    }
 
-	/**
-	 * Set request offset
-	 *
-	 * @param offset
-	 *            log offset
-	 */
-	public void SetOffset(long offset) {
-		SetParam(Consts.CONST_OFFSET, String.valueOf(offset));
-	}
+    /**
+     * Get begin time,
+     *
+     * @return begin time
+     */
+    public int GetFromTime() {
+        return from;
+    }
 
-	/**
-	 * Get request offset
-	 *
-	 * @return offset value
-	 */
-	public long GetOffset() {
-		String offset = GetParam(Consts.CONST_OFFSET);
-		if (offset.isEmpty()) {
-			return 0;
-		} else {
-			return Long.parseLong(offset);
-		}
-	}
+    public void SetToTime(int to) {
+        this.to = to;
+    }
 
-	/**
-	 * Get request line number
-	 *
-	 * @param line
-	 *            line number
-	 */
-	public void SetLine(long line) {
-		SetParam(Consts.CONST_LINE, String.valueOf(line));
-	}
+    /**
+     * Get end time
+     *
+     * @return end time
+     */
+    public int GetToTime() {
+        return to;
+    }
 
-	/**
-	 * Get request line number
-	 *
-	 * @return line number
-	 */
-	public long GetLine() {
-		String line = GetParam(Consts.CONST_LINE);
-		if (line.isEmpty()) {
-			return 0;
-		} else {
-			return Long.parseLong(line);
-		}
-	}
+    /**
+     * Set request offset
+     *
+     * @param offset log offset
+     */
+    public void SetOffset(long offset) {
+        this.offset = offset;
+    }
 
-	/**
-	 * Set request reverse flag
-	 *
-	 * @param reverse
-	 *            reverse flag
-	 */
-	public void SetReverse(boolean reverse) {
-		SetParam(Consts.CONST_REVERSE, String.valueOf(reverse));
-	}
+    /**
+     * Get request offset
+     *
+     * @return offset value
+     */
+    public long GetOffset() {
+        return offset != null ? offset : 0;
+    }
 
-	/**
-	 * Get request reverse flag
-	 *
-	 * @return reverse flag
-	 */
-	public boolean GetReverse() {
-		String reverse = GetParam(Consts.CONST_REVERSE);
-		if (reverse.isEmpty()) {
-			return false;
-		} else {
-			return Boolean.parseBoolean(reverse);
-		}
-	}
+    /**
+     * Get request line number
+     *
+     * @param line line number
+     */
+    public void SetLine(long line) {
+        this.line = line;
+    }
 
-	/**
-	 * Set request powerSql flag
-	 *
-	 * @param powerSql
-	 *            powerSql flag
-	 */
-	public void SetPowerSql(boolean powerSql) {
-		SetParam(Consts.CONST_POWER_SQL, String.valueOf(powerSql));
-	}
+    /**
+     * Get request line number
+     *
+     * @return line number
+     */
+    public long GetLine() {
+        return line != null ? line : 0;
+    }
 
-	public void SetShard(int shard) {
-		SetParam(Consts.CONST_SHARD, String.valueOf(shard));
-	}
-	public void SetSession(String session) {
-		if (session != null)
-			SetParam(Consts.CONST_SESSION, session);
-	}
-	/**
-	 * Get request powerSql flag
-	 *
-	 * @return powerSql flag
-	 */
-	public boolean GetPowerSql() {
-		String powerSql = GetParam(Consts.CONST_POWER_SQL);
-		if (powerSql.isEmpty()) {
-			return false;
-		} else {
-			return Boolean.parseBoolean(powerSql);
-		}
-	}
+    /**
+     * Set request reverse flag
+     *
+     * @param reverse reverse flag
+     */
+    public void SetReverse(boolean reverse) {
+        this.reverse = reverse;
+    }
 
-	/**
-	 * Set request forward flag
-	 *
-	 * @param forward
-	 *            forward flag
-	 */
-	public void SetForward(boolean forward) {
-		SetParam(Consts.CONST_FORWARD, String.valueOf(forward));
-	}
+    /**
+     * Get request reverse flag
+     *
+     * @return reverse flag
+     */
+    public boolean GetReverse() {
+        return reverse != null && reverse;
+    }
 
-	/**
-	 * Get request forward flag
-	 *
-	 * @return forward flag
-	 */
-	public boolean GetForward() {
-		String forward = GetParam(Consts.CONST_FORWARD);
-		if (forward.isEmpty()) {
-			return false;
-		} else {
-			return Boolean.parseBoolean(forward);
-		}
-	}
+    /**
+     * Set request powerSql flag
+     *
+     * @param powerSql powerSql flag
+     */
+    public void SetPowerSql(boolean powerSql) {
+        this.powerSql = powerSql;
+    }
 
-	/**
-	 * Set request accurate flag
-	 *
-	 * @param accurate
-	 *            accurate flag
-	 */
-	public void SetAccurate(boolean accurate) {
-		SetParam(Consts.CONST_ACCURATE, String.valueOf(accurate));
-	}
+    public void SetShard(int shard) {
+        this.shard = shard;
+    }
 
-	/**
-	 * Get request accurate flag
-	 *
-	 * @return accurate flag
-	 */
-	public boolean GetAccurate() {
-		String accurate = GetParam(Consts.CONST_ACCURATE);
-		if (accurate.isEmpty()) {
-			return false;
-		} else {
-			return Boolean.parseBoolean(accurate);
-		}
-	}
+    public void SetSession(String session) {
+        if (session != null)
+            this.session = session;
+    }
 
-	public void SetNeedHighlight(boolean needHighlight) {
-		SetParam(Consts.CONST_HIGHLIGHT, String.valueOf(needHighlight));
-	}
+    /**
+     * Get request powerSql flag
+     *
+     * @return powerSql flag
+     */
+    public boolean GetPowerSql() {
+        return powerSql != null && powerSql;
+    }
 
-	public boolean GetNeedHighlight() {
-		String needHighlight = GetParam(Consts.CONST_HIGHLIGHT);
-		if (needHighlight.isEmpty()) {
-			return false;
-		} else {
-			return Boolean.parseBoolean(needHighlight);
-		}
-	}
+    /**
+     * Set request forward flag
+     *
+     * @param forward forward flag
+     */
+    public void SetForward(boolean forward) {
+        this.forward = forward;
+    }
+
+    /**
+     * Get request forward flag
+     *
+     * @return forward flag
+     */
+    public boolean GetForward() {
+        return forward != null && forward;
+    }
+
+    /**
+     * Set request accurate flag
+     *
+     * @param accurate accurate flag
+     */
+    public void SetAccurate(boolean accurate) {
+        this.accurate = accurate;
+    }
+
+    /**
+     * Get request accurate flag
+     *
+     * @return accurate flag
+     */
+    public boolean GetAccurate() {
+        return accurate != null && accurate;
+    }
+
+    public Consts.CompressType getCompressType() {
+        return compressType;
+    }
+
+    public void setCompressType(Consts.CompressType compressType) {
+        this.compressType = compressType;
+    }
+
+    public void SetNeedHighlight(boolean needHighlight) {
+        this.needHighlight = needHighlight;
+    }
+
+    public boolean GetNeedHighlight() {
+        return needHighlight != null && needHighlight;
+    }
+
+    private static void addParameterIfNotNull(JSONObject dest, String key, Object value) {
+        if (value != null) {
+            dest.put(key, value);
+        }
+    }
+
+    public String getRequestBody() {
+        JSONObject body = new JSONObject();
+        body.put(Consts.CONST_FROM, from);
+        body.put(Consts.CONST_TO, to);
+        body.put(Consts.CONST_TOPIC, topic);
+        body.put(Consts.CONST_QUERY, query);
+        addParameterIfNotNull(body, Consts.CONST_LINE, line);
+        addParameterIfNotNull(body, Consts.CONST_OFFSET, offset);
+        addParameterIfNotNull(body, Consts.CONST_REVERSE, reverse);
+        addParameterIfNotNull(body, Consts.CONST_POWER_SQL, powerSql);
+        addParameterIfNotNull(body, Consts.CONST_SESSION, session);
+        addParameterIfNotNull(body, Consts.CONST_SHARD, shard);
+        addParameterIfNotNull(body, Consts.CONST_ACCURATE, accurate);
+        addParameterIfNotNull(body, Consts.CONST_FORWARD, forward);
+        addParameterIfNotNull(body, Consts.CONST_HIGHLIGHT, needHighlight);
+        return body.toString();
+    }
 }
