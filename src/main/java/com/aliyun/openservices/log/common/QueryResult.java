@@ -33,6 +33,7 @@ public class QueryResult {
     private int shard = 0;
     private long scanBytes = 0;
     private List<List<LogContent>> highlights;
+    private List<String> columnTypes;
     private List<QueriedLog> logs;
 
     public String getAggQuery() {
@@ -183,6 +184,14 @@ public class QueryResult {
         this.highlights = highlights;
     }
 
+    public List<String> getColumnTypes() {
+        return columnTypes;
+    }
+
+    public void setColumnTypes(List<String> columnTypes) {
+        this.columnTypes = columnTypes;
+    }
+
     public List<QueriedLog> getLogs() {
         return logs;
     }
@@ -314,6 +323,13 @@ public class QueryResult {
                     }
                     highlights.add(logContents);
                 }
+            }
+        }
+        JSONArray columnTypesAsJson = asJsonObj.getJSONArray("columnTypes");
+        if (columnTypesAsJson != null) {
+            columnTypes = new ArrayList<String>(columnTypesAsJson.size());
+            for (int i = 0; i < columnTypesAsJson.size(); ++i) {
+                columnTypes.add(columnTypesAsJson.getString(i));
             }
         }
     }
