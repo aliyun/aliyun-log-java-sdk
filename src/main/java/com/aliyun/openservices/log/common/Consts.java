@@ -162,6 +162,8 @@ public class Consts {
     public static final String CONST_SESSION = "session";
     public static final String CONST_ACCURATE = "accurate";
     public static final String CONST_HIGHLIGHT = "highlight";
+    public static final String CONST_FROM_NS_PART = "fromNs";
+    public static final String CONST_TO_NS_PART = "toNs";
     public static final String CONST_QUERY = "query";
     public static final String CONST_TOKEN = "token";
     public static final String CONST_CURSOR = "cursor";
@@ -282,6 +284,7 @@ public class Consts {
 
     public static final String CONST_RESULT_TOPICS = "topics";
     public static final String CONST_RESULT_TIME = "__time__";
+    public static final String CONST_RESULT_TIME_NS_PART = "__time_ns_part__";
     public static final String CONST_RESULT_SOURCE = "__source__";
 
     public static final String CONST_ERROR_CODE = "errorCode";

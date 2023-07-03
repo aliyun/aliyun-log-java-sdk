@@ -53,6 +53,16 @@ public final class Logs {
      */
     com.aliyun.openservices.log.common.Logs.Log.ContentOrBuilder getContentsOrBuilder(
         int index);
+
+    // optional fixed32 Time_ns = 4;
+    /**
+     * <code>optional fixed32 Time_ns = 4;</code>
+     */
+    boolean hasTimeNs();
+    /**
+     * <code>optional fixed32 Time_ns = 4;</code>
+     */
+    int getTimeNs();
   }
   /**
    * Protobuf type {@code com.aliyun.openservices.log.common.Log}
@@ -116,6 +126,11 @@ public final class Logs {
                 mutable_bitField0_ |= 0x00000002;
               }
               contents_.add(input.readMessage(com.aliyun.openservices.log.common.Logs.Log.Content.PARSER, extensionRegistry));
+              break;
+            }
+            case 37: {
+              bitField0_ |= 0x00000002;
+              timeNs_ = input.readFixed32();
               break;
             }
           }
@@ -864,9 +879,26 @@ public final class Logs {
       return contents_.get(index);
     }
 
+    // optional fixed32 Time_ns = 4;
+    public static final int TIME_NS_FIELD_NUMBER = 4;
+    private int timeNs_;
+    /**
+     * <code>optional fixed32 Time_ns = 4;</code>
+     */
+    public boolean hasTimeNs() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional fixed32 Time_ns = 4;</code>
+     */
+    public int getTimeNs() {
+      return timeNs_;
+    }
+
     private void initFields() {
       time_ = 0;
       contents_ = java.util.Collections.emptyList();
+      timeNs_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -896,6 +928,9 @@ public final class Logs {
       for (int i = 0; i < contents_.size(); i++) {
         output.writeMessage(2, contents_.get(i));
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeFixed32(4, timeNs_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -912,6 +947,10 @@ public final class Logs {
       for (int i = 0; i < contents_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, contents_.get(i));
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFixed32Size(4, timeNs_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1038,6 +1077,8 @@ public final class Logs {
         } else {
           contentsBuilder_.clear();
         }
+        timeNs_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -1079,6 +1120,10 @@ public final class Logs {
         } else {
           result.contents_ = contentsBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.timeNs_ = timeNs_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1123,6 +1168,9 @@ public final class Logs {
               contentsBuilder_.addAllMessages(other.contents_);
             }
           }
+        }
+        if (other.hasTimeNs()) {
+          setTimeNs(other.getTimeNs());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -1448,6 +1496,39 @@ public final class Logs {
           contents_ = null;
         }
         return contentsBuilder_;
+      }
+
+      // optional fixed32 Time_ns = 4;
+      private int timeNs_ ;
+      /**
+       * <code>optional fixed32 Time_ns = 4;</code>
+       */
+      public boolean hasTimeNs() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional fixed32 Time_ns = 4;</code>
+       */
+      public int getTimeNs() {
+        return timeNs_;
+      }
+      /**
+       * <code>optional fixed32 Time_ns = 4;</code>
+       */
+      public Builder setTimeNs(int value) {
+        bitField0_ |= 0x00000004;
+        timeNs_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional fixed32 Time_ns = 4;</code>
+       */
+      public Builder clearTimeNs() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        timeNs_ = 0;
+        onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:com.aliyun.openservices.log.common.Log)
@@ -4512,18 +4593,18 @@ public final class Logs {
   static {
     java.lang.String[] descriptorData = {
       "\n\nLogs.proto\022\"com.aliyun.openservices.lo" +
-      "g.common\"}\n\003Log\022\014\n\004Time\030\001 \002(\r\022A\n\010Content" +
-      "s\030\002 \003(\0132/.com.aliyun.openservices.log.co" +
-      "mmon.Log.Content\032%\n\007Content\022\013\n\003Key\030\001 \002(\t" +
-      "\022\r\n\005Value\030\002 \002(\t\"$\n\006LogTag\022\013\n\003Key\030\001 \002(\t\022\r" +
-      "\n\005Value\030\002 \002(\t\"\304\001\n\010LogGroup\0225\n\004Logs\030\001 \003(\013" +
-      "2\'.com.aliyun.openservices.log.common.Lo" +
-      "g\022\020\n\010Category\030\002 \001(\t\022\r\n\005Topic\030\003 \001(\t\022\016\n\006So" +
-      "urce\030\004 \001(\t\022\023\n\013MachineUUID\030\005 \001(\t\022;\n\007LogTa" +
-      "gs\030\006 \003(\0132*.com.aliyun.openservices.log.c",
-      "ommon.LogTag\"R\n\014LogGroupList\022B\n\014logGroup" +
-      "List\030\001 \003(\0132,.com.aliyun.openservices.log" +
-      ".common.LogGroup"
+      "g.common\"\216\001\n\003Log\022\014\n\004Time\030\001 \002(\r\022A\n\010Conten" +
+      "ts\030\002 \003(\0132/.com.aliyun.openservices.log.c" +
+      "ommon.Log.Content\022\017\n\007Time_ns\030\004 \001(\007\032%\n\007Co" +
+      "ntent\022\013\n\003Key\030\001 \002(\t\022\r\n\005Value\030\002 \002(\t\"$\n\006Log" +
+      "Tag\022\013\n\003Key\030\001 \002(\t\022\r\n\005Value\030\002 \002(\t\"\304\001\n\010LogG" +
+      "roup\0225\n\004Logs\030\001 \003(\0132\'.com.aliyun.openserv" +
+      "ices.log.common.Log\022\020\n\010Category\030\002 \001(\t\022\r\n" +
+      "\005Topic\030\003 \001(\t\022\016\n\006Source\030\004 \001(\t\022\023\n\013MachineU" +
+      "UID\030\005 \001(\t\022;\n\007LogTags\030\006 \003(\0132*.com.aliyun.",
+      "openservices.log.common.LogTag\"R\n\014LogGro" +
+      "upList\022B\n\014logGroupList\030\001 \003(\0132,.com.aliyu" +
+      "n.openservices.log.common.LogGroup"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4535,7 +4616,7 @@ public final class Logs {
           internal_static_com_aliyun_openservices_log_common_Log_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_aliyun_openservices_log_common_Log_descriptor,
-              new java.lang.String[] { "Time", "Contents", });
+              new java.lang.String[] { "Time", "Contents", "TimeNs", });
           internal_static_com_aliyun_openservices_log_common_Log_Content_descriptor =
             internal_static_com_aliyun_openservices_log_common_Log_descriptor.getNestedTypes().get(0);
           internal_static_com_aliyun_openservices_log_common_Log_Content_fieldAccessorTable = new

@@ -221,6 +221,13 @@ public class QueryResult {
                     throw new LogException(Consts.INVALID_LOG_TIME,
                             "The field __time__ is invalid in your query result: " + value, requestId);
                 }
+            } else if (key.equals(Consts.CONST_RESULT_TIME_NS_PART)) {
+                try {
+                    logItem.mLogTimeNsPart = Integer.parseInt(value);
+                } catch (NumberFormatException ex) {
+                    throw new LogException(Consts.INVALID_LOG_TIME,
+                            "The field __time_ns_part__ is invalid in your query result: " + value, requestId);
+                }
             } else {
                 logItem.PushBack(key, value);
             }

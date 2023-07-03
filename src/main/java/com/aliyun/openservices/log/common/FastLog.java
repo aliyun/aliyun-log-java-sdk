@@ -11,6 +11,7 @@ public class FastLog {
     private int beginOffset;
     private int endOffset;
     private int time = -1;
+    private int timeNsPart = 0;
     private ArrayList<FastLogContent> contents;
 
     public FastLog(byte[] rawBytes, int offset, int length) {
@@ -59,6 +60,12 @@ public class FastLog {
                     this.contents.add(new FastLogContent(this.rawBytes, value[2], value[1]));
                 }
             } else if (mode == 5) {
+                if (index == 4) {
+                    timeNsPart = this.rawBytes[value[2]] & 255 |
+                            (this.rawBytes[value[2] + 1] & 255) << 8 |
+                            (this.rawBytes[value[2] + 2] & 255) << 16 |
+                            (this.rawBytes[value[2] + 3] & 255) << 24;
+                }
                 pos = value[2] + 4;
             } else {
                 return false;
@@ -69,6 +76,10 @@ public class FastLog {
 
     public int getTime() {
         return this.time;
+    }
+
+    public int getTimeNsPart() {
+        return this.timeNsPart;
     }
 
     public int getContentsCount() {

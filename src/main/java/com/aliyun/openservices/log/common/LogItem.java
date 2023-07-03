@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 public class LogItem implements Serializable {
 	private static final long serialVersionUID = -3488075856612935955L;
 	public int mLogTime;
+	public int mLogTimeNsPart = 0;
 	public ArrayList<LogContent> mContents = new ArrayList<LogContent>();
 
 	/**
@@ -51,6 +52,12 @@ public class LogItem implements Serializable {
 		SetLogContents(contents);
 	}
 
+	public LogItem(int logTime, int logTimeNsPart, ArrayList<LogContent> contents) {
+		this.mLogTime = logTime;
+		this.mLogTimeNsPart = logTimeNsPart;
+		SetLogContents(contents);
+	}
+
 	/**
 	 * Set logTime
 	 * 
@@ -68,6 +75,25 @@ public class LogItem implements Serializable {
 	 */
 	public int GetTime() {
 		return mLogTime;
+	}
+
+	/**
+	 * Set logTimeNsPart
+	 *
+	 * @param logTimeNsPart
+	 *            log time ns part
+	 */
+	public void SetTimeNsPart(int logTimeNsPart) {
+		this.mLogTimeNsPart = logTimeNsPart;
+	}
+
+	/**
+	 * Get log timeNsPart
+	 *
+	 * @return log time ns part
+	 */
+	public int GetTimeNsPart() {
+		return mLogTimeNsPart;
 	}
 
 	/**
@@ -116,6 +142,8 @@ public class LogItem implements Serializable {
 		JSONObject obj = new JSONObject();
 		
 		obj.put("logtime", mLogTime);
+		if (mLogTimeNsPart > 0)
+			obj.put("logTimeNsPart", mLogTimeNsPart);
 		for(LogContent content : mContents) {
 			obj.put(content.GetKey(), content.GetValue());
 		}
