@@ -52,6 +52,16 @@ public class LogItem implements Serializable {
 		SetLogContents(contents);
 	}
 
+	/**
+	 * Construct a logItem with a certain time stamp and log contents
+	 *
+	 * @param logTime
+	 *            log time stamp
+	 * @param logTimeNsPart
+	 * 			  log time nano stamp
+	 * @param contents
+	 *            log contents
+	 */
 	public LogItem(int logTime, int logTimeNsPart, ArrayList<LogContent> contents) {
 		this.mLogTime = logTime;
 		this.mLogTimeNsPart = logTimeNsPart;
