@@ -26,6 +26,8 @@ public class GetLogsRequest extends Request {
     private String session;
     private Boolean accurate;
     private Boolean needHighlight;
+    private int fromNsPart;
+    private int toNsPart;
 
     // lz4, zstd, zip, deflate
     private Consts.CompressType compressType = Consts.CompressType.LZ4;
@@ -395,6 +397,22 @@ public class GetLogsRequest extends Request {
         return needHighlight != null && needHighlight;
     }
 
+    public void SetFromNsPart(int fromNsPart) {
+        this.fromNsPart = fromNsPart;
+    }
+
+    public int GetFromNsPart() {
+        return fromNsPart;
+    }
+
+    public void SetToNsPart(int toNsPart) {
+        this.toNsPart = toNsPart;
+    }
+
+    public int GetToNsPart() {
+        return toNsPart;
+    }
+
     private static void addParameterIfNotNull(JSONObject dest, String key, Object value) {
         if (value != null) {
             dest.put(key, value);
@@ -416,6 +434,8 @@ public class GetLogsRequest extends Request {
         addParameterIfNotNull(body, Consts.CONST_ACCURATE, accurate);
         addParameterIfNotNull(body, Consts.CONST_FORWARD, forward);
         addParameterIfNotNull(body, Consts.CONST_HIGHLIGHT, needHighlight);
+        addParameterIfNotNull(body, Consts.CONST_FROM_NS_PART, fromNsPart);
+        addParameterIfNotNull(body, Consts.CONST_TO_NS_PART, toNsPart);
         return body.toString();
     }
 }

@@ -582,6 +582,8 @@ public class Client implements LogService {
 				for (LogItem item : logItems) {
 					Logs.Log.Builder log = logs.addLogsBuilder();
 					log.setTime(item.mLogTime);
+					if (item.mLogTimeNsPart != 0)
+						log.setTimeNs(item.mLogTimeNsPart);
 					for (LogContent content : item.mContents) {
 						CodingUtils.assertStringNotNullOrEmpty(content.mKey, "key");
 						Logs.Log.Content.Builder contentBuilder = log
@@ -607,6 +609,8 @@ public class Client implements LogService {
 				for (LogItem item : logItems) {
 					JSONObject jsonObjInner = new JSONObject();
 					jsonObjInner.put(Consts.CONST_RESULT_TIME, item.mLogTime);
+					if (item.mLogTimeNsPart != 0)
+						jsonObjInner.put(Consts.CONST_RESULT_TIME_NS_PART, item.mLogTimeNsPart);
 					for (LogContent content : item.mContents) {
 						jsonObjInner.put(content.mKey, content.mValue);
 					}

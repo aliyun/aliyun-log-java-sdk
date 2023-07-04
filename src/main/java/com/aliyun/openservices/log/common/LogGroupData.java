@@ -143,7 +143,7 @@ public class LogGroupData implements Serializable {
 			for(Content content:log.getContentsList()) {
 				logContents.add(new LogContent(content.getKey(), content.getValue()));
 			}
-			logItems.add(new LogItem(log.getTime(), logContents));
+			logItems.add(new LogItem(log.getTime(), (log.hasTimeNs() ? log.getTimeNs() : 0), logContents));
 		}
 		
 		SetAllLogs(logItems);
