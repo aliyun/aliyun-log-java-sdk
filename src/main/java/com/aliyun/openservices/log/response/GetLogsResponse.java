@@ -197,8 +197,8 @@ public class GetLogsResponse extends BasicGetLogsResponse {
         mTerms = new ArrayList<ArrayList<String>>();
         for (QueryResult.Term term : terms) {
             ArrayList<String> list = new ArrayList<String>();
-            list.add(term.getKey());
             list.add(term.getTerm());
+            list.add(term.getKey());
             mTerms.add(list);
         }
         setmLimited(result.getLimited());
