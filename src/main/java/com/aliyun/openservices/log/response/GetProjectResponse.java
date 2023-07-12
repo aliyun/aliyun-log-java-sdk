@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.response;
 import java.util.Map;
 
 import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.common.DataRedundancyType;
 import com.aliyun.openservices.log.common.ProjectQuota;
 import com.aliyun.openservices.log.exception.LogException;
 
@@ -11,17 +12,17 @@ import com.alibaba.fastjson.JSONObject;
 
 public class GetProjectResponse extends Response {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1938728647331317823L;
 
-    private String mDescription = "";
-    private String mStatus = "";
-    private String mResourceGroup = "";
+    private String description = "";
+    private String status = "";
+    private String resourceGroupId = "";
 
-    private String mRegion = "";
-    private String mOwner = "";
+    private String region = "";
+    private String owner = "";
+
+    private DataRedundancyType dataRedundancyType;
+
     private ProjectQuota quota;
 
     public GetProjectResponse(Map<String, String> headers) {
@@ -30,11 +31,12 @@ public class GetProjectResponse extends Response {
 
     public void FromJsonObject(JSONObject obj) throws LogException {
         try {
-            mDescription = obj.getString("description");
-            mStatus = obj.getString("status");
-            mResourceGroup = obj.getString("resourceGroupId");
-            mRegion = obj.getString("region");
-            mOwner = obj.getString("owner");
+            description = obj.getString("description");
+            status = obj.getString("status");
+            resourceGroupId = obj.getString("resourceGroupId");
+            region = obj.getString("region");
+            owner = obj.getString("owner");
+            dataRedundancyType = DataRedundancyType.parse(obj.getString("dataRedundancyType"));
             quota = ProjectQuota.parseFromJSON(obj.getJSONObject(Consts.CONST_QUOTA));
         } catch (JSONException e) {
             throw new LogException("InvalidErrorResponse", e.getMessage(),
@@ -43,23 +45,31 @@ public class GetProjectResponse extends Response {
     }
 
     public String GetProjectDescription() {
-        return mDescription;
+        return description;
     }
 
     public String GetProjectStatus() {
-        return mStatus;
+        return status;
     }
 
     public String getResourceGroupId() {
-        return mResourceGroup;
+        return resourceGroupId;
     }
 
     public String GetProjectRegion() {
-        return mRegion;
+        return region;
     }
 
     public String GetProjectOwner() {
-        return mOwner;
+        return owner;
+    }
+
+    public DataRedundancyType getDataRedundancyType() {
+        return dataRedundancyType;
+    }
+
+    public void setDataRedundancyType(DataRedundancyType dataRedundancyType) {
+        this.dataRedundancyType = dataRedundancyType;
     }
 
     public ProjectQuota getQuota() {

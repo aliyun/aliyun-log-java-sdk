@@ -1,9 +1,11 @@
 package com.aliyun.openservices.log.functiontest;
 
 
+import com.aliyun.openservices.log.common.DataRedundancyType;
 import com.aliyun.openservices.log.common.Project;
 import com.aliyun.openservices.log.common.ProjectQuota;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.request.CreateProjectRequest;
 import com.aliyun.openservices.log.request.ListProjectRequest;
 import com.aliyun.openservices.log.request.UpdateProjectRequest;
 import com.aliyun.openservices.log.response.GetProjectResponse;
@@ -185,6 +187,29 @@ public class ProjectFunctionTest extends FunctionTest {
         }
         final String chinese = chineseBuilder.toString();
         verifyUpdate(chinese, chinese);
+    }
+
+    @Test
+    public void testCreateHaProject() throws LogException {
+        String project = TEST_PROJECT;
+        client.createProject(new CreateProjectRequest(project, "abc", null, DataRedundancyType.ZRS));
+
+        GetProjectResponse response = client.GetProject(project);
+        assertEquals(response.GetProjectDescription(), "abc");
+        assertEquals(DataRedundancyType.ZRS, response.getDataRedundancyType());
+
+        ListProjectResponse response1 = client.ListProject(project, 0, 100);
+        for (Project project1 : response1.getProjects()) {
+            assertEquals(project1.getProjectDesc(), "abc");
+            assertEquals(DataRedundancyType.ZRS, response.getDataRedundancyType());
+        }
+        client.updateProject(new UpdateProjectRequest(project, "124"));
+        response1 = client.ListProject(project, 0, 100);
+        for (Project project1 : response1.getProjects()) {
+            assertEquals(project1.getProjectDesc(), "124");
+            assertEquals(DataRedundancyType.ZRS, response.getDataRedundancyType());
+        }
+        safeDeleteProjectWithoutSleep(project);
     }
 
     @After
