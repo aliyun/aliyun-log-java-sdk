@@ -12,4 +12,17 @@ public class StaticCredentialsProvider implements CredentialsProvider {
     }
 
     private Credentials credentials;
+
+    public void setAccessKeyId(String accessKeyId) {
+        credentials.setAccessKeyId(accessKeyId);
+    }
+
+    public void setAccessKeySecret(String accessKeySecret) {
+        credentials.setAccessKeySecret(accessKeySecret);
+    }
+
+    public void setSecretToken(String secretToken) {
+        credentials.setSecurityToken(secretToken);
+    }
+
 }

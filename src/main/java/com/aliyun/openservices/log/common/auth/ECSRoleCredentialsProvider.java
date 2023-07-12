@@ -14,7 +14,7 @@ public class ECSRoleCredentialsProvider implements CredentialsProvider {
     @Override
     public Credentials getCredentials() {
         if (null == credentials || credentials.shouldRefresh()) {
-            credentials = (TemporaryCredentials) fetcher.fetch();
+            credentials = fetcher.fetch();
         }
         return credentials;
     }

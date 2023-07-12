@@ -22,17 +22,17 @@ public abstract class HttpCredentialsFetcher implements CredentialsFetcher {
      * @param response http response.
      * @return credentials
      */
-    public abstract Credentials parse(HttpResponse response) throws Exception;
+    public abstract TemporaryCredentials parse(HttpResponse response) throws Exception;
 
 
     @Override
-    public Credentials fetch() {
+    public TemporaryCredentials fetch() {
         String url = buildUrl();
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet httpGet = new HttpGet(url);
         RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(3000).setSocketTimeout(3000).build();
         httpGet.setConfig(config);
-        Credentials credentials;
+        TemporaryCredentials credentials;
         CloseableHttpResponse httpResponse = null;
         try {
             httpResponse = httpClient.execute(httpGet);

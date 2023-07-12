@@ -27,28 +27,10 @@ public abstract class SlsSignerBase {
 
     protected CredentialsProvider credentialsProvider;
 
-    /**
-     * Use <pre>
-     *     {@code SlsSignerBase(new StaticCredentialsProvider(credentials))}
-     * </pre> instead.
-     */
-    @Deprecated
-    public SlsSignerBase(Credentials credentials) {
-        this(new StaticCredentialsProvider(credentials));
-    }
-
     public SlsSignerBase(CredentialsProvider credentialsProvider) {
         this.credentialsProvider = credentialsProvider;
     }
 
-    @Deprecated
-    public static SlsSigner createRequestSigner(ClientConfiguration clientConfiguration, Credentials credentials) {
-        if (clientConfiguration.getSignatureVersion() == SignVersion.V4) {
-            return new SlsV4Signer(credentials, clientConfiguration.getRegion());
-        } else {
-            return new SlsV1Signer(credentials);
-        }
-    }
 
     public static SlsSigner createRequestSigner(ClientConfiguration clientConfiguration, CredentialsProvider credentialsProvider) {
         if (clientConfiguration.getSignatureVersion() == SignVersion.V4) {

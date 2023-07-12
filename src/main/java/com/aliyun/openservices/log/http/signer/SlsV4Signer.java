@@ -64,18 +64,6 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
 
     private final String region;
 
-    /**
-     * Use <pre>
-     *     {@code SlsV4Signer(new StaticCredentialsProvider(credentials))}
-     * </pre> instead.
-     */
-    @Deprecated
-    public SlsV4Signer(Credentials credentials, String region) {
-        super(credentials);
-        Args.check(region != null && !region.isEmpty(), "region must not be empty for v4 signature.");
-        this.region = region;
-    }
-
     public SlsV4Signer(CredentialsProvider credentialsProvider, String region) {
         super(credentialsProvider);
         Args.check(region != null && !region.isEmpty(), "region must not be empty for v4 signature.");
@@ -200,6 +188,9 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
     public String signRequest(Map<String, String> headers, HttpMethod httpMethod,
                               String resourceUri, Map<String, String> urlParams,
                               byte[] body, String dateTime) {
+        Credentials credentials = credentialsProvider.getCredentials();
+        addHeaderSecretToken(credentials.getSecurityToken(), headers);
+
         String contentSha256;
         if (body != null && body.length > 0) {
             headers.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(body.length));
@@ -240,7 +231,6 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
         String stringToSign = buildStringToSign(canonicalRequest, dateTime, scope);
         Mac mac = getMacInstance();
         HmacSHA256Hasher sha256Hasher = new HmacSHA256Hasher(mac);
-        Credentials credentials = credentialsProvider.getCredentials();
         byte[] signingKey = buildSigningKey(sha256Hasher, credentials.getAccessKeySecret(), region, date);
         byte[] result = sha256Hasher.hash(signingKey, stringToSign.getBytes(CHARSET_UTF_8));
         String signature = BinaryUtil.toHex(result);
@@ -267,6 +257,12 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
             } catch (InvalidKeyException e) {
                 throw new RuntimeException("Unable to calculate the signature", e);
             }
+        }
+    }
+
+    private void addHeaderSecretToken(String securityToken, Map<String, String> headers) {
+        if (securityToken != null && !securityToken.isEmpty()) {
+            headers.put(Consts.CONST_X_ACS_SECURITY_TOKEN, securityToken);
         }
     }
 }

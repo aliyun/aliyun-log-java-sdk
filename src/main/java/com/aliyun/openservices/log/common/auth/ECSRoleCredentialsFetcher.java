@@ -21,7 +21,7 @@ public class ECSRoleCredentialsFetcher extends HttpCredentialsFetcher {
     }
 
     @Override
-    public Credentials parse(HttpResponse httpResponse) throws LogException {
+    public TemporaryCredentials parse(HttpResponse httpResponse) throws LogException {
         try {
             JSONObject response = JSONObject.parseObject(EntityUtils.toString(httpResponse.getEntity()));
             if (response != null && "Success".equalsIgnoreCase(response.getString("Code"))) {

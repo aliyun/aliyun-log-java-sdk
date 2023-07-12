@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.http.signer;
 
 import com.aliyun.openservices.log.common.auth.DefaultCredentails;
+import com.aliyun.openservices.log.common.auth.StaticCredentialsProvider;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +16,8 @@ public class SignerV4Test {
 
     @Test
     public void testSignRequest() {
-        SlsV4Signer signer = new SlsV4Signer(new DefaultCredentails("acsddda21dsd", "zxasdasdasw2"),
+        SlsV4Signer signer = new SlsV4Signer(new StaticCredentialsProvider(
+                new DefaultCredentails("acsddda21dsd", "zxasdasdasw2")),
                 "cn-hangzhou");
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("hello", "world");
@@ -29,14 +31,15 @@ public class SignerV4Test {
         urlParams.put("", "efg");
         urlParams.put("A-bc", "eFg");
 
-        byte[] body =  "adasd= -asd zcas".getBytes(CHARSET_UTF_8);
+        byte[] body = "adasd= -asd zcas".getBytes(CHARSET_UTF_8);
 
         Assert.assertEquals(signer.signRequest(headers, HttpMethod.POST,
                         "/logstores", urlParams, body, "20220808T032330Z"),
                 "SLS4-HMAC-SHA256 Credential=acsddda21dsd/20220808/cn-hangzhou/sls/aliyun_v4_request,Signature=" +
                         "a98f5632e93836e63839cd836a54055f480020a9364ca944e2d34f2eb9bf1bed");
 
-        SlsV4Signer signer2 = new SlsV4Signer(new DefaultCredentails("acsddda21dsd", "zxasdasdasw2"),
+        SlsV4Signer signer2 = new SlsV4Signer(new StaticCredentialsProvider(
+                new DefaultCredentails("acsddda21dsd", "zxasdasdasw2")),
                 "cn-shanghai");
 
         Assert.assertEquals(signer2.signRequest(new HashMap<String, String>(),

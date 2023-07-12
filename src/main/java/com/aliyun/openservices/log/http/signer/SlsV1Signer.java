@@ -21,16 +21,6 @@ import java.util.TreeMap;
 
 public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
 
-    /**
-     * Use <pre>
-     *     {@code SlsV1Signer(new StaticCredentialsProvider(credentials))}
-     * </pre> instead.
-     */
-    @Deprecated
-    public SlsV1Signer(Credentials credentials) {
-        super(credentials);
-    }
-
     public SlsV1Signer(CredentialsProvider credentialsProvider) {
         super(credentialsProvider);
     }
@@ -44,7 +34,7 @@ public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
             for (int i = 0; i + res.length() < 32; i++) {
                 zeros.append("0");
             }
-            return zeros.toString() + res;
+            return zeros + res;
         } catch (NoSuchAlgorithmException e) {
             // never happen
             throw new RuntimeException("Not Supported signature method "
@@ -58,6 +48,9 @@ public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
                      String resourceUri,
                      Map<String, String> urlParams,
                      byte[] body) {
+        Credentials credentials = credentialsProvider.getCredentials();
+        addHeaderSecretToken(credentials.getSecurityToken(), headers);
+
         String contendMD5;
         if (body != null && body.length > 0) {
             contendMD5 = SlsV1Signer.md5Crypt(body);
@@ -81,7 +74,7 @@ public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
             builder.append("?");
             builder.append(urlParametersToString(urlParams));
         }
-        Credentials credentials = credentialsProvider.getCredentials();
+
         String signature = encode(credentials.getAccessKeySecret(), builder.toString());
         headers.put(Consts.CONST_AUTHORIZATION, Consts.CONST_HEADSIGNATURE_PREFIX + credentials.getAccessKeyId() + ":" + signature);
     }
@@ -133,4 +126,9 @@ public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
         }
     }
 
+    private void addHeaderSecretToken(String securityToken, Map<String, String> headers) {
+        if (securityToken != null && !securityToken.isEmpty()) {
+            headers.put(Consts.CONST_X_ACS_SECURITY_TOKEN, securityToken);
+        }
+    }
 }

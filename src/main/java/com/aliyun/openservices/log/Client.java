@@ -40,7 +40,6 @@ public class Client implements LogService {
 	private static final String DEFAULT_USER_AGENT = VersionInfoUtils.getDefaultUserAgent();
 	private String httpType;
 	private String hostName;
-	@Deprecated
 	private CredentialsProvider credentialsProvider;
 	private String sourceIp;
 	private ServiceClient serviceClient;
@@ -259,8 +258,6 @@ public class Client implements LogService {
 		configure(endpoint, new DefaultCredentails(accessId, accessKey), sourceIp);
 	}
 
-	public Credentials getCredentials() { return credentialsProvider.getCredentials(); }
-
 	/**
 	 * set credentialProvider and update the signer.
 	 * @param credentialsProvider
@@ -275,69 +272,61 @@ public class Client implements LogService {
 		this.signer = SlsSignerBase.createRequestSigner(clientConfiguration, credentialsProvider);
 	}
 
-	/**
-	 * Use getCredentials instead.
-	 */
-	@Deprecated
-	public String getAccessId() {
-		return getCredentials().getAccessKeyId();
-	}
-
 	private void ensureStaticCredentialProvider() {
 		if(!(this.credentialsProvider instanceof StaticCredentialsProvider)) {
-			throw new RuntimeException("can only setAccessId to StaticCredentialProvider, use setCredentialsProvider instead");
+			throw new RuntimeException("can only set or get AccessId/AccessKey/SecretToken on StaticCredentialProvider");
 		}
 	}
+
 	/**
-	 * Use setCredentialsProvider(new StaticCredentialsProvider(credentials)) instead.
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
 	 */
-	@Deprecated
+	public String getAccessId() {
+		ensureStaticCredentialProvider();
+		return credentialsProvider.getCredentials().getAccessKeyId();
+	}
+
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public void setAccessId(String accessId) {
 		ensureStaticCredentialProvider();
-		Credentials credentials = getCredentials();
-		credentials.setAccessKeyId(accessId);
-		this.credentialsProvider = new StaticCredentialsProvider(credentials);
-		updateSigner(this.credentialsProvider);
+		StaticCredentialsProvider scp = (StaticCredentialsProvider)this.credentialsProvider;
+		scp.setAccessKeyId(accessId);
 	}
 
 	/**
-	 * Use getCredentials instead.
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
 	 */
-	@Deprecated
 	public String getAccessKey() {
-		return getCredentials().getAccessKeySecret();
+		ensureStaticCredentialProvider();
+		return credentialsProvider.getCredentials().getAccessKeySecret();
 	}
 
 	/**
-	 * Use setCredentialsProvider(new StaticCredentialsProvider(credentials)) instead.
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
 	 */
-	@Deprecated
 	public void setAccessKey(String accessKey) {
 		ensureStaticCredentialProvider();
-		Credentials credentials = getCredentials();
-		credentials.setAccessKeySecret(accessKey);
-		this.credentialsProvider = new StaticCredentialsProvider(credentials);
-		updateSigner(this.credentialsProvider);
+		StaticCredentialsProvider scp = (StaticCredentialsProvider)this.credentialsProvider;
+		scp.setAccessKeySecret(accessKey);
 	}
 
 	/**
-	 * Use getCredentials instead.
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
 	 */
-	@Deprecated
 	public String getSecurityToken() {
-		return getCredentials().getSecurityToken();
+		ensureStaticCredentialProvider();
+		return credentialsProvider.getCredentials().getSecurityToken();
 	}
 
 	/**
-	 * Use setCredentialsProvider(new StaticCredentialsProvider(credentials)) instead.
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
 	 */
-	@Deprecated
 	public void setSecurityToken(String securityToken) {
 		ensureStaticCredentialProvider();
-		Credentials credentials = getCredentials();
-		credentials.setSecurityToken(securityToken);
-		this.credentialsProvider = new StaticCredentialsProvider(credentials);
-		updateSigner(this.credentialsProvider);
+		StaticCredentialsProvider scp = (StaticCredentialsProvider)this.credentialsProvider;
+		scp.setSecretToken(securityToken);
 	}
 
 	public void shutdown() {
@@ -779,7 +768,7 @@ public class Client implements LogService {
 	}
 
 	private ClientConnectionStatus GetGlobalConnectionStatus() throws LogException {
-		Credentials credentials = getCredentials();
+		Credentials credentials = credentialsProvider.getCredentials();
 		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
 				.GetConnectionContainer(this.hostName, credentials.getAccessKeyId(), credentials.getAccessKeySecret());
 		ClientConnectionStatus connection_status = connection_container.GetGlobalConnection();
@@ -797,7 +786,7 @@ public class Client implements LogService {
 
 	private ClientConnectionStatus GetShardConnectionStatus(String project, String logstore, int shard_id)
 			throws LogException {
-		Credentials credentials = getCredentials();
+		Credentials credentials = credentialsProvider.getCredentials();
 		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
 				.GetConnectionContainer(this.hostName, credentials.getAccessKeyId(), credentials.getAccessKeySecret());
 		ClientConnectionStatus connection_status = connection_container.GetShardConnection(project, logstore, shard_id);
@@ -2088,10 +2077,6 @@ public class Client implements LogService {
 			headParameter.put(Consts.CONST_HOST, this.hostName);
 		}
 		headParameter.put(Consts.CONST_X_SLS_APIVERSION, Consts.DEFAULT_API_VESION);
-		String securityToken = getCredentials().getSecurityToken();
-		if (securityToken != null && !securityToken.isEmpty()) {
-			headParameter.put(Consts.CONST_X_ACS_SECURITY_TOKEN, securityToken);
-		}
 		if (realIpForConsole != null && !realIpForConsole.isEmpty()) {
 			headParameter.put(Consts.CONST_X_SLS_IP, realIpForConsole);
 		}
