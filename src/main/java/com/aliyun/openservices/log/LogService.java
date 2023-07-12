@@ -2774,6 +2774,7 @@ public interface LogService {
 
 	CreateProjectResponse createProject(String project, String projectDescription, String resourceGroupId) throws LogException;
 
+	CreateProjectResponse createProject(CreateProjectRequest request) throws LogException;
 	/**
 	 * get a project
 	 *

@@ -20,6 +20,7 @@ public class Project implements Serializable {
     protected String createTime = "";
     protected String lastModifyTime = "";
     protected String resourceGroupId;
+    private DataRedundancyType dataRedundancyType;
     private ProjectQuota quota;
 
     public Project() {
@@ -49,6 +50,7 @@ public class Project implements Serializable {
         this.createTime = project.getCreateTime();
         this.lastModifyTime = project.getLastModifyTime();
         this.resourceGroupId = project.getResourceGroupId();
+        this.dataRedundancyType = project.getDataRedundancyType();
     }
 
     public String getProjectName() {
@@ -115,6 +117,14 @@ public class Project implements Serializable {
         this.lastModifyTime = lastModifyTime;
     }
 
+    public DataRedundancyType getDataRedundancyType() {
+        return dataRedundancyType;
+    }
+
+    public void setDataRedundancyType(DataRedundancyType dataRedundancyType) {
+        this.dataRedundancyType = dataRedundancyType;
+    }
+
     public ProjectQuota getQuota() {
         return quota;
     }
@@ -159,6 +169,7 @@ public class Project implements Serializable {
             setCreateTime(dict.getString(Consts.CONST_CREATTIME));
             setLastModifyTime(dict.getString(Consts.CONST_LASTMODIFYTIME));
             setResourceGroupId(dict.getString(Consts.CONST_RESOURCEGROUPID));
+            setDataRedundancyType(DataRedundancyType.parse(dict.getString("dataRedundancyType")));
             setQuota(ProjectQuota.parseFromJSON(dict.getJSONObject(Consts.CONST_QUOTA)));
         } catch (JSONException e) {
             throw new LogException("FailToGenerateProject", e.getMessage(), e, "");

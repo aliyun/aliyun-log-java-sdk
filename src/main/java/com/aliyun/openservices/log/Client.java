@@ -3563,22 +3563,18 @@ public class Client implements LogService {
 	@Override
 	public CreateProjectResponse createProject(String project,
 			String projectDescription, String resourceGroupId) throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		if (projectDescription == null) {
-			projectDescription = "";
-		}
-		Map<String, String> headParameter = GetCommonHeadPara(project);
+		return createProject(new CreateProjectRequest(project, projectDescription, resourceGroupId));
+	}
+
+	public CreateProjectResponse createProject(CreateProjectRequest request) throws LogException {
+		Args.notNull(request, "request");
+		CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "project");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		String resourceUri = "/";
-		JSONObject jsonBody = new JSONObject();
-        jsonBody.put("projectName", project);
-        jsonBody.put("description", projectDescription);
-		if (resourceGroupId != null) {
-			jsonBody.put("resourceGroupId", resourceGroupId);
-		}
-		byte[] body = encodeToUtf8(jsonBody.toString());
+		byte[] body = encodeToUtf8(request.getRequestBody());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 		Map<String, String> urlParameter = new HashMap<String, String>();
-		ResponseMessage response = SendData(project, HttpMethod.POST,
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
 		Map<String, String> resHeaders = response.getHeaders();
 		return new CreateProjectResponse(resHeaders);
