@@ -10,9 +10,7 @@ import com.alibaba.fastjson.parser.Feature;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.Consts.CompressType;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
-import com.aliyun.openservices.log.common.auth.Credentials;
-import com.aliyun.openservices.log.common.auth.DefaultCredentails;
-import com.aliyun.openservices.log.common.auth.ECSRoleCredentials;
+import com.aliyun.openservices.log.common.auth.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.*;
 import com.aliyun.openservices.log.http.comm.*;
@@ -42,7 +40,8 @@ public class Client implements LogService {
 	private static final String DEFAULT_USER_AGENT = VersionInfoUtils.getDefaultUserAgent();
 	private String httpType;
 	private String hostName;
-	private Credentials credentials;
+	@Deprecated
+	private CredentialsProvider credentialsProvider;
 	private String sourceIp;
 	private ServiceClient serviceClient;
 	private String realIpForConsole;
@@ -145,7 +144,7 @@ public class Client implements LogService {
 	}
 
 	public Client(String endpoint, String roleName) {
-		this(endpoint, new ECSRoleCredentials(roleName), null);
+		this(endpoint, new ECSRoleCredentialsProvider(roleName), null);
 	}
 
 	/**
@@ -180,6 +179,15 @@ public class Client implements LogService {
 		configure(endpoint, credentials, sourceIp);
 	}
 
+	public Client(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
+		ClientConfiguration clientConfig = new ClientConfiguration();
+		clientConfig.setMaxConnections(Consts.HTTP_CONNECT_MAX_COUNT);
+		clientConfig.setConnectionTimeout(Consts.HTTP_CONNECT_TIME_OUT);
+		clientConfig.setSocketTimeout(Consts.HTTP_SEND_TIME_OUT);
+		this.serviceClient = new DefaultServiceClient(clientConfig);
+		configure(endpoint, credentialsProvider, sourceIp);
+	}
+
 	/**
 	 * @deprecated Use Client(String endpoint, String accessId, String accessKey, String sourceIp,
 	 * 	              ClientConfiguration config) instead.
@@ -199,6 +207,10 @@ public class Client implements LogService {
         this.serviceClient = serviceClient;
 		configure(endpoint, new DefaultCredentails(accessId, accessKey), null);
     }
+
+	public Client(String endpoint, CredentialsProvider credentialsProvider) {
+		configure(endpoint, credentialsProvider, null);
+	}
 
     public synchronized void setEndpoint(String endpoint) {
 		Args.notNullOrEmpty(endpoint, "endpoint");
@@ -223,15 +235,18 @@ public class Client implements LogService {
 	}
 
     private void configure(String endpoint, Credentials credentials, String sourceIp) {
-		setEndpoint(endpoint);
-	    this.credentials = credentials;
-	    this.sourceIp = sourceIp;
-	    if (sourceIp == null || sourceIp.isEmpty()) {
-		    this.sourceIp = NetworkUtils.getLocalMachineIP();
-	    }
-	    ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
-	    this.signer = SlsSignerBase.createRequestSigner(clientConfiguration, credentials);
+		configure(endpoint,  new StaticCredentialsProvider(credentials), sourceIp);
     }
+
+	private void configure(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
+		setEndpoint(endpoint);
+		this.sourceIp = sourceIp;
+		if (sourceIp == null || sourceIp.isEmpty()) {
+			this.sourceIp = NetworkUtils.getLocalMachineIP();
+		}
+		this.credentialsProvider = credentialsProvider;
+		updateSigner(credentialsProvider);
+	}
 
 	public Client(String endpoint, String accessId, String accessKey, String sourceIp,
 	              ClientConfiguration config) {
@@ -244,28 +259,85 @@ public class Client implements LogService {
 		configure(endpoint, new DefaultCredentails(accessId, accessKey), sourceIp);
 	}
 
+	public Credentials getCredentials() { return credentialsProvider.getCredentials(); }
+
+	/**
+	 * set credentialProvider and update the signer.
+	 * @param credentialsProvider
+	 */
+	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
+		this.credentialsProvider = credentialsProvider;
+		this.updateSigner(credentialsProvider);
+	}
+
+	private void updateSigner(CredentialsProvider credentialsProvider){
+		ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
+		this.signer = SlsSignerBase.createRequestSigner(clientConfiguration, credentialsProvider);
+	}
+
+	/**
+	 * Use getCredentials instead.
+	 */
+	@Deprecated
 	public String getAccessId() {
-		return credentials.getAccessKeyId();
+		return getCredentials().getAccessKeyId();
 	}
 
+	private void ensureStaticCredentialProvider() {
+		if(!(this.credentialsProvider instanceof StaticCredentialsProvider)) {
+			throw new RuntimeException("can only setAccessId to StaticCredentialProvider, use setCredentialsProvider instead");
+		}
+	}
+	/**
+	 * Use setCredentialsProvider(new StaticCredentialsProvider(credentials)) instead.
+	 */
+	@Deprecated
 	public void setAccessId(String accessId) {
+		ensureStaticCredentialProvider();
+		Credentials credentials = getCredentials();
 		credentials.setAccessKeyId(accessId);
+		this.credentialsProvider = new StaticCredentialsProvider(credentials);
+		updateSigner(this.credentialsProvider);
 	}
 
+	/**
+	 * Use getCredentials instead.
+	 */
+	@Deprecated
 	public String getAccessKey() {
-		return credentials.getAccessKeySecret();
+		return getCredentials().getAccessKeySecret();
 	}
 
+	/**
+	 * Use setCredentialsProvider(new StaticCredentialsProvider(credentials)) instead.
+	 */
+	@Deprecated
 	public void setAccessKey(String accessKey) {
+		ensureStaticCredentialProvider();
+		Credentials credentials = getCredentials();
 		credentials.setAccessKeySecret(accessKey);
+		this.credentialsProvider = new StaticCredentialsProvider(credentials);
+		updateSigner(this.credentialsProvider);
 	}
 
+	/**
+	 * Use getCredentials instead.
+	 */
+	@Deprecated
 	public String getSecurityToken() {
-		return credentials.getSecurityToken();
+		return getCredentials().getSecurityToken();
 	}
 
+	/**
+	 * Use setCredentialsProvider(new StaticCredentialsProvider(credentials)) instead.
+	 */
+	@Deprecated
 	public void setSecurityToken(String securityToken) {
+		ensureStaticCredentialProvider();
+		Credentials credentials = getCredentials();
 		credentials.setSecurityToken(securityToken);
+		this.credentialsProvider = new StaticCredentialsProvider(credentials);
+		updateSigner(this.credentialsProvider);
 	}
 
 	public void shutdown() {
@@ -707,6 +779,7 @@ public class Client implements LogService {
 	}
 
 	private ClientConnectionStatus GetGlobalConnectionStatus() throws LogException {
+		Credentials credentials = getCredentials();
 		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
 				.GetConnectionContainer(this.hostName, credentials.getAccessKeyId(), credentials.getAccessKeySecret());
 		ClientConnectionStatus connection_status = connection_container.GetGlobalConnection();
@@ -724,6 +797,7 @@ public class Client implements LogService {
 
 	private ClientConnectionStatus GetShardConnectionStatus(String project, String logstore, int shard_id)
 			throws LogException {
+		Credentials credentials = getCredentials();
 		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
 				.GetConnectionContainer(this.hostName, credentials.getAccessKeyId(), credentials.getAccessKeySecret());
 		ClientConnectionStatus connection_status = connection_container.GetShardConnection(project, logstore, shard_id);
@@ -2014,7 +2088,7 @@ public class Client implements LogService {
 			headParameter.put(Consts.CONST_HOST, this.hostName);
 		}
 		headParameter.put(Consts.CONST_X_SLS_APIVERSION, Consts.DEFAULT_API_VESION);
-		String securityToken = credentials.getSecurityToken();
+		String securityToken = getCredentials().getSecurityToken();
 		if (securityToken != null && !securityToken.isEmpty()) {
 			headParameter.put(Consts.CONST_X_ACS_SECURITY_TOKEN, securityToken);
 		}

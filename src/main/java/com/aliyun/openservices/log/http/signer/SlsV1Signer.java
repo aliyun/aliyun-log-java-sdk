@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.http.signer;
 
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.auth.Credentials;
+import com.aliyun.openservices.log.common.auth.CredentialsProvider;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.http.utils.DateUtil;
 import com.aliyun.openservices.log.util.Utils;
@@ -20,8 +21,18 @@ import java.util.TreeMap;
 
 public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
 
+    /**
+     * Use <pre>
+     *     {@code SlsV1Signer(new StaticCredentialsProvider(credentials))}
+     * </pre> instead.
+     */
+    @Deprecated
     public SlsV1Signer(Credentials credentials) {
         super(credentials);
+    }
+
+    public SlsV1Signer(CredentialsProvider credentialsProvider) {
+        super(credentialsProvider);
     }
 
     public static String md5Crypt(byte[] bytes) {
@@ -70,6 +81,7 @@ public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
             builder.append("?");
             builder.append(urlParametersToString(urlParams));
         }
+        Credentials credentials = credentialsProvider.getCredentials();
         String signature = encode(credentials.getAccessKeySecret(), builder.toString());
         headers.put(Consts.CONST_AUTHORIZATION, Consts.CONST_HEADSIGNATURE_PREFIX + credentials.getAccessKeyId() + ":" + signature);
     }

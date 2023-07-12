@@ -20,6 +20,7 @@ package com.aliyun.openservices.log.http.signer;
 
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.auth.Credentials;
+import com.aliyun.openservices.log.common.auth.CredentialsProvider;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.http.utils.BinaryUtil;
 import com.aliyun.openservices.log.http.utils.HttpUtil;
@@ -63,8 +64,20 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
 
     private final String region;
 
+    /**
+     * Use <pre>
+     *     {@code SlsV4Signer(new StaticCredentialsProvider(credentials))}
+     * </pre> instead.
+     */
+    @Deprecated
     public SlsV4Signer(Credentials credentials, String region) {
         super(credentials);
+        Args.check(region != null && !region.isEmpty(), "region must not be empty for v4 signature.");
+        this.region = region;
+    }
+
+    public SlsV4Signer(CredentialsProvider credentialsProvider, String region) {
+        super(credentialsProvider);
         Args.check(region != null && !region.isEmpty(), "region must not be empty for v4 signature.");
         this.region = region;
     }
@@ -227,6 +240,7 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
         String stringToSign = buildStringToSign(canonicalRequest, dateTime, scope);
         Mac mac = getMacInstance();
         HmacSHA256Hasher sha256Hasher = new HmacSHA256Hasher(mac);
+        Credentials credentials = credentialsProvider.getCredentials();
         byte[] signingKey = buildSigningKey(sha256Hasher, credentials.getAccessKeySecret(), region, date);
         byte[] result = sha256Hasher.hash(signingKey, stringToSign.getBytes(CHARSET_UTF_8));
         String signature = BinaryUtil.toHex(result);

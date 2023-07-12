@@ -19,21 +19,42 @@
 package com.aliyun.openservices.log.http.signer;
 
 import com.aliyun.openservices.log.common.auth.Credentials;
+import com.aliyun.openservices.log.common.auth.CredentialsProvider;
+import com.aliyun.openservices.log.common.auth.StaticCredentialsProvider;
 import com.aliyun.openservices.log.http.client.ClientConfiguration;
 
 public abstract class SlsSignerBase {
 
-    protected final Credentials credentials;
+    protected CredentialsProvider credentialsProvider;
 
+    /**
+     * Use <pre>
+     *     {@code SlsSignerBase(new StaticCredentialsProvider(credentials))}
+     * </pre> instead.
+     */
+    @Deprecated
     public SlsSignerBase(Credentials credentials) {
-        this.credentials = credentials;
+        this(new StaticCredentialsProvider(credentials));
     }
 
+    public SlsSignerBase(CredentialsProvider credentialsProvider) {
+        this.credentialsProvider = credentialsProvider;
+    }
+
+    @Deprecated
     public static SlsSigner createRequestSigner(ClientConfiguration clientConfiguration, Credentials credentials) {
         if (clientConfiguration.getSignatureVersion() == SignVersion.V4) {
             return new SlsV4Signer(credentials, clientConfiguration.getRegion());
         } else {
             return new SlsV1Signer(credentials);
+        }
+    }
+
+    public static SlsSigner createRequestSigner(ClientConfiguration clientConfiguration, CredentialsProvider credentialsProvider) {
+        if (clientConfiguration.getSignatureVersion() == SignVersion.V4) {
+            return new SlsV4Signer(credentialsProvider, clientConfiguration.getRegion());
+        } else {
+            return new SlsV1Signer(credentialsProvider);
         }
     }
 }

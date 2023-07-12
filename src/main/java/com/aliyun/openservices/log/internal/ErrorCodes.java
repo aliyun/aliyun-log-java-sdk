@@ -14,4 +14,7 @@ public final class ErrorCodes {
      */
     public  static final String REQUEST_TIMEOUT = "RequestTimeout";
     public  static final String INVALID_PARAMETER = "InvalidParameter";
+
+
+    public static final String CREDENTIAL_BAD_RESPONSE = "CredentialBadResponse";
 }
