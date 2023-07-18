@@ -208,6 +208,11 @@ public class Client implements LogService {
     }
 
 	public Client(String endpoint, CredentialsProvider credentialsProvider) {
+		ClientConfiguration clientConfig = new ClientConfiguration();
+		clientConfig.setMaxConnections(Consts.HTTP_CONNECT_MAX_COUNT);
+		clientConfig.setConnectionTimeout(Consts.HTTP_CONNECT_TIME_OUT);
+		clientConfig.setSocketTimeout(Consts.HTTP_SEND_TIME_OUT);
+		this.serviceClient = new DefaultServiceClient(clientConfig);
 		configure(endpoint, credentialsProvider, null);
 	}
 
@@ -768,9 +773,8 @@ public class Client implements LogService {
 	}
 
 	private ClientConnectionStatus GetGlobalConnectionStatus() throws LogException {
-		Credentials credentials = credentialsProvider.getCredentials();
 		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
-				.GetConnectionContainer(this.hostName, credentials.getAccessKeyId(), credentials.getAccessKeySecret());
+				.GetConnectionContainer(this.hostName, credentialsProvider);
 		ClientConnectionStatus connection_status = connection_container.GetGlobalConnection();
 		if (connection_status == null || !connection_status.IsValidConnection()) {
 			connection_container.UpdateGlobalConnection();
@@ -786,9 +790,8 @@ public class Client implements LogService {
 
 	private ClientConnectionStatus GetShardConnectionStatus(String project, String logstore, int shard_id)
 			throws LogException {
-		Credentials credentials = credentialsProvider.getCredentials();
 		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
-				.GetConnectionContainer(this.hostName, credentials.getAccessKeyId(), credentials.getAccessKeySecret());
+				.GetConnectionContainer(this.hostName, credentialsProvider);
 		ClientConnectionStatus connection_status = connection_container.GetShardConnection(project, logstore, shard_id);
 		if (connection_status != null && connection_status.IsValidConnection()) {
 			return connection_status;

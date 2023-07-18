@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.Shard;
+import com.aliyun.openservices.log.common.auth.CredentialsProvider;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.ListShardResponse;
 
@@ -20,16 +21,13 @@ public class ClientConnectionContainer {
 	private long mGlobalConnectionValidInterval = 60L * 1000 * 1000 * 1000;
 	private long mGlobalConnectionUpdateSendSize = 100 * 1024 * 1024;
 
-	public ClientConnectionContainer()
+	public ClientConnectionContainer(String endpoint, CredentialsProvider credentialsProvider)
 	{
 		mClient = null;
 		mGlobalConnection = null;
 		mShardConnections = new ConcurrentHashMap<String, ClientConnectionStatus>();
 		mShardLastUpdateTime = new ConcurrentHashMap<String, Long>();
-	}
-
-	public void Init(String endpoint, String accessId, String accessKey) {
-		mClient = new Client(endpoint, accessId, accessKey);
+		mClient = new Client(endpoint, credentialsProvider);
 	}
 
 	public ClientConnectionStatus GetShardConnection(String project, String logstore, int shardId) {

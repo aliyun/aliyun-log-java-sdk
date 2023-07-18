@@ -16,5 +16,5 @@ public final class ErrorCodes {
     public  static final String INVALID_PARAMETER = "InvalidParameter";
 
 
-    public static final String CREDENTIAL_BAD_RESPONSE = "CredentialBadResponse";
+    public static final String FETCH_CREDENTIALS_FAILED = "FetchCredentialsFailed";
 }

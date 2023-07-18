@@ -24,27 +24,37 @@ public abstract class HttpCredentialsFetcher implements CredentialsFetcher {
      */
     public abstract TemporaryCredentials parse(HttpResponse response) throws Exception;
 
-
-    @Override
-    public TemporaryCredentials fetch() {
-        String url = buildUrl();
-        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet httpGet = new HttpGet(url);
-        RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(3000).setSocketTimeout(3000).build();
-        httpGet.setConfig(config);
-        TemporaryCredentials credentials;
+    private TemporaryCredentials fetchOnce(CloseableHttpClient httpClient, HttpGet httpGet) throws Exception {
         CloseableHttpResponse httpResponse = null;
         try {
             httpResponse = httpClient.execute(httpGet);
-            credentials = parse(httpResponse);
-        } catch (Exception e) {
-            throw new RuntimeException("Fail to fetch credentials", e);
+            return parse(httpResponse);
         } finally {
             try {
                 httpResponse.close();
             } catch (Exception e) {
             }
         }
-        return credentials;
     }
+
+    @Override
+    public TemporaryCredentials fetch(int maxRetry) {
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet httpGet = new HttpGet(buildUrl());
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(3000).setSocketTimeout(3000).build();
+        httpGet.setConfig(config);
+
+        Exception capturedException = null;
+        maxRetry = Math.max(0, maxRetry);
+        while(maxRetry >= 0) {
+            try {
+                return fetchOnce(httpClient, httpGet);
+            } catch (Exception e) {
+                capturedException = e;
+            }
+            maxRetry--;
+        }
+        throw new RuntimeException("Fail to fetch credentials, max retry times exceeded", capturedException);
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.aliyun.openservices.log.http.client;
 
+import com.aliyun.openservices.log.common.auth.CredentialsProvider;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,11 +22,10 @@ public class ClientConnectionHelper {
 		return SingletonHolder.INSTANCE;
 	}
 
-	public ClientConnectionContainer GetConnectionContainer(String endpoint, String accessId, String accessKey) {
-		String key = endpoint + "#" + accessId;
+	public ClientConnectionContainer GetConnectionContainer(String endpoint, CredentialsProvider credentialsProvider) {
+		String key = endpoint;
 		if (mAllConnections.containsKey(key) == false) {
-			ClientConnectionContainer container = new ClientConnectionContainer();
-			container.Init(endpoint, accessId, accessKey);
+			ClientConnectionContainer container = new ClientConnectionContainer(endpoint, credentialsProvider);
 			mAllConnections.put(key, container);
 			return container;
 		} else {

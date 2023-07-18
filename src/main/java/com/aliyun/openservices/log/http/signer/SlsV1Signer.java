@@ -126,9 +126,4 @@ public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
         }
     }
 
-    private void addHeaderSecretToken(String securityToken, Map<String, String> headers) {
-        if (securityToken != null && !securityToken.isEmpty()) {
-            headers.put(Consts.CONST_X_ACS_SECURITY_TOKEN, securityToken);
-        }
-    }
 }

@@ -22,8 +22,10 @@ public class ECSRoleCredentialsFetcher extends HttpCredentialsFetcher {
 
     @Override
     public TemporaryCredentials parse(HttpResponse httpResponse) throws LogException {
+        JSONObject response = null;
+        String errMsg = "response body is null";
         try {
-            JSONObject response = JSONObject.parseObject(EntityUtils.toString(httpResponse.getEntity()));
+             response = JSONObject.parseObject(EntityUtils.toString(httpResponse.getEntity()));
             if (response != null && "Success".equalsIgnoreCase(response.getString("Code"))) {
                 String accessKeyId = response.getString("AccessKeyId");
                 String accessKeySecret = response.getString("AccessKeySecret");
@@ -33,11 +35,19 @@ public class ECSRoleCredentialsFetcher extends HttpCredentialsFetcher {
                 return new TemporaryCredentials(accessKeyId, accessKeySecret,
                         securityToken, expiration, lastUpdated);
             }
-            throw new LogException(ErrorCodes.CREDENTIAL_BAD_RESPONSE, "Fetch credential got bad response", "");
-        } catch (Exception e) {
-            throw new LogException(ErrorCodes.CREDENTIAL_BAD_RESPONSE,
-                    "Fetch credential got bad response, err msg:" + e.getMessage(), "");
+        } catch (Exception e) { // parseObject or data type error
+            e.printStackTrace();
+            if(response != null) {
+                errMsg = "response body is: " + response.toJSONString();
+            }
+            throw new LogException(ErrorCodes.FETCH_CREDENTIALS_FAILED, "Fetch credential got bad response, " + errMsg
+                    +", exception: " + e.getMessage(), "");
         }
+
+        if(response != null) {
+            errMsg = "response body is: " + response.toJSONString();
+        }
+        throw new LogException(ErrorCodes.FETCH_CREDENTIALS_FAILED, "Fetch credential got bad response, " + errMsg, "");
     }
 
     private final String ecsRamRole;

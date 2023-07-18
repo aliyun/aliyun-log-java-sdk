@@ -18,10 +18,13 @@
  */
 package com.aliyun.openservices.log.http.signer;
 
+import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.auth.Credentials;
 import com.aliyun.openservices.log.common.auth.CredentialsProvider;
 import com.aliyun.openservices.log.common.auth.StaticCredentialsProvider;
 import com.aliyun.openservices.log.http.client.ClientConfiguration;
+
+import java.util.Map;
 
 public abstract class SlsSignerBase {
 
@@ -37,6 +40,12 @@ public abstract class SlsSignerBase {
             return new SlsV4Signer(credentialsProvider, clientConfiguration.getRegion());
         } else {
             return new SlsV1Signer(credentialsProvider);
+        }
+    }
+
+    protected void addHeaderSecretToken(String securityToken, Map<String, String> headers) {
+        if (securityToken != null && !securityToken.isEmpty()) {
+            headers.put(Consts.CONST_X_ACS_SECURITY_TOKEN, securityToken);
         }
     }
 }
