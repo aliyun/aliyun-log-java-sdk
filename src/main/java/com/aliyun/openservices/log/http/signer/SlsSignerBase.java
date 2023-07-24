@@ -19,9 +19,7 @@
 package com.aliyun.openservices.log.http.signer;
 
 import com.aliyun.openservices.log.common.Consts;
-import com.aliyun.openservices.log.common.auth.Credentials;
 import com.aliyun.openservices.log.common.auth.CredentialsProvider;
-import com.aliyun.openservices.log.common.auth.StaticCredentialsProvider;
 import com.aliyun.openservices.log.http.client.ClientConfiguration;
 
 import java.util.Map;
