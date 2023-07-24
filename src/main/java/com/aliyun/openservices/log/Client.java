@@ -178,6 +178,10 @@ public class Client implements LogService {
 		configure(endpoint, credentials, sourceIp);
 	}
 
+	public Client(String endpoint, CredentialsProvider credentialsProvider) {
+		this(endpoint, credentialsProvider, "");
+	}
+
 	public Client(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
 		ClientConfiguration clientConfig = new ClientConfiguration();
 		clientConfig.setMaxConnections(Consts.HTTP_CONNECT_MAX_COUNT);
@@ -206,15 +210,6 @@ public class Client implements LogService {
         this.serviceClient = serviceClient;
 		configure(endpoint, new DefaultCredentials(accessId, accessKey), null);
     }
-
-	public Client(String endpoint, CredentialsProvider credentialsProvider) {
-		ClientConfiguration clientConfig = new ClientConfiguration();
-		clientConfig.setMaxConnections(Consts.HTTP_CONNECT_MAX_COUNT);
-		clientConfig.setConnectionTimeout(Consts.HTTP_CONNECT_TIME_OUT);
-		clientConfig.setSocketTimeout(Consts.HTTP_SEND_TIME_OUT);
-		this.serviceClient = new DefaultServiceClient(clientConfig);
-		configure(endpoint, credentialsProvider, null);
-	}
 
     public synchronized void setEndpoint(String endpoint) {
 		Args.notNullOrEmpty(endpoint, "endpoint");
