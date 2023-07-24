@@ -48,7 +48,9 @@ public class ECSRoleCredentialsFetcher extends HttpCredentialsFetcher {
                 throw new LogException(ErrorCodes.FETCH_CREDENTIALS_FAILED, "Fetch credential got unexpected response, " + rawRespBody, "");
             }
             return credentialsFromJson(response);
-        } catch (ParseException e) {
+        } catch (LogException e) {
+            throw e;
+        } catch (Exception e) {
             throw new LogException(ErrorCodes.FETCH_CREDENTIALS_FAILED, "Fetch credential fail to parse response, " + rawRespBody, e, "");
         }
     }
