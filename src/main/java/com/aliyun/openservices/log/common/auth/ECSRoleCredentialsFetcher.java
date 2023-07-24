@@ -7,6 +7,8 @@ import com.aliyun.openservices.log.internal.ErrorCodes;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
+import java.text.ParseException;
+
 
 public class ECSRoleCredentialsFetcher extends HttpCredentialsFetcher {
     private static final String META_DATA_SERVICE_URL = "http://100.100.100.200/latest/meta-data/ram/security-credentials/";
@@ -20,34 +22,35 @@ public class ECSRoleCredentialsFetcher extends HttpCredentialsFetcher {
         return META_DATA_SERVICE_URL + ecsRamRole;
     }
 
+    private TemporaryCredentials credentialsFromJson(JSONObject response) throws ParseException {
+        String accessKeyId = response.getString("AccessKeyId");
+        String accessKeySecret = response.getString("AccessKeySecret");
+        String securityToken = response.getString("SecurityToken");
+        long expiration = DateUtil.stringToLong(response.getString("Expiration"));
+        long lastUpdated = DateUtil.stringToLong(response.getString("LastUpdated"));
+        return new TemporaryCredentials(accessKeyId, accessKeySecret,
+                securityToken, expiration, lastUpdated);
+    }
+
     @Override
     public TemporaryCredentials parse(HttpResponse httpResponse) throws LogException {
-        JSONObject response = null;
-        String errMsg = "response body is null";
+        // parse http response body
+        String rawRespBody;
         try {
-             response = JSONObject.parseObject(EntityUtils.toString(httpResponse.getEntity()));
-            if (response != null && "Success".equalsIgnoreCase(response.getString("Code"))) {
-                String accessKeyId = response.getString("AccessKeyId");
-                String accessKeySecret = response.getString("AccessKeySecret");
-                String securityToken = response.getString("SecurityToken");
-                long expiration = DateUtil.stringToLong(response.getString("Expiration"));
-                long lastUpdated = DateUtil.stringToLong(response.getString("LastUpdated"));
-                return new TemporaryCredentials(accessKeyId, accessKeySecret,
-                        securityToken, expiration, lastUpdated);
-            }
-        } catch (Exception e) { // parseObject or data type error
-            e.printStackTrace();
-            if(response != null) {
-                errMsg = "response body is: " + response.toJSONString();
-            }
-            throw new LogException(ErrorCodes.FETCH_CREDENTIALS_FAILED, "Fetch credential got bad response, " + errMsg
-                    +", exception: " + e.getMessage(), "");
+            rawRespBody = EntityUtils.toString(httpResponse.getEntity());
+        } catch (Exception e) {
+            throw new LogException(ErrorCodes.FETCH_CREDENTIALS_FAILED, "Fail to fetch credentials: fetch http resp body", e, "");
         }
-
-        if(response != null) {
-            errMsg = "response body is: " + response.toJSONString();
+        // response body to json object, json object to credentials
+        try {
+            JSONObject response = JSONObject.parseObject(rawRespBody);
+            if (response == null || !"Success".equalsIgnoreCase(response.getString("Code"))) {
+                throw new LogException(ErrorCodes.FETCH_CREDENTIALS_FAILED, "Fetch credential got unexpected response, " + rawRespBody, "");
+            }
+            return credentialsFromJson(response);
+        } catch (ParseException e) {
+            throw new LogException(ErrorCodes.FETCH_CREDENTIALS_FAILED, "Fetch credential fail to parse response, " + rawRespBody, e, "");
         }
-        throw new LogException(ErrorCodes.FETCH_CREDENTIALS_FAILED, "Fetch credential got bad response, " + errMsg, "");
     }
 
     private final String ecsRamRole;

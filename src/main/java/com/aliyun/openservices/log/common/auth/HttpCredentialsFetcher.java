@@ -24,37 +24,45 @@ public abstract class HttpCredentialsFetcher implements CredentialsFetcher {
      */
     public abstract TemporaryCredentials parse(HttpResponse response) throws Exception;
 
-    private TemporaryCredentials fetchOnce(CloseableHttpClient httpClient, HttpGet httpGet) throws Exception {
+    @Override
+    public TemporaryCredentials fetch() {
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet httpGet = buildHttpRequest();
+
+        Exception capturedException = null;
+        int retryTimes = FETCH_CREDENTIALS_MAX_RETRY_TIMES;
+        while (retryTimes >= 0) {
+            try {
+                return fetchOnce(httpClient, httpGet);
+            } catch (Exception e) {
+                capturedException = e;
+            }
+            retryTimes--;
+        }
+        throw new RuntimeException("Fail to fetch credentials, max retry times exceeded", capturedException);
+    }
+
+    private HttpGet buildHttpRequest() {
+        HttpGet httpGet = new HttpGet(buildUrl());
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(3000).setSocketTimeout(3000).build();
+        httpGet.setConfig(config);
+        return httpGet;
+    }
+
+    protected TemporaryCredentials fetchOnce(CloseableHttpClient httpClient, HttpGet httpGet) throws Exception {
         CloseableHttpResponse httpResponse = null;
         try {
             httpResponse = httpClient.execute(httpGet);
             return parse(httpResponse);
         } finally {
             try {
-                httpResponse.close();
-            } catch (Exception e) {
+                if (httpResponse != null) {
+                    httpResponse.close();
+                }
+            } catch (Exception ignored) {
             }
         }
     }
 
-    @Override
-    public TemporaryCredentials fetch(int maxRetry) {
-        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet httpGet = new HttpGet(buildUrl());
-        RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(3000).setSocketTimeout(3000).build();
-        httpGet.setConfig(config);
-
-        Exception capturedException = null;
-        maxRetry = Math.max(0, maxRetry);
-        while(maxRetry >= 0) {
-            try {
-                return fetchOnce(httpClient, httpGet);
-            } catch (Exception e) {
-                capturedException = e;
-            }
-            maxRetry--;
-        }
-        throw new RuntimeException("Fail to fetch credentials, max retry times exceeded", capturedException);
-    }
-
+    private static final int FETCH_CREDENTIALS_MAX_RETRY_TIMES = 3;
 }

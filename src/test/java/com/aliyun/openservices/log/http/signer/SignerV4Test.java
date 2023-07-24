@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.http.signer;
 
-import com.aliyun.openservices.log.common.auth.DefaultCredentails;
+import com.aliyun.openservices.log.common.auth.DefaultCredentials;
 import com.aliyun.openservices.log.common.auth.StaticCredentialsProvider;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import org.junit.Assert;
@@ -17,7 +17,7 @@ public class SignerV4Test {
     @Test
     public void testSignRequest() {
         SlsV4Signer signer = new SlsV4Signer(new StaticCredentialsProvider(
-                new DefaultCredentails("acsddda21dsd", "zxasdasdasw2")),
+                new DefaultCredentials("acsddda21dsd", "zxasdasdasw2")),
                 "cn-hangzhou");
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("hello", "world");
@@ -39,7 +39,7 @@ public class SignerV4Test {
                         "a98f5632e93836e63839cd836a54055f480020a9364ca944e2d34f2eb9bf1bed");
 
         SlsV4Signer signer2 = new SlsV4Signer(new StaticCredentialsProvider(
-                new DefaultCredentails("acsddda21dsd", "zxasdasdasw2")),
+                new DefaultCredentials("acsddda21dsd", "zxasdasdasw2")),
                 "cn-shanghai");
 
         Assert.assertEquals(signer2.signRequest(new HashMap<String, String>(),

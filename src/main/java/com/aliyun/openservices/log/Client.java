@@ -135,7 +135,7 @@ public class Client implements LogService {
 	 *            aliyun accessKey
 	 */
 	public Client(String endpoint, String accessId, String accessKey) {
-		this(endpoint, new DefaultCredentails(accessId, accessKey), null);
+		this(endpoint, new DefaultCredentials(accessId, accessKey), null);
 	}
 
 	public Client(String endpoint, String accessId, String accessKey, ClientConfiguration configuration) {
@@ -166,7 +166,7 @@ public class Client implements LogService {
 	 *            client ip address
 	 */
 	public Client(String endpoint, String accessId, String accessKey, String sourceIp) {
-		this(endpoint, new DefaultCredentails(accessId, accessKey), sourceIp);
+		this(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
 	}
 
 	public Client(String endpoint, Credentials credentials, String sourceIp) {
@@ -199,12 +199,12 @@ public class Client implements LogService {
         clientConfig.setConnectionTimeout(connectTimeout);
         clientConfig.setSocketTimeout(sendTimeout);
         this.serviceClient = new DefaultServiceClient(clientConfig);
-		configure(endpoint, new DefaultCredentails(accessId, accessKey), sourceIp);
+		configure(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
     }
 
     public Client(String endpoint, String accessId, String accessKey, ServiceClient serviceClient) {
         this.serviceClient = serviceClient;
-		configure(endpoint, new DefaultCredentails(accessId, accessKey), null);
+		configure(endpoint, new DefaultCredentials(accessId, accessKey), null);
     }
 
 	public Client(String endpoint, CredentialsProvider credentialsProvider) {
@@ -260,7 +260,7 @@ public class Client implements LogService {
 		} else {
 			this.serviceClient = new DefaultServiceClient(config);
 		}
-		configure(endpoint, new DefaultCredentails(accessId, accessKey), sourceIp);
+		configure(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
 	}
 
 	/**
@@ -4482,7 +4482,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 
-		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName() 
+		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName()
 			+ "/nodes/" +  request.getTopostoreNodeId();
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
@@ -4622,7 +4622,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 
-		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName() 
+		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName()
 			+ "/relations/" +  request.getTopostoreRelationId();
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
@@ -4714,11 +4714,11 @@ public class Client implements LogService {
 
 		if(nodeRelationMap.containsKey(nodeId)){
 			for(TopostoreRelation relation: nodeRelationMap.get(nodeId)){
-				if(relationTypes == null || relationTypes.size()==0 || relationTypes.contains(relation.getRelationType())){	
+				if(relationTypes == null || relationTypes.size()==0 || relationTypes.contains(relation.getRelationType())){
 					String mNodeId=null;
 					if(direction.equals(Consts.TOPOSTORE_RELATION_DIRECTION_IN)){
 						mNodeId = relation.getSrcNodeId();
-					} else if(direction.equals(Consts.TOPOSTORE_RELATION_DIRECTION_OUT)){	
+					} else if(direction.equals(Consts.TOPOSTORE_RELATION_DIRECTION_OUT)){
 						mNodeId = relation.getDstNodeId();
 					}
 
@@ -4748,7 +4748,7 @@ public class Client implements LogService {
 		return ret;
 	}
 
-	private List<TopostoreNode> listTopostoreNodeWithAutoPage(String topostoreName, List<String> reqNodeIds, 
+	private List<TopostoreNode> listTopostoreNodeWithAutoPage(String topostoreName, List<String> reqNodeIds,
 		List<String> nodeTypes, Map<String, String> nodeProperties, Map<String, String> params) throws LogException{
 		List<TopostoreNode> finalNodes = new ArrayList<TopostoreNode>();
 
@@ -4829,9 +4829,9 @@ public class Client implements LogService {
 
 		// get all nodes
 		List<String> allNodeIds = new ArrayList<String>();
-		List<TopostoreNode> allTopoNodes = this.listTopostoreNodeWithAutoPage(request.getTopostoreName(), request.getNodeIds(), 
+		List<TopostoreNode> allTopoNodes = this.listTopostoreNodeWithAutoPage(request.getTopostoreName(), request.getNodeIds(),
 			request.getNodeTypes(), request.getNodeProperities(), request.GetParam());
-		
+
 		for(TopostoreNode n: allTopoNodes){
 			allNodeIds.add(n.getNodeId());
 		}
@@ -4858,20 +4858,20 @@ public class Client implements LogService {
 			listRelationReq.setOffset(relationOffset);
 
 			ListTopostoreRelationResponse listRelationResp = this.listTopostoreRelation(listRelationReq);
-	
+
 			relationTotal = listRelationResp.getTotal();
 
 			relationOffset += listRelationResp.getCount();
-			
+
 			for(TopostoreRelation relation: listRelationResp.getTopostoreRelations()){
 				String srcNodeId = relation.getSrcNodeId();
 				String dstNodeId = relation.getDstNodeId();
-	
+
 				if (!nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_IN).containsKey(dstNodeId)){
 					nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_IN).put(dstNodeId, new ArrayList<TopostoreRelation>());
 				}
 				nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_IN).get(dstNodeId).add(relation);
-	
+
 				if (!nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_OUT).containsKey(srcNodeId)){
 					nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_OUT).put(srcNodeId, new ArrayList<TopostoreRelation>());
 				}
@@ -4891,7 +4891,7 @@ public class Client implements LogService {
 						if(request.getDepth()>0){
 							depthMode = true;
 						}
-						List<Set<String>>  ret = traverseNodeRelations(entry.getValue(), entry.getKey(), nodeId, 
+						List<Set<String>>  ret = traverseNodeRelations(entry.getValue(), entry.getKey(), nodeId,
 						request.getDepth(), depthMode, request.getRelationTypes());
 						if(ret.size() == 2){
 							for(String n: ret.get(0)){
@@ -4909,7 +4909,7 @@ public class Client implements LogService {
 
 		List<String> reqNodeIds = new ArrayList<String>();
 		reqNodeIds.addAll(finalNodeIds);
-				
+
 		if(reqNodeIds.size()>0){
 			response.setNodes(this.listTopostoreNodeWithAutoPage(request.getTopostoreName(), reqNodeIds, null, null, request.GetParam()));
 		} else {
@@ -4924,10 +4924,10 @@ public class Client implements LogService {
 			response.setRelations(new ArrayList<TopostoreRelation>());
 		}
 
-		
+
 		return response;
 	}
-	
+
 	@Override
 	public CreateResourceResponse createResource(CreateResourceRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");

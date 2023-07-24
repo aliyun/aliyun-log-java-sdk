@@ -23,13 +23,12 @@ public class ClientConnectionHelper {
 	}
 
 	public ClientConnectionContainer GetConnectionContainer(String endpoint, CredentialsProvider credentialsProvider) {
-		String key = endpoint;
-		if (mAllConnections.containsKey(key) == false) {
+		if (!mAllConnections.containsKey(endpoint)) {
 			ClientConnectionContainer container = new ClientConnectionContainer(endpoint, credentialsProvider);
-			mAllConnections.put(key, container);
+			mAllConnections.put(endpoint, container);
 			return container;
 		} else {
-			return mAllConnections.get(key);
+			return mAllConnections.get(endpoint);
 		}
 	}
 
