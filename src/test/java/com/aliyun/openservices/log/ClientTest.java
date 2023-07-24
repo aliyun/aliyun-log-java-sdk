@@ -171,9 +171,13 @@ public class ClientTest {
                 TEST_ACCESS_KEY);
         client.GetHostURI("abc");
         client.setEndpoint("https://abc////////////");
-        client.setEndpoint("mock-sls.aliyun-inc.com "); // trim
+
         URI uri = client.GetHostURI("");
         assertEquals("https://abc", uri.toString());
+        client.setEndpoint("mock-sls.aliyun-inc.com "); // trim
+
+        uri = client.GetHostURI("");
+        assertEquals("http://mock-sls.aliyun-inc.com", uri.toString());
         List<String> invalidEndpoints = Arrays.asList(
                 "http://mock-sls.aliyun-inc.com?abc=def",
                 "abc://xxx",
@@ -190,4 +194,5 @@ public class ClientTest {
             }
         }
     }
+
 }

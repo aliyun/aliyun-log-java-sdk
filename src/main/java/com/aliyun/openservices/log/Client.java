@@ -10,9 +10,7 @@ import com.alibaba.fastjson.parser.Feature;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.Consts.CompressType;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
-import com.aliyun.openservices.log.common.auth.Credentials;
-import com.aliyun.openservices.log.common.auth.DefaultCredentails;
-import com.aliyun.openservices.log.common.auth.ECSRoleCredentials;
+import com.aliyun.openservices.log.common.auth.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.*;
 import com.aliyun.openservices.log.http.comm.*;
@@ -42,7 +40,7 @@ public class Client implements LogService {
 	private static final String DEFAULT_USER_AGENT = VersionInfoUtils.getDefaultUserAgent();
 	private String httpType;
 	private String hostName;
-	private Credentials credentials;
+	private CredentialsProvider credentialsProvider;
 	private String sourceIp;
 	private ServiceClient serviceClient;
 	private String realIpForConsole;
@@ -137,7 +135,7 @@ public class Client implements LogService {
 	 *            aliyun accessKey
 	 */
 	public Client(String endpoint, String accessId, String accessKey) {
-		this(endpoint, new DefaultCredentails(accessId, accessKey), null);
+		this(endpoint, new DefaultCredentials(accessId, accessKey), null);
 	}
 
 	public Client(String endpoint, String accessId, String accessKey, ClientConfiguration configuration) {
@@ -145,7 +143,7 @@ public class Client implements LogService {
 	}
 
 	public Client(String endpoint, String roleName) {
-		this(endpoint, new ECSRoleCredentials(roleName), null);
+		this(endpoint, new ECSRoleCredentialsProvider(roleName), null);
 	}
 
 	/**
@@ -168,7 +166,7 @@ public class Client implements LogService {
 	 *            client ip address
 	 */
 	public Client(String endpoint, String accessId, String accessKey, String sourceIp) {
-		this(endpoint, new DefaultCredentails(accessId, accessKey), sourceIp);
+		this(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
 	}
 
 	public Client(String endpoint, Credentials credentials, String sourceIp) {
@@ -178,6 +176,19 @@ public class Client implements LogService {
 		clientConfig.setSocketTimeout(Consts.HTTP_SEND_TIME_OUT);
 		this.serviceClient = new DefaultServiceClient(clientConfig);
 		configure(endpoint, credentials, sourceIp);
+	}
+
+	public Client(String endpoint, CredentialsProvider credentialsProvider) {
+		this(endpoint, credentialsProvider, "");
+	}
+
+	public Client(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
+		ClientConfiguration clientConfig = new ClientConfiguration();
+		clientConfig.setMaxConnections(Consts.HTTP_CONNECT_MAX_COUNT);
+		clientConfig.setConnectionTimeout(Consts.HTTP_CONNECT_TIME_OUT);
+		clientConfig.setSocketTimeout(Consts.HTTP_SEND_TIME_OUT);
+		this.serviceClient = new DefaultServiceClient(clientConfig);
+		configure(endpoint, credentialsProvider, sourceIp);
 	}
 
 	/**
@@ -192,12 +203,12 @@ public class Client implements LogService {
         clientConfig.setConnectionTimeout(connectTimeout);
         clientConfig.setSocketTimeout(sendTimeout);
         this.serviceClient = new DefaultServiceClient(clientConfig);
-		configure(endpoint, new DefaultCredentails(accessId, accessKey), sourceIp);
+		configure(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
     }
 
     public Client(String endpoint, String accessId, String accessKey, ServiceClient serviceClient) {
         this.serviceClient = serviceClient;
-		configure(endpoint, new DefaultCredentails(accessId, accessKey), null);
+		configure(endpoint, new DefaultCredentials(accessId, accessKey), null);
     }
 
     public synchronized void setEndpoint(String endpoint) {
@@ -223,15 +234,18 @@ public class Client implements LogService {
 	}
 
     private void configure(String endpoint, Credentials credentials, String sourceIp) {
-		setEndpoint(endpoint);
-	    this.credentials = credentials;
-	    this.sourceIp = sourceIp;
-	    if (sourceIp == null || sourceIp.isEmpty()) {
-		    this.sourceIp = NetworkUtils.getLocalMachineIP();
-	    }
-	    ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
-	    this.signer = SlsSignerBase.createRequestSigner(clientConfiguration, credentials);
+		configure(endpoint,  new StaticCredentialsProvider(credentials), sourceIp);
     }
+
+	private void configure(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
+		setEndpoint(endpoint);
+		this.sourceIp = sourceIp;
+		if (sourceIp == null || sourceIp.isEmpty()) {
+			this.sourceIp = NetworkUtils.getLocalMachineIP();
+		}
+		this.credentialsProvider = credentialsProvider;
+		updateSigner(credentialsProvider);
+	}
 
 	public Client(String endpoint, String accessId, String accessKey, String sourceIp,
 	              ClientConfiguration config) {
@@ -241,31 +255,78 @@ public class Client implements LogService {
 		} else {
 			this.serviceClient = new DefaultServiceClient(config);
 		}
-		configure(endpoint, new DefaultCredentails(accessId, accessKey), sourceIp);
+		configure(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
 	}
 
+	/**
+	 * set credentialProvider and update the signer.
+	 * @param credentialsProvider
+	 */
+	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
+		this.credentialsProvider = credentialsProvider;
+		this.updateSigner(credentialsProvider);
+	}
+
+	private void updateSigner(CredentialsProvider credentialsProvider){
+		ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
+		this.signer = SlsSignerBase.createRequestSigner(clientConfiguration, credentialsProvider);
+	}
+
+	private void ensureStaticCredentialProvider() {
+		if(!(this.credentialsProvider instanceof StaticCredentialsProvider)) {
+			throw new RuntimeException("can only set or get AccessId/AccessKey/SecretToken on StaticCredentialProvider");
+		}
+	}
+
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public String getAccessId() {
-		return credentials.getAccessKeyId();
+		ensureStaticCredentialProvider();
+		return credentialsProvider.getCredentials().getAccessKeyId();
 	}
 
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public void setAccessId(String accessId) {
-		credentials.setAccessKeyId(accessId);
+		ensureStaticCredentialProvider();
+		StaticCredentialsProvider scp = (StaticCredentialsProvider)this.credentialsProvider;
+		scp.setAccessKeyId(accessId);
 	}
 
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public String getAccessKey() {
-		return credentials.getAccessKeySecret();
+		ensureStaticCredentialProvider();
+		return credentialsProvider.getCredentials().getAccessKeySecret();
 	}
 
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public void setAccessKey(String accessKey) {
-		credentials.setAccessKeySecret(accessKey);
+		ensureStaticCredentialProvider();
+		StaticCredentialsProvider scp = (StaticCredentialsProvider)this.credentialsProvider;
+		scp.setAccessKeySecret(accessKey);
 	}
 
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public String getSecurityToken() {
-		return credentials.getSecurityToken();
+		ensureStaticCredentialProvider();
+		return credentialsProvider.getCredentials().getSecurityToken();
 	}
 
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public void setSecurityToken(String securityToken) {
-		credentials.setSecurityToken(securityToken);
+		ensureStaticCredentialProvider();
+		StaticCredentialsProvider scp = (StaticCredentialsProvider)this.credentialsProvider;
+		scp.setSecretToken(securityToken);
 	}
 
 	public void shutdown() {
@@ -708,7 +769,7 @@ public class Client implements LogService {
 
 	private ClientConnectionStatus GetGlobalConnectionStatus() throws LogException {
 		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
-				.GetConnectionContainer(this.hostName, credentials.getAccessKeyId(), credentials.getAccessKeySecret());
+				.GetConnectionContainer(this.hostName, credentialsProvider);
 		ClientConnectionStatus connection_status = connection_container.GetGlobalConnection();
 		if (connection_status == null || !connection_status.IsValidConnection()) {
 			connection_container.UpdateGlobalConnection();
@@ -725,7 +786,7 @@ public class Client implements LogService {
 	private ClientConnectionStatus GetShardConnectionStatus(String project, String logstore, int shard_id)
 			throws LogException {
 		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
-				.GetConnectionContainer(this.hostName, credentials.getAccessKeyId(), credentials.getAccessKeySecret());
+				.GetConnectionContainer(this.hostName, credentialsProvider);
 		ClientConnectionStatus connection_status = connection_container.GetShardConnection(project, logstore, shard_id);
 		if (connection_status != null && connection_status.IsValidConnection()) {
 			return connection_status;
@@ -2014,10 +2075,6 @@ public class Client implements LogService {
 			headParameter.put(Consts.CONST_HOST, this.hostName);
 		}
 		headParameter.put(Consts.CONST_X_SLS_APIVERSION, Consts.DEFAULT_API_VESION);
-		String securityToken = credentials.getSecurityToken();
-		if (securityToken != null && !securityToken.isEmpty()) {
-			headParameter.put(Consts.CONST_X_ACS_SECURITY_TOKEN, securityToken);
-		}
 		if (realIpForConsole != null && !realIpForConsole.isEmpty()) {
 			headParameter.put(Consts.CONST_X_SLS_IP, realIpForConsole);
 		}
@@ -4416,7 +4473,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 
-		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName() 
+		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName()
 			+ "/nodes/" +  request.getTopostoreNodeId();
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
@@ -4556,7 +4613,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 
-		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName() 
+		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName()
 			+ "/relations/" +  request.getTopostoreRelationId();
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
@@ -4648,11 +4705,11 @@ public class Client implements LogService {
 
 		if(nodeRelationMap.containsKey(nodeId)){
 			for(TopostoreRelation relation: nodeRelationMap.get(nodeId)){
-				if(relationTypes == null || relationTypes.size()==0 || relationTypes.contains(relation.getRelationType())){	
+				if(relationTypes == null || relationTypes.size()==0 || relationTypes.contains(relation.getRelationType())){
 					String mNodeId=null;
 					if(direction.equals(Consts.TOPOSTORE_RELATION_DIRECTION_IN)){
 						mNodeId = relation.getSrcNodeId();
-					} else if(direction.equals(Consts.TOPOSTORE_RELATION_DIRECTION_OUT)){	
+					} else if(direction.equals(Consts.TOPOSTORE_RELATION_DIRECTION_OUT)){
 						mNodeId = relation.getDstNodeId();
 					}
 
@@ -4682,7 +4739,7 @@ public class Client implements LogService {
 		return ret;
 	}
 
-	private List<TopostoreNode> listTopostoreNodeWithAutoPage(String topostoreName, List<String> reqNodeIds, 
+	private List<TopostoreNode> listTopostoreNodeWithAutoPage(String topostoreName, List<String> reqNodeIds,
 		List<String> nodeTypes, Map<String, String> nodeProperties, Map<String, String> params) throws LogException{
 		List<TopostoreNode> finalNodes = new ArrayList<TopostoreNode>();
 
@@ -4763,9 +4820,9 @@ public class Client implements LogService {
 
 		// get all nodes
 		List<String> allNodeIds = new ArrayList<String>();
-		List<TopostoreNode> allTopoNodes = this.listTopostoreNodeWithAutoPage(request.getTopostoreName(), request.getNodeIds(), 
+		List<TopostoreNode> allTopoNodes = this.listTopostoreNodeWithAutoPage(request.getTopostoreName(), request.getNodeIds(),
 			request.getNodeTypes(), request.getNodeProperities(), request.GetParam());
-		
+
 		for(TopostoreNode n: allTopoNodes){
 			allNodeIds.add(n.getNodeId());
 		}
@@ -4792,20 +4849,20 @@ public class Client implements LogService {
 			listRelationReq.setOffset(relationOffset);
 
 			ListTopostoreRelationResponse listRelationResp = this.listTopostoreRelation(listRelationReq);
-	
+
 			relationTotal = listRelationResp.getTotal();
 
 			relationOffset += listRelationResp.getCount();
-			
+
 			for(TopostoreRelation relation: listRelationResp.getTopostoreRelations()){
 				String srcNodeId = relation.getSrcNodeId();
 				String dstNodeId = relation.getDstNodeId();
-	
+
 				if (!nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_IN).containsKey(dstNodeId)){
 					nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_IN).put(dstNodeId, new ArrayList<TopostoreRelation>());
 				}
 				nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_IN).get(dstNodeId).add(relation);
-	
+
 				if (!nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_OUT).containsKey(srcNodeId)){
 					nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_OUT).put(srcNodeId, new ArrayList<TopostoreRelation>());
 				}
@@ -4825,7 +4882,7 @@ public class Client implements LogService {
 						if(request.getDepth()>0){
 							depthMode = true;
 						}
-						List<Set<String>>  ret = traverseNodeRelations(entry.getValue(), entry.getKey(), nodeId, 
+						List<Set<String>>  ret = traverseNodeRelations(entry.getValue(), entry.getKey(), nodeId,
 						request.getDepth(), depthMode, request.getRelationTypes());
 						if(ret.size() == 2){
 							for(String n: ret.get(0)){
@@ -4843,7 +4900,7 @@ public class Client implements LogService {
 
 		List<String> reqNodeIds = new ArrayList<String>();
 		reqNodeIds.addAll(finalNodeIds);
-				
+
 		if(reqNodeIds.size()>0){
 			response.setNodes(this.listTopostoreNodeWithAutoPage(request.getTopostoreName(), reqNodeIds, null, null, request.GetParam()));
 		} else {
@@ -4858,10 +4915,10 @@ public class Client implements LogService {
 			response.setRelations(new ArrayList<TopostoreRelation>());
 		}
 
-		
+
 		return response;
 	}
-	
+
 	@Override
 	public CreateResourceResponse createResource(CreateResourceRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");

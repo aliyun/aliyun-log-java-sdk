@@ -20,6 +20,7 @@ package com.aliyun.openservices.log.http.signer;
 
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.auth.Credentials;
+import com.aliyun.openservices.log.common.auth.CredentialsProvider;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.http.utils.BinaryUtil;
 import com.aliyun.openservices.log.http.utils.HttpUtil;
@@ -63,8 +64,8 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
 
     private final String region;
 
-    public SlsV4Signer(Credentials credentials, String region) {
-        super(credentials);
+    public SlsV4Signer(CredentialsProvider credentialsProvider, String region) {
+        super(credentialsProvider);
         Args.check(region != null && !region.isEmpty(), "region must not be empty for v4 signature.");
         this.region = region;
     }
@@ -187,6 +188,9 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
     public String signRequest(Map<String, String> headers, HttpMethod httpMethod,
                               String resourceUri, Map<String, String> urlParams,
                               byte[] body, String dateTime) {
+        Credentials credentials = credentialsProvider.getCredentials();
+        addHeaderSecretToken(credentials.getSecurityToken(), headers);
+
         String contentSha256;
         if (body != null && body.length > 0) {
             headers.put(Consts.CONST_CONTENT_LENGTH, String.valueOf(body.length));
@@ -255,4 +259,5 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
             }
         }
     }
+
 }
