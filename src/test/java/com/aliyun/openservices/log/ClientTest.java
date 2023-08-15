@@ -171,7 +171,6 @@ public class ClientTest {
                 TEST_ACCESS_KEY);
         client.GetHostURI("abc");
         client.setEndpoint("https://abc////////////");
-
         URI uri = client.GetHostURI("");
         assertEquals("https://abc", uri.toString());
         client.setEndpoint("mock-sls.aliyun-inc.com "); // trim
@@ -194,5 +193,4 @@ public class ClientTest {
             }
         }
     }
-
 }
