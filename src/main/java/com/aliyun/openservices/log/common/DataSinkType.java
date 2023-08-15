@@ -10,6 +10,7 @@ public enum DataSinkType implements JSONSerializable {
     ALIYUN_ADB("AliyunADB"),
     ALIYUN_TSDB("AliyunTSDB"),
     ALIYUN_OSS("AliyunOSS"),
+    ALIYUN_OSSHDFS("AliyunOSSHDFS"),
     ALIYUN_ODPS("AliyunODPS"),
     GENERAL("General");
 

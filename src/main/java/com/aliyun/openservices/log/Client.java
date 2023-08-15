@@ -190,7 +190,6 @@ public class Client implements LogService {
 		this.serviceClient = new DefaultServiceClient(clientConfig);
 		configure(endpoint, credentialsProvider, sourceIp);
 	}
-
 	/**
 	 * @deprecated Use Client(String endpoint, String accessId, String accessKey, String sourceIp,
 	 * 	              ClientConfiguration config) instead.
@@ -233,9 +232,9 @@ public class Client implements LogService {
 		}
 	}
 
-    private void configure(String endpoint, Credentials credentials, String sourceIp) {
-		configure(endpoint,  new StaticCredentialsProvider(credentials), sourceIp);
-    }
+	private void configure(String endpoint, Credentials credentials, String sourceIp) {
+		configure(endpoint, new StaticCredentialsProvider(credentials), sourceIp);
+	}
 
 	private void configure(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
 		setEndpoint(endpoint);
@@ -260,6 +259,7 @@ public class Client implements LogService {
 
 	/**
 	 * set credentialProvider and update the signer.
+	 *
 	 * @param credentialsProvider
 	 */
 	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
@@ -267,13 +267,13 @@ public class Client implements LogService {
 		this.updateSigner(credentialsProvider);
 	}
 
-	private void updateSigner(CredentialsProvider credentialsProvider){
+	private void updateSigner(CredentialsProvider credentialsProvider) {
 		ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
 		this.signer = SlsSignerBase.createRequestSigner(clientConfiguration, credentialsProvider);
 	}
 
 	private void ensureStaticCredentialProvider() {
-		if(!(this.credentialsProvider instanceof StaticCredentialsProvider)) {
+		if (!(this.credentialsProvider instanceof StaticCredentialsProvider)) {
 			throw new RuntimeException("can only set or get AccessId/AccessKey/SecretToken on StaticCredentialProvider");
 		}
 	}
@@ -291,7 +291,7 @@ public class Client implements LogService {
 	 */
 	public void setAccessId(String accessId) {
 		ensureStaticCredentialProvider();
-		StaticCredentialsProvider scp = (StaticCredentialsProvider)this.credentialsProvider;
+		StaticCredentialsProvider scp = (StaticCredentialsProvider) this.credentialsProvider;
 		scp.setAccessKeyId(accessId);
 	}
 
@@ -308,7 +308,7 @@ public class Client implements LogService {
 	 */
 	public void setAccessKey(String accessKey) {
 		ensureStaticCredentialProvider();
-		StaticCredentialsProvider scp = (StaticCredentialsProvider)this.credentialsProvider;
+		StaticCredentialsProvider scp = (StaticCredentialsProvider) this.credentialsProvider;
 		scp.setAccessKeySecret(accessKey);
 	}
 
@@ -325,7 +325,7 @@ public class Client implements LogService {
 	 */
 	public void setSecurityToken(String securityToken) {
 		ensureStaticCredentialProvider();
-		StaticCredentialsProvider scp = (StaticCredentialsProvider)this.credentialsProvider;
+		StaticCredentialsProvider scp = (StaticCredentialsProvider) this.credentialsProvider;
 		scp.setSecretToken(securityToken);
 	}
 

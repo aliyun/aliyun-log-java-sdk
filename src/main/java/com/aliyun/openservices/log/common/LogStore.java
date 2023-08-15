@@ -28,6 +28,7 @@ public class LogStore implements Serializable {
     private EncryptConf encryptConf = null;
     private int hotTTL = -1;
     private String mode = null;
+    private int infrequentAccessTTL = -1;
 
     public int getArchiveSeconds() {
         return archiveSeconds;
@@ -88,6 +89,7 @@ public class LogStore implements Serializable {
         this.encryptConf = logStore.encryptConf;
         this.hotTTL = logStore.hotTTL;
         this.mode = logStore.mode;
+        this.infrequentAccessTTL = logStore.infrequentAccessTTL;
     }
 
     public long getPreserveStorage() {
@@ -212,6 +214,14 @@ public class LogStore implements Serializable {
         this.hotTTL = hotTTL;
     }
 
+    public int getInfrequentAccessTTL() {
+        return infrequentAccessTTL;
+    }
+
+    public void setInfrequentAccessTTL(int infrequentAccessTTL) {
+        this.infrequentAccessTTL = infrequentAccessTTL;
+    }
+
     public String getMode() {
         return mode;
     }
@@ -236,8 +246,11 @@ public class LogStore implements Serializable {
         logStoreDict.put("resourceQuota", resourceQuota);
         logStoreDict.put("archiveSeconds", archiveSeconds);
         logStoreDict.put("telemetryType", telemetryType);
-        if(hotTTL > 0) {
-            logStoreDict.put("hot_ttl",hotTTL);
+        if (hotTTL > 0) {
+            logStoreDict.put("hot_ttl", hotTTL);
+        }
+        if (infrequentAccessTTL > 0) {
+            logStoreDict.put("infrequentAccessTTL", infrequentAccessTTL);
         }
         if (this.encryptConf != null)
         {
@@ -318,6 +331,10 @@ public class LogStore implements Serializable {
             if (dict.containsKey("hot_ttl"))
             {
                 this.hotTTL = dict.getInteger("hot_ttl");
+            }
+            if (dict.containsKey("infrequentAccessTTL"))
+            {
+                this.infrequentAccessTTL = dict.getInteger("infrequentAccessTTL");
             }
             if (dict.containsKey("mode"))
             {
