@@ -18,7 +18,6 @@ public class PullLogsRequest extends Request {
     private String endCursor;
     private String query;
     private String pullMode;
-    private boolean responseWithMeta;
 
     /**
      * Construct a get cursor request
@@ -64,11 +63,10 @@ public class PullLogsRequest extends Request {
      * @param query     query
      */
     public PullLogsRequest(String project, String logStore, int shardId, int count, String cursor, String endCursor,
-            String query, String pullmode, boolean responseWithMeta) {
+            String query, String pullmode) {
         this(project, logStore, shardId, count, cursor, endCursor);
         setQuery(query);
         setPullMode(pullmode);
-        setResponseWithMeta(responseWithMeta);
     }
 
     public String getLogStore() {
@@ -127,10 +125,6 @@ public class PullLogsRequest extends Request {
         this.pullMode = pullMode;
     }
 
-    public void setResponseWithMeta(boolean responseWithMeta) {
-        this.responseWithMeta = responseWithMeta;
-    }
-
     @Override
     public Map<String, String> GetAllParams() {
         SetParam(Consts.CONST_TYPE, Consts.CONST_TYPE_LOG);
@@ -141,7 +135,6 @@ public class PullLogsRequest extends Request {
         }
         if (pullMode != null && !pullMode.isEmpty()) {
             SetParam(Consts.CONST_PULL_MODE, pullMode);
-            SetParam(Consts.CONST_RESPONSE_WITH_META, String.valueOf(responseWithMeta));
         }
 
         if (query != null && !query.isEmpty()) {
