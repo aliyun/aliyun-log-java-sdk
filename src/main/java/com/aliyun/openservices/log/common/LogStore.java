@@ -249,7 +249,7 @@ public class LogStore implements Serializable {
         if (hotTTL > 0) {
             logStoreDict.put("hot_ttl", hotTTL);
         }
-        if (infrequentAccessTTL > 0) {
+        if (infrequentAccessTTL >= 0) {
             logStoreDict.put("infrequentAccessTTL", infrequentAccessTTL);
         }
         if (this.encryptConf != null)
