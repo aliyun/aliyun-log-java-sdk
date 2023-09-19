@@ -8,7 +8,7 @@ public class TemporaryCredentials implements Credentials {
     public static final double DEFAULT_EXPIRED_FACTOR = 0.8;
 
     /**
-     * Constructs ECSRoleCredentialProvider.
+     * Constructs TemporaryCredentials.
      *
      * @param expiration  the expiration of the credentials, in millisecond format.
      * @param lastUpdated the last updated time of the credentials, in millisecond format.
@@ -31,7 +31,7 @@ public class TemporaryCredentials implements Credentials {
     }
 
     /**
-     * Constructs ECSRoleCredentialProvider.
+     * Constructs TemporaryCredentials.
      *
      * @param expiredFactor the expiration factor of the credentials, the
      *                      value should be less than 1.0 and greater than 0. Determines when

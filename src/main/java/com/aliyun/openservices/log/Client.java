@@ -182,28 +182,48 @@ public class Client implements LogService {
 		this(endpoint, credentialsProvider, "");
 	}
 
-	public Client(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
+	private static ClientConfiguration getDefaultClientConfiguration() {
 		ClientConfiguration clientConfig = new ClientConfiguration();
 		clientConfig.setMaxConnections(Consts.HTTP_CONNECT_MAX_COUNT);
 		clientConfig.setConnectionTimeout(Consts.HTTP_CONNECT_TIME_OUT);
 		clientConfig.setSocketTimeout(Consts.HTTP_SEND_TIME_OUT);
-		this.serviceClient = new DefaultServiceClient(clientConfig);
+		return clientConfig;
+	}
+
+	/**
+	 * @param endpoint            required not null, the log service server address
+	 * @param credentialsProvider required not null, interface which provide credentials
+	 * @param sourceIp            nullable, client ip address
+	 */
+	public Client(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
+		this(endpoint, credentialsProvider, new DefaultServiceClient(getDefaultClientConfiguration()), sourceIp);
+	}
+
+	/**
+	 * @param endpoint            required not null, the log service server address
+	 * @param credentialsProvider required not null, interface which provide credentials
+	 * @param serviceClient       required not null, customized service client
+	 * @param sourceIp            nullable, client ip address
+	 */
+	public Client(String endpoint, CredentialsProvider credentialsProvider, ServiceClient serviceClient, String sourceIp) {
+		this.serviceClient = serviceClient;
 		configure(endpoint, credentialsProvider, sourceIp);
 	}
+
 	/**
 	 * @deprecated Use Client(String endpoint, String accessId, String accessKey, String sourceIp,
-	 * 	              ClientConfiguration config) instead.
+	 * ClientConfiguration config) instead.
 	 */
 	@Deprecated
-    public Client(String endpoint, String accessId, String accessKey, String sourceIp,
-                  int connectMaxCount, int connectTimeout, int sendTimeout) {
-        ClientConfiguration clientConfig = new ClientConfiguration();
-        clientConfig.setMaxConnections(connectMaxCount);
-        clientConfig.setConnectionTimeout(connectTimeout);
-        clientConfig.setSocketTimeout(sendTimeout);
-        this.serviceClient = new DefaultServiceClient(clientConfig);
+	public Client(String endpoint, String accessId, String accessKey, String sourceIp,
+				  int connectMaxCount, int connectTimeout, int sendTimeout) {
+		ClientConfiguration clientConfig = new ClientConfiguration();
+		clientConfig.setMaxConnections(connectMaxCount);
+		clientConfig.setConnectionTimeout(connectTimeout);
+		clientConfig.setSocketTimeout(sendTimeout);
+		this.serviceClient = new DefaultServiceClient(clientConfig);
 		configure(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
-    }
+	}
 
     public Client(String endpoint, String accessId, String accessKey, ServiceClient serviceClient) {
         this.serviceClient = serviceClient;
@@ -246,15 +266,35 @@ public class Client implements LogService {
 		updateSigner(credentialsProvider);
 	}
 
-	public Client(String endpoint, String accessId, String accessKey, String sourceIp,
-	              ClientConfiguration config) {
+	/**
+	 * @param endpoint required not null, the log service server address
+	 * @param provider required not null, interface which provide credentials
+	 * @param config   required not null, client configuration
+	 * @param sourceIp nullable, client ip address
+	 */
+	public Client(String endpoint, CredentialsProvider provider,
+				  ClientConfiguration config,
+				  String sourceIp) {
 		Args.notNull(config, "Config");
 		if (config.isRequestTimeoutEnabled()) {
 			this.serviceClient = new TimeoutServiceClient(config);
 		} else {
 			this.serviceClient = new DefaultServiceClient(config);
 		}
-		configure(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
+		configure(endpoint, credentialsProvider, sourceIp);
+	}
+
+	/**
+	 * @param endpoint  required not null, the log service server address
+	 * @param accessId  required not null, access key id
+	 * @param accessKey required not null, access key secret
+	 * @param config    required not null, client configuration
+	 * @param sourceIp  nullable, client ip address
+	 */
+	@Deprecated
+	public Client(String endpoint, String accessId, String accessKey, String sourceIp,
+				  ClientConfiguration config) {
+		this(endpoint, new StaticCredentialsProvider(new DefaultCredentials(accessId, accessKey)), config, sourceIp);
 	}
 
 	/**
@@ -274,7 +314,7 @@ public class Client implements LogService {
 
 	private void ensureStaticCredentialProvider() {
 		if (!(this.credentialsProvider instanceof StaticCredentialsProvider)) {
-			throw new RuntimeException("can only set or get AccessId/AccessKey/SecretToken on StaticCredentialProvider");
+			throw new RuntimeException("can only set or get AccessId/AccessKey/SecurityToken on StaticCredentialProvider");
 		}
 	}
 
@@ -326,7 +366,7 @@ public class Client implements LogService {
 	public void setSecurityToken(String securityToken) {
 		ensureStaticCredentialProvider();
 		StaticCredentialsProvider scp = (StaticCredentialsProvider) this.credentialsProvider;
-		scp.setSecretToken(securityToken);
+		scp.setSecurityToken(securityToken);
 	}
 
 	public void shutdown() {

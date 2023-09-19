@@ -21,8 +21,8 @@ public class StaticCredentialsProvider implements CredentialsProvider {
         credentials.setAccessKeySecret(accessKeySecret);
     }
 
-    public void setSecretToken(String secretToken) {
-        credentials.setSecurityToken(secretToken);
+    public void setSecurityToken(String securityToken) {
+        credentials.setSecurityToken(securityToken);
     }
 
 }

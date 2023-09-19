@@ -189,7 +189,7 @@ public class SlsV4Signer extends SlsSignerBase implements SlsSigner {
                               String resourceUri, Map<String, String> urlParams,
                               byte[] body, String dateTime) {
         Credentials credentials = credentialsProvider.getCredentials();
-        addHeaderSecretToken(credentials.getSecurityToken(), headers);
+        addHeaderSecurityToken(credentials.getSecurityToken(), headers);
 
         String contentSha256;
         if (body != null && body.length > 0) {
