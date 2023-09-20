@@ -49,7 +49,7 @@ public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
                      Map<String, String> urlParams,
                      byte[] body) {
         Credentials credentials = credentialsProvider.getCredentials();
-        addHeaderSecretToken(credentials.getSecurityToken(), headers);
+        addHeaderSecurityToken(credentials.getSecurityToken(), headers);
 
         String contendMD5;
         if (body != null && body.length > 0) {
