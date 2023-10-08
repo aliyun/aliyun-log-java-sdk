@@ -268,11 +268,11 @@ public class Client implements LogService {
 
 	/**
 	 * @param endpoint required not null, the log service server address
-	 * @param provider required not null, interface which provide credentials
+	 * @param credentialsProvider required not null, interface which provide credentials
 	 * @param config   required not null, client configuration
 	 * @param sourceIp nullable, client ip address
 	 */
-	public Client(String endpoint, CredentialsProvider provider,
+	public Client(String endpoint, CredentialsProvider credentialsProvider,
 				  ClientConfiguration config,
 				  String sourceIp) {
 		Args.notNull(config, "Config");
