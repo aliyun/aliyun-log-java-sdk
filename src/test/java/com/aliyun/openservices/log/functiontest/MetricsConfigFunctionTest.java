@@ -29,6 +29,9 @@ public class MetricsConfigFunctionTest extends FunctionTest {
         + "    \"query_cache_config\" : {\n"
         + "        \"enable\" : true\n"
         + "    },\n"
+        + "    \"pushdown_config\" : {\n"
+        + "        \"enable\" : true\n"
+        + "    },\n"
         + "    \"parallel_config\" : {\n"
         + "        \"enable\" : true,\n"
         + "        \"mode\" : \"static\",\n"
@@ -81,6 +84,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
     public void testMetricsConfigValue() {
         Assert.assertTrue(CONFIG.getQueryCacheConfig().isEnable());
         MetricParallelConfig parallelConfig = CONFIG.getParallelConfig();
+        Assert.assertTrue(CONFIG.getPushdownConfig().isEnable());
         Assert.assertTrue(parallelConfig.isEnable());
         Assert.assertEquals(parallelConfig.getMode(), "static");
         Assert.assertEquals(parallelConfig.getTimePieceInterval(), 86400);

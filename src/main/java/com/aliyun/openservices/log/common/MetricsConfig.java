@@ -18,6 +18,9 @@ public class MetricsConfig implements Serializable {
     @JSONField(name = "downsampling_config")
     private MetricDownSamplingConfig downSamplingConfig;
 
+    @JSONField(name = "pushdown_config")
+    private MetricPushdownConfig pushdownConfig;
+
     public MetricsConfig(MetricDownSamplingConfig downSamplingConfig) {
         this.downSamplingConfig = downSamplingConfig;
     }
@@ -30,16 +33,33 @@ public class MetricsConfig implements Serializable {
         this.queryCacheConfig = queryCacheConfig;
     }
 
+    public MetricsConfig(MetricPushdownConfig pushdownConfig) {
+        this.pushdownConfig = pushdownConfig;
+    }
+
     public MetricsConfig(MetricParallelConfig parallelConfig, MetricQueryCacheConfig queryCacheConfig) {
         this.parallelConfig = parallelConfig;
         this.queryCacheConfig = queryCacheConfig;
     }
 
     public MetricsConfig(MetricQueryCacheConfig queryCacheConfig, MetricParallelConfig parallelConfig,
-        MetricDownSamplingConfig downSamplingConfig) {
+                         MetricDownSamplingConfig downSamplingConfig) {
         this.queryCacheConfig = queryCacheConfig;
         this.parallelConfig = parallelConfig;
         this.downSamplingConfig = downSamplingConfig;
+    }
+
+    public MetricsConfig(MetricQueryCacheConfig queryCacheConfig, MetricParallelConfig parallelConfig, MetricPushdownConfig pushdownConfig) {
+        this.queryCacheConfig = queryCacheConfig;
+        this.parallelConfig = parallelConfig;
+        this.pushdownConfig = pushdownConfig;
+    }
+
+    public MetricsConfig(MetricQueryCacheConfig queryCacheConfig, MetricParallelConfig parallelConfig, MetricDownSamplingConfig downSamplingConfig, MetricPushdownConfig pushdownConfig) {
+        this.queryCacheConfig = queryCacheConfig;
+        this.parallelConfig = parallelConfig;
+        this.downSamplingConfig = downSamplingConfig;
+        this.pushdownConfig = pushdownConfig;
     }
 
     public MetricQueryCacheConfig getQueryCacheConfig() {
@@ -58,6 +78,14 @@ public class MetricsConfig implements Serializable {
         this.parallelConfig = parallelConfig;
     }
 
+    public MetricPushdownConfig getPushdownConfig() {
+        return pushdownConfig;
+    }
+
+    public void setPushdownConfig(MetricPushdownConfig pushdownConfig) {
+        this.pushdownConfig = pushdownConfig;
+    }
+
     public MetricDownSamplingConfig getDownSamplingConfig() {
         return downSamplingConfig;
     }
@@ -74,20 +102,24 @@ public class MetricsConfig implements Serializable {
         MetricsConfig that = (MetricsConfig)o;
 
         if (queryCacheConfig != null ? !queryCacheConfig.equals(that.queryCacheConfig)
-            : that.queryCacheConfig != null) {
+                : that.queryCacheConfig != null) {
             return false;
         }
         if (parallelConfig != null ? !parallelConfig.equals(that.parallelConfig) : that.parallelConfig != null) {
             return false;
         }
+        if (pushdownConfig != null ? !pushdownConfig.equals(that.pushdownConfig) : that.pushdownConfig != null){
+            return false;
+        }
         return downSamplingConfig != null ? downSamplingConfig.equals(that.downSamplingConfig)
-            : that.downSamplingConfig == null;
+                : that.downSamplingConfig == null;
     }
 
     @Override
     public int hashCode() {
         int result = queryCacheConfig != null ? queryCacheConfig.hashCode() : 0;
         result = 31 * result + (parallelConfig != null ? parallelConfig.hashCode() : 0);
+        result = 31 * result + (pushdownConfig != null ? pushdownConfig.hashCode() : 0);
         result = 31 * result + (downSamplingConfig != null ? downSamplingConfig.hashCode() : 0);
         return result;
     }
