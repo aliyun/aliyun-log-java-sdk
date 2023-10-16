@@ -373,6 +373,10 @@ public class Client implements LogService {
 		serviceClient.shutdown();
 	}
 
+	public ClientConfiguration getClientConfiguration() {
+		return serviceClient.getClientConfiguration();
+	}
+
 	URI GetHostURI(String project) {
 		String endPointUrl = this.httpType + this.hostName;
 		if (project != null && !project.isEmpty()) {
@@ -2119,8 +2123,11 @@ public class Client implements LogService {
 			headParameter.put(Consts.CONST_X_SLS_IP, realIpForConsole);
 		}
 		if (useSSLForConsole != null) {
-			headParameter.put(Consts.CONST_X_SLS_SSL, useSSLForConsole ? "true"
-					: "false");
+			headParameter.put(Consts.CONST_X_SLS_SSL, useSSLForConsole ? "true" : "false");
+		}
+		ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
+		if (clientConfiguration != null) {
+			headParameter.putAll(clientConfiguration.getDefaultHeaders());
 		}
 		return headParameter;
 	}
@@ -6368,5 +6375,46 @@ public class Client implements LogService {
 		ListMetricsConfigResponse listMetricsConfigResponse = new ListMetricsConfigResponse(resHeaders);
 		listMetricsConfigResponse.fromJSON(object);
 		return listMetricsConfigResponse;
+	}
+	@Override
+	public CreateShipperMigrationResponse createShipperMigration(CreateShipperMigrationRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		CodingUtils.assertParameterNotNull(request.getMigration(), "migration");
+		request.getMigration().checkForCreate();
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		byte[] body = encodeToUtf8(request.getMigration().ToCreateJsonString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String migrationUri = Consts.CONST_MIGRATION_URI;
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.POST,
+				migrationUri, request.GetAllParams(), headParameter, body);
+		return new CreateShipperMigrationResponse(response.getHeaders());
+	}
+	@Override
+	public GetShipperMigrationResponse getShipperMigration(GetShipperMigrationRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		CodingUtils.assertStringNotNullOrEmpty(request.getName(), "name");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		String resourceUri = String.format(Consts.CONST_MIGRATION_NAME_URI, request.getName());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, request.GetAllParams(), headParameter);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = parseResponseBody(response, requestId);
+		ShipperMigration migration = ShipperMigration.extractGetMigration(object, requestId);
+		return new GetShipperMigrationResponse(response.getHeaders(), migration);
+	}
+	@Override
+	public ListShipperMigrationResponse listShipperMigration(ListShipperMigrationRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		String resourceUri = Consts.CONST_MIGRATION_URI;
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		Map<String, String> urlParameter = request.GetAllParams();
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = parseResponseBody(response, requestId);
+		int total = object.getIntValue(Consts.CONST_TOTAL);
+		int count = object.getIntValue(Consts.CONST_COUNT);
+		List<ShipperMigration> migrations = ShipperMigration.extractMigrations(object, requestId);
+		return new ListShipperMigrationResponse(response.getHeaders(), count, total, migrations);
 	}
 }

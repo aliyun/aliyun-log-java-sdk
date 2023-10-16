@@ -412,6 +412,9 @@ public class Consts {
     public static final String RESOURCE_CREATE_TIME = "createTime";
     public static final String RESOURCE_LAST_MODIFY_TIME = "lastModifyTime";
 
+    public static final String CONST_MIGRATION_URI = "/shippermigrations";
+    public static final String CONST_MIGRATION_NAME_URI = CONST_MIGRATION_URI + "/%s";
+
     public static final String CONST_RESOURCE_RECORD_URI = CONST_RESOURCE_NAME_URI + "/records";
     public static final String CONST_RESOURCE_RECORD_ID_URI = CONST_RESOURCE_RECORD_URI + "/%s";
     public static final String RESOURCE_RECORD_ID = "id";
