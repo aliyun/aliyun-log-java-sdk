@@ -37,6 +37,9 @@ public class MetricsConfigFunctionTest extends FunctionTest {
         + "        \"parallel_count_per_host\" : 2,\n"
         + "        \"total_parallel_count\" : 64\n"
         + "    },\n"
+        + "    \"pushdown_config\" : {\n"
+        + "        \"enable\" : true\n"
+        + "    },\n"
         + "    \"downsampling_config\": {\n"
         + "        \"base\": {\n"
         + "            \"create_time\": 12345678901,\n"
@@ -81,6 +84,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
     public void testMetricsConfigValue() {
         Assert.assertTrue(CONFIG.getQueryCacheConfig().isEnable());
         MetricParallelConfig parallelConfig = CONFIG.getParallelConfig();
+        Assert.assertTrue(CONFIG.getPushdownConfig().isEnable());
         Assert.assertTrue(parallelConfig.isEnable());
         Assert.assertEquals(parallelConfig.getMode(), "static");
         Assert.assertEquals(parallelConfig.getTimePieceInterval(), 86400);

@@ -35,6 +35,8 @@ import static com.aliyun.openservices.log.common.Consts.CONST_LOGSTORE_REPLICATI
  * Client class is the main class in the sdk, it implements the interfaces
  * defined in LogService. It can be used to send request to the log service
  * server to put/get data.
+ * <p></p>
+ * It is highly recommended to use {@link ClientBuilder} to build {@link Client} instance.
  */
 public class Client implements LogService {
 	private static final String DEFAULT_USER_AGENT = VersionInfoUtils.getDefaultUserAgent();
@@ -170,11 +172,8 @@ public class Client implements LogService {
 	}
 
 	public Client(String endpoint, Credentials credentials, String sourceIp) {
-		ClientConfiguration clientConfig = new ClientConfiguration();
-		clientConfig.setMaxConnections(Consts.HTTP_CONNECT_MAX_COUNT);
-		clientConfig.setConnectionTimeout(Consts.HTTP_CONNECT_TIME_OUT);
-		clientConfig.setSocketTimeout(Consts.HTTP_SEND_TIME_OUT);
-		this.serviceClient = new DefaultServiceClient(clientConfig);
+		ClientConfiguration clientConfig = getDefaultClientConfiguration();
+		this.serviceClient = buildServiceClient(clientConfig);
 		configure(endpoint, credentials, sourceIp);
 	}
 
@@ -182,7 +181,7 @@ public class Client implements LogService {
 		this(endpoint, credentialsProvider, "");
 	}
 
-	private static ClientConfiguration getDefaultClientConfiguration() {
+	static ClientConfiguration getDefaultClientConfiguration() {
 		ClientConfiguration clientConfig = new ClientConfiguration();
 		clientConfig.setMaxConnections(Consts.HTTP_CONNECT_MAX_COUNT);
 		clientConfig.setConnectionTimeout(Consts.HTTP_CONNECT_TIME_OUT);
@@ -190,6 +189,12 @@ public class Client implements LogService {
 		return clientConfig;
 	}
 
+	static ServiceClient buildServiceClient(ClientConfiguration clientConfig) {
+		if (clientConfig.isRequestTimeoutEnabled()) {
+			return new TimeoutServiceClient(clientConfig);
+		}
+		return new DefaultServiceClient(clientConfig);
+	}
 	/**
 	 * @param endpoint            required not null, the log service server address
 	 * @param credentialsProvider required not null, interface which provide credentials
@@ -221,7 +226,7 @@ public class Client implements LogService {
 		clientConfig.setMaxConnections(connectMaxCount);
 		clientConfig.setConnectionTimeout(connectTimeout);
 		clientConfig.setSocketTimeout(sendTimeout);
-		this.serviceClient = new DefaultServiceClient(clientConfig);
+		this.serviceClient = buildServiceClient(clientConfig);
 		configure(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
 	}
 
@@ -276,11 +281,7 @@ public class Client implements LogService {
 				  ClientConfiguration config,
 				  String sourceIp) {
 		Args.notNull(config, "Config");
-		if (config.isRequestTimeoutEnabled()) {
-			this.serviceClient = new TimeoutServiceClient(config);
-		} else {
-			this.serviceClient = new DefaultServiceClient(config);
-		}
+		this.serviceClient = buildServiceClient(config);
 		configure(endpoint, credentialsProvider, sourceIp);
 	}
 
