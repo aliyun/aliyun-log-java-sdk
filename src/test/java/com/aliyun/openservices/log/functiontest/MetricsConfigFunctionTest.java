@@ -5,11 +5,8 @@ import java.util.List;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
-import com.aliyun.openservices.log.common.LogStore;
-import com.aliyun.openservices.log.common.MetricDownSamplingConfig;
+import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.MetricDownSamplingConfig.MetricDownSamplingStatus;
-import com.aliyun.openservices.log.common.MetricParallelConfig;
-import com.aliyun.openservices.log.common.MetricsConfig;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.*;
 import com.aliyun.openservices.log.response.GetMetricsConfigResponse;
@@ -39,6 +36,10 @@ public class MetricsConfigFunctionTest extends FunctionTest {
         + "    },\n"
         + "    \"pushdown_config\" : {\n"
         + "        \"enable\" : true\n"
+        + "    },\n"
+        + "    \"remote_write_config\" : {\n"
+        + "        \"history_interval\" : 500,\n"
+        + "        \"future_interval\" : 600\n"
         + "    },\n"
         + "    \"downsampling_config\": {\n"
         + "        \"base\": {\n"
@@ -91,6 +92,9 @@ public class MetricsConfigFunctionTest extends FunctionTest {
         Assert.assertEquals(parallelConfig.getTimePieceCount(), 8);
         Assert.assertEquals(parallelConfig.getParallelCountPerHost(), 2);
         Assert.assertEquals(parallelConfig.getTotalParallelCount(), 64);
+        MetricRemoteWriteConfig remoteWriteConfig = CONFIG.getRemoteWriteConfig();
+        Assert.assertEquals(remoteWriteConfig.getHistoryInterval(), 500);
+        Assert.assertEquals(remoteWriteConfig.getFutureInterval(), 600);
         MetricDownSamplingConfig downSamplingConfig = CONFIG.getDownSamplingConfig();
         MetricDownSamplingStatus base = downSamplingConfig.getBase();
         List<MetricDownSamplingStatus> downsampling = downSamplingConfig.getDownsampling();
