@@ -72,6 +72,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
     static String PARAMETERINVALID = "ParameterInvalid";
     static String METRICSCONFIGNOTEXIST = "MetricsConfigNotExist";
     static String METRICSCONFIGALREADYEXIST = "MetricsConfigAlreadyExist";
+    static String NOTSUPPORTED = "NotSupported";
 
     @Before
     public void setUp() throws LogException {
@@ -124,7 +125,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
             client.createMetricsConfig(new CreateMetricsConfigRequest(PROJECTEXIST, LOGSTOREEXIST, CONFIG));
             Assert.fail("should fail");
         } catch (LogException e) {
-            Assert.assertEquals(PARAMETERINVALID, e.GetErrorCode());
+            Assert.assertEquals(NOTSUPPORTED, e.GetErrorCode());
         }
         try {
             client.createMetricsConfig(new CreateMetricsConfigRequest(PROJECTEXIST, METRICSNOTEXIST, CONFIG));
@@ -169,7 +170,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
             client.updateMetricsConfig(new UpdateMetricsConfigRequest(PROJECTEXIST, LOGSTOREEXIST, CONFIG));
             Assert.fail("should fail");
         } catch (LogException e) {
-            Assert.assertEquals(PARAMETERINVALID, e.GetErrorCode());
+            Assert.assertEquals(NOTSUPPORTED, e.GetErrorCode());
         }
         try {
             client.updateMetricsConfig(new UpdateMetricsConfigRequest(PROJECTEXIST, METRICSNOTEXIST, CONFIG));
@@ -219,7 +220,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
             client.deleteMetricsConfig(new DeleteMetricsConfigRequest(PROJECTEXIST, LOGSTOREEXIST));
             Assert.fail("should fail");
         } catch (LogException e) {
-            Assert.assertEquals(PARAMETERINVALID, e.GetErrorCode());
+            Assert.assertEquals(NOTSUPPORTED, e.GetErrorCode());
         }
         try {
             client.deleteMetricsConfig(new DeleteMetricsConfigRequest(PROJECTEXIST, METRICSNOTEXIST));
@@ -247,7 +248,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
             client.getMetricsConfig(new GetMetricsConfigRequest(PROJECTEXIST, LOGSTOREEXIST));
             Assert.fail("should fail");
         } catch (LogException e) {
-            Assert.assertEquals(PARAMETERINVALID, e.GetErrorCode());
+            Assert.assertEquals(NOTSUPPORTED, e.GetErrorCode());
         }
         try {
             client.getMetricsConfig(new GetMetricsConfigRequest(PROJECTEXIST, METRICSNOTEXIST));
