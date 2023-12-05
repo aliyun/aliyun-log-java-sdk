@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.MetricDownSamplingConfig;
+import com.aliyun.openservices.log.common.MetricRemoteWriteConfig;
 import com.aliyun.openservices.log.common.MetricDownSamplingConfig.MetricDownSamplingStatus;
 import com.aliyun.openservices.log.common.MetricParallelConfig;
 import com.aliyun.openservices.log.common.MetricsConfig;
@@ -40,6 +41,13 @@ public class MetricsConfigFunctionTest extends FunctionTest {
         + "    \"pushdown_config\" : {\n"
         + "        \"enable\" : true\n"
         + "    },\n"
+        + "    \"remote_write_config\" : {\n"
+        + "        \"enable\" : true,\n"
+        + "        \"history_interval\" : 500,\n"
+        + "        \"future_interval\" : 600,\n"
+        + "        \"replica_field\" : \"xzz_test\",\n"
+        + "        \"replica_timeout_seconds\" : 30\n"
+        + "    },\n"
         + "    \"downsampling_config\": {\n"
         + "        \"base\": {\n"
         + "            \"create_time\": 12345678901,\n"
@@ -67,6 +75,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
     static String PARAMETERINVALID = "ParameterInvalid";
     static String METRICSCONFIGNOTEXIST = "MetricsConfigNotExist";
     static String METRICSCONFIGALREADYEXIST = "MetricsConfigAlreadyExist";
+    static String NOTSUPPORTED = "NotSupported";
 
     @Before
     public void setUp() throws LogException {
@@ -91,6 +100,11 @@ public class MetricsConfigFunctionTest extends FunctionTest {
         Assert.assertEquals(parallelConfig.getTimePieceCount(), 8);
         Assert.assertEquals(parallelConfig.getParallelCountPerHost(), 2);
         Assert.assertEquals(parallelConfig.getTotalParallelCount(), 64);
+        MetricRemoteWriteConfig remoteWriteConfig = CONFIG.getRemoteWriteConfig();
+        Assert.assertEquals(remoteWriteConfig.getHistoryInterval(), 500);
+        Assert.assertEquals(remoteWriteConfig.getFutureInterval(), 600);
+        Assert.assertEquals(remoteWriteConfig.getReplicaField(), "xzz_test");
+        Assert.assertEquals(remoteWriteConfig.getReplicaTimeoutSeconds(), 30);
         MetricDownSamplingConfig downSamplingConfig = CONFIG.getDownSamplingConfig();
         MetricDownSamplingStatus base = downSamplingConfig.getBase();
         List<MetricDownSamplingStatus> downsampling = downSamplingConfig.getDownsampling();
@@ -116,7 +130,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
             client.createMetricsConfig(new CreateMetricsConfigRequest(PROJECTEXIST, LOGSTOREEXIST, CONFIG));
             Assert.fail("should fail");
         } catch (LogException e) {
-            Assert.assertEquals(PARAMETERINVALID, e.GetErrorCode());
+            Assert.assertEquals(NOTSUPPORTED, e.GetErrorCode());
         }
         try {
             client.createMetricsConfig(new CreateMetricsConfigRequest(PROJECTEXIST, METRICSNOTEXIST, CONFIG));
@@ -161,7 +175,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
             client.updateMetricsConfig(new UpdateMetricsConfigRequest(PROJECTEXIST, LOGSTOREEXIST, CONFIG));
             Assert.fail("should fail");
         } catch (LogException e) {
-            Assert.assertEquals(PARAMETERINVALID, e.GetErrorCode());
+            Assert.assertEquals(NOTSUPPORTED, e.GetErrorCode());
         }
         try {
             client.updateMetricsConfig(new UpdateMetricsConfigRequest(PROJECTEXIST, METRICSNOTEXIST, CONFIG));
@@ -211,7 +225,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
             client.deleteMetricsConfig(new DeleteMetricsConfigRequest(PROJECTEXIST, LOGSTOREEXIST));
             Assert.fail("should fail");
         } catch (LogException e) {
-            Assert.assertEquals(PARAMETERINVALID, e.GetErrorCode());
+            Assert.assertEquals(NOTSUPPORTED, e.GetErrorCode());
         }
         try {
             client.deleteMetricsConfig(new DeleteMetricsConfigRequest(PROJECTEXIST, METRICSNOTEXIST));
@@ -239,7 +253,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
             client.getMetricsConfig(new GetMetricsConfigRequest(PROJECTEXIST, LOGSTOREEXIST));
             Assert.fail("should fail");
         } catch (LogException e) {
-            Assert.assertEquals(PARAMETERINVALID, e.GetErrorCode());
+            Assert.assertEquals(NOTSUPPORTED, e.GetErrorCode());
         }
         try {
             client.getMetricsConfig(new GetMetricsConfigRequest(PROJECTEXIST, METRICSNOTEXIST));
