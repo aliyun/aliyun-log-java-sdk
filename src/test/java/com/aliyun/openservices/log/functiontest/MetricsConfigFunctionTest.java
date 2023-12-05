@@ -42,8 +42,11 @@ public class MetricsConfigFunctionTest extends FunctionTest {
         + "        \"enable\" : true\n"
         + "    },\n"
         + "    \"remote_write_config\" : {\n"
+        + "        \"enable\" : true,\n"
         + "        \"history_interval\" : 500,\n"
-        + "        \"future_interval\" : 600\n"
+        + "        \"future_interval\" : 600,\n"
+        + "        \"replica_field\" : \"xzz_test\",\n"
+        + "        \"replica_timeout_seconds\" : 30\n"
         + "    },\n"
         + "    \"downsampling_config\": {\n"
         + "        \"base\": {\n"
@@ -100,6 +103,8 @@ public class MetricsConfigFunctionTest extends FunctionTest {
         MetricRemoteWriteConfig remoteWriteConfig = CONFIG.getRemoteWriteConfig();
         Assert.assertEquals(remoteWriteConfig.getHistoryInterval(), 500);
         Assert.assertEquals(remoteWriteConfig.getFutureInterval(), 600);
+        Assert.assertEquals(remoteWriteConfig.getReplicaField(), "xzz_test");
+        Assert.assertEquals(remoteWriteConfig.getReplicaTimeoutSeconds(), 30);
         MetricDownSamplingConfig downSamplingConfig = CONFIG.getDownSamplingConfig();
         MetricDownSamplingStatus base = downSamplingConfig.getBase();
         List<MetricDownSamplingStatus> downsampling = downSamplingConfig.getDownsampling();
