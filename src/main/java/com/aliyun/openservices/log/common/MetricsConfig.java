@@ -1,8 +1,8 @@
 package com.aliyun.openservices.log.common;
 
-import java.io.Serializable;
-
 import com.alibaba.fastjson.annotation.JSONField;
+
+import java.io.Serializable;
 
 /**
  * @author xizongzheng.xzz
@@ -21,6 +21,9 @@ public class MetricsConfig implements Serializable {
     @JSONField(name = "pushdown_config")
     private MetricPushdownConfig pushdownConfig;
 
+    @JSONField(name = "remote_write_config")
+    private MetricRemoteWriteConfig remoteWriteConfig;
+
     public MetricsConfig(MetricDownSamplingConfig downSamplingConfig) {
         this.downSamplingConfig = downSamplingConfig;
     }
@@ -35,6 +38,10 @@ public class MetricsConfig implements Serializable {
 
     public MetricsConfig(MetricPushdownConfig pushdownConfig) {
         this.pushdownConfig = pushdownConfig;
+    }
+
+    public MetricsConfig(MetricRemoteWriteConfig remoteWriteConfig) {
+        this.remoteWriteConfig = remoteWriteConfig;
     }
 
     public MetricsConfig(MetricParallelConfig parallelConfig, MetricQueryCacheConfig queryCacheConfig) {
@@ -60,6 +67,15 @@ public class MetricsConfig implements Serializable {
         this.parallelConfig = parallelConfig;
         this.downSamplingConfig = downSamplingConfig;
         this.pushdownConfig = pushdownConfig;
+
+    }
+
+    public MetricsConfig(MetricQueryCacheConfig queryCacheConfig, MetricParallelConfig parallelConfig, MetricDownSamplingConfig downSamplingConfig, MetricPushdownConfig pushdownConfig, MetricRemoteWriteConfig remoteWriteConfig) {
+        this.queryCacheConfig = queryCacheConfig;
+        this.parallelConfig = parallelConfig;
+        this.downSamplingConfig = downSamplingConfig;
+        this.pushdownConfig = pushdownConfig;
+        this.remoteWriteConfig = remoteWriteConfig;
     }
 
     public MetricQueryCacheConfig getQueryCacheConfig() {
@@ -84,6 +100,15 @@ public class MetricsConfig implements Serializable {
 
     public void setPushdownConfig(MetricPushdownConfig pushdownConfig) {
         this.pushdownConfig = pushdownConfig;
+    }
+
+
+    public MetricRemoteWriteConfig getRemoteWriteConfig() {
+        return remoteWriteConfig;
+    }
+
+    public void setRemoteWriteConfig(MetricRemoteWriteConfig remoteWriteConfig) {
+        this.remoteWriteConfig = remoteWriteConfig;
     }
 
     public MetricDownSamplingConfig getDownSamplingConfig() {
@@ -111,6 +136,9 @@ public class MetricsConfig implements Serializable {
         if (pushdownConfig != null ? !pushdownConfig.equals(that.pushdownConfig) : that.pushdownConfig != null){
             return false;
         }
+        if (remoteWriteConfig != null ? !remoteWriteConfig.equals(that.remoteWriteConfig) : that.remoteWriteConfig != null){
+            return false;
+        }
         return downSamplingConfig != null ? downSamplingConfig.equals(that.downSamplingConfig)
                 : that.downSamplingConfig == null;
     }
@@ -120,6 +148,7 @@ public class MetricsConfig implements Serializable {
         int result = queryCacheConfig != null ? queryCacheConfig.hashCode() : 0;
         result = 31 * result + (parallelConfig != null ? parallelConfig.hashCode() : 0);
         result = 31 * result + (pushdownConfig != null ? pushdownConfig.hashCode() : 0);
+        result = 31 * result + (remoteWriteConfig != null ? remoteWriteConfig.hashCode() : 0);
         result = 31 * result + (downSamplingConfig != null ? downSamplingConfig.hashCode() : 0);
         return result;
     }

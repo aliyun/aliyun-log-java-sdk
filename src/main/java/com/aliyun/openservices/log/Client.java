@@ -35,6 +35,8 @@ import static com.aliyun.openservices.log.common.Consts.CONST_LOGSTORE_REPLICATI
  * Client class is the main class in the sdk, it implements the interfaces
  * defined in LogService. It can be used to send request to the log service
  * server to put/get data.
+ * <p></p>
+ * It is highly recommended to use {@link ClientBuilder} to build {@link Client} instance.
  */
 public class Client implements LogService {
 	private static final String DEFAULT_USER_AGENT = VersionInfoUtils.getDefaultUserAgent();
@@ -170,11 +172,8 @@ public class Client implements LogService {
 	}
 
 	public Client(String endpoint, Credentials credentials, String sourceIp) {
-		ClientConfiguration clientConfig = new ClientConfiguration();
-		clientConfig.setMaxConnections(Consts.HTTP_CONNECT_MAX_COUNT);
-		clientConfig.setConnectionTimeout(Consts.HTTP_CONNECT_TIME_OUT);
-		clientConfig.setSocketTimeout(Consts.HTTP_SEND_TIME_OUT);
-		this.serviceClient = new DefaultServiceClient(clientConfig);
+		ClientConfiguration clientConfig = getDefaultClientConfiguration();
+		this.serviceClient = buildServiceClient(clientConfig);
 		configure(endpoint, credentials, sourceIp);
 	}
 
@@ -182,7 +181,7 @@ public class Client implements LogService {
 		this(endpoint, credentialsProvider, "");
 	}
 
-	private static ClientConfiguration getDefaultClientConfiguration() {
+	static ClientConfiguration getDefaultClientConfiguration() {
 		ClientConfiguration clientConfig = new ClientConfiguration();
 		clientConfig.setMaxConnections(Consts.HTTP_CONNECT_MAX_COUNT);
 		clientConfig.setConnectionTimeout(Consts.HTTP_CONNECT_TIME_OUT);
@@ -190,6 +189,12 @@ public class Client implements LogService {
 		return clientConfig;
 	}
 
+	static ServiceClient buildServiceClient(ClientConfiguration clientConfig) {
+		if (clientConfig.isRequestTimeoutEnabled()) {
+			return new TimeoutServiceClient(clientConfig);
+		}
+		return new DefaultServiceClient(clientConfig);
+	}
 	/**
 	 * @param endpoint            required not null, the log service server address
 	 * @param credentialsProvider required not null, interface which provide credentials
@@ -221,7 +226,7 @@ public class Client implements LogService {
 		clientConfig.setMaxConnections(connectMaxCount);
 		clientConfig.setConnectionTimeout(connectTimeout);
 		clientConfig.setSocketTimeout(sendTimeout);
-		this.serviceClient = new DefaultServiceClient(clientConfig);
+		this.serviceClient = buildServiceClient(clientConfig);
 		configure(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
 	}
 
@@ -276,11 +281,7 @@ public class Client implements LogService {
 				  ClientConfiguration config,
 				  String sourceIp) {
 		Args.notNull(config, "Config");
-		if (config.isRequestTimeoutEnabled()) {
-			this.serviceClient = new TimeoutServiceClient(config);
-		} else {
-			this.serviceClient = new DefaultServiceClient(config);
-		}
+		this.serviceClient = buildServiceClient(config);
 		configure(endpoint, credentialsProvider, sourceIp);
 	}
 
@@ -371,6 +372,10 @@ public class Client implements LogService {
 
 	public void shutdown() {
 		serviceClient.shutdown();
+	}
+
+	public ClientConfiguration getClientConfiguration() {
+		return serviceClient.getClientConfiguration();
 	}
 
 	URI GetHostURI(String project) {
@@ -2119,8 +2124,11 @@ public class Client implements LogService {
 			headParameter.put(Consts.CONST_X_SLS_IP, realIpForConsole);
 		}
 		if (useSSLForConsole != null) {
-			headParameter.put(Consts.CONST_X_SLS_SSL, useSSLForConsole ? "true"
-					: "false");
+			headParameter.put(Consts.CONST_X_SLS_SSL, useSSLForConsole ? "true" : "false");
+		}
+		ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
+		if (clientConfiguration != null) {
+			headParameter.putAll(clientConfiguration.getDefaultHeaders());
 		}
 		return headParameter;
 	}
@@ -6368,5 +6376,46 @@ public class Client implements LogService {
 		ListMetricsConfigResponse listMetricsConfigResponse = new ListMetricsConfigResponse(resHeaders);
 		listMetricsConfigResponse.fromJSON(object);
 		return listMetricsConfigResponse;
+	}
+	@Override
+	public CreateShipperMigrationResponse createShipperMigration(CreateShipperMigrationRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		CodingUtils.assertParameterNotNull(request.getMigration(), "migration");
+		request.getMigration().checkForCreate();
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		byte[] body = encodeToUtf8(request.getMigration().ToCreateJsonString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String migrationUri = Consts.CONST_MIGRATION_URI;
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.POST,
+				migrationUri, request.GetAllParams(), headParameter, body);
+		return new CreateShipperMigrationResponse(response.getHeaders());
+	}
+	@Override
+	public GetShipperMigrationResponse getShipperMigration(GetShipperMigrationRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		CodingUtils.assertStringNotNullOrEmpty(request.getName(), "name");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		String resourceUri = String.format(Consts.CONST_MIGRATION_NAME_URI, request.getName());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, request.GetAllParams(), headParameter);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = parseResponseBody(response, requestId);
+		ShipperMigration migration = ShipperMigration.extractGetMigration(object, requestId);
+		return new GetShipperMigrationResponse(response.getHeaders(), migration);
+	}
+	@Override
+	public ListShipperMigrationResponse listShipperMigration(ListShipperMigrationRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		String resourceUri = Consts.CONST_MIGRATION_URI;
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		Map<String, String> urlParameter = request.GetAllParams();
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = parseResponseBody(response, requestId);
+		int total = object.getIntValue(Consts.CONST_TOTAL);
+		int count = object.getIntValue(Consts.CONST_COUNT);
+		List<ShipperMigration> migrations = ShipperMigration.extractMigrations(object, requestId);
+		return new ListShipperMigrationResponse(response.getHeaders(), count, total, migrations);
 	}
 }

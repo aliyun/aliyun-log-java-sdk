@@ -20,6 +20,6 @@ public class ECSRoleCredentialsProvider implements CredentialsProvider {
     }
 
 
-    private TemporaryCredentials credentials;
+    private volatile TemporaryCredentials credentials;
     private final CredentialsFetcher fetcher;
 }

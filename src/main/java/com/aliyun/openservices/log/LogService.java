@@ -3918,4 +3918,8 @@ public interface LogService {
 	DeleteMetricsConfigResponse deleteMetricsConfig(DeleteMetricsConfigRequest request) throws LogException;
 	GetMetricsConfigResponse getMetricsConfig(GetMetricsConfigRequest request) throws LogException;
 	ListMetricsConfigResponse listMetricsConfig(ListMetricsConfigRequest request) throws LogException;
+
+	CreateShipperMigrationResponse createShipperMigration(CreateShipperMigrationRequest request) throws LogException;
+	GetShipperMigrationResponse getShipperMigration(GetShipperMigrationRequest request) throws LogException;
+	ListShipperMigrationResponse listShipperMigration(ListShipperMigrationRequest request) throws LogException;
 }
