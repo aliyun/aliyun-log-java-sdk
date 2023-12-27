@@ -9,6 +9,10 @@ public class CreateProjectRequest extends Request {
     private String resourceGroupId;
     private DataRedundancyType dataRedundancyType;
 
+    public CreateProjectRequest(String project, String description, DataRedundancyType dataRedundancyType) {
+        this(project, description, null, dataRedundancyType);
+    }
+
     public CreateProjectRequest(String project, String description, String resourceGroupId) {
         this(project, description, resourceGroupId, null);
     }
