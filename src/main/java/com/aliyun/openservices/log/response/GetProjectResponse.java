@@ -25,6 +25,8 @@ public class GetProjectResponse extends Response {
 
     private ProjectQuota quota;
 
+    private String transferAcceleration;
+
     public GetProjectResponse(Map<String, String> headers) {
         super(headers);
     }
@@ -38,6 +40,7 @@ public class GetProjectResponse extends Response {
             owner = obj.getString("owner");
             dataRedundancyType = DataRedundancyType.parse(obj.getString("dataRedundancyType"));
             quota = ProjectQuota.parseFromJSON(obj.getJSONObject(Consts.CONST_QUOTA));
+            transferAcceleration = obj.getString("transferAcceleration");
         } catch (JSONException e) {
             throw new LogException("InvalidErrorResponse", e.getMessage(),
                     GetRequestId());
@@ -78,5 +81,13 @@ public class GetProjectResponse extends Response {
 
     public void setQuota(ProjectQuota quota) {
         this.quota = quota;
+    }
+
+    public String getTransferAcceleration() {
+        return transferAcceleration;
+    }
+
+    public void setTransferAcceleration(String transferAcceleration) {
+        this.transferAcceleration = transferAcceleration;
     }
 }

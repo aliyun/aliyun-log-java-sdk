@@ -22,6 +22,7 @@ public class ScheduledSQLConfiguration extends JobConfiguration {
     private Long fromTime = 0L;
     private Long toTime = 0L;
     private String dataFormat = "log2log";
+    private Boolean forceComplete = false;
     private ScheduledSQLParameters parameters;
 
     public String getDataFormat() {
@@ -160,6 +161,12 @@ public class ScheduledSQLConfiguration extends JobConfiguration {
         this.resourcePool = resourcePool;
     }
 
+    public void setForceComplete(Boolean forceComplete) {
+        this.forceComplete = forceComplete;
+    }
+
+    public Boolean getForceComplete() { return forceComplete; }
+
     @Override
     public void deserialize(JSONObject value) {
         sourceLogstore = value.getString("sourceLogstore");
@@ -178,6 +185,8 @@ public class ScheduledSQLConfiguration extends JobConfiguration {
         fromTime = value.getLongValue("fromTime");
         toTime = value.getLongValue("toTime");
         dataFormat = value.getString("dataFormat");
+        forceComplete = value.getBoolean("forceComplete");
+
         if ("log2metric".equals(dataFormat)) {
             parameters = new Log2MetricParameters();
             parameters.deserialize(value.getJSONObject("parameters"));
@@ -245,6 +254,9 @@ public class ScheduledSQLConfiguration extends JobConfiguration {
             return false;
         }
         if (getParameters() != null ? !getParameters().equals(that.getParameters()) : that.getParameters() != null) {
+            return false;
+        }
+        if (getForceComplete() != null ? !getForceComplete().equals(that.getForceComplete()) : that.getForceComplete() != null) {
             return false;
         }
         return getMaxRunTimeInSeconds() != null ? !getMaxRunTimeInSeconds().equals(that.getMaxRunTimeInSeconds()) : that.getMaxRunTimeInSeconds() != null;
