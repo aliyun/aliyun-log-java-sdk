@@ -1,8 +1,8 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 import java.io.Serializable;
+
+import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * @author xizongzheng.xzz
