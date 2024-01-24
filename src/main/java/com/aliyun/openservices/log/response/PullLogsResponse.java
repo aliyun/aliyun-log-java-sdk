@@ -3,7 +3,6 @@ package com.aliyun.openservices.log.response;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.util.LZ4Encoder;
 import com.aliyun.openservices.log.common.LogGroupData;
-import com.aliyun.openservices.log.common.LogGroupMeta;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.VarintUtil;
@@ -18,8 +17,9 @@ public class PullLogsResponse extends Response {
     private List<LogGroupData> logGroups;
     private int rawSize;
     private int count;
+    private long rawDataSize = -1;
+    private int rawDataCount = -1;
     private byte[] rawData;
-    private LogGroupMeta logGroupMeta;
 
     /**
      * Construct the response with http headers
@@ -34,6 +34,12 @@ public class PullLogsResponse extends Response {
         try {
             rawSize = Integer.parseInt(headers.get(Consts.CONST_X_SLS_BODYRAWSIZE));
             count = Integer.parseInt(GetHeader(Consts.CONST_X_SLS_COUNT));
+            if (headers.containsKey(Consts.CONST_X_SLS_RAWDATASIZE)) {
+                rawDataSize = Long.parseLong(headers.get(Consts.CONST_X_SLS_RAWDATASIZE));
+            }
+            if (headers.containsKey(Consts.CONST_X_SLS_RAWDATACOUNT)) {
+                rawDataCount = Integer.parseInt(headers.get(Consts.CONST_X_SLS_RAWDATACOUNT));
+            }
         } catch (NumberFormatException e) {
             throw new LogException("ParseLogGroupListRawSizeError", e.getMessage(), e, GetRequestId());
         }
@@ -44,6 +50,14 @@ public class PullLogsResponse extends Response {
      */
     public int getRawSize() {
         return rawSize;
+    }
+
+    public long getRawDataSize() {
+        return rawDataSize;
+    }
+
+    public int getRawDataCount() {
+        return rawDataCount;
     }
 
     private void parseLogGroupsIfNeeded() throws LogException {
@@ -94,9 +108,6 @@ public class PullLogsResponse extends Response {
                 }
                 if (index == 1) {
                     logGroups.add(new LogGroupData(uncompressedData, value[2], value[1], GetRequestId()));
-                } else if (index == 2) {
-                    logGroupMeta = new LogGroupMeta(uncompressedData, value[2], value[1], count, GetRequestId());
-                    logGroupMeta.parseMeta();
                 }
                 pos = value[1] + value[2];
             } else if (mode == 5) {
@@ -164,8 +175,4 @@ public class PullLogsResponse extends Response {
         return rawData;
     }
 
-    public LogGroupMeta getLogGroupMeta() throws LogException {
-        parseLogGroupsIfNeeded();
-        return logGroupMeta;
-    }
 }

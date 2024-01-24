@@ -63,7 +63,7 @@ public class PullLogsRequest extends Request {
      * @param query     query
      */
     public PullLogsRequest(String project, String logStore, int shardId, int count, String cursor, String endCursor,
-            String query, String pullmode) {
+                           String query, String pullmode) {
         this(project, logStore, shardId, count, cursor, endCursor);
         setQuery(query);
         setPullMode(pullmode);

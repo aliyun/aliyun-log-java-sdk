@@ -889,7 +889,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
 
         public void deserialize(JSONObject value) {
-            setUseDefault(value.getBoolean("useDefault"));
+            setUseDefault(JsonUtils.readBool(value, "useDefault", false));
             setRepeatInterval(JsonUtils.readOptionalString(value, "repeatInterval"));
             setActionPolicyId(JsonUtils.readOptionalString(value, "actionPolicyId"));
             setAlertPolicyId(JsonUtils.readOptionalString(value, "alertPolicyId"));
@@ -949,7 +949,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
 
         public void deserialize(JSONObject value) {
-            setEnabled(JsonUtils.readBool(value,"enabled", false));
+            setEnabled(JsonUtils.readBool(value, "enabled", false));
             setEndpoint(JsonUtils.readOptionalString(value, "endpoint"));
             setProject(JsonUtils.readOptionalString(value, "project"));
             setEventStore(JsonUtils.readOptionalString(value, "eventStore"));
@@ -970,7 +970,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
 
         public void deserialize(JSONObject value) {
-            setEnabled(JsonUtils.readBool(value,"enabled", false));
+            setEnabled(JsonUtils.readBool(value, "enabled", false));
         }
     }
 
@@ -987,7 +987,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
 
         public void deserialize(JSONObject value) {
-            setEnabled(JsonUtils.readBool(value,"enabled", false));
+            setEnabled(JsonUtils.readBool(value, "enabled", false));
         }
     }
 }
