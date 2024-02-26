@@ -184,7 +184,6 @@ public class Consts {
     public static final String CONST_ACTION_MERGE = "merge";
     public static final String CONST_ROUTE_KEY = "key";
     public static final String CONST_PULL_MODE = "pullMode";
-    public static final String CONST_RESPONSE_WITH_META = "responseWithMeta";
 
     // context logs
     public static final String CONST_PACK_META = "pack_meta";

@@ -14,6 +14,7 @@ import com.aliyun.openservices.log.common.auth.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.*;
 import com.aliyun.openservices.log.http.comm.*;
+import com.aliyun.openservices.log.http.signer.SignVersion;
 import com.aliyun.openservices.log.http.signer.SlsSigner;
 import com.aliyun.openservices.log.http.signer.SlsSignerBase;
 import com.aliyun.openservices.log.http.utils.CodingUtils;
@@ -254,6 +255,9 @@ public class Client implements LogService {
 		}
 		if (NetworkUtils.isIPAddr(this.hostName)) {
 			throw new IllegalArgumentException("The ip address is not supported");
+		}
+		if (getClientConfiguration().getRegion() == null) {
+			setSignV4IfInAcdr(endpoint);
 		}
 	}
 
@@ -6417,5 +6421,13 @@ public class Client implements LogService {
 		int count = object.getIntValue(Consts.CONST_COUNT);
 		List<ShipperMigration> migrations = ShipperMigration.extractMigrations(object, requestId);
 		return new ListShipperMigrationResponse(response.getHeaders(), count, total, migrations);
+	}
+
+	private void setSignV4IfInAcdr(String endpoint) {
+		String region = Utils.parseRegion(endpoint);
+		if (region != null && region.contains("-acdr-ut-")) {
+			getClientConfiguration().setSignatureVersion(SignVersion.V4);
+			getClientConfiguration().setRegion(region);
+		}
 	}
 }
