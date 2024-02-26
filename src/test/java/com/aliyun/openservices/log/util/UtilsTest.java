@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import static org.junit.Assert.assertEquals;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class UtilsTest {
@@ -79,5 +80,12 @@ public class UtilsTest {
         System.out.println(ret);
         assertEquals(2, ret.size());
     }
-
+    @Test
+    public void testParseRegion() {
+        Assert.assertEquals("cn-hangzhou", Utils.parseRegion("http://cn-hangzhou-intranet.log.aliyuncs.com"));
+        Assert.assertEquals("cn-hangzhou", Utils.parseRegion("https://cn-hangzhou.log.aliyuncs.com"));
+        Assert.assertEquals("ap-southease-1", Utils.parseRegion("ap-southease-1-intranet.log.aliyuncs.com"));
+        Assert.assertEquals("cn-shanghai-corp", Utils.parseRegion("cn-shanghai-corp.sls.aliyuncs.com"));
+        Assert.assertNull(Utils.parseRegion("sls.aliyuncs.com"));
+    }
 }

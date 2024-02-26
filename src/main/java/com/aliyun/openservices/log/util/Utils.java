@@ -1,9 +1,11 @@
 package com.aliyun.openservices.log.util;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class Utils {
-
+    private static final String ENDPOINT_REGEX_PATTERN = "^(?:http[s]?:\\/\\/)?([a-z-0-9]+)\\.(?:sls|log)\\.aliyuncs\\.com$";
     private Utils() {
     }
 
@@ -123,5 +125,23 @@ public final class Utils {
         }
 
         return nList;
+    }
+
+    /**
+     * @param endpoint sls endpoint
+     * @return returns null if parse failed
+     */
+    public static String parseRegion(String endpoint) {
+        final Matcher matcher = Pattern.compile(ENDPOINT_REGEX_PATTERN).matcher(endpoint);
+        if (!matcher.find()) {
+            return null;
+        }
+        String region = matcher.group(1);
+        for (String suffix : Arrays.asList("-intranet", "-share", "-vpc")) {
+            if (region.endsWith(suffix)) {
+                return region.substring(0, region.length() - suffix.length());
+            }
+        }
+        return region;
     }
 }

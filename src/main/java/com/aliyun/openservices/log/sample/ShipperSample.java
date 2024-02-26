@@ -13,7 +13,7 @@ public class ShipperSample {
 
     private static final String accessKeyId = "";
     private static final String accessKeySecret = "";
-    private static final String host = "cn-shanghai-staging-share.sls.aliyuncs.com";
+    private static final String host = "cn-shanghai-staging.sls.aliyuncs.com";
     private static final String project = "project-for-test-1";
     private static final String logStore = "access_log";
     private static final Client client = new Client(host, accessKeyId, accessKeySecret);
