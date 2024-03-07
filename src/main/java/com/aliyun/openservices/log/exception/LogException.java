@@ -159,10 +159,10 @@ public class LogException extends Exception {
     }
 
     public JSONObject getAccessDeniedDetail() {
-        if (errorDetail == null || !errorDetail.containsKey(Consts.CONST_ACCESSDENIEDDETAIL)) {
+        if (errorDetail == null) {
             return null;
         }
-        return (JSONObject) errorDetail.get(Consts.CONST_ACCESSDENIEDDETAIL);
+        return (JSONObject) errorDetail.getOrDefault(Consts.CONST_ACCESSDENIEDDETAIL, null);
     }
 
     @Override
