@@ -3,11 +3,6 @@
  */
 package com.aliyun.openservices.log.exception;
 
-import com.alibaba.fastjson.JSONObject;
-import com.aliyun.openservices.log.common.Consts;
-
-import java.util.Map;
-
 /**
  * The exception is thrown if error happen.
  *
@@ -23,7 +18,7 @@ public class LogException extends Exception {
 
     private String requestId;
 
-    private Map<String, Object> errorDetail;
+    private String responseBody;
 
     /**
      * Construct LogException
@@ -71,12 +66,12 @@ public class LogException extends Exception {
         this.requestId = requestId;
     }
 
-    public LogException(int httpCode, String code, String message, String requestId, Map<String, Object> errorDetail) {
+    public LogException(int httpCode, String code, String message, String requestId, String responseBody) {
         super(message);
         this.httpCode = httpCode;
         this.errorCode = code;
         this.requestId = requestId;
-        this.errorDetail = errorDetail;
+        this.responseBody = responseBody;
     }
     /**
      * Get the error code
@@ -150,19 +145,12 @@ public class LogException extends Exception {
         this.requestId = requestId;
     }
 
-    public Map<String, Object> getErrorDetail() {
-        return errorDetail;
+    public String getResponseBody() {
+        return responseBody;
     }
 
-    public void setErrorDetail(Map<String, Object> errorDetail) {
-        this.errorDetail = errorDetail;
-    }
-
-    public JSONObject getAccessDeniedDetail() {
-        if (errorDetail == null) {
-            return null;
-        }
-        return (JSONObject) errorDetail.getOrDefault(Consts.CONST_ACCESSDENIEDDETAIL, null);
+    public void setResponseBody(String responseBody) {
+        this.responseBody = responseBody;
     }
 
     @Override
