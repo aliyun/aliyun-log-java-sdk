@@ -3,9 +3,9 @@
  */
 package com.aliyun.openservices.log.exception;
 
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -23,7 +23,7 @@ public class LogException extends Exception {
 
     private String requestId;
 
-    private Map<String, String> errorDetail;
+    private Map<String, Object> errorDetail;
 
     /**
      * Construct LogException
@@ -71,7 +71,7 @@ public class LogException extends Exception {
         this.requestId = requestId;
     }
 
-    public LogException(int httpCode, String code, String message, String requestId, Map<String, String> errorDetail) {
+    public LogException(int httpCode, String code, String message, String requestId, Map<String, Object> errorDetail) {
         super(message);
         this.httpCode = httpCode;
         this.errorCode = code;
@@ -150,16 +150,19 @@ public class LogException extends Exception {
         this.requestId = requestId;
     }
 
-    public Map<String, String> getErrorDetail() {
+    public Map<String, Object> getErrorDetail() {
         return errorDetail;
     }
 
-    public void setErrorDetail(Map<String, String> errorDetail) {
+    public void setErrorDetail(Map<String, Object> errorDetail) {
         this.errorDetail = errorDetail;
     }
 
-    public String getAccessDeniedDetail() {
-        return errorDetail.getOrDefault(Consts.CONST_ACCESSDENIEDDETAIL, "");
+    public JSONObject getAccessDeniedDetail() {
+        if (errorDetail == null || !errorDetail.containsKey(Consts.CONST_ACCESSDENIEDDETAIL)) {
+            return null;
+        }
+        return (JSONObject) errorDetail.get(Consts.CONST_ACCESSDENIEDDETAIL);
     }
 
     @Override

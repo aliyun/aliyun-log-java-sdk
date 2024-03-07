@@ -2056,7 +2056,7 @@ public class Client implements LogService {
 			try {
 				String errorCode = object.getString(Consts.CONST_ERROR_CODE);
 				String errorMessage = object.getString(Consts.CONST_ERROR_MESSAGE);
-				String accessDeniedDetail = (String) object.getOrDefault(Consts.CONST_ACCESSDENIEDDETAIL, "");
+				JSONObject accessDeniedDetail = object.getJSONObject(Consts.CONST_ACCESSDENIEDDETAIL);
 				throw new LogException(httpCode, errorCode, errorMessage, requestId, Collections.singletonMap(Consts.CONST_ACCESSDENIEDDETAIL, accessDeniedDetail));
 			} catch (JSONException e) {
 				throw new LogException(httpCode, "InvalidErrorResponse",
