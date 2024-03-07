@@ -3,6 +3,11 @@
  */
 package com.aliyun.openservices.log.exception;
 
+import com.aliyun.openservices.log.common.Consts;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The exception is thrown if error happen.
  *
@@ -17,6 +22,8 @@ public class LogException extends Exception {
     private String errorCode;
 
     private String requestId;
+
+    private Map<String, String> errorDetail;
 
     /**
      * Construct LogException
@@ -64,6 +71,13 @@ public class LogException extends Exception {
         this.requestId = requestId;
     }
 
+    public LogException(int httpCode, String code, String message, String requestId, Map<String, String> errorDetail) {
+        super(message);
+        this.httpCode = httpCode;
+        this.errorCode = code;
+        this.requestId = requestId;
+        this.errorDetail = errorDetail;
+    }
     /**
      * Get the error code
      *
@@ -134,6 +148,18 @@ public class LogException extends Exception {
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
+    }
+
+    public Map<String, String> getErrorDetail() {
+        return errorDetail;
+    }
+
+    public void setErrorDetail(Map<String, String> errorDetail) {
+        this.errorDetail = errorDetail;
+    }
+
+    public String getAccessDeniedDetail() {
+        return errorDetail.getOrDefault(Consts.CONST_ACCESSDENIEDDETAIL, "");
     }
 
     @Override
