@@ -20,7 +20,12 @@ public enum TimeSpanType implements JSONSerializable {
     TODAY("Today"),
     YESTERDAY("Yesterday"),
     CUSTOM("Custom"),
-    FIXED("Fixed");
+    FIXED("Fixed"),
+    THEDAYBEFOREYESTERDAY("TheDayBeforeYesterday"),
+    THISWEEK("ThisWeek"),
+    LASTWEEK("LastWeek"),
+    THISMONTH("ThisMonth"),
+    THISQUARTER("ThisQuarter");
 
     private final String value;
 
