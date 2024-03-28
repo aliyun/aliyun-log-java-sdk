@@ -2050,13 +2050,13 @@ public class Client implements LogService {
 		}
 	}
 
-	void ErrorCheck(JSONObject object, String requestId, int httpCode)
+	void ErrorCheck(JSONObject object, String requestId, int httpCode, String response)
 			throws LogException {
 		if (object.containsKey(Consts.CONST_ERROR_CODE)) {
 			try {
 				String errorCode = object.getString(Consts.CONST_ERROR_CODE);
 				String errorMessage = object.getString(Consts.CONST_ERROR_MESSAGE);
-				throw new LogException(httpCode, errorCode, errorMessage, requestId);
+				throw new LogException(httpCode, errorCode, errorMessage, requestId, response);
 			} catch (JSONException e) {
 				throw new LogException(httpCode, "InvalidErrorResponse",
 						"Error response is not a valid error json : \n"
@@ -2222,8 +2222,14 @@ public class Client implements LogService {
 			if (statusCode != Consts.CONST_HTTP_OK) {
 				String requestId = GetRequestId(response.getHeaders());
 				try {
-					JSONObject object = parseResponseBody(response, requestId);
-					ErrorCheck(object, requestId, statusCode);
+					String responseBody = encodeResponseBodyToUtf8String(response, requestId);
+					try {
+						JSONObject object = JSONObject.parseObject(responseBody, Feature.DisableSpecialKeyDetect);
+						ErrorCheck(object, requestId, statusCode, responseBody);
+					} catch (JSONException ex) {
+						throw new LogException(ErrorCodes.BAD_RESPONSE,
+								"The response is not valid json string : " + body, ex, requestId);
+					}
 				} catch (LogException ex) {
 					ex.setHttpCode(response.getStatusCode());
 					throw ex;

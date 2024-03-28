@@ -112,7 +112,7 @@ public class ClientTest {
     @Test(expected = LogException.class)
     public void testErrorCheck() throws LogException {
         JSONObject jObj = JSONObject.parseObject(SlsClientTestData.TEST_ERROR);
-        client.ErrorCheck(jObj, "", 200);
+        client.ErrorCheck(jObj, "", 200, "");
     }
 
     @Test

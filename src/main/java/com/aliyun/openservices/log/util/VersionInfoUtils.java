@@ -23,7 +23,16 @@ public class VersionInfoUtils {
 
     public static String getDefaultUserAgent() {
         if (defaultUserAgent == null) {
-            defaultUserAgent = USER_AGENT_PREFIX + "-" + getVersion()+"/" + System.getProperty("java.version");
+            String version = null;
+            // note packageVersion not available in unittest
+            Package pkg = VersionInfoUtils.class.getPackage();
+            if (pkg != null) {
+                version = pkg.getImplementationVersion();
+            }
+            if (version == null) {
+                version = getVersion();
+            }
+            defaultUserAgent = USER_AGENT_PREFIX + "-" + version + "/" + System.getProperty("java.version");
         }
         return defaultUserAgent;
     }

@@ -12,6 +12,6 @@ public class VersionInfoUtilsTest {
     @Test
     public void testGetVersion() {
         String userAgent = VersionInfoUtils.getDefaultUserAgent();
-        assertTrue(userAgent.startsWith("aliyun-log-sdk-java-0.6.64"));
+        assertTrue(userAgent.startsWith("aliyun-log-sdk-java-"));
     }
 }
