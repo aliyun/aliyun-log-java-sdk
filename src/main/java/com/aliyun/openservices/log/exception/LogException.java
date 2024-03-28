@@ -18,6 +18,8 @@ public class LogException extends Exception {
 
     private String requestId;
 
+    private String rawResponseError;
+
     /**
      * Construct LogException
      *
@@ -62,6 +64,23 @@ public class LogException extends Exception {
         this.httpCode = httpCode;
         this.errorCode = code;
         this.requestId = requestId;
+    }
+    /**
+     * Construct LogException
+     *
+     * @param httpCode  http code, -1 the error is happened in the client
+     * @param code      error code
+     * @param message   error message
+     * @param requestId request id from sls server, if the error is happened in the
+     *                  client, the request id is empty
+     * @param rawResponseError body from http response
+     */
+    public LogException(int httpCode, String code, String message, String requestId, String rawResponseError) {
+        super(message);
+        this.httpCode = httpCode;
+        this.errorCode = code;
+        this.requestId = requestId;
+        this.rawResponseError = rawResponseError;
     }
 
     /**
@@ -134,6 +153,14 @@ public class LogException extends Exception {
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
+    }
+
+    public String getRawResponseError() {
+        return rawResponseError;
+    }
+
+    public void setRawResponseError(String rawResponseError) {
+        this.rawResponseError = rawResponseError;
     }
 
     @Override

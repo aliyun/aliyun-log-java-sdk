@@ -13,7 +13,8 @@ import com.alibaba.fastjson.JSONObject;
 public class GetProjectResponse extends Response {
 
     private static final long serialVersionUID = 1938728647331317823L;
-
+    private String createTime = "";
+    private String lastModifyTime = "";
     private String description = "";
     private String status = "";
     private String resourceGroupId = "";
@@ -26,6 +27,7 @@ public class GetProjectResponse extends Response {
     private ProjectQuota quota;
 
     private String transferAcceleration;
+    private String location;
 
     public GetProjectResponse(Map<String, String> headers) {
         super(headers);
@@ -41,6 +43,9 @@ public class GetProjectResponse extends Response {
             dataRedundancyType = DataRedundancyType.parse(obj.getString("dataRedundancyType"));
             quota = ProjectQuota.parseFromJSON(obj.getJSONObject(Consts.CONST_QUOTA));
             transferAcceleration = obj.getString("transferAcceleration");
+            setCreateTime(obj.getString(Consts.CONST_CREATTIME));
+            setLastModifyTime(obj.getString(Consts.CONST_LASTMODIFYTIME));
+            location = obj.getString("location");
         } catch (JSONException e) {
             throw new LogException("InvalidErrorResponse", e.getMessage(),
                     GetRequestId());
@@ -89,5 +94,29 @@ public class GetProjectResponse extends Response {
 
     public void setTransferAcceleration(String transferAcceleration) {
         this.transferAcceleration = transferAcceleration;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(String lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
