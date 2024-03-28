@@ -11,7 +11,7 @@
 
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.101</version>
+    <version>0.6.102</version>
     <packaging>jar</packaging>
 
     <name>Aliyun LOG Java SDK</name>
