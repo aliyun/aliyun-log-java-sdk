@@ -1,10 +1,16 @@
 package com.aliyun.openservices.log.common;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AliyunLOGSink extends DataSink {
 
@@ -28,6 +34,9 @@ public class AliyunLOGSink extends DataSink {
 
     @JSONField
     private String roleArn;
+
+    @JSONField
+    private List<String> datasets;
 
     public AliyunLOGSink() {
         super(DataSinkType.ALIYUN_LOG);
@@ -117,12 +126,30 @@ public class AliyunLOGSink extends DataSink {
         return roleArn;
     }
 
+    public List<String> getDatasets() {
+        return datasets;
+    }
+
+    public void setDatasets(ArrayList<String> datasets) {
+        this.datasets = datasets;
+    }
+
+
     public void deserialize(JSONObject value) {
         name = value.getString("name");
         if (value.containsKey("endpoint")) {
             endpoint = value.getString("endpoint");
         } else {
             endpoint = "";
+        }
+        JSONArray datasetsAsJson = value.getJSONArray("datasets");
+        if (datasetsAsJson != null) {
+            datasets = new ArrayList<String>(datasetsAsJson.size());
+            for (int i = 0; i < datasetsAsJson.size(); ++i) {
+                datasets.add(datasetsAsJson.getString(i));
+            }
+        } else {
+            datasets = null;
         }
         project = value.getString("project");
         logstore = value.getString("logstore");
@@ -155,6 +182,9 @@ public class AliyunLOGSink extends DataSink {
         if (getAccessKeyId() != null ? !getAccessKeyId().equals(sink.getAccessKeyId()) : sink.getAccessKeyId() != null) {
             return false;
         }
+        if (getDatasets() != null ? !getDatasets().equals(sink.getDatasets()) : sink.getDatasets() != null) {
+            return false;
+        }
         return getAccessKeySecret() != null ? getAccessKeySecret().equals(sink.getAccessKeySecret()) : sink.getAccessKeySecret() == null;
     }
 
@@ -166,6 +196,7 @@ public class AliyunLOGSink extends DataSink {
         result = 31 * result + (getLogstore() != null ? getLogstore().hashCode() : 0);
         result = 31 * result + (getAccessKeyId() != null ? getAccessKeyId().hashCode() : 0);
         result = 31 * result + (getAccessKeySecret() != null ? getAccessKeySecret().hashCode() : 0);
+        result = 31 * result + (getDatasets() != null ? getDatasets().hashCode() : 0);
         return result;
     }
 }
