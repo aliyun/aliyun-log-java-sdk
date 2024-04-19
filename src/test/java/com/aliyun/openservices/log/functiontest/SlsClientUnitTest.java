@@ -3,77 +3,25 @@ package com.aliyun.openservices.log.functiontest;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.Client;
-import com.aliyun.openservices.log.common.ACL;
-import com.aliyun.openservices.log.common.ACLPrivileges;
-import com.aliyun.openservices.log.common.Config;
-import com.aliyun.openservices.log.common.ConfigInputDetail;
-import com.aliyun.openservices.log.common.ConfigOutputDetail;
-import com.aliyun.openservices.log.common.Consts;
-import com.aliyun.openservices.log.common.Consts.ACLAction;
-import com.aliyun.openservices.log.common.Consts.ACLPrivilege;
+import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.Consts.CompressType;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
-import com.aliyun.openservices.log.common.GroupAttribute;
-import com.aliyun.openservices.log.common.Histogram;
-import com.aliyun.openservices.log.common.LogContent;
-import com.aliyun.openservices.log.common.LogGroupData;
-import com.aliyun.openservices.log.common.LogItem;
-import com.aliyun.openservices.log.common.LogStore;
-import com.aliyun.openservices.log.common.Logs;
-import com.aliyun.openservices.log.common.MachineGroup;
-import com.aliyun.openservices.log.common.QueriedLog;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.http.comm.ResponseMessage;
-import com.aliyun.openservices.log.request.ApplyConfigToMachineGroupRequest;
-import com.aliyun.openservices.log.request.BatchGetLogRequest;
-import com.aliyun.openservices.log.request.DeleteConfigRequest;
-import com.aliyun.openservices.log.request.DeleteLogStoreRequest;
-import com.aliyun.openservices.log.request.DeleteMachineGroupRequest;
-import com.aliyun.openservices.log.request.GetConfigRequest;
-import com.aliyun.openservices.log.request.GetCursorRequest;
-import com.aliyun.openservices.log.request.GetHistogramsRequest;
-import com.aliyun.openservices.log.request.GetLogsRequest;
-import com.aliyun.openservices.log.request.GetMachineGroupRequest;
-import com.aliyun.openservices.log.request.ListACLRequest;
-import com.aliyun.openservices.log.request.ListConfigRequest;
-import com.aliyun.openservices.log.request.ListMachineGroupRequest;
-import com.aliyun.openservices.log.request.ListShardRequest;
-import com.aliyun.openservices.log.request.PutLogsRequest;
-import com.aliyun.openservices.log.request.RemoveConfigFromMachineGroupRequest;
-import com.aliyun.openservices.log.request.Request;
-import com.aliyun.openservices.log.response.BatchGetLogResponse;
-import com.aliyun.openservices.log.response.GetConfigResponse;
-import com.aliyun.openservices.log.response.GetCursorResponse;
-import com.aliyun.openservices.log.response.GetHistogramsResponse;
-import com.aliyun.openservices.log.response.GetLogsResponse;
-import com.aliyun.openservices.log.response.ListACLResponse;
-import com.aliyun.openservices.log.response.ListConfigResponse;
-import com.aliyun.openservices.log.response.ListLogStoresResponse;
-import com.aliyun.openservices.log.response.ListMachineGroupResponse;
-import com.aliyun.openservices.log.response.ListShardResponse;
-import com.aliyun.openservices.log.response.Response;
+import com.aliyun.openservices.log.request.*;
+import com.aliyun.openservices.log.response.*;
 import com.aliyun.openservices.log.util.LZ4Encoder;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.Deflater;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * java sdk unittest
@@ -257,40 +205,6 @@ public class SlsClientUnitTest {
     }
 
     @Test
-    public void TestExtractACLs() {
-        JSONObject jObj = new JSONObject();
-        jObj.put("principle", "test1");
-
-        JSONArray p = new JSONArray();
-        p.add("READ");
-        jObj.put("privilege", p);
-
-        jObj.put("lastModifyTime", 1434520236);
-        jObj.put("createTime", 1434520236);
-
-        JSONArray array = new JSONArray();
-        array.add(jObj);
-
-        JSONObject testObj = new JSONObject();
-        testObj.put("acls", array);
-
-        try {
-            List<ACL> res = logClientMock.ExtractACLs(testObj, "");
-
-            assertEquals("projectNum does not match", array.size(), res.size());
-            for (int i = 0; i < array.size(); i++) {
-                assertEquals("principle does not match", array.getJSONObject(i).getString("principle"), res.get(i).GetPrinciple());
-                assertEquals("privilege does not match", array.getJSONObject(i).getString("privilege"), res.get(i).GetPrivilege().ToJsonString());
-                assertEquals("lastModifyTime does not match", array.getJSONObject(i).getIntValue("lastModifyTime"), res.get(i).GetLastModifyTime());
-                assertEquals("createTime does not match", array.getJSONObject(i).getIntValue("createTime"), res.get(i).GetCreateTime());
-            }
-
-        } catch (LogException e) {
-            assertTrue(e.getMessage(), false);
-        }
-    }
-
-    @Test
     public void TestExtractConfigFromResponse() {
         JSONObject jObj = new JSONObject();
         jObj.put("configName", "testconfig");
@@ -419,29 +333,6 @@ public class SlsClientUnitTest {
 
         assertEquals(group.GetCreateTime(), 12343235);
         assertEquals(group.GetLastModifyTime(), 12343234);
-    }
-
-    @Test
-    public void TestExtractACLFromResponse() {
-        JSONObject jObj = new JSONObject();
-        jObj.put("principle", "test1");
-        JSONArray p = new JSONArray();
-        p.add("READ");
-        jObj.put("privilege", p);
-        jObj.put("lastModifyTime", 1434520236);
-        jObj.put("createTime", 1434520236);
-
-        ACL acl = new ACL();
-        try {
-            acl = logClientMock.ExtractACLFromResponse(jObj, "");
-        } catch (LogException e) {
-            fail(e.getMessage());
-        }
-
-        assertEquals(acl.GetPrinciple(), "test1");
-        assertEquals(acl.GetPrivilege().ToJsonString(), "[\"READ\"]");
-        assertEquals(acl.GetLastModifyTime(), 1434520236);
-        assertEquals(acl.GetCreateTime(), 1434520236);
     }
 
     @Test
@@ -1703,213 +1594,6 @@ public class SlsClientUnitTest {
     }
 
     @Test
-    public void TestUpdateACL() {
-        String project = "test-project";
-        String logStore = "test-logstore";
-
-        String principle = "ANONYMOUS";
-
-        List<ACLPrivilege> privilegeList = new ArrayList<ACLPrivilege>();
-        privilegeList.add(ACLPrivilege.READ);
-        privilegeList.add(ACLPrivilege.WRITE);
-        privilegeList.add(ACLPrivilege.WRITE);
-        ACLPrivileges privileges = new ACLPrivileges(privilegeList);
-
-        ACL acl = new ACL(principle, privileges, ACLAction.GRANT);
-
-        ResponseMessage response = new ResponseMessage();
-
-        Map<String, String> resHeaders = new HashMap<String, String>();
-        resHeaders.put(Consts.CONST_X_SLS_REQUESTID, "TESTREQID");
-        response.setHeaders(resHeaders);
-        response.setStatusCode(200);
-
-        try {
-            mock.ChangeResponse(response);
-            mock.UpdateACL(project, acl);
-        } catch (LogException e) {
-            assertTrue(e.getMessage(), false);
-        }
-
-        response.setHeaders(resHeaders);
-        response.setStatusCode(200);
-
-        try {
-            mock.ChangeResponse(response);
-            mock.UpdateACL(project, logStore, acl);
-        } catch (LogException e) {
-            assertTrue(e.getMessage(), false);
-        }
-
-        byte[] errorBody = null;
-        try {
-            errorBody = SlsClientTestData.TEST_STANDARD_ERROR.getBytes("utf-8");
-        } catch (UnsupportedEncodingException e) {
-            assertTrue(e.getMessage(), false);
-        }
-        InputStream errorContent = new ByteArrayInputStream(errorBody);
-        response.setStatusCode(400);
-        response.setContent(errorContent);
-        mock.ChangeResponse(response);
-        try {
-            mock.UpdateACL(project, acl);
-        } catch (LogException e) {
-            assertEquals("code", e.GetErrorCode());
-            assertEquals("message", e.GetErrorMessage());
-        }
-    }
-
-
-    @Test
-    public void TestListACL() {
-        String project = "test-project";
-        String logStore = "test-logstore";
-
-        String principle = "ANONYMOUS";
-
-        ACLPrivileges p1 = new ACLPrivileges();
-        p1.AddPrivilege(ACLPrivilege.READ);
-        ACLPrivileges p2 = new ACLPrivileges();
-        p2.AddPrivilege(ACLPrivilege.WRITE);
-        int createTime = 12343123;
-        int lastModifyTime = 1234314;
-
-        ACL acl1 = null;
-        ACL acl2 = null;
-        acl1 = new ACL(principle, p1, ACLAction.GRANT);
-        acl1.SetCreateTime(createTime);
-        acl1.SetLastModifyTime(lastModifyTime);
-
-        acl2 = new ACL(principle, p2, ACLAction.GRANT);
-        acl2.SetCreateTime(createTime);
-        acl2.SetLastModifyTime(lastModifyTime);
-
-        List<ACL> acls = new ArrayList<ACL>();
-        acls.add(acl2);
-        acls.add(acl1);
-
-        JSONObject aclDict1 = new JSONObject();
-        aclDict1.put("principle", acl2.GetPrinciple());
-        aclDict1.put("privilege", JSONArray.parseArray(acl2.GetPrivilege().ToJsonString()));
-        aclDict1.put("createTime", acl2.GetCreateTime());
-        aclDict1.put("lastModifyTime", acl2.GetLastModifyTime());
-
-        JSONObject aclDict2 = new JSONObject();
-        aclDict2.put("principle", acl1.GetPrinciple());
-        aclDict2.put("privilege", JSONArray.parseArray(acl1.GetPrivilege().ToJsonString()));
-        aclDict2.put("createTime", acl1.GetCreateTime());
-        aclDict2.put("lastModifyTime", acl1.GetLastModifyTime());
-
-        JSONArray aclsArray = new JSONArray();
-        aclsArray.add(aclDict1);
-        aclsArray.add(aclDict2);
-
-        JSONObject obj = new JSONObject();
-        obj.put("total", 4);
-        obj.put("count", 2);
-        obj.put("acls", aclsArray);
-
-        String jsonStr = obj.toString();
-        byte[] body = null;
-        try {
-            body = jsonStr.getBytes("utf-8");
-        } catch (UnsupportedEncodingException e) {
-            assertTrue(e.getMessage(), false);
-        }
-        InputStream content = new ByteArrayInputStream(body);
-
-        ResponseMessage response = new ResponseMessage();
-
-        Map<String, String> resHeaders = new HashMap<String, String>();
-        resHeaders.put(Consts.CONST_X_SLS_REQUESTID, "TESTREQID");
-        response.setHeaders(resHeaders);
-        response.setStatusCode(200);
-        response.setContent(content);
-        response.SetBody(body);
-        try {
-            mock.ChangeResponse(response);
-            mock.ListACL(project, 0, 1);
-
-            content = new ByteArrayInputStream(body);
-            response.setContent(content);
-            mock.ChangeResponse(response);
-            mock.ListACL(project, logStore, 0, 1);
-
-            content = new ByteArrayInputStream(body);
-            response.setContent(content);
-            mock.ChangeResponse(response);
-            mock.ListACL(project, logStore);
-
-            content = new ByteArrayInputStream(body);
-            response.setContent(content);
-            mock.ChangeResponse(response);
-            ListACLResponse listRes = mock.ListACL(project);
-
-            assertEquals("offset does not match", 4, listRes.GetTotal());
-            assertEquals("count does not match", 2, listRes.GetCount());
-
-            assertEquals("configNum does not match", acls.size(), listRes.GetACLs().size());
-            for (int i = 0; i < acls.size(); i++) {
-                assertEquals(acls.get(i).GetPrinciple(), listRes.GetACLs().get(i).GetPrinciple());
-                assertEquals(acls.get(i).GetPrivilege().ToJsonString(), listRes.GetACLs().get(i).GetPrivilege().ToJsonString());
-                assertEquals(acls.get(i).GetCreateTime(), listRes.GetACLs().get(i).GetCreateTime());
-                assertEquals(acls.get(i).GetLastModifyTime(), listRes.GetACLs().get(i).GetLastModifyTime());
-            }
-        } catch (LogException e) {
-            assertTrue(e.getMessage(), false);
-        }
-
-
-        byte[] errorBody = null;
-        try {
-            errorBody = SlsClientTestData.TEST_STANDARD_ERROR.getBytes("utf-8");
-        } catch (UnsupportedEncodingException e) {
-            assertTrue(e.getMessage(), false);
-        }
-        InputStream errorContent = new ByteArrayInputStream(errorBody);
-        response.setStatusCode(400);
-        response.setContent(errorContent);
-        mock.ChangeResponse(response);
-        try {
-            mock.ListACL(project);
-        } catch (LogException e) {
-            assertEquals("code", e.GetErrorCode());
-            assertEquals("message", e.GetErrorMessage());
-        }
-
-        byte[] invalidBody = null;
-        try {
-            invalidBody = SlsClientTestData.TEST_INVALID_JSON.getBytes("utf-8");
-        } catch (UnsupportedEncodingException e) {
-            assertTrue(e.getMessage(), false);
-        }
-        InputStream invalidContent = new ByteArrayInputStream(invalidBody);
-        response.setStatusCode(200);
-        response.setContent(invalidContent);
-        mock.ChangeResponse(response);
-        try {
-            mock.ListACL(project);
-        } catch (LogException e) {
-            assertEquals("BadResponse", e.GetErrorCode());
-        }
-
-        try {
-            invalidBody = "{\"total\":\"4\",\"size\":\"2\",\"key\":\"invalid json\"}".getBytes("utf-8");
-        } catch (UnsupportedEncodingException e) {
-            assertTrue(e.getMessage(), false);
-        }
-        invalidContent = new ByteArrayInputStream(invalidBody);
-        response.setStatusCode(200);
-        response.setContent(invalidContent);
-        mock.ChangeResponse(response);
-        try {
-            mock.ListACL(project);
-        } catch (LogException e) {
-            assertEquals("BadResponse", e.GetErrorCode());
-        }
-    }
-
-    @Test
     public void TestBatchGetLog() {
         LogContent content1 = new LogContent();
         LogContent content2 = new LogContent();
@@ -2827,11 +2511,6 @@ public class SlsClientUnitTest {
         assertEquals(2, req7.GetOffset());
         assertEquals(4, req7.GetSize());
 
-        ListACLRequest req8 = new ListACLRequest("project", "logStore", 3, 5);
-        assertEquals("logStore", req8.GetLogStore());
-        assertEquals(3, req8.GetOffset());
-        assertEquals(5, req8.GetSize());
-
         GetMachineGroupRequest req10 = new GetMachineGroupRequest("project", "");
         req10.SetGroupName("group2");
         assertEquals("group2", req10.GetGroupName());
@@ -3035,25 +2714,7 @@ public class SlsClientUnitTest {
 
         Config config = new Config();
         config.SetConfigName("config");
-
         assertEquals("config", config.GetConfigName());
-
-        byte[] logBytes = {1, 2, 4, 6, 7, 9, 11, 22};
-        Deflater compresser = new Deflater();
-        compresser.setInput(logBytes);
-        compresser.finish();
-        int size = logBytes.length;
-        ByteArrayOutputStream out = new ByteArrayOutputStream(size);
-        byte[] buf = new byte[10240];
-        while (!compresser.finished()) {
-            int count = compresser.deflate(buf);
-            out.write(buf, 0, count);
-        }
-        logBytes = out.toByteArray();
-
-        ACL acl = new ACL();
-        acl.SetPrinciple("ID");
-        assertEquals("ID", acl.GetPrinciple());
 
         GroupAttribute attribute = new GroupAttribute("externalName1", "groupTopic1");
         assertEquals("externalName1", attribute.GetExternalName());
@@ -3122,58 +2783,6 @@ public class SlsClientUnitTest {
 			config1.FromJsonString("af");
 		} catch (LogException e) {
 			assertEquals("FailToGenerateConfig", e.GetErrorCode());
-		}
-		
-		ACLPrivileges privileges = new ACLPrivileges();
-		String privilegesStr = "[\"READ\",\"WRITE\",\"READ\"]";
-		try {
-			privileges.FromJsonString(privilegesStr);
-			assertEquals(2, privileges.GetPrivileges().size());
-			assertEquals(ACLPrivilege.READ, privileges.GetPrivileges().get(0));
-			assertEquals(ACLPrivilege.WRITE, privileges.GetPrivileges().get(1));
-		} catch (LogException e) {
-			assertTrue(e.GetErrorMessage(), false);
-		}
-		
-		try {
-			privileges.FromJsonString("fsad");
-		} catch (LogException e) {
-			assertEquals("FailToGenerateACLPrivileges", e.GetErrorCode());
-		}
-		
-		ACL acl1 = new ACL();
-		try {
-			acl1.FromJsonString("fsad");
-		} catch (LogException e) {
-			assertEquals("FailToGenerateACL", e.GetErrorCode());
-		}
-		
-		acl1.SetCreateTime(3321);
-		acl1.SetLastModifyTime(3322);
-
-		acl1.SetPrinciple("principle");
-		acl1.SetPrivilege(privileges);
-		
-		try {
-			JSONObject aclDict = JSONObject.parseObject(acl1.ToJsonString());
-			assertEquals(3321, aclDict.getIntValue("createTime"));
-			assertEquals(3322, aclDict.getIntValue("lastModifyTime"));
-			assertEquals("principle", aclDict.getString("principle"));
-			
-			JSONArray privilegesArray = aclDict.getJSONArray("privilege");
-			assertEquals(2, privilegesArray.size());
-			assertEquals("READ", privilegesArray.getString(0));
-			assertEquals("WRITE", privilegesArray.getString(1));
-		} catch (LogException e) {
-			assertTrue(e.GetErrorMessage(), false);
-		}
-		
-		try {
-			acl1.SetPrivilege(new ACLPrivileges());
-			acl1.ToRequestJson();
-		} catch (LogException e) {
-			assertEquals("BadResponse", e.GetErrorCode());
-			assertEquals("ACL privilege must have at least one value", e.GetErrorMessage());
 		}*/
     }
 
@@ -3352,33 +2961,6 @@ class SlsClientMock {
                     "ParseResponseMessageToByteStream", ResponseMessage.class, String.class);
             method.setAccessible(true);
             return (ByteArrayOutputStream) method.invoke(olsClient, response, requestId);
-        } catch (Exception e) {
-            assertTrue(e.getMessage(), false);
-        }
-        return null;
-    }
-
-
-    @SuppressWarnings("unchecked")
-    public List<ACL> ExtractACLs(JSONObject object, String requestId) throws LogException {
-        try {
-            Method method = olsClient.getClass().getDeclaredMethod(
-                    "ExtractACLs", JSONObject.class, String.class);
-            method.setAccessible(true);
-            return (List<ACL>) method.invoke(olsClient, object, requestId);
-        } catch (Exception e) {
-            assertTrue(e.getMessage(), false);
-        }
-        return null;
-    }
-
-    public ACL ExtractACLFromResponse(JSONObject dict,
-                                      String requestId) throws LogException {
-        try {
-            Method method = olsClient.getClass().getDeclaredMethod(
-                    "ExtractACLFromResponse", JSONObject.class, String.class);
-            method.setAccessible(true);
-            return (ACL) method.invoke(olsClient, dict, requestId);
         } catch (Exception e) {
             assertTrue(e.getMessage(), false);
         }
