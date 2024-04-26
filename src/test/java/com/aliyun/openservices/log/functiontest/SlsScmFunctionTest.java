@@ -2,28 +2,9 @@ package com.aliyun.openservices.log.functiontest;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.aliyun.openservices.log.common.ACL;
-import com.aliyun.openservices.log.common.ACLPrivileges;
-import com.aliyun.openservices.log.common.ApsaraLogConfigInputDetail;
-import com.aliyun.openservices.log.common.Config;
-import com.aliyun.openservices.log.common.ConfigInputDetail;
-import com.aliyun.openservices.log.common.ConfigOutputDetail;
-import com.aliyun.openservices.log.common.Consts.ACLAction;
-import com.aliyun.openservices.log.common.Consts.ACLPrivilege;
-import com.aliyun.openservices.log.common.DelimiterConfigInputDetail;
-import com.aliyun.openservices.log.common.GroupAttribute;
-import com.aliyun.openservices.log.common.JsonConfigInputDetail;
-import com.aliyun.openservices.log.common.LogStore;
-import com.aliyun.openservices.log.common.MachineGroup;
-import com.aliyun.openservices.log.common.Project;
-import com.aliyun.openservices.log.common.StreamLogConfigInputDetail;
+import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.response.GetConfigResponse;
-import com.aliyun.openservices.log.response.GetMachineGroupResponse;
-import com.aliyun.openservices.log.response.ListACLResponse;
-import com.aliyun.openservices.log.response.ListConfigResponse;
-import com.aliyun.openservices.log.response.ListMachineGroupResponse;
-import com.aliyun.openservices.log.response.ListProjectResponse;
+import com.aliyun.openservices.log.response.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,9 +12,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class SlsScmFunctionTest extends FunctionTest {
 	static private String project = "project-test-scm";
@@ -531,52 +510,6 @@ public class SlsScmFunctionTest extends FunctionTest {
 		}
 	}
 
-	private void aclAPI() {
-		try {
-			String principle = "ANONYMOUS";
-			
-			List<ACLPrivilege> privilegeList = new ArrayList<ACLPrivilege>();
-			privilegeList.add(ACLPrivilege.READ);
-			ACLPrivileges privileges = new ACLPrivileges(privilegeList);
-			
-			ACL acl = new ACL(principle, privileges, ACLAction.GRANT);
-			
-			client.UpdateACL(project, acl);
-			
-			ListACLResponse listRes = client.ListACL(project);
-			assertEquals("acl num does not match", 2, listRes.GetACLs().size());
-			boolean checked = false;
-			for (ACL aclRes:listRes.GetACLs()) {
-				if (aclRes.GetPrinciple().equals(principle)) {
-					checked = true;
-					assertEquals(principle, aclRes.GetPrinciple());
-					assertTrue(aclRes.GetPrivilege().GetPrivileges().contains(ACLPrivilege.READ));
-				}
-			}
-			assertTrue("expected ACL does not exist", checked);
-			
-			List<ACLPrivilege> privilegeList2 = new ArrayList<ACLPrivilege>();
-			privilegeList2.add(ACLPrivilege.READ);
-			privilegeList2.add(ACLPrivilege.WRITE);
-			ACLPrivileges privileges2 = new ACLPrivileges(privilegeList2);
-			
-			ACL acl2 = new ACL(principle, privileges2, ACLAction.GRANT);
-			
-			client.UpdateACL(project, logStore, acl2);
-			
-			ListACLResponse listRes2 = client.ListACL(project, logStore);
-			assertEquals("acl num does not match", 1, listRes2.GetACLs().size());
-			System.out.println(listRes2.GetCount());
-
-			assertEquals(principle, listRes2.GetACLs().get(0).GetPrinciple());
-			assertTrue(listRes2.GetACLs().get(0).GetPrivilege().GetPrivileges().contains(ACLPrivilege.READ));
-			assertTrue(listRes2.GetACLs().get(0).GetPrivilege().GetPrivileges().contains(ACLPrivilege.WRITE));
-
-		} catch (LogException e) {
-            fail(e.GetErrorMessage());
-		}
-	}
-	
 	private void testReleaseSCM(String testConfigName, String testMachineGroupName){
 		try {
 			client.DeleteConfig(project, testConfigName);
@@ -623,7 +556,6 @@ public class SlsScmFunctionTest extends FunctionTest {
 	@Test
 	public void TestAll() {
 		listAllProject();
-		aclAPI();
 		apsaraConfigAPI(apsaraConfigName);
 		configAPI(configName);
 		machineGroupAPI(groupName, configName);

@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.util.VarintUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FastLog {
 
@@ -12,10 +13,9 @@ public class FastLog {
     private int endOffset;
     private int time = -1;
     private int timeNsPart = 0;
-    private ArrayList<FastLogContent> contents;
+    private final List<FastLogContent> contents;
 
     public FastLog(byte[] rawBytes, int offset, int length) {
-
         this.rawBytes = rawBytes;
         this.beginOffset = offset;
         this.endOffset = offset + length;
@@ -86,6 +86,10 @@ public class FastLog {
         return this.contents.size();
     }
 
+    public List<FastLogContent> getContents() {
+        return contents;
+    }
+
     public FastLogContent getContents(int i) {
         if (i < this.contents.size()) {
             return this.contents.get(i);
@@ -94,7 +98,7 @@ public class FastLog {
         }
     }
 
-    public int getByteSize(){
+    public int getByteSize() {
         return endOffset - beginOffset;
     }
 }

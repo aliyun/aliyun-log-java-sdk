@@ -43,33 +43,6 @@ public class Consts {
         }
     }
 
-    public enum ACLPrivilege {
-        READ("READ"), WRITE("WRITE"), LIST("LIST"), ADMIN("ADMIN");
-
-        private String strValue;
-
-        ACLPrivilege(String strValue) {
-            this.strValue = strValue;
-        }
-
-        public String toString() {
-            return strValue;
-        }
-    }
-
-    public enum ACLAction {
-        GRANT("grant"), REVOKE("revoke");
-        private String strValue;
-
-        ACLAction(String strValue) {
-            this.strValue = strValue;
-        }
-
-        public String toString() {
-            return strValue;
-        }
-    }
-
     public enum BatchModifyEtlMetaType {
         BATCH_ENABLE_ETL_META("batch_enable"),
         BATCH_DISABLE_ETL_META("batch_disable"),

@@ -4,12 +4,11 @@ import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.common.QueriedLog;
-import com.aliyun.openservices.log.common.QueryResult;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.request.GetLogsRequestV2;
-import com.aliyun.openservices.log.response.GetLogsResponseV2;
+import com.aliyun.openservices.log.request.GetLogsRequest;
+import com.aliyun.openservices.log.response.GetLogsResponse;
 
-public class GetLogsV2Sample {
+public class GetLogsSample {
     private static final String endpoint = "your_endpoint";
     private static final String akId = "your_access_id";
     private static final String ak = "your_access_key";
@@ -20,13 +19,11 @@ public class GetLogsV2Sample {
         Client client = new Client(endpoint, akId, ak);
         int from = 1678456800;
         int to = 1678460400;
-        GetLogsRequestV2 request = new GetLogsRequestV2(project, logStore, from, to, "", "* | SELECT * limit 10000");
+        GetLogsRequest getLogsRequest = new GetLogsRequest(project, logStore, from, to, "", "* | SELECT * limit 10000");
         try {
-            GetLogsResponseV2 response = client.GetLogsV2(request);
-            System.out.println(response.getQueryResultAsString());
-            QueryResult result = response.getResult();
-            System.out.println("isCompleted = " + result.isCompleted());
-            for (QueriedLog log : result.getLogs()) {
+            GetLogsResponse response = client.GetLogs(getLogsRequest);
+            System.out.println("isCompleted = " + response.IsCompleted());
+            for (QueriedLog log : response.getLogs()) {
                 LogItem item = log.GetLogItem();
                 for (LogContent f : item.GetLogContents()) {
                     System.out.println(f.getKey() + "=" + f.getValue());

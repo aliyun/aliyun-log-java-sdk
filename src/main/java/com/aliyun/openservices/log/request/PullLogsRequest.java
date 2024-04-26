@@ -63,6 +63,13 @@ public class PullLogsRequest extends Request {
      * @param query     query
      */
     public PullLogsRequest(String project, String logStore, int shardId, int count, String cursor, String endCursor,
+                           String query) {
+        this(project, logStore, shardId, count, cursor, endCursor);
+        setQuery(query);
+    }
+
+    @Deprecated
+    public PullLogsRequest(String project, String logStore, int shardId, int count, String cursor, String endCursor,
                            String query, String pullmode) {
         this(project, logStore, shardId, count, cursor, endCursor);
         setQuery(query);
@@ -119,6 +126,9 @@ public class PullLogsRequest extends Request {
 
     public void setQuery(String query) {
         this.query = query;
+        if (query != null && !query.isEmpty()) {
+            setPullMode("scan_on_stream");
+        }
     }
 
     public void setPullMode(String pullMode) {
