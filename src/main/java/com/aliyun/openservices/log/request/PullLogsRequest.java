@@ -18,6 +18,7 @@ public class PullLogsRequest extends Request {
     private String endCursor;
     private String query;
     private String pullMode;
+    private Consts.CompressType compressType = Consts.CompressType.LZ4;
 
     /**
      * Construct a get cursor request
@@ -133,6 +134,14 @@ public class PullLogsRequest extends Request {
 
     public void setPullMode(String pullMode) {
         this.pullMode = pullMode;
+    }
+
+    public Consts.CompressType getCompressType() {
+        return compressType;
+    }
+
+    public void setCompressType(Consts.CompressType compressType) {
+        this.compressType = compressType;
     }
 
     @Override

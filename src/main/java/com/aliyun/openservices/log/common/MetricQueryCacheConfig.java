@@ -16,19 +16,4 @@ public class MetricQueryCacheConfig {
     public void setEnable(boolean enable) {
         this.enable = enable;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {return true;}
-        if (o == null || getClass() != o.getClass()) {return false;}
-
-        MetricQueryCacheConfig that = (MetricQueryCacheConfig)o;
-
-        return enable == that.enable;
-    }
-
-    @Override
-    public int hashCode() {
-        return (enable ? 1 : 0);
-    }
 }

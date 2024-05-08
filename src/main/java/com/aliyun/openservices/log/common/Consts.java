@@ -7,9 +7,9 @@ public class Consts {
     public enum CompressType {
         NONE(""),
         LZ4(Consts.CONST_LZ4),
-        GZIP(Consts.CONST_GZIP_ENCODING);
-
-        private String strValue;
+        GZIP(Consts.CONST_GZIP_ENCODING),
+        ZSTD(Consts.CONST_ZSTD);
+        private final String strValue;
 
         CompressType(String strValue) {
             this.strValue = strValue;
@@ -280,6 +280,8 @@ public class Consts {
 
     public static final String CONST_GZIP = "gzip";
     public static final String CONST_LZ4 = "lz4";
+
+    public static final String CONST_ZSTD = "zstd";
     public static final String CONST_HTTP_ACCEPT = "accept";
 
     // common

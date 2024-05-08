@@ -2,7 +2,11 @@ package com.aliyun.openservices.log.functiontest;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.MetricsConfig;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.request.CreateMetricsConfigRequest;
+import com.aliyun.openservices.log.request.UpdateMetricsConfigRequest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,5 +29,28 @@ public class MetricsConfigTest {
 
         final String jsonString = JSON.toJSONString(null);
         System.out.println(jsonString);
+    }
+
+    @Test
+    public void testRemoteWriteConfig() {
+        String conf = "{\"downsampling_config\":null,\"parallel_config\":null,\"query_cache_config\":null,\"pushdown_config\":null,\"remote_write_config\":{\"enable\":true,\"replica_field\":\"\",\"replica_timeout_seconds\":0,\"history_interval\":0,\"future_interval\":0,\"shard_group_strategy_list\":{\"strategies\":[{\"metric_names\":[\".*bucket\"],\"hash_labels\":[\"instance\"],\"shard_group_count\":64,\"priority\":3},{\"metric_names\":[\"up\"],\"hash_labels\":[\"instance\"],\"shard_group_count\":32,\"priority\":4}],\"try_other_shard\":true,\"last_update_time\":1708409523}}}\n";
+        MetricsConfig metricsConfig = JSONObject.parseObject(conf, MetricsConfig.class);
+        Assert.assertEquals(metricsConfig.getRemoteWriteConfig().getShardGroupStrategyList().getStrategies().size(), 2);
+    }
+
+    @Test
+    public void testCreateRemoteWriteConfig(){
+        Client client = new Client(
+                "pub-cn-hangzhou-staging-share.log.aliyuncs.com", "xxx", "xxx");
+
+        String conf = "{\"downsampling_config\":null,\"parallel_config\":null,\"query_cache_config\":null,\"pushdown_config\":null,\"remote_write_config\":{\"enable\":true,\"replica_field\":\"\",\"replica_timeout_seconds\":0,\"history_interval\":0,\"future_interval\":0,\"shard_group_strategy_list\":{\"strategies\":[{\"metric_names\":[\".*_bucket\", \"apiserver_.*\"],\"hash_labels\":[],\"shard_group_count\":1,\"priority\":2},{\"metric_names\":[\".*_total\", \".*_count\", \".*_sum\"],\"hash_labels\":[],\"shard_group_count\":8,\"priority\":3},{\"metric_names\":[\".*\"],\"hash_labels\":[],\"shard_group_count\":32,\"priority\":4}],\"try_other_shard\":true,\"last_update_time\":1709192903}}}";
+        MetricsConfig metricsConfig = JSONObject.parseObject(conf, MetricsConfig.class);
+        try{
+            //client.createMetricsConfig(new CreateMetricsConfigRequest("haoqi-sls-metric-test", "asi-chengdu-classd-unit1-shardgroup", metricsConfig));
+            client.updateMetricsConfig(new UpdateMetricsConfigRequest("haoqi-sls-metric-test", "asi-chengdu-classd-unit1-shardgroup", metricsConfig));
+        } catch (LogException e) {
+            System.out.println(e);
+        }
+        //asi-chengdu-classd-unit1-shardgroup
     }
 }

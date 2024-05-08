@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.common.LogGroupData;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.util.VarintUtil;
+import com.aliyun.openservices.log.util.ZSTDEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,8 @@ public class PullLogsResponse extends Response {
     private int count;
     private long rawDataSize = -1;
     private int rawDataCount = -1;
-    private byte[] rawData;
+    private final byte[] rawData;
+    private final String compressType;
 
     /**
      * Construct the response with http headers
@@ -40,6 +42,7 @@ public class PullLogsResponse extends Response {
             if (headers.containsKey(Consts.CONST_X_SLS_RAWDATACOUNT)) {
                 rawDataCount = Integer.parseInt(headers.get(Consts.CONST_X_SLS_RAWDATACOUNT));
             }
+            compressType = headers.get(Consts.CONST_X_SLS_COMPRESSTYPE);
         } catch (NumberFormatException e) {
             throw new LogException("ParseLogGroupListRawSizeError", e.getMessage(), e, GetRequestId());
         }
@@ -66,8 +69,20 @@ public class PullLogsResponse extends Response {
         }
         logGroups = new ArrayList<LogGroupData>();
         if (rawSize > 0) {
-            byte[] uncompressedData = LZ4Encoder.decompressFromLhLz4Chunk(rawData, rawSize);
-            parseFastLogGroupList(uncompressedData);
+            Consts.CompressType type = Consts.CompressType.fromString(compressType);
+            byte[] uncompressedData;
+            switch (type) {
+                case LZ4:
+                    uncompressedData = LZ4Encoder.decompressFromLhLz4Chunk(rawData, rawSize);
+                    parseFastLogGroupList(uncompressedData);
+                    break;
+                case ZSTD:
+                    uncompressedData = ZSTDEncoder.decompress(rawData, rawSize);
+                    parseFastLogGroupList(uncompressedData);
+                    break;
+                default:
+                    throw new LogException("DecompressException", "The compress type is invalid: " + type, GetRequestId());
+            }
         }
         if (logGroups.size() != count) {
             throw new LogException("LogGroupCountNotMatch",

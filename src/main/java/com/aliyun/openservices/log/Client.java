@@ -659,7 +659,7 @@ public class Client implements LogService {
 		String logStore = request.GetLogStore();
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		String shardKey = request.getHashKey();
-		CompressType compressType = request.GetCompressType();
+		CompressType compressType = request.getCompressType();
 		CodingUtils.assertParameterNotNull(compressType, "compressType");
 
 		byte[] logBytes = request.GetLogGroupBytes();
@@ -757,19 +757,22 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		headParameter.put(Consts.CONST_CONTENT_TYPE, request.getContentType());
 		long originalSize = logBytes.length;
-
-		if (compressType == CompressType.LZ4) {
-			logBytes = LZ4Encoder.compressToLhLz4Chunk(logBytes.clone());
-			headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE,
-					compressType.toString());
-		} else if (compressType == CompressType.GZIP) {
-			logBytes = GzipUtils.compress(logBytes);
-			headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE,
-					compressType.toString());
+		switch (compressType) {
+			case LZ4:
+				// Why clone here?
+				logBytes = LZ4Encoder.compressToLhLz4Chunk(logBytes.clone());
+				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
+				break;
+			case GZIP:
+				logBytes = GzipUtils.compress(logBytes);
+				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
+				break;
+			case ZSTD:
+				logBytes = ZSTDEncoder.compress(logBytes);
+				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
+				break;
 		}
-
-		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE,
-				String.valueOf(originalSize));
+		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(originalSize));
 
 		Map<String, String> urlParameter = request.GetAllParams();
 		String resourceUri = "/logstores/" + logStore;
@@ -1005,11 +1008,9 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter, request.getRequestBody());
 		return GetLogsResponse.deserializeFrom(response, deserialize);
 	}
-
 	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException {
 		return getLogsInternal(request, true);
 	}
-
 	@Deprecated
 	public GetLogsResponseV2 GetLogsV2(GetLogsRequestV2 request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -1024,7 +1025,6 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter, request.getRequestBody());
 		return GetLogsResponseV2.deserializeFrom(response);
 	}
-
 	public GetContextLogsResponse getContextLogs(GetContextLogsRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
@@ -1290,23 +1290,24 @@ public class Client implements LogService {
 			throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-		return BatchGetLog(new BatchGetLogRequest(project, logStore, shardId,
-				count, cursor, end_cursor));
+		return BatchGetLog(new BatchGetLogRequest(project, logStore, shardId, count, cursor, end_cursor));
 	}
 
 	@Deprecated
 	@Override
-	public BatchGetLogResponse BatchGetLog(BatchGetLogRequest request)
-			throws LogException {
+	public BatchGetLogResponse BatchGetLog(BatchGetLogRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		String logStore = request.GetLogStore();
 		CodingUtils.validateLogstore(logStore);
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
         String resourceUri = "/logstores/" + logStore + "/shards/" + request.GetShardId();
-		headParameter.put(Consts.CONST_ACCEPT_ENCODING, Consts.CONST_LZ4);
+		CompressType compressType = request.getCompressType();
+		if (compressType == null || compressType == CompressType.NONE) {
+			compressType = CompressType.LZ4;
+		}
+		headParameter.put(Consts.CONST_ACCEPT_ENCODING, compressType.toString());
 		headParameter.put(Consts.CONST_HTTP_ACCEPT, Consts.CONST_PROTO_BUF);
 		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response;
@@ -1348,10 +1349,13 @@ public class Client implements LogService {
         String project = request.GetProject();
         String logStore = request.getLogStore();
 		CodingUtils.validateLogstore(logStore);
-
         Map<String, String> headers = GetCommonHeadPara(project);
         String resourceUri = "/logstores/" + logStore + "/shards/" + request.getShardId();
-        headers.put(Consts.CONST_ACCEPT_ENCODING, Consts.CONST_LZ4);
+		CompressType compressType = request.getCompressType();
+		if (compressType == null || compressType == CompressType.NONE) {
+			compressType = CompressType.LZ4;
+		}
+		headers.put(Consts.CONST_ACCEPT_ENCODING, compressType.toString());
         headers.put(Consts.CONST_HTTP_ACCEPT, Consts.CONST_PROTO_BUF);
         Map<String, String> urlParameter = request.GetAllParams();
 
@@ -1389,8 +1393,7 @@ public class Client implements LogService {
 		return CreateConfig(new CreateConfigRequest(project, config));
 	}
 
-	public CreateConfigResponse CreateConfig(CreateConfigRequest request)
-			throws LogException {
+	public CreateConfigResponse CreateConfig(CreateConfigRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
