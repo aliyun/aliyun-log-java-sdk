@@ -72,29 +72,4 @@ public class MetricParallelConfig {
         this.totalParallelCount = totalParallelCount;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {return true;}
-        if (o == null || getClass() != o.getClass()) {return false;}
-
-        MetricParallelConfig that = (MetricParallelConfig)o;
-
-        if (enable != that.enable) {return false;}
-        if (timePieceInterval != that.timePieceInterval) {return false;}
-        if (timePieceCount != that.timePieceCount) {return false;}
-        if (parallelCountPerHost != that.parallelCountPerHost) {return false;}
-        if (totalParallelCount != that.totalParallelCount) {return false;}
-        return mode != null ? mode.equals(that.mode) : that.mode == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (enable ? 1 : 0);
-        result = 31 * result + (mode != null ? mode.hashCode() : 0);
-        result = 31 * result + timePieceInterval;
-        result = 31 * result + timePieceCount;
-        result = 31 * result + parallelCountPerHost;
-        result = 31 * result + totalParallelCount;
-        return result;
-    }
 }

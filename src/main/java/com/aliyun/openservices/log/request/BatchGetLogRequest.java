@@ -11,12 +11,10 @@ import com.aliyun.openservices.log.common.Consts;
  *
  */
 public class BatchGetLogRequest extends Request {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4467245335122126584L;
 	protected String mLogStore;
 	protected int mShardId;
+	private Consts.CompressType compressType = Consts.CompressType.LZ4;
 	
 	/**
 	 * Construct a get cursor request
@@ -138,5 +136,13 @@ public class BatchGetLogRequest extends Request {
 	 */
 	public void SetCount(int count) {
 		SetParam(Consts.CONST_COUNT, String.valueOf(count));
+	}
+
+	public Consts.CompressType getCompressType() {
+		return compressType;
+	}
+
+	public void setCompressType(Consts.CompressType compressType) {
+		this.compressType = compressType;
 	}
 }

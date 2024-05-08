@@ -2,6 +2,8 @@ package com.aliyun.openservices.log.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import java.util.List;
+
 /**
  * @author xzz
  */
@@ -21,6 +23,9 @@ public class MetricRemoteWriteConfig {
 
     @JSONField(name = "replica_timeout_seconds")
     private int replicaTimeoutSeconds;
+
+    @JSONField(name = "shard_group_strategy_list")
+    private ShardGroupStrategyList shardGroupStrategyList;
 
     public int getHistoryInterval() {
         return historyInterval;
@@ -62,27 +67,95 @@ public class MetricRemoteWriteConfig {
         this.replicaTimeoutSeconds = replicaTimeoutSeconds;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {return true;}
-        if (o == null || getClass() != o.getClass()) {return false;}
-
-        MetricRemoteWriteConfig that = (MetricRemoteWriteConfig) o;
-
-        if (enable != that.enable) {return false;}
-        if (historyInterval != that.historyInterval) {return false;}
-        if (futureInterval != that.futureInterval) {return false;}
-        if (replicaTimeoutSeconds != that.replicaTimeoutSeconds) {return false;}
-        return replicaField != null ? replicaField.equals(that.replicaField) : that.replicaField == null;
+    public ShardGroupStrategyList getShardGroupStrategyList() {
+        return shardGroupStrategyList;
     }
 
-    @Override
-    public int hashCode() {
-        int result = (enable ? 1 : 0);
-        result = 31 * result + historyInterval;
-        result = 31 * result + futureInterval;
-        result = 31 * result + (replicaField != null ? replicaField.hashCode() : 0);
-        result = 31 * result + replicaTimeoutSeconds;
-        return result;
+    public void setShardGroupStrategyList(ShardGroupStrategyList shardGroupStrategyList) {
+        this.shardGroupStrategyList = shardGroupStrategyList;
     }
+
+
+    public static class ShardGroupStrategyList {
+        @JSONField(name = "strategies")
+        private List<ShardGroupStrategy> strategies;
+
+        @JSONField(name = "try_other_shard")
+        private boolean tryOtherShard;
+
+        @JSONField(name = "last_update_time")
+        private int lastUpdateTime;
+
+
+        public List<ShardGroupStrategy> getStrategies() {
+            return strategies;
+        }
+
+        public void setStrategies(List<ShardGroupStrategy> strategies) {
+            this.strategies = strategies;
+        }
+
+        public boolean isTryOtherShard() {
+            return tryOtherShard;
+        }
+
+        public void setTryOtherShard(boolean tryOtherShard) {
+            this.tryOtherShard = tryOtherShard;
+        }
+
+        public int getLastUpdateTime() {
+            return lastUpdateTime;
+        }
+
+        public void setLastUpdateTime(int lastUpdateTime) {
+            this.lastUpdateTime = lastUpdateTime;
+        }
+    }
+
+    public static class ShardGroupStrategy {
+        @JSONField(name = "metric_names")
+        private List<String> metricNames;
+        @JSONField(name = "hash_labels")
+        private List<String> hashLabels;
+        @JSONField(name = "shard_group_count")
+        private int shardGroupCount;
+
+        @JSONField(name = "priority")
+        private int priority;
+
+        public List<String> getMetricNames() {
+            return metricNames;
+        }
+
+        public void setMetricNames(List<String> metricNames) {
+            this.metricNames = metricNames;
+        }
+
+
+        public int getShardGroupCount() {
+            return shardGroupCount;
+        }
+
+        public void setShardGroupCount(int shardGroupCount) {
+            this.shardGroupCount = shardGroupCount;
+        }
+
+        public List<String> getHashLabels() {
+            return hashLabels;
+        }
+
+        public void setHashLabels(List<String> hashLabels) {
+            this.hashLabels = hashLabels;
+        }
+
+        public int getPriority() {
+            return priority;
+        }
+
+        public void setPriority(int priority) {
+            this.priority = priority;
+        }
+
+    }
+
 }

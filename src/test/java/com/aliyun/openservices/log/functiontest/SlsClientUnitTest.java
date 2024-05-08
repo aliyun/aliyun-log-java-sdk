@@ -2579,7 +2579,7 @@ public class SlsClientUnitTest {
 
         PutLogsRequest req21 = new PutLogsRequest("", "", "", new ArrayList<LogItem>());
         req21.SetCompressType(CompressType.NONE);
-        assertEquals(CompressType.NONE, req21.GetCompressType());
+        assertEquals(CompressType.NONE, req21.getCompressType());
 
         DeleteLogStoreRequest req22 = new DeleteLogStoreRequest("", "");
         req22.SetLogStoreName("test-logstore");

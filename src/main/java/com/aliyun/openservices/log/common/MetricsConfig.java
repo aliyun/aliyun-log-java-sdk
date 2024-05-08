@@ -117,37 +117,4 @@ public class MetricsConfig implements Serializable {
         this.downSamplingConfig = downSamplingConfig;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {return true;}
-        if (o == null || getClass() != o.getClass()) {return false;}
-
-        MetricsConfig that = (MetricsConfig)o;
-
-        if (queryCacheConfig != null ? !queryCacheConfig.equals(that.queryCacheConfig)
-                : that.queryCacheConfig != null) {
-            return false;
-        }
-        if (parallelConfig != null ? !parallelConfig.equals(that.parallelConfig) : that.parallelConfig != null) {
-            return false;
-        }
-        if (pushdownConfig != null ? !pushdownConfig.equals(that.pushdownConfig) : that.pushdownConfig != null){
-            return false;
-        }
-        if (remoteWriteConfig != null ? !remoteWriteConfig.equals(that.remoteWriteConfig) : that.remoteWriteConfig != null){
-            return false;
-        }
-        return downSamplingConfig != null ? downSamplingConfig.equals(that.downSamplingConfig)
-                : that.downSamplingConfig == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = queryCacheConfig != null ? queryCacheConfig.hashCode() : 0;
-        result = 31 * result + (parallelConfig != null ? parallelConfig.hashCode() : 0);
-        result = 31 * result + (pushdownConfig != null ? pushdownConfig.hashCode() : 0);
-        result = 31 * result + (remoteWriteConfig != null ? remoteWriteConfig.hashCode() : 0);
-        result = 31 * result + (downSamplingConfig != null ? downSamplingConfig.hashCode() : 0);
-        return result;
-    }
 }
