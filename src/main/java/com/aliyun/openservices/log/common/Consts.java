@@ -103,6 +103,7 @@ public class Consts {
     public static final String CONST_X_SLS_CURSOR = "x-log-cursor";
     public static final String CONST_X_SLS_COUNT = "x-log-count";
     public static final String CONST_X_SLS_PROCESS = "x-log-progress";
+    public static final String CONST_X_SLS_SCANBYTES = "x-log-scanbytes";
     public static final String CONST_X_SLS_NEXT_TOKEN = "x-log-nexttoken";
     public static final String CONST_X_ACS_SECURITY_TOKEN = "x-acs-security-token";
     public static final String CONST_X_LOG_RESOURCEOWNERACCOUNT = "x-log-resourceowneraccount";
