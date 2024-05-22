@@ -6,10 +6,10 @@ import java.io.UnsupportedEncodingException;
 
 public class FastLogContent {
 
-    private byte[] rawBytes;
+    private final byte[] rawBytes;
     // [beginOffset, endOffset)
-    private int beginOffset;
-    private int endOffset;
+    private final int beginOffset;
+    private final int endOffset;
     private int keyOffset = -1;
     private int keyLength = -1;
     private int valueOffset = -1;
@@ -107,5 +107,33 @@ public class FastLogContent {
         byte[] bytes = new byte[length];
         System.arraycopy(this.rawBytes, offset, bytes, 0, length);
         return bytes;
+    }
+
+    public byte[] getRawBytes() {
+        return rawBytes;
+    }
+
+    public int getBeginOffset() {
+        return beginOffset;
+    }
+
+    public int getEndOffset() {
+        return endOffset;
+    }
+
+    public int getKeyOffset() {
+        return keyOffset;
+    }
+
+    public int getKeyLength() {
+        return keyLength;
+    }
+
+    public int getValueOffset() {
+        return valueOffset;
+    }
+
+    public int getValueLength() {
+        return valueLength;
     }
 }

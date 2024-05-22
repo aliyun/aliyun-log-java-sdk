@@ -7,9 +7,9 @@ public class Consts {
     public enum CompressType {
         NONE(""),
         LZ4(Consts.CONST_LZ4),
-        GZIP(Consts.CONST_GZIP_ENCODING);
-
-        private String strValue;
+        GZIP(Consts.CONST_GZIP_ENCODING),
+        ZSTD(Consts.CONST_ZSTD);
+        private final String strValue;
 
         CompressType(String strValue) {
             this.strValue = strValue;
@@ -35,33 +35,6 @@ public class Consts {
         private String strValue;
 
         CursorMode(String strValue) {
-            this.strValue = strValue;
-        }
-
-        public String toString() {
-            return strValue;
-        }
-    }
-
-    public enum ACLPrivilege {
-        READ("READ"), WRITE("WRITE"), LIST("LIST"), ADMIN("ADMIN");
-
-        private String strValue;
-
-        ACLPrivilege(String strValue) {
-            this.strValue = strValue;
-        }
-
-        public String toString() {
-            return strValue;
-        }
-    }
-
-    public enum ACLAction {
-        GRANT("grant"), REVOKE("revoke");
-        private String strValue;
-
-        ACLAction(String strValue) {
             this.strValue = strValue;
         }
 
@@ -118,6 +91,8 @@ public class Consts {
     public static final String CONST_X_SLS_APIVERSION = "x-log-apiversion";
     public static final String CONST_X_SLS_COMPRESSTYPE = "x-log-compresstype";
     public static final String CONST_X_SLS_BODYRAWSIZE = "x-log-bodyrawsize";
+    public static final String CONST_X_SLS_RAWDATACOUNT = "x-log-rawdatacount";
+    public static final String CONST_X_SLS_RAWDATASIZE = "x-log-rawdatasize";
     public static final String CONST_X_SLS_SIGNATUREMETHOD = "x-log-signaturemethod";
     public static final String CONST_X_SLS_REQUESTID = "x-log-requestid";
     public static final String CONST_X_SLS_HOSTIP = "x-log-hostip";
@@ -162,6 +137,8 @@ public class Consts {
     public static final String CONST_SESSION = "session";
     public static final String CONST_ACCURATE = "accurate";
     public static final String CONST_HIGHLIGHT = "highlight";
+    public static final String CONST_FROM_NS_PART = "fromNs";
+    public static final String CONST_TO_NS_PART = "toNs";
     public static final String CONST_QUERY = "query";
     public static final String CONST_TOKEN = "token";
     public static final String CONST_CURSOR = "cursor";
@@ -180,7 +157,6 @@ public class Consts {
     public static final String CONST_ACTION_MERGE = "merge";
     public static final String CONST_ROUTE_KEY = "key";
     public static final String CONST_PULL_MODE = "pullMode";
-    public static final String CONST_RESPONSE_WITH_META = "responseWithMeta";
 
     // context logs
     public static final String CONST_PACK_META = "pack_meta";
@@ -282,6 +258,7 @@ public class Consts {
 
     public static final String CONST_RESULT_TOPICS = "topics";
     public static final String CONST_RESULT_TIME = "__time__";
+    public static final String CONST_RESULT_TIME_NS_PART = "__time_ns_part__";
     public static final String CONST_RESULT_SOURCE = "__source__";
 
     public static final String CONST_ERROR_CODE = "errorCode";
@@ -303,6 +280,8 @@ public class Consts {
 
     public static final String CONST_GZIP = "gzip";
     public static final String CONST_LZ4 = "lz4";
+
+    public static final String CONST_ZSTD = "zstd";
     public static final String CONST_HTTP_ACCEPT = "accept";
 
     // common
@@ -408,6 +387,9 @@ public class Consts {
     public static final String RESOURCE_ACL = "acl";
     public static final String RESOURCE_CREATE_TIME = "createTime";
     public static final String RESOURCE_LAST_MODIFY_TIME = "lastModifyTime";
+
+    public static final String CONST_MIGRATION_URI = "/shippermigrations";
+    public static final String CONST_MIGRATION_NAME_URI = CONST_MIGRATION_URI + "/%s";
 
     public static final String CONST_RESOURCE_RECORD_URI = CONST_RESOURCE_NAME_URI + "/records";
     public static final String CONST_RESOURCE_RECORD_ID_URI = CONST_RESOURCE_RECORD_URI + "/%s";

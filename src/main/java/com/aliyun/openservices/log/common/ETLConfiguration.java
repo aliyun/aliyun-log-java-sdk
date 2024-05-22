@@ -51,6 +51,9 @@ public class ETLConfiguration extends JobConfiguration {
     @JSONField
     private Integer toTime;
 
+    @JSONField
+    private String lang;
+
     public void setRoleArn(String roleArn) {
         this.roleArn = roleArn;
     }
@@ -147,6 +150,13 @@ public class ETLConfiguration extends JobConfiguration {
         this.toTime = toTime;
     }
 
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
     @Override
     public void deserialize(JSONObject value) {
         script = value.getString("script");
@@ -167,6 +177,7 @@ public class ETLConfiguration extends JobConfiguration {
         roleArn = JsonUtils.readOptionalString(value,"roleArn");
         fromTime = JsonUtils.readOptionalInt(value, "fromTime");
         toTime = JsonUtils.readOptionalInt(value, "toTime");
+        lang = JsonUtils.readOptionalString(value, "lang");
     }
 
     @Override
@@ -191,6 +202,8 @@ public class ETLConfiguration extends JobConfiguration {
             return false;
         if (getRoleArn() != null ? !getRoleArn().equals(that.getRoleArn()) : that.getRoleArn() != null)
             return false;
+        if (getLang() != null ? !getLang().equals(that.getLang()) : that.getLang() != null)
+            return false;
         return getAccessKeySecret() != null ? getAccessKeySecret().equals(that.getAccessKeySecret()) : that.getAccessKeySecret() == null;
     }
 
@@ -206,6 +219,7 @@ public class ETLConfiguration extends JobConfiguration {
         result = 31 * result + (getAccessKeyId() != null ? getAccessKeyId().hashCode() : 0);
         result = 31 * result + (getAccessKeySecret() != null ? getAccessKeySecret().hashCode() : 0);
         result = 31 * result + (getRoleArn() != null ? getRoleArn().hashCode() : 0);
+        result = 31 * result + (getLang() != null ? getLang().hashCode() : 0);
         return result;
     }
 
@@ -222,6 +236,7 @@ public class ETLConfiguration extends JobConfiguration {
                 ", accessKeyId='" + accessKeyId + '\'' +
                 ", accessKeySecret='" + accessKeySecret + '\'' +
                 ", roleArn='" + roleArn + '\'' +
+                ", lang='" + lang + '\'' +
                 '}';
     }
 }

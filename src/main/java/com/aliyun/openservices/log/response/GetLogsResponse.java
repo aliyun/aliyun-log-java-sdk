@@ -56,6 +56,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
     private ArrayList<String> mKeys;
     private ArrayList<ArrayList<String>> mTerms;
     private List<List<LogContent>> mHighlights;
+    private List<String> mColumnTypes;
 
     private String rawQueryResult;
 
@@ -170,6 +171,14 @@ public class GetLogsResponse extends BasicGetLogsResponse {
                     }
                 }
             }
+
+            JSONArray columnTypesAsJson = object.getJSONArray("columnTypes");
+            if (columnTypesAsJson != null) {
+                mColumnTypes = new ArrayList<String>(columnTypesAsJson.size());
+                for (int i = 0; i < columnTypesAsJson.size(); ++i) {
+                    mColumnTypes.add(columnTypesAsJson.getString(i));
+                }
+            }
         }
     }
 
@@ -188,8 +197,8 @@ public class GetLogsResponse extends BasicGetLogsResponse {
         mTerms = new ArrayList<ArrayList<String>>();
         for (QueryResult.Term term : terms) {
             ArrayList<String> list = new ArrayList<String>();
-            list.add(term.getKey());
             list.add(term.getTerm());
+            list.add(term.getKey());
             mTerms.add(list);
         }
         setmLimited(result.getLimited());
@@ -206,6 +215,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
         mShard = result.getShard();
         mScanBytes = result.getScanBytes();
         mHighlights = result.getHighlights();
+        mColumnTypes = result.getColumnTypes();
         this.logs = (ArrayList<QueriedLog>) result.getLogs();
     }
 
@@ -398,6 +408,10 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 
     public List<List<LogContent>> getHighlights() {
         return mHighlights;
+    }
+
+    public List<String> getColumnTypes() {
+        return mColumnTypes;
     }
 
     public String getRawQueryResult() {

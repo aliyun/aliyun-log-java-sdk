@@ -74,7 +74,8 @@ public abstract class BaseDataTest extends FunctionTest {
             GetCursorResponse cursor = client.GetCursor(project, logStore.GetLogStoreName(), i, Consts.CursorMode.BEGIN);
             cur = cursor.GetCursor();
             do {
-                PullLogsResponse pullLogs = client.pullLogs(new PullLogsRequest(project, logStore.GetLogStoreName(), i, 10, cur));
+                PullLogsRequest request = new PullLogsRequest(project, logStore.GetLogStoreName(), i, 10, cur);
+                PullLogsResponse pullLogs = client.pullLogs(request);
                 cur = pullLogs.getNextCursor();
                 logGroupSizeByPull = pullLogs.getCount();
                 logGroupSize += logGroupSizeByPull;

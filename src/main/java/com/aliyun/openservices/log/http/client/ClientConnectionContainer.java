@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.Shard;
+import com.aliyun.openservices.log.common.auth.CredentialsProvider;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.ListShardResponse;
 
@@ -20,47 +21,37 @@ public class ClientConnectionContainer {
 	private long mGlobalConnectionValidInterval = 60L * 1000 * 1000 * 1000;
 	private long mGlobalConnectionUpdateSendSize = 100 * 1024 * 1024;
 
-	public ClientConnectionContainer()
-	{
-		mClient = null;
-		mGlobalConnection = null;
+	public ClientConnectionContainer(String endpoint, CredentialsProvider credentialsProvider) {
 		mShardConnections = new ConcurrentHashMap<String, ClientConnectionStatus>();
 		mShardLastUpdateTime = new ConcurrentHashMap<String, Long>();
-	}
-
-	public void Init(String endpoint, String accessId, String accessKey) {
-		mClient = new Client(endpoint, accessId, accessKey);
+		mClient = new Client(endpoint, credentialsProvider);
 	}
 
 	public ClientConnectionStatus GetShardConnection(String project, String logstore, int shardId) {
 		String key = project + "#" + logstore;
-		if (mShardLastUpdateTime.containsKey(key) == false)
-		{
-			mShardLastUpdateTime.put(key, (long)0);
+		if (!mShardLastUpdateTime.containsKey(key)) {
+			mShardLastUpdateTime.put(key, (long) 0);
 		}
 		String keyShard = project + "#" + logstore + "#" + shardId;
-		if (mShardConnections.containsKey(keyShard) == false) {
+		if (!mShardConnections.containsKey(keyShard)) {
 			UpdateShardConnection(key);
 		}
-		if (mShardConnections.containsKey(keyShard))
-		{
+		if (mShardConnections.containsKey(keyShard)) {
 			return mShardConnections.get(keyShard);
 		}
 		return null;
 	}
-	public void ResetGlobalConnection()
-	{
+
+	public void ResetGlobalConnection() {
 		mGlobalConnection = null;
 	}
 
 
-	public ClientConnectionStatus GetGlobalConnection()
-	{
+	public ClientConnectionStatus GetGlobalConnection() {
 		return mGlobalConnection;
 	}
 
-	public void UpdateConnections()
-	{
+	public void UpdateConnections() {
 		UpdateGlobalConnection();
 		UpdateShardConnections();
 	}
@@ -68,17 +59,17 @@ public class ClientConnectionContainer {
 	public void UpdateGlobalConnection() {
 		long curTime = System.nanoTime();
 		boolean toUpdate = false;
-		if (mGlobalConnection == null || mGlobalConnection.IsValidConnection() == false) {
-            toUpdate = true;
+		if (mGlobalConnection == null || !mGlobalConnection.IsValidConnection()) {
+			toUpdate = true;
 		} else if (curTime - mGlobalConnection.GetLastUsedTime() < mGlobalConnectionValidInterval
 				&& (curTime - mGlobalConnection.GetCreateTime() > mGlobalConnectionUpdateInterval
-						|| mGlobalConnection.GetSendDataSize() > mGlobalConnectionUpdateSendSize
-						|| mGlobalConnection.GetPullDataSize() > mGlobalConnectionUpdateSendSize)) {
-            toUpdate = true;
+				|| mGlobalConnection.GetSendDataSize() > mGlobalConnectionUpdateSendSize
+				|| mGlobalConnection.GetPullDataSize() > mGlobalConnectionUpdateSendSize)) {
+			toUpdate = true;
 		}
 		if (toUpdate) {
 			String ipAddress = mClient.GetServerIpAddress("");
-			if (ipAddress != null && ipAddress.isEmpty() == false) {
+			if (ipAddress != null && !ipAddress.isEmpty()) {
 				mGlobalConnection = new ClientConnectionStatus(ipAddress);
 			}
 		}
@@ -91,28 +82,23 @@ public class ClientConnectionContainer {
 		}
 	}
 
-	private void UpdateShardConnection(String projectLogstore)
-	{
-		if (mShardLastUpdateTime.containsKey(projectLogstore) == false)
-		{
-			return ;
+	private void UpdateShardConnection(String projectLogstore) {
+		if (!mShardLastUpdateTime.containsKey(projectLogstore)) {
+			return;
 		}
 		Long lastUpdateTime = mShardLastUpdateTime.get(projectLogstore);
 		long curTime = System.nanoTime();
-		if (curTime - lastUpdateTime < mShardConnectionUpdateInterval)
-		{
+		if (curTime - lastUpdateTime < mShardConnectionUpdateInterval) {
 			return;
 		}
 		String[] items = projectLogstore.split("#");
-		if (items.length == 2)
-		{
+		if (items.length == 2) {
 			try {
 				ListShardResponse res = mClient.ListShard(items[0], items[1]);
 				ArrayList<Shard> allShards = res.GetShards();
-				for(Shard shard : allShards)
-				{
+				for (Shard shard : allShards) {
 					String serverIp = shard.getServerIp();
-					if (serverIp != null && serverIp.isEmpty() == false) {
+					if (serverIp != null && !serverIp.isEmpty()) {
 						int shardId = shard.GetShardId();
 						String key = projectLogstore + "#" + shardId;
 						mShardConnections.put(key, new ClientConnectionStatus(serverIp));

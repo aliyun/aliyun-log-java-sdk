@@ -18,7 +18,7 @@ public class PullLogsRequest extends Request {
     private String endCursor;
     private String query;
     private String pullMode;
-    private boolean responseWithMeta;
+    private Consts.CompressType compressType = Consts.CompressType.LZ4;
 
     /**
      * Construct a get cursor request
@@ -64,11 +64,17 @@ public class PullLogsRequest extends Request {
      * @param query     query
      */
     public PullLogsRequest(String project, String logStore, int shardId, int count, String cursor, String endCursor,
-            String query, String pullmode, boolean responseWithMeta) {
+                           String query) {
+        this(project, logStore, shardId, count, cursor, endCursor);
+        setQuery(query);
+    }
+
+    @Deprecated
+    public PullLogsRequest(String project, String logStore, int shardId, int count, String cursor, String endCursor,
+                           String query, String pullmode) {
         this(project, logStore, shardId, count, cursor, endCursor);
         setQuery(query);
         setPullMode(pullmode);
-        setResponseWithMeta(responseWithMeta);
     }
 
     public String getLogStore() {
@@ -121,14 +127,21 @@ public class PullLogsRequest extends Request {
 
     public void setQuery(String query) {
         this.query = query;
+        if (query != null && !query.isEmpty()) {
+            setPullMode("scan_on_stream");
+        }
     }
 
     public void setPullMode(String pullMode) {
         this.pullMode = pullMode;
     }
 
-    public void setResponseWithMeta(boolean responseWithMeta) {
-        this.responseWithMeta = responseWithMeta;
+    public Consts.CompressType getCompressType() {
+        return compressType;
+    }
+
+    public void setCompressType(Consts.CompressType compressType) {
+        this.compressType = compressType;
     }
 
     @Override
@@ -141,7 +154,6 @@ public class PullLogsRequest extends Request {
         }
         if (pullMode != null && !pullMode.isEmpty()) {
             SetParam(Consts.CONST_PULL_MODE, pullMode);
-            SetParam(Consts.CONST_RESPONSE_WITH_META, String.valueOf(responseWithMeta));
         }
 
         if (query != null && !query.isEmpty()) {

@@ -18,7 +18,7 @@ public class AlertNewSample {
         String dashboardName = "dashboardtest";
         String logstore = "logstore-test";
 
-        host = "pub-cn-hangzhou-staging-share.log.aliyuncs.com";
+        host = "pub-cn-hangzhou-staging.log.aliyuncs.com";
         project = "test-hq123";
         alertName = "alert-1600604931412";
 

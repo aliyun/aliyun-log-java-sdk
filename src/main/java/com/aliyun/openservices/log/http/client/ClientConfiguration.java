@@ -7,6 +7,9 @@ import com.aliyun.openservices.log.http.comm.Protocol;
 import com.aliyun.openservices.log.http.comm.RetryStrategy;
 import com.aliyun.openservices.log.http.signer.SignVersion;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The client configuration for accessing Aliyun Log Service.
  */
@@ -41,6 +44,8 @@ public class ClientConfiguration {
     private int maxErrorRetry = 3;
     protected SignVersion signatureVersion = DEFAULT_SIGNATURE_VERSION;
     private String region;
+
+    private Map<String, String> defaultHeaders = new HashMap<String, String>();
 
     public ClientConfiguration() {
     }
@@ -285,5 +290,38 @@ public class ClientConfiguration {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+
+    /**
+     * Gets the default http headers. All these headers would be automatically
+     * added in every request. And if a header is also specified in the request,
+     * the default one will be overwritten.
+     *
+     * @return The default http headers.
+     */
+    public Map<String, String> getDefaultHeaders() {
+        return defaultHeaders;
+    }
+
+    /**
+     * Sets the default http headers. All these headers would be automatically
+     * added in every request. And if a header is also specified in the request,
+     * the default one will be overwritten.
+     *
+     * @param defaultHeaders Default http headers.
+     */
+    public void setDefaultHeaders(Map<String, String> defaultHeaders) {
+        this.defaultHeaders = defaultHeaders;
+    }
+
+    /**
+     * Add a default header into the default header list.
+     *
+     * @param key   The default header name.
+     * @param value The default header value.
+     */
+    public void addDefaultHeader(String key, String value) {
+        this.defaultHeaders.put(key, value);
     }
 }

@@ -23,19 +23,11 @@ public class LogStore implements Serializable {
     private long preserveStorage = -1;
     private long usedStorage = 0;
     private String productType = "";
-    private int archiveSeconds = 0;
     private String telemetryType = "";
     private EncryptConf encryptConf = null;
     private int hotTTL = -1;
     private String mode = null;
-
-    public int getArchiveSeconds() {
-        return archiveSeconds;
-    }
-
-    public void setArchiveSeconds(int archiveSeconds) {
-        this.archiveSeconds = archiveSeconds;
-    }
+    private int infrequentAccessTTL = -1;
 
     public String getTelemetryType() {
         return telemetryType;
@@ -83,30 +75,30 @@ public class LogStore implements Serializable {
         this.preserveStorage = logStore.preserveStorage;
         this.usedStorage = logStore.usedStorage;
         this.productType = logStore.getProductType();
-        this.archiveSeconds = logStore.getArchiveSeconds();
         this.telemetryType = logStore.getTelemetryType();
         this.encryptConf = logStore.encryptConf;
         this.hotTTL = logStore.hotTTL;
         this.mode = logStore.mode;
+        this.infrequentAccessTTL = logStore.infrequentAccessTTL;
     }
 
     public long getPreserveStorage() {
-		return preserveStorage;
-	}
+        return preserveStorage;
+    }
 
-	public void setPreserveStorage(long preserveStorage) {
-		this.preserveStorage = preserveStorage;
-	}
+    public void setPreserveStorage(long preserveStorage) {
+        this.preserveStorage = preserveStorage;
+    }
 
-	public long getUsedStorage() {
-		return usedStorage;
-	}
+    public long getUsedStorage() {
+        return usedStorage;
+    }
 
-	public void setUsedStorage(long usedStorage) {
-		this.usedStorage = usedStorage;
-	}
+    public void setUsedStorage(long usedStorage) {
+        this.usedStorage = usedStorage;
+    }
 
-	public int getmMaxSplitShard() {
+    public int getmMaxSplitShard() {
         return mMaxSplitShard;
     }
 
@@ -193,15 +185,13 @@ public class LogStore implements Serializable {
     public void SetShardCount(int shardCount) {
         this.shardCount = shardCount;
     }
-    
-    public void SetEncryptConf(EncryptConf encrypt_conf)
-    {
-    	this.encryptConf = encrypt_conf;
+
+    public void SetEncryptConf(EncryptConf encrypt_conf) {
+        this.encryptConf = encrypt_conf;
     }
-    
-    public EncryptConf getEncryptConf()
-    {
-    	return this.encryptConf;
+
+    public EncryptConf getEncryptConf() {
+        return this.encryptConf;
     }
 
     public int getHotTTL() {
@@ -212,6 +202,14 @@ public class LogStore implements Serializable {
         this.hotTTL = hotTTL;
     }
 
+    public int getInfrequentAccessTTL() {
+        return infrequentAccessTTL;
+    }
+
+    public void setInfrequentAccessTTL(int infrequentAccessTTL) {
+        this.infrequentAccessTTL = infrequentAccessTTL;
+    }
+
     public String getMode() {
         return mode;
     }
@@ -220,7 +218,7 @@ public class LogStore implements Serializable {
         this.mode = mode;
     }
 
-	public JSONObject ToRequestJson() {
+    public JSONObject ToRequestJson() {
         JSONObject logStoreDict = new JSONObject();
         logStoreDict.put("logstoreName", GetLogStoreName());
         logStoreDict.put("ttl", GetTtl());
@@ -234,14 +232,15 @@ public class LogStore implements Serializable {
         storage.put("preserved", preserveStorage);
         resourceQuota.put("storage", storage);
         logStoreDict.put("resourceQuota", resourceQuota);
-        logStoreDict.put("archiveSeconds", archiveSeconds);
         logStoreDict.put("telemetryType", telemetryType);
-        if(hotTTL > 0) {
-            logStoreDict.put("hot_ttl",hotTTL);
+        if (hotTTL > 0) {
+            logStoreDict.put("hot_ttl", hotTTL);
         }
-        if (this.encryptConf != null)
-        {
-        	logStoreDict.put("encrypt_conf", this.encryptConf.ToJsonObject());
+        if (infrequentAccessTTL >= 0) {
+            logStoreDict.put("infrequentAccessTTL", infrequentAccessTTL);
+        }
+        if (this.encryptConf != null) {
+            logStoreDict.put("encrypt_conf", this.encryptConf.ToJsonObject());
         }
         if (mode != null) {
             logStoreDict.put("mode", mode);
@@ -290,37 +289,34 @@ public class LogStore implements Serializable {
             if (dict.containsKey("productType")) {
                 productType = dict.getString("productType");
             }
-            if (dict.containsKey("archiveSeconds")) {
-                archiveSeconds = dict.getIntValue("archiveSeconds");
-            }
             if (dict.containsKey("telemetryType")) {
                 telemetryType = dict.getString("telemetryType");
             }
             // set resourceQuota
             if (dict.containsKey("resourceQuota")) {
-            	JSONObject resourceQuotaJson = dict.getJSONObject("resourceQuota");
-            	if (resourceQuotaJson.containsKey("storage")) {
-            		JSONObject storageJson = resourceQuotaJson.getJSONObject("storage");
-            		if (storageJson.containsKey("preserved")) {
-            			preserveStorage = storageJson.getLong("preserved");
-            		}
-            		if (storageJson.containsKey("used")) {
-            			usedStorage = storageJson.getLong("used");
-            		}
-            	}
+                JSONObject resourceQuotaJson = dict.getJSONObject("resourceQuota");
+                if (resourceQuotaJson.containsKey("storage")) {
+                    JSONObject storageJson = resourceQuotaJson.getJSONObject("storage");
+                    if (storageJson.containsKey("preserved")) {
+                        preserveStorage = storageJson.getLong("preserved");
+                    }
+                    if (storageJson.containsKey("used")) {
+                        usedStorage = storageJson.getLong("used");
+                    }
+                }
             }
-            if (dict.containsKey("encrypt_conf"))
-            {
-            	EncryptConf encypt_config = new EncryptConf();
-            	encypt_config.FromJsonObject(dict.getJSONObject("encrypt_conf"));
-            	this.encryptConf = encypt_config;
+            if (dict.containsKey("encrypt_conf")) {
+                EncryptConf encypt_config = new EncryptConf();
+                encypt_config.FromJsonObject(dict.getJSONObject("encrypt_conf"));
+                this.encryptConf = encypt_config;
             }
-            if (dict.containsKey("hot_ttl"))
-            {
+            if (dict.containsKey("hot_ttl")) {
                 this.hotTTL = dict.getInteger("hot_ttl");
             }
-            if (dict.containsKey("mode"))
-            {
+            if (dict.containsKey("infrequentAccessTTL")) {
+                this.infrequentAccessTTL = dict.getInteger("infrequentAccessTTL");
+            }
+            if (dict.containsKey("mode")) {
                 this.mode = dict.getString("mode");
             }
         } catch (JSONException e) {

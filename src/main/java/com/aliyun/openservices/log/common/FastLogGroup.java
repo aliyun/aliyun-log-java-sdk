@@ -7,12 +7,12 @@ import java.util.List;
 
 public class FastLogGroup {
 
-    private byte[] rawBytes;
+    private final byte[] rawBytes;
     // [beginOffset, endOffset)
-    private int beginOffset;
-    private int endOffset;
-    private ArrayList<FastLog> logs;
-    private ArrayList<FastLogTag> tags;
+    private final int beginOffset;
+    private final int endOffset;
+    private final List<FastLog> logs;
+    private final List<FastLogTag> tags;
     private int categoryOffset; //contain two varint to support getBytes of FastLogGroup
     private int topicOffset;
     private int sourceOffset;
@@ -295,5 +295,28 @@ public class FastLogGroup {
 
     public boolean hasMachineUUID() {
         return this.machineUUIDOffset >= 0;
+    }
+
+    public byte[] getRawBytes() {
+        return rawBytes;
+    }
+
+    public int getBeginOffset() {
+        return beginOffset;
+    }
+
+    public int getEndOffset() {
+        return endOffset;
+    }
+
+    public int getTopicOffset() {
+        return topicOffset;
+    }
+
+    public int getSourceOffset() {
+        return sourceOffset;
+    }
+    public byte[] getLogGroupBytes() {
+        return logGroupBytes;
     }
 }

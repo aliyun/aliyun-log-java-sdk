@@ -77,17 +77,6 @@ public class LogStoreFunctionTest extends MetaAPIBaseFunctionTest {
 
         // TODO test encrypt conf
         logStore.SetEncryptConf(null);
-        logStore.setArchiveSeconds(randomInt(100));
-        try {
-            client.CreateLogStore(TEST_PROJECT, logStore);
-            fail("Create invalid archive seconds should fail");
-        } catch (LogException ex) {
-            assertEquals(ex.getErrorCode(), "ParameterInvalid");
-            assertEquals(ex.getMessage(), "invalid archive seconds " + logStore.getArchiveSeconds());
-            assertEquals(ex.getHttpCode(), 400);
-        }
-
-        logStore.setArchiveSeconds(randomBetween(86400, logStore.GetTtl() * 86400));
 
         if (randomBoolean()) {
             logStore.setTelemetryType("metrics");
@@ -104,7 +93,6 @@ public class LogStoreFunctionTest extends MetaAPIBaseFunctionTest {
         assertEquals(appendMeta, logStore2.isAppendMeta());
         assertEquals(webTracking, logStore2.isEnableWebTracking());
         assertEquals(logStore.getTelemetryType(), logStore2.getTelemetryType());
-        assertEquals(logStore.getArchiveSeconds(), logStore2.getArchiveSeconds());
         assertEquals(logStore.getUsedStorage(), 0);
         assertEquals(logStore.getProductType(), logStore2.getProductType());
         assertEquals(logStore.getEncryptConf(), logStore2.getEncryptConf());
@@ -139,7 +127,6 @@ public class LogStoreFunctionTest extends MetaAPIBaseFunctionTest {
         assertEquals("logstore-for-testing2", logStore3.GetLogStoreName());
         assertFalse(logStore3.isEnableWebTracking());
         assertEquals(logStore.getTelemetryType(), logStore3.getTelemetryType());
-        assertEquals(logStore.getArchiveSeconds(), logStore3.getArchiveSeconds());
         assertEquals(logStore.getUsedStorage(), 0);
         assertEquals(logStore.getProductType(), logStore3.getProductType());
         assertEquals(logStore.getEncryptConf(), logStore3.getEncryptConf());
@@ -166,7 +153,6 @@ public class LogStoreFunctionTest extends MetaAPIBaseFunctionTest {
         assertEquals("logstore-for-testing3", logStore3.GetLogStoreName());
         assertFalse(logStore3.isEnableWebTracking());
         assertEquals(logStore.getTelemetryType(), logStore3.getTelemetryType());
-        assertEquals(logStore.getArchiveSeconds(), logStore3.getArchiveSeconds());
         assertEquals(logStore.getUsedStorage(), 0);
         assertEquals(logStore.getProductType(), logStore3.getProductType());
         assertEquals(logStore.getEncryptConf(), logStore3.getEncryptConf());

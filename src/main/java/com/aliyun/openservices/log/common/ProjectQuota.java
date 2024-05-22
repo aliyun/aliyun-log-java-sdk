@@ -21,6 +21,9 @@ public class ProjectQuota implements Serializable {
     private int ingestion;
     private int alert;
     private int report;
+
+    private int scheduledSQL;
+
     private long readQpsPerMin;
     private long writeQpsPerMin;
     private long writeSizePerMin;
@@ -129,6 +132,14 @@ public class ProjectQuota implements Serializable {
         this.report = report;
     }
 
+    public int getScheduledSQL() {
+        return scheduledSQL;
+    }
+
+    public void setScheduledSQL(int scheduledSQL) {
+        this.scheduledSQL = scheduledSQL;
+    }
+
     public long getReadQpsPerMin() {
         return readQpsPerMin;
     }
@@ -177,6 +188,7 @@ public class ProjectQuota implements Serializable {
         ingestion = jsonObject.getIntValue("ingestion");
         alert = jsonObject.getIntValue("alert");
         report = jsonObject.getIntValue("report");
+        scheduledSQL = jsonObject.getIntValue("scheduledSQL");
         writeSizePerMin = jsonObject.getLongValue("writeSizePerMin");
         writeQpsPerMin = jsonObject.getLongValue("writeQpsPerMin");
         readQpsPerMin = jsonObject.getLongValue("readQpsPerMin");
@@ -198,6 +210,7 @@ public class ProjectQuota implements Serializable {
                 ", ingestion=" + ingestion +
                 ", alert=" + alert +
                 ", report=" + report +
+                ", scheduledSQL=" + scheduledSQL +
                 ", readQpsPerMin=" + readQpsPerMin +
                 ", writeQpsPerMin=" + writeQpsPerMin +
                 ", writeSizePerMin=" + writeSizePerMin +

@@ -1,15 +1,15 @@
 package com.aliyun.openservices.log.common.auth;
 
-public class DefaultCredentails implements Credentials {
+public class DefaultCredentials implements Credentials {
     private String accessKeyId;
     private String accessKeySecret;
     private String securityToken;
 
-    public DefaultCredentails(String accessKeyId, String accessKeySecret) {
+    public DefaultCredentials(String accessKeyId, String accessKeySecret) {
         this(accessKeyId, accessKeySecret, null);
     }
 
-    public DefaultCredentails(String accessKeyId, String accessKeySecret, String securityToken) {
+    public DefaultCredentials(String accessKeyId, String accessKeySecret, String securityToken) {
         this.accessKeyId = accessKeyId;
         this.accessKeySecret = accessKeySecret;
         this.securityToken = securityToken;

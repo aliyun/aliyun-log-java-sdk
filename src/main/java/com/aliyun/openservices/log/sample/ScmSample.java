@@ -3,13 +3,9 @@ package com.aliyun.openservices.log.sample;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.Client;
-import com.aliyun.openservices.log.common.ACL;
-import com.aliyun.openservices.log.common.ACLPrivileges;
 import com.aliyun.openservices.log.common.Config;
 import com.aliyun.openservices.log.common.ConfigInputDetail;
 import com.aliyun.openservices.log.common.ConfigOutputDetail;
-import com.aliyun.openservices.log.common.Consts.ACLAction;
-import com.aliyun.openservices.log.common.Consts.ACLPrivilege;
 import com.aliyun.openservices.log.common.GroupAttribute;
 import com.aliyun.openservices.log.common.Index;
 import com.aliyun.openservices.log.common.IndexKey;
@@ -32,12 +28,10 @@ import com.aliyun.openservices.log.response.DeleteMachineGroupResponse;
 import com.aliyun.openservices.log.response.GetConfigResponse;
 import com.aliyun.openservices.log.response.GetIndexResponse;
 import com.aliyun.openservices.log.response.GetMachineGroupResponse;
-import com.aliyun.openservices.log.response.ListACLResponse;
 import com.aliyun.openservices.log.response.ListConfigResponse;
 import com.aliyun.openservices.log.response.ListMachineGroupResponse;
 import com.aliyun.openservices.log.response.ListMachinesResponse;
 import com.aliyun.openservices.log.response.RemoveConfigFromMachineGroupResponse;
-import com.aliyun.openservices.log.response.UpdateACLResponse;
 import com.aliyun.openservices.log.response.UpdateConfigResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupMachineResponse;
 import com.aliyun.openservices.log.response.UpdateMachineGroupResponse;
@@ -308,59 +302,6 @@ class ScmSampleClient {
 		}
 	}
 
-	public void UpdateACL() {
-		String principleId = "ANONYMOUS"; // or AliUID
-		ACLPrivileges privileges = new ACLPrivileges();
-		privileges.AddPrivilege(ACLPrivilege.READ);
-		privileges.AddPrivilege(ACLPrivilege.WRITE);
-		privileges.AddPrivilege(ACLPrivilege.LIST); 
-
-		ACL acl = new ACL(principleId, privileges, ACLAction.GRANT);
-
-		try {
-			UpdateACLResponse res = client.UpdateACL(project, acl);
-
-			System.out.println("RequestId:" + res.GetRequestId());
-		} catch (LogException e) {
-			e.printStackTrace();
-		}
-		
-		ACLPrivileges privileges_revoke = new ACLPrivileges();
-		privileges_revoke.AddPrivilege(ACLPrivilege.WRITE);
-		acl = new ACL(principleId, privileges_revoke, ACLAction.REVOKE);
-		
-		try {
-			UpdateACLResponse res = client.UpdateACL(project, acl);
-
-			System.out.println("RequestId:" + res.GetRequestId());
-		} catch (LogException e) {
-			e.printStackTrace();
-		}
-		
-	}
-
-
-	public void ListACLs() {
-		try {
-			ListACLResponse res = client.ListACL(project);
-			System.out.println("RequestId:" + res.GetRequestId());
-			int total = res.GetTotal();
-			int size = res.GetCount();
-			System.out.println("total:" + total);
-			System.out.println("Size:" + size);
-
-
-			System.out.println("acls:" + res.GetACLs().toString());
-			for (ACL acl : res.GetACLs()) {
-				System.out.println("Priciple" + acl.GetPrinciple());
-				System.out.println("Privilege"
-						+ acl.GetPrivilege().ToJsonString());
-			}
-		} catch (LogException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public void CreateMachineGroup() {
 		//Construct machineGroup type1: using ArrayList<Machine> to create machinelist
 		String groupType = "";
@@ -618,10 +559,6 @@ public class ScmSample {
 
 		sample.ApplyConfigToMachineGroup();
 		sample.RemoveConfigFromMachineGroup();
-
-		// ------------------------ACL----------------------------
-		sample.UpdateACL();
-		sample.ListACLs();
 
 		sample.CreateIndex();
 		sample.GetIndex();

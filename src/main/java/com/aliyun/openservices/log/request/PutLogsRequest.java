@@ -31,13 +31,21 @@ public class PutLogsRequest extends Request {
      * @return the compressType
      */
     public CompressType GetCompressType() {
-        return compressType;
+        return getCompressType();
     }
 
     /**
      * @param compressType the compressType to set
      */
     public void SetCompressType(CompressType compressType) {
+        setCompressType(compressType);
+    }
+
+    public CompressType getCompressType() {
+        return compressType;
+    }
+
+    public void setCompressType(CompressType compressType) {
         this.compressType = compressType;
     }
 

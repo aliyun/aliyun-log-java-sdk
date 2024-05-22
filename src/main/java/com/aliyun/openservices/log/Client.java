@@ -10,12 +10,11 @@ import com.alibaba.fastjson.parser.Feature;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.Consts.CompressType;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
-import com.aliyun.openservices.log.common.auth.Credentials;
-import com.aliyun.openservices.log.common.auth.DefaultCredentails;
-import com.aliyun.openservices.log.common.auth.ECSRoleCredentials;
+import com.aliyun.openservices.log.common.auth.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.*;
 import com.aliyun.openservices.log.http.comm.*;
+import com.aliyun.openservices.log.http.signer.SignVersion;
 import com.aliyun.openservices.log.http.signer.SlsSigner;
 import com.aliyun.openservices.log.http.signer.SlsSignerBase;
 import com.aliyun.openservices.log.http.utils.CodingUtils;
@@ -37,12 +36,14 @@ import static com.aliyun.openservices.log.common.Consts.CONST_LOGSTORE_REPLICATI
  * Client class is the main class in the sdk, it implements the interfaces
  * defined in LogService. It can be used to send request to the log service
  * server to put/get data.
+ * <p></p>
+ * It is highly recommended to use {@link ClientBuilder} to build {@link Client} instance.
  */
 public class Client implements LogService {
 	private static final String DEFAULT_USER_AGENT = VersionInfoUtils.getDefaultUserAgent();
 	private String httpType;
 	private String hostName;
-	private Credentials credentials;
+	private CredentialsProvider credentialsProvider;
 	private String sourceIp;
 	private ServiceClient serviceClient;
 	private String realIpForConsole;
@@ -137,7 +138,7 @@ public class Client implements LogService {
 	 *            aliyun accessKey
 	 */
 	public Client(String endpoint, String accessId, String accessKey) {
-		this(endpoint, new DefaultCredentails(accessId, accessKey), null);
+		this(endpoint, new DefaultCredentials(accessId, accessKey), null);
 	}
 
 	public Client(String endpoint, String accessId, String accessKey, ClientConfiguration configuration) {
@@ -145,7 +146,7 @@ public class Client implements LogService {
 	}
 
 	public Client(String endpoint, String roleName) {
-		this(endpoint, new ECSRoleCredentials(roleName), null);
+		this(endpoint, new ECSRoleCredentialsProvider(roleName), null);
 	}
 
 	/**
@@ -168,36 +169,71 @@ public class Client implements LogService {
 	 *            client ip address
 	 */
 	public Client(String endpoint, String accessId, String accessKey, String sourceIp) {
-		this(endpoint, new DefaultCredentails(accessId, accessKey), sourceIp);
+		this(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
 	}
 
 	public Client(String endpoint, Credentials credentials, String sourceIp) {
+		ClientConfiguration clientConfig = getDefaultClientConfiguration();
+		this.serviceClient = buildServiceClient(clientConfig);
+		configure(endpoint, credentials, sourceIp);
+	}
+
+	public Client(String endpoint, CredentialsProvider credentialsProvider) {
+		this(endpoint, credentialsProvider, "");
+	}
+
+	static ClientConfiguration getDefaultClientConfiguration() {
 		ClientConfiguration clientConfig = new ClientConfiguration();
 		clientConfig.setMaxConnections(Consts.HTTP_CONNECT_MAX_COUNT);
 		clientConfig.setConnectionTimeout(Consts.HTTP_CONNECT_TIME_OUT);
 		clientConfig.setSocketTimeout(Consts.HTTP_SEND_TIME_OUT);
-		this.serviceClient = new DefaultServiceClient(clientConfig);
-		configure(endpoint, credentials, sourceIp);
+		return clientConfig;
+	}
+
+	static ServiceClient buildServiceClient(ClientConfiguration clientConfig) {
+		if (clientConfig.isRequestTimeoutEnabled()) {
+			return new TimeoutServiceClient(clientConfig);
+		}
+		return new DefaultServiceClient(clientConfig);
+	}
+	/**
+	 * @param endpoint            required not null, the log service server address
+	 * @param credentialsProvider required not null, interface which provide credentials
+	 * @param sourceIp            nullable, client ip address
+	 */
+	public Client(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
+		this(endpoint, credentialsProvider, new DefaultServiceClient(getDefaultClientConfiguration()), sourceIp);
+	}
+
+	/**
+	 * @param endpoint            required not null, the log service server address
+	 * @param credentialsProvider required not null, interface which provide credentials
+	 * @param serviceClient       required not null, customized service client
+	 * @param sourceIp            nullable, client ip address
+	 */
+	public Client(String endpoint, CredentialsProvider credentialsProvider, ServiceClient serviceClient, String sourceIp) {
+		this.serviceClient = serviceClient;
+		configure(endpoint, credentialsProvider, sourceIp);
 	}
 
 	/**
 	 * @deprecated Use Client(String endpoint, String accessId, String accessKey, String sourceIp,
-	 * 	              ClientConfiguration config) instead.
+	 * ClientConfiguration config) instead.
 	 */
 	@Deprecated
-    public Client(String endpoint, String accessId, String accessKey, String sourceIp,
-                  int connectMaxCount, int connectTimeout, int sendTimeout) {
-        ClientConfiguration clientConfig = new ClientConfiguration();
-        clientConfig.setMaxConnections(connectMaxCount);
-        clientConfig.setConnectionTimeout(connectTimeout);
-        clientConfig.setSocketTimeout(sendTimeout);
-        this.serviceClient = new DefaultServiceClient(clientConfig);
-		configure(endpoint, new DefaultCredentails(accessId, accessKey), sourceIp);
-    }
+	public Client(String endpoint, String accessId, String accessKey, String sourceIp,
+				  int connectMaxCount, int connectTimeout, int sendTimeout) {
+		ClientConfiguration clientConfig = new ClientConfiguration();
+		clientConfig.setMaxConnections(connectMaxCount);
+		clientConfig.setConnectionTimeout(connectTimeout);
+		clientConfig.setSocketTimeout(sendTimeout);
+		this.serviceClient = buildServiceClient(clientConfig);
+		configure(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
+	}
 
     public Client(String endpoint, String accessId, String accessKey, ServiceClient serviceClient) {
         this.serviceClient = serviceClient;
-		configure(endpoint, new DefaultCredentails(accessId, accessKey), null);
+		configure(endpoint, new DefaultCredentials(accessId, accessKey), null);
     }
 
     public synchronized void setEndpoint(String endpoint) {
@@ -220,56 +256,130 @@ public class Client implements LogService {
 		if (NetworkUtils.isIPAddr(this.hostName)) {
 			throw new IllegalArgumentException("The ip address is not supported");
 		}
-	}
-
-    private void configure(String endpoint, Credentials credentials, String sourceIp) {
-		setEndpoint(endpoint);
-	    this.credentials = credentials;
-	    this.sourceIp = sourceIp;
-	    if (sourceIp == null || sourceIp.isEmpty()) {
-		    this.sourceIp = NetworkUtils.getLocalMachineIP();
-	    }
-	    ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
-	    this.signer = SlsSignerBase.createRequestSigner(clientConfiguration, credentials);
-    }
-
-	public Client(String endpoint, String accessId, String accessKey, String sourceIp,
-	              ClientConfiguration config) {
-		Args.notNull(config, "Config");
-		if (config.isRequestTimeoutEnabled()) {
-			this.serviceClient = new TimeoutServiceClient(config);
-		} else {
-			this.serviceClient = new DefaultServiceClient(config);
+		if (getClientConfiguration().getRegion() == null) {
+			setSignV4IfInAcdr(endpoint);
 		}
-		configure(endpoint, new DefaultCredentails(accessId, accessKey), sourceIp);
 	}
 
+	private void configure(String endpoint, Credentials credentials, String sourceIp) {
+		configure(endpoint, new StaticCredentialsProvider(credentials), sourceIp);
+	}
+
+	private void configure(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
+		setEndpoint(endpoint);
+		this.sourceIp = sourceIp;
+		if (sourceIp == null || sourceIp.isEmpty()) {
+			this.sourceIp = NetworkUtils.getLocalMachineIP();
+		}
+		this.credentialsProvider = credentialsProvider;
+		updateSigner(credentialsProvider);
+	}
+
+	/**
+	 * @param endpoint required not null, the log service server address
+	 * @param credentialsProvider required not null, interface which provide credentials
+	 * @param config   required not null, client configuration
+	 * @param sourceIp nullable, client ip address
+	 */
+	public Client(String endpoint, CredentialsProvider credentialsProvider,
+				  ClientConfiguration config,
+				  String sourceIp) {
+		Args.notNull(config, "Config");
+		this.serviceClient = buildServiceClient(config);
+		configure(endpoint, credentialsProvider, sourceIp);
+	}
+
+	/**
+	 * @param endpoint  required not null, the log service server address
+	 * @param accessId  required not null, access key id
+	 * @param accessKey required not null, access key secret
+	 * @param config    required not null, client configuration
+	 * @param sourceIp  nullable, client ip address
+	 */
+	@Deprecated
+	public Client(String endpoint, String accessId, String accessKey, String sourceIp,
+				  ClientConfiguration config) {
+		this(endpoint, new StaticCredentialsProvider(new DefaultCredentials(accessId, accessKey)), config, sourceIp);
+	}
+
+	/**
+	 * set credentialProvider and update the signer.
+	 *
+	 * @param credentialsProvider
+	 */
+	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
+		this.credentialsProvider = credentialsProvider;
+		this.updateSigner(credentialsProvider);
+	}
+
+	private void updateSigner(CredentialsProvider credentialsProvider) {
+		ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
+		this.signer = SlsSignerBase.createRequestSigner(clientConfiguration, credentialsProvider);
+	}
+
+	private void ensureStaticCredentialProvider() {
+		if (!(this.credentialsProvider instanceof StaticCredentialsProvider)) {
+			throw new RuntimeException("can only set or get AccessId/AccessKey/SecurityToken on StaticCredentialProvider");
+		}
+	}
+
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public String getAccessId() {
-		return credentials.getAccessKeyId();
+		ensureStaticCredentialProvider();
+		return credentialsProvider.getCredentials().getAccessKeyId();
 	}
 
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public void setAccessId(String accessId) {
-		credentials.setAccessKeyId(accessId);
+		ensureStaticCredentialProvider();
+		StaticCredentialsProvider scp = (StaticCredentialsProvider) this.credentialsProvider;
+		scp.setAccessKeyId(accessId);
 	}
 
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public String getAccessKey() {
-		return credentials.getAccessKeySecret();
+		ensureStaticCredentialProvider();
+		return credentialsProvider.getCredentials().getAccessKeySecret();
 	}
 
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public void setAccessKey(String accessKey) {
-		credentials.setAccessKeySecret(accessKey);
+		ensureStaticCredentialProvider();
+		StaticCredentialsProvider scp = (StaticCredentialsProvider) this.credentialsProvider;
+		scp.setAccessKeySecret(accessKey);
 	}
 
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public String getSecurityToken() {
-		return credentials.getSecurityToken();
+		ensureStaticCredentialProvider();
+		return credentialsProvider.getCredentials().getSecurityToken();
 	}
 
+	/**
+	 * If client's credentialsProvider is not of type StaticCredentialsProvider, a RuntimeException will be thrown.
+	 */
 	public void setSecurityToken(String securityToken) {
-		credentials.setSecurityToken(securityToken);
+		ensureStaticCredentialProvider();
+		StaticCredentialsProvider scp = (StaticCredentialsProvider) this.credentialsProvider;
+		scp.setSecurityToken(securityToken);
 	}
 
 	public void shutdown() {
 		serviceClient.shutdown();
+	}
+
+	public ClientConfiguration getClientConfiguration() {
+		return serviceClient.getClientConfiguration();
 	}
 
 	URI GetHostURI(String project) {
@@ -549,7 +659,7 @@ public class Client implements LogService {
 		String logStore = request.GetLogStore();
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		String shardKey = request.getHashKey();
-		CompressType compressType = request.GetCompressType();
+		CompressType compressType = request.getCompressType();
 		CodingUtils.assertParameterNotNull(compressType, "compressType");
 
 		byte[] logBytes = request.GetLogGroupBytes();
@@ -582,6 +692,8 @@ public class Client implements LogService {
 				for (LogItem item : logItems) {
 					Logs.Log.Builder log = logs.addLogsBuilder();
 					log.setTime(item.mLogTime);
+					if (item.mLogTimeNsPart != 0)
+						log.setTimeNs(item.mLogTimeNsPart);
 					for (LogContent content : item.mContents) {
 						CodingUtils.assertStringNotNullOrEmpty(content.mKey, "key");
 						Logs.Log.Content.Builder contentBuilder = log
@@ -607,6 +719,8 @@ public class Client implements LogService {
 				for (LogItem item : logItems) {
 					JSONObject jsonObjInner = new JSONObject();
 					jsonObjInner.put(Consts.CONST_RESULT_TIME, item.mLogTime);
+					if (item.mLogTimeNsPart != 0)
+						jsonObjInner.put(Consts.CONST_RESULT_TIME_NS_PART, item.mLogTimeNsPart);
 					for (LogContent content : item.mContents) {
 						jsonObjInner.put(content.mKey, content.mValue);
 					}
@@ -643,19 +757,22 @@ public class Client implements LogService {
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		headParameter.put(Consts.CONST_CONTENT_TYPE, request.getContentType());
 		long originalSize = logBytes.length;
-
-		if (compressType == CompressType.LZ4) {
-			logBytes = LZ4Encoder.compressToLhLz4Chunk(logBytes.clone());
-			headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE,
-					compressType.toString());
-		} else if (compressType == CompressType.GZIP) {
-			logBytes = GzipUtils.compress(logBytes);
-			headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE,
-					compressType.toString());
+		switch (compressType) {
+			case LZ4:
+				// Why clone here?
+				logBytes = LZ4Encoder.compressToLhLz4Chunk(logBytes.clone());
+				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
+				break;
+			case GZIP:
+				logBytes = GzipUtils.compress(logBytes);
+				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
+				break;
+			case ZSTD:
+				logBytes = ZSTDEncoder.compress(logBytes);
+				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
+				break;
 		}
-
-		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE,
-				String.valueOf(originalSize));
+		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(originalSize));
 
 		Map<String, String> urlParameter = request.GetAllParams();
 		String resourceUri = "/logstores/" + logStore;
@@ -704,7 +821,7 @@ public class Client implements LogService {
 
 	private ClientConnectionStatus GetGlobalConnectionStatus() throws LogException {
 		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
-				.GetConnectionContainer(this.hostName, credentials.getAccessKeyId(), credentials.getAccessKeySecret());
+				.GetConnectionContainer(this.hostName, credentialsProvider);
 		ClientConnectionStatus connection_status = connection_container.GetGlobalConnection();
 		if (connection_status == null || !connection_status.IsValidConnection()) {
 			connection_container.UpdateGlobalConnection();
@@ -721,7 +838,7 @@ public class Client implements LogService {
 	private ClientConnectionStatus GetShardConnectionStatus(String project, String logstore, int shard_id)
 			throws LogException {
 		ClientConnectionContainer connection_container = ClientConnectionHelper.getInstance()
-				.GetConnectionContainer(this.hostName, credentials.getAccessKeyId(), credentials.getAccessKeySecret());
+				.GetConnectionContainer(this.hostName, credentialsProvider);
 		ClientConnectionStatus connection_status = connection_container.GetShardConnection(project, logstore, shard_id);
 		if (connection_status != null && connection_status.IsValidConnection()) {
 			return connection_status;
@@ -891,11 +1008,9 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter, request.getRequestBody());
 		return GetLogsResponse.deserializeFrom(response, deserialize);
 	}
-
 	public GetLogsResponse GetLogs(GetLogsRequest request) throws LogException {
 		return getLogsInternal(request, true);
 	}
-
 	@Deprecated
 	public GetLogsResponseV2 GetLogsV2(GetLogsRequestV2 request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -910,7 +1025,6 @@ public class Client implements LogService {
 				resourceUri, urlParameter, headParameter, request.getRequestBody());
 		return GetLogsResponseV2.deserializeFrom(response);
 	}
-
 	public GetContextLogsResponse getContextLogs(GetContextLogsRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		Map<String, String> urlParameter = request.GetAllParams();
@@ -1176,23 +1290,24 @@ public class Client implements LogService {
 			throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-		return BatchGetLog(new BatchGetLogRequest(project, logStore, shardId,
-				count, cursor, end_cursor));
+		return BatchGetLog(new BatchGetLogRequest(project, logStore, shardId, count, cursor, end_cursor));
 	}
 
 	@Deprecated
 	@Override
-	public BatchGetLogResponse BatchGetLog(BatchGetLogRequest request)
-			throws LogException {
+	public BatchGetLogResponse BatchGetLog(BatchGetLogRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		String logStore = request.GetLogStore();
 		CodingUtils.validateLogstore(logStore);
-
 		Map<String, String> headParameter = GetCommonHeadPara(project);
         String resourceUri = "/logstores/" + logStore + "/shards/" + request.GetShardId();
-		headParameter.put(Consts.CONST_ACCEPT_ENCODING, Consts.CONST_LZ4);
+		CompressType compressType = request.getCompressType();
+		if (compressType == null || compressType == CompressType.NONE) {
+			compressType = CompressType.LZ4;
+		}
+		headParameter.put(Consts.CONST_ACCEPT_ENCODING, compressType.toString());
 		headParameter.put(Consts.CONST_HTTP_ACCEPT, Consts.CONST_PROTO_BUF);
 		Map<String, String> urlParameter = request.GetAllParams();
 		ResponseMessage response;
@@ -1234,10 +1349,13 @@ public class Client implements LogService {
         String project = request.GetProject();
         String logStore = request.getLogStore();
 		CodingUtils.validateLogstore(logStore);
-
         Map<String, String> headers = GetCommonHeadPara(project);
         String resourceUri = "/logstores/" + logStore + "/shards/" + request.getShardId();
-        headers.put(Consts.CONST_ACCEPT_ENCODING, Consts.CONST_LZ4);
+		CompressType compressType = request.getCompressType();
+		if (compressType == null || compressType == CompressType.NONE) {
+			compressType = CompressType.LZ4;
+		}
+		headers.put(Consts.CONST_ACCEPT_ENCODING, compressType.toString());
         headers.put(Consts.CONST_HTTP_ACCEPT, Consts.CONST_PROTO_BUF);
         Map<String, String> urlParameter = request.GetAllParams();
 
@@ -1275,8 +1393,7 @@ public class Client implements LogService {
 		return CreateConfig(new CreateConfigRequest(project, config));
 	}
 
-	public CreateConfigResponse CreateConfig(CreateConfigRequest request)
-			throws LogException {
+	public CreateConfigResponse CreateConfig(CreateConfigRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -1795,139 +1912,6 @@ public class Client implements LogService {
 		return new RemoveConfigFromMachineGroupResponse(resHeaders);
 	}
 
-	public UpdateACLResponse UpdateACL(String project, ACL acl)
-			throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		CodingUtils.assertParameterNotNull(acl, "acl");
-		return UpdateACL(new UpdateACLRequest(project, acl));
-	}
-
-	public UpdateACLResponse UpdateACL(String project, String logStore, ACL acl)
-			throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		CodingUtils.assertParameterNotNull(logStore, "logStore");
-		CodingUtils.assertParameterNotNull(acl, "acl");
-		return UpdateACL(new UpdateACLRequest(project, logStore, acl));
-	}
-
-	public UpdateACLResponse UpdateACL(UpdateACLRequest request)
-			throws LogException {
-		CodingUtils.assertParameterNotNull(request, "request");
-		String project = request.GetProject();
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		String logStore = request.GetLogStore();
-		CodingUtils.assertParameterNotNull(logStore, "logStore");
-		ACL acl = request.GetACL();
-		CodingUtils.assertParameterNotNull(acl, "acl");
-		Map<String, String> headParameter = GetCommonHeadPara(project);
-		byte[] body = encodeToUtf8(acl.ToRequestString());
-		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-		String resourceUri = "/";
-		if (!logStore.isEmpty()) {
-			resourceUri += "logstores/" + logStore;
-		}
-		Map<String, String> urlParameter = request.GetAllParams();
-		ResponseMessage response = SendData(project, HttpMethod.PUT,
-				resourceUri, urlParameter, headParameter, body);
-		Map<String, String> resHeaders = response.getHeaders();
-		return new UpdateACLResponse(resHeaders);
-	}
-
-	public ListACLResponse ListACL(String project) throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		return ListACL(new ListACLRequest(project));
-	}
-
-	public ListACLResponse ListACL(String project, int offset, int size)
-			throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		return ListACL(new ListACLRequest(project, offset, size));
-	}
-
-	public ListACLResponse ListACL(String project, String logStore)
-			throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		CodingUtils.assertParameterNotNull(logStore, "logStore");
-		return ListACL(new ListACLRequest(project, logStore));
-	}
-
-	public ListACLResponse ListACL(String project, String logStore, int offset,
-			int size) throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		CodingUtils.assertParameterNotNull(logStore, "logStore");
-		return ListACL(new ListACLRequest(project, logStore, offset, size));
-	}
-
-	protected ACL ExtractACLFromResponse(JSONObject dict, String requestId)
-			throws LogException {
-		ACL acl = new ACL();
-		try {
-			acl.FromJsonString(dict.toString());
-		} catch (LogException e) {
-			throw new LogException(e.GetErrorCode(), e.GetErrorMessage(),
-					e.getCause(), requestId);
-		}
-		return acl;
-	}
-
-	protected List<ACL> ExtractACLs(JSONObject object, String requestId) throws LogException {
-		List<ACL> acls = new ArrayList<ACL>();
-		JSONArray array = new JSONArray();
-		try {
-			array = object.getJSONArray("acls");
-			if (array == null) {
-				return acls;
-			}
-			for (int i = 0; i < array.size(); i++) {
-				JSONObject aclDict = array.getJSONObject(i);
-				if (aclDict == null) {
-					continue;
-				}
-				ACL acl = ExtractACLFromResponse(aclDict, requestId);
-				acls.add(acl);
-			}
-		} catch (JSONException e) {
-			throw new LogException(ErrorCodes.BAD_RESPONSE,
-					"The response is not valid acl json array string : "
-							+ array.toString(), e, requestId);
-		}
-		return acls;
-	}
-
-	public ListACLResponse ListACL(ListACLRequest request) throws LogException {
-		CodingUtils.assertParameterNotNull(request, "request");
-		String project = request.GetProject();
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		String logStore = request.GetLogStore();
-		CodingUtils.assertParameterNotNull(logStore, "logStore");
-		Map<String, String> headParameter = GetCommonHeadPara(project);
-		String resourceUri = "/";
-		if (!logStore.isEmpty()) {
-			resourceUri += "logstores/" + logStore;
-		}
-		Map<String, String> urlParameter = request.GetAllParams();
-		JSONObject object = null;
-		ResponseMessage response = new ResponseMessage();
-		ListACLResponse listACLResponse;
-		try {
-			response = SendData(project, HttpMethod.GET, resourceUri,
-					urlParameter, headParameter);
-			Map<String, String> resHeaders = response.getHeaders();
-            String requestId = GetRequestId(resHeaders);
-			object = parseResponseBody(response, requestId);
-			int total = object.getIntValue("total");
-			int count = object.getIntValue("count");
-            List<ACL> acls = ExtractACLs(object, requestId);
-			listACLResponse = new ListACLResponse(resHeaders, count, total, acls);
-		} catch (JSONException e) {
-			throw new LogException(ErrorCodes.BAD_RESPONSE,
-					"The response is not valid list acl json string : "
-							+ Utils.safeToString(object), e,
-					GetRequestId(response.getHeaders()));
-		}
-		return listACLResponse;
-	}
-
 	private List<String> ExtractJsonArray(String nodeKey, JSONObject object) {
 		try {
 			return JsonUtils.readOptionalStrings(object, nodeKey);
@@ -1936,13 +1920,13 @@ public class Client implements LogService {
 		}
 	}
 
-	void ErrorCheck(JSONObject object, String requestId, int httpCode)
+	void ErrorCheck(JSONObject object, String requestId, int httpCode, String response)
 			throws LogException {
 		if (object.containsKey(Consts.CONST_ERROR_CODE)) {
 			try {
 				String errorCode = object.getString(Consts.CONST_ERROR_CODE);
 				String errorMessage = object.getString(Consts.CONST_ERROR_MESSAGE);
-				throw new LogException(httpCode, errorCode, errorMessage, requestId);
+				throw new LogException(httpCode, errorCode, errorMessage, requestId, response);
 			} catch (JSONException e) {
 				throw new LogException(httpCode, "InvalidErrorResponse",
 						"Error response is not a valid error json : \n"
@@ -2010,16 +1994,15 @@ public class Client implements LogService {
 			headParameter.put(Consts.CONST_HOST, this.hostName);
 		}
 		headParameter.put(Consts.CONST_X_SLS_APIVERSION, Consts.DEFAULT_API_VESION);
-		String securityToken = credentials.getSecurityToken();
-		if (securityToken != null && !securityToken.isEmpty()) {
-			headParameter.put(Consts.CONST_X_ACS_SECURITY_TOKEN, securityToken);
-		}
 		if (realIpForConsole != null && !realIpForConsole.isEmpty()) {
 			headParameter.put(Consts.CONST_X_SLS_IP, realIpForConsole);
 		}
 		if (useSSLForConsole != null) {
-			headParameter.put(Consts.CONST_X_SLS_SSL, useSSLForConsole ? "true"
-					: "false");
+			headParameter.put(Consts.CONST_X_SLS_SSL, useSSLForConsole ? "true" : "false");
+		}
+		ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
+		if (clientConfiguration != null) {
+			headParameter.putAll(clientConfiguration.getDefaultHeaders());
 		}
 		return headParameter;
 	}
@@ -2109,8 +2092,14 @@ public class Client implements LogService {
 			if (statusCode != Consts.CONST_HTTP_OK) {
 				String requestId = GetRequestId(response.getHeaders());
 				try {
-					JSONObject object = parseResponseBody(response, requestId);
-					ErrorCheck(object, requestId, statusCode);
+					String responseBody = encodeResponseBodyToUtf8String(response, requestId);
+					try {
+						JSONObject object = JSONObject.parseObject(responseBody, Feature.DisableSpecialKeyDetect);
+						ErrorCheck(object, requestId, statusCode, responseBody);
+					} catch (JSONException ex) {
+						throw new LogException(ErrorCodes.BAD_RESPONSE,
+								"The response is not valid json string : " + body, ex, requestId);
+					}
 				} catch (LogException ex) {
 					ex.setHttpCode(response.getStatusCode());
 					throw ex;
@@ -3559,22 +3548,18 @@ public class Client implements LogService {
 	@Override
 	public CreateProjectResponse createProject(String project,
 			String projectDescription, String resourceGroupId) throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		if (projectDescription == null) {
-			projectDescription = "";
-		}
-		Map<String, String> headParameter = GetCommonHeadPara(project);
+		return createProject(new CreateProjectRequest(project, projectDescription, resourceGroupId));
+	}
+
+	public CreateProjectResponse createProject(CreateProjectRequest request) throws LogException {
+		Args.notNull(request, "request");
+		CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "project");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 		String resourceUri = "/";
-		JSONObject jsonBody = new JSONObject();
-        jsonBody.put("projectName", project);
-        jsonBody.put("description", projectDescription);
-		if (resourceGroupId != null) {
-			jsonBody.put("resourceGroupId", resourceGroupId);
-		}
-		byte[] body = encodeToUtf8(jsonBody.toString());
+		byte[] body = encodeToUtf8(request.getRequestBody());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
 		Map<String, String> urlParameter = new HashMap<String, String>();
-		ResponseMessage response = SendData(project, HttpMethod.POST,
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, body);
 		Map<String, String> resHeaders = response.getHeaders();
 		return new CreateProjectResponse(resHeaders);
@@ -4416,7 +4401,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 
-		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName() 
+		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName()
 			+ "/nodes/" +  request.getTopostoreNodeId();
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
@@ -4556,7 +4541,7 @@ public class Client implements LogService {
 
 		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
 
-		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName() 
+		String resourceUri =Consts.TOPOSTORE_URI + "/" + request.getTopostoreName()
 			+ "/relations/" +  request.getTopostoreRelationId();
 
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
@@ -4648,11 +4633,11 @@ public class Client implements LogService {
 
 		if(nodeRelationMap.containsKey(nodeId)){
 			for(TopostoreRelation relation: nodeRelationMap.get(nodeId)){
-				if(relationTypes == null || relationTypes.size()==0 || relationTypes.contains(relation.getRelationType())){	
+				if(relationTypes == null || relationTypes.size()==0 || relationTypes.contains(relation.getRelationType())){
 					String mNodeId=null;
 					if(direction.equals(Consts.TOPOSTORE_RELATION_DIRECTION_IN)){
 						mNodeId = relation.getSrcNodeId();
-					} else if(direction.equals(Consts.TOPOSTORE_RELATION_DIRECTION_OUT)){	
+					} else if(direction.equals(Consts.TOPOSTORE_RELATION_DIRECTION_OUT)){
 						mNodeId = relation.getDstNodeId();
 					}
 
@@ -4682,7 +4667,7 @@ public class Client implements LogService {
 		return ret;
 	}
 
-	private List<TopostoreNode> listTopostoreNodeWithAutoPage(String topostoreName, List<String> reqNodeIds, 
+	private List<TopostoreNode> listTopostoreNodeWithAutoPage(String topostoreName, List<String> reqNodeIds,
 		List<String> nodeTypes, Map<String, String> nodeProperties, Map<String, String> params) throws LogException{
 		List<TopostoreNode> finalNodes = new ArrayList<TopostoreNode>();
 
@@ -4763,9 +4748,9 @@ public class Client implements LogService {
 
 		// get all nodes
 		List<String> allNodeIds = new ArrayList<String>();
-		List<TopostoreNode> allTopoNodes = this.listTopostoreNodeWithAutoPage(request.getTopostoreName(), request.getNodeIds(), 
+		List<TopostoreNode> allTopoNodes = this.listTopostoreNodeWithAutoPage(request.getTopostoreName(), request.getNodeIds(),
 			request.getNodeTypes(), request.getNodeProperities(), request.GetParam());
-		
+
 		for(TopostoreNode n: allTopoNodes){
 			allNodeIds.add(n.getNodeId());
 		}
@@ -4792,20 +4777,20 @@ public class Client implements LogService {
 			listRelationReq.setOffset(relationOffset);
 
 			ListTopostoreRelationResponse listRelationResp = this.listTopostoreRelation(listRelationReq);
-	
+
 			relationTotal = listRelationResp.getTotal();
 
 			relationOffset += listRelationResp.getCount();
-			
+
 			for(TopostoreRelation relation: listRelationResp.getTopostoreRelations()){
 				String srcNodeId = relation.getSrcNodeId();
 				String dstNodeId = relation.getDstNodeId();
-	
+
 				if (!nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_IN).containsKey(dstNodeId)){
 					nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_IN).put(dstNodeId, new ArrayList<TopostoreRelation>());
 				}
 				nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_IN).get(dstNodeId).add(relation);
-	
+
 				if (!nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_OUT).containsKey(srcNodeId)){
 					nodeRelationMap.get(Consts.TOPOSTORE_RELATION_DIRECTION_OUT).put(srcNodeId, new ArrayList<TopostoreRelation>());
 				}
@@ -4825,7 +4810,7 @@ public class Client implements LogService {
 						if(request.getDepth()>0){
 							depthMode = true;
 						}
-						List<Set<String>>  ret = traverseNodeRelations(entry.getValue(), entry.getKey(), nodeId, 
+						List<Set<String>>  ret = traverseNodeRelations(entry.getValue(), entry.getKey(), nodeId,
 						request.getDepth(), depthMode, request.getRelationTypes());
 						if(ret.size() == 2){
 							for(String n: ret.get(0)){
@@ -4843,7 +4828,7 @@ public class Client implements LogService {
 
 		List<String> reqNodeIds = new ArrayList<String>();
 		reqNodeIds.addAll(finalNodeIds);
-				
+
 		if(reqNodeIds.size()>0){
 			response.setNodes(this.listTopostoreNodeWithAutoPage(request.getTopostoreName(), reqNodeIds, null, null, request.GetParam()));
 		} else {
@@ -4858,10 +4843,10 @@ public class Client implements LogService {
 			response.setRelations(new ArrayList<TopostoreRelation>());
 		}
 
-		
+
 		return response;
 	}
-	
+
 	@Override
 	public CreateResourceResponse createResource(CreateResourceRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
@@ -6271,5 +6256,54 @@ public class Client implements LogService {
 		ListMetricsConfigResponse listMetricsConfigResponse = new ListMetricsConfigResponse(resHeaders);
 		listMetricsConfigResponse.fromJSON(object);
 		return listMetricsConfigResponse;
+	}
+	@Override
+	public CreateShipperMigrationResponse createShipperMigration(CreateShipperMigrationRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		CodingUtils.assertParameterNotNull(request.getMigration(), "migration");
+		request.getMigration().checkForCreate();
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		byte[] body = encodeToUtf8(request.getMigration().ToCreateJsonString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String migrationUri = Consts.CONST_MIGRATION_URI;
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.POST,
+				migrationUri, request.GetAllParams(), headParameter, body);
+		return new CreateShipperMigrationResponse(response.getHeaders());
+	}
+	@Override
+	public GetShipperMigrationResponse getShipperMigration(GetShipperMigrationRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		CodingUtils.assertStringNotNullOrEmpty(request.getName(), "name");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		String resourceUri = String.format(Consts.CONST_MIGRATION_NAME_URI, request.getName());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, request.GetAllParams(), headParameter);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = parseResponseBody(response, requestId);
+		ShipperMigration migration = ShipperMigration.extractGetMigration(object, requestId);
+		return new GetShipperMigrationResponse(response.getHeaders(), migration);
+	}
+	@Override
+	public ListShipperMigrationResponse listShipperMigration(ListShipperMigrationRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		String resourceUri = Consts.CONST_MIGRATION_URI;
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		Map<String, String> urlParameter = request.GetAllParams();
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = parseResponseBody(response, requestId);
+		int total = object.getIntValue(Consts.CONST_TOTAL);
+		int count = object.getIntValue(Consts.CONST_COUNT);
+		List<ShipperMigration> migrations = ShipperMigration.extractMigrations(object, requestId);
+		return new ListShipperMigrationResponse(response.getHeaders(), count, total, migrations);
+	}
+
+	private void setSignV4IfInAcdr(String endpoint) {
+		String region = Utils.parseRegion(endpoint);
+		if (region != null && region.contains("-acdr-ut-")) {
+			getClientConfiguration().setSignatureVersion(SignVersion.V4);
+			getClientConfiguration().setRegion(region);
+		}
 	}
 }

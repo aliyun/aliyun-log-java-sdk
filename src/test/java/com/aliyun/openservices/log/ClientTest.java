@@ -8,7 +8,11 @@ import com.aliyun.openservices.log.common.Shard;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.functiontest.Credentials;
 import com.aliyun.openservices.log.functiontest.SlsClientTestData;
+import com.aliyun.openservices.log.http.client.ClientConfiguration;
+import com.aliyun.openservices.log.http.signer.SignVersion;
+import com.aliyun.openservices.log.request.ListProjectRequest;
 import com.aliyun.openservices.log.response.GetHistogramsResponse;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.net.URI;
@@ -108,7 +112,7 @@ public class ClientTest {
     @Test(expected = LogException.class)
     public void testErrorCheck() throws LogException {
         JSONObject jObj = JSONObject.parseObject(SlsClientTestData.TEST_ERROR);
-        client.ErrorCheck(jObj, "", 200);
+        client.ErrorCheck(jObj, "", 200, "");
     }
 
     @Test
@@ -171,9 +175,12 @@ public class ClientTest {
                 TEST_ACCESS_KEY);
         client.GetHostURI("abc");
         client.setEndpoint("https://abc////////////");
-        client.setEndpoint("mock-sls.aliyun-inc.com "); // trim
         URI uri = client.GetHostURI("");
         assertEquals("https://abc", uri.toString());
+        client.setEndpoint("mock-sls.aliyun-inc.com "); // trim
+
+        uri = client.GetHostURI("");
+        assertEquals("http://mock-sls.aliyun-inc.com", uri.toString());
         List<String> invalidEndpoints = Arrays.asList(
                 "http://mock-sls.aliyun-inc.com?abc=def",
                 "abc://xxx",
@@ -188,6 +195,56 @@ public class ClientTest {
             } catch (IllegalArgumentException ex) {
                 assertEquals(ex.getMessage(), "Invalid endpoint: " + endpoint);
             }
+        }
+    }
+
+    @Test
+    public void testAcdrEndpoint() throws LogException {
+        // acdr with default clientConfiguration
+        {
+            String endpoint = "https://xx-test-acdr-ut-1-intranet.log.aliyuncs.com";
+            Client client = new Client(endpoint, "xxx", "yyy");
+            ClientConfiguration clientConfiguration = client.getClientConfiguration();
+            Assert.assertEquals(clientConfiguration.getRegion(), "xx-test-acdr-ut-1");
+            Assert.assertEquals(clientConfiguration.getSignatureVersion(), SignVersion.V4);
+        }
+        // acdr with custom clientConfiguration
+        {
+            String endpoint = "xxy-test-acdr-ut-1-intranet.log.aliyuncs.com";
+            ClientConfiguration clientConfiguration = new ClientConfiguration();
+            clientConfiguration.setMaxErrorRetry(9);
+            Client client = new Client(endpoint, "xxx", "yyy", clientConfiguration);
+            ClientConfiguration config = client.getClientConfiguration();
+            Assert.assertEquals(config.getRegion(), "xxy-test-acdr-ut-1");
+            Assert.assertEquals(config.getSignatureVersion(), SignVersion.V4);
+            Assert.assertEquals(config.getMaxErrorRetry(), 9);
+        }
+        // acdr with region and SignatureVersion already set
+        {
+            String endpoint = "xxy-test-acdr-ut-1-intranet.log.aliyuncs.com";
+            ClientConfiguration clientConfiguration = new ClientConfiguration();
+            clientConfiguration.setRegion("something");
+            clientConfiguration.setSignatureVersion(SignVersion.V4);
+            Client client = new Client(endpoint, "xxx", "yyy", clientConfiguration);
+            ClientConfiguration config = client.getClientConfiguration();
+            Assert.assertEquals(config.getRegion(), "something");
+            Assert.assertEquals(config.getSignatureVersion(), SignVersion.V4);
+        }
+        // not in acdr
+        {
+            String endpoint = "https://cn-hangzhou-intranet.log.aliyuncs.com";
+            Client client = new Client(endpoint, "xxx", "yyy");
+            ClientConfiguration clientConfiguration = client.getClientConfiguration();
+            Assert.assertNull(clientConfiguration.getRegion());
+            Assert.assertEquals(clientConfiguration.getSignatureVersion(), SignVersion.V1);
+        }
+        // not standard endpoint
+        {
+            String endpoint = "sls.aliyuncs.com";
+            Client client = new Client(endpoint, "xxx", "yyy");
+            ClientConfiguration clientConfiguration = client.getClientConfiguration();
+            Assert.assertNull(clientConfiguration.getRegion());
+            Assert.assertEquals(clientConfiguration.getSignatureVersion(), SignVersion.V1);
         }
     }
 }

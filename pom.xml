@@ -11,7 +11,7 @@
 
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.85</version>
+    <version>0.6.105</version>
     <packaging>jar</packaging>
 
     <name>Aliyun LOG Java SDK</name>
@@ -75,6 +75,11 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.luben</groupId>
+            <artifactId>zstd-jni</artifactId>
+            <version>1.5.6-3</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -130,6 +135,11 @@
                         <exclude>**/oms/**</exclude>
                         <exclude>**/odps/**</exclude>
                     </excludes>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
             <plugin>

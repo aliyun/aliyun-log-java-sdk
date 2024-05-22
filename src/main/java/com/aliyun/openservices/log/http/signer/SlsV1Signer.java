@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.http.signer;
 
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.auth.Credentials;
+import com.aliyun.openservices.log.common.auth.CredentialsProvider;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.http.utils.DateUtil;
 import com.aliyun.openservices.log.util.Utils;
@@ -20,8 +21,8 @@ import java.util.TreeMap;
 
 public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
 
-    public SlsV1Signer(Credentials credentials) {
-        super(credentials);
+    public SlsV1Signer(CredentialsProvider credentialsProvider) {
+        super(credentialsProvider);
     }
 
     public static String md5Crypt(byte[] bytes) {
@@ -33,7 +34,7 @@ public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
             for (int i = 0; i + res.length() < 32; i++) {
                 zeros.append("0");
             }
-            return zeros.toString() + res;
+            return zeros + res;
         } catch (NoSuchAlgorithmException e) {
             // never happen
             throw new RuntimeException("Not Supported signature method "
@@ -47,6 +48,9 @@ public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
                      String resourceUri,
                      Map<String, String> urlParams,
                      byte[] body) {
+        Credentials credentials = credentialsProvider.getCredentials();
+        addHeaderSecurityToken(credentials.getSecurityToken(), headers);
+
         String contendMD5;
         if (body != null && body.length > 0) {
             contendMD5 = SlsV1Signer.md5Crypt(body);
@@ -70,6 +74,7 @@ public class SlsV1Signer extends SlsSignerBase implements SlsSigner {
             builder.append("?");
             builder.append(urlParametersToString(urlParams));
         }
+
         String signature = encode(credentials.getAccessKeySecret(), builder.toString());
         headers.put(Consts.CONST_AUTHORIZATION, Consts.CONST_HEADSIGNATURE_PREFIX + credentials.getAccessKeyId() + ":" + signature);
     }
