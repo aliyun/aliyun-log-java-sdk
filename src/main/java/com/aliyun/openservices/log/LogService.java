@@ -508,6 +508,25 @@ public interface LogService {
 	 */
     PutLogsResponse PutLogs(PutLogsRequest request) throws LogException;
 
+
+		/**
+	 * Send Data to log service server in batches
+	 *
+	 * @param request
+	 *            the batch put log request
+	 *
+	 * @return The batch put logs response
+	 *
+	 * @throws LogException
+	 *             if any error happen when send data to the server
+	 * @throws NullPointerException
+	 *             if any parameter is null
+	 * @throws IllegalArgumentException
+	 *             if project or logstore is empty, or the total logGroup log count
+	 *             exceed 4096, or the total data size exceed 5MB
+	 */
+    BatchPutLogsResponse batchPutLogs(BatchPutLogsRequest request) throws LogException;
+
 	/**
 	 * Get cursor from log service server
 	 *

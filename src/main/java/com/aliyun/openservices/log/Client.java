@@ -652,6 +652,48 @@ public class Client implements LogService {
 		return PutLogs(request);
 	}
 
+	@Override
+	public BatchPutLogsResponse batchPutLogs(BatchPutLogsRequest request)
+			throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(request.getLogStore(), "logStore");
+		final CompressType compressType = request.getCompressType();
+		CodingUtils.assertParameterNotNull(compressType, "compressType");
+		if (compressType != CompressType.ZSTD && compressType != CompressType.LZ4) {
+			throw new LogException(ErrorCodes.INVALID_PARAMETER, "Unsupported compress type:" + compressType, "");
+		}
+		List<LogGroup> logGroups = request.getLogGroups();
+		if (logGroups == null || logGroups.isEmpty()) {
+			throw new LogException(ErrorCodes.INVALID_PARAMETER, "LogGroups is empty", "");
+		}
+
+		byte[] logBytes = request.serializeToPb();
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		headParameter.put(Consts.CONST_X_LOG_MODE, Consts.CONST_BATCH_GROUP);
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_PROTO_BUF);
+		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(logBytes.length));
+		headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
+		checkBodyRawSize(logBytes.length);
+
+		String resourceUri = "/logstores/" + request.getLogStore();
+		String shardKey = request.getHashKey();
+		Map<String, String> urlParameter = request.GetAllParams();
+		if (shardKey == null || shardKey.isEmpty()) {
+			resourceUri += "/shards/lb";
+		} else {
+			resourceUri += "/shards/route";
+			urlParameter.put("key", shardKey);
+		}
+
+		ResponseMessage response = sendLogBytes(project, logBytes, resourceUri, urlParameter, headParameter);
+		if (response != null) {
+			return new BatchPutLogsResponse(response.getHeaders());
+		}
+		// never happen
+		return null;
+	}
+
 	public PutLogsResponse PutLogs(PutLogsRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
@@ -743,37 +785,15 @@ public class Client implements LogService {
 				logBytes = encodeToUtf8(jsonObj.toString());
 			}
 		}
-		int bodySize = logBytes.length;
-		if (bodySize > Consts.CONST_MAX_PUT_SIZE) {
-			throw new LogException("InvalidLogSize",
-					"logItems' size exceeds maximum limitation : "
-							+ Consts.CONST_MAX_PUT_SIZE
-							+ " bytes", "");
-		} else if (bodySize > Consts.CONST_MAX_POST_BODY_SIZE) {
-			throw new LogException("PostBodyTooLarge",
-					"body size " + bodySize + " must little than " + Consts.CONST_MAX_POST_BODY_SIZE, "");
-		}
+		checkBodyRawSize(logBytes.length);
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		headParameter.put(Consts.CONST_CONTENT_TYPE, request.getContentType());
-		long originalSize = logBytes.length;
-		switch (compressType) {
-			case LZ4:
-				// Why clone here?
-				logBytes = LZ4Encoder.compressToLhLz4Chunk(logBytes.clone());
-				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
-				break;
-			case GZIP:
-				logBytes = GzipUtils.compress(logBytes);
-				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
-				break;
-			case ZSTD:
-				logBytes = ZSTDEncoder.compress(logBytes);
-				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
-				break;
+		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(logBytes.length));
+		if (request.getCompressType() != CompressType.NONE) {
+			headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, request.getCompressType().toString());
 		}
-		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(originalSize));
-
+		logBytes = Utils.compressLogBytes(logBytes, request.getCompressType());
 		Map<String, String> urlParameter = request.GetAllParams();
 		String resourceUri = "/logstores/" + logStore;
 		if (shardKey == null || shardKey.length() == 0) {
@@ -785,8 +805,15 @@ public class Client implements LogService {
 				urlParameter.put("seqid", String.valueOf(request.getHashRouteKeySeqId()));
 			}
 		}
-		long cmp_size = logBytes.length;
+		ResponseMessage response = sendLogBytes(project, logBytes, resourceUri, urlParameter, headParameter);
+		if (response != null) {
+			return new PutLogsResponse(response.getHeaders());
+		}
+		// never happen
+		return null;
+	}
 
+	private ResponseMessage sendLogBytes(String project, byte[] logBytes, String resourceUri, Map<String, String> urlParameter, Map<String, String> headParameter) throws LogException {
 		for (int i = 0; i < 2; i++) {
 			String server_ip = this.realServerIP;
 			ClientConnectionStatus connection_status = null;
@@ -797,13 +824,11 @@ public class Client implements LogService {
 			try {
 				ResponseMessage response = SendData(project, HttpMethod.POST, resourceUri, urlParameter, headParameter,
 						logBytes, null, server_ip);
-				Map<String, String> resHeaders = response.getHeaders();
-				PutLogsResponse putLogsResponse = new PutLogsResponse(resHeaders);
 				if (connection_status != null) {
-					connection_status.AddSendDataSize(cmp_size);
+					connection_status.AddSendDataSize(logBytes.length);
 					connection_status.UpdateLastUsedTime(System.nanoTime());
 				}
-				return putLogsResponse;
+				return response;
 			} catch (LogException e) {
 				String requestId = e.getRequestId();
 				if (i == 1 || requestId != null && !requestId.isEmpty())
@@ -816,7 +841,20 @@ public class Client implements LogService {
 				}
 			}
 		}
-		return null; // never happen
+		return null;
+	}
+
+	private void checkBodyRawSize(int bodySize) throws LogException {
+		if (bodySize > Consts.CONST_MAX_PUT_SIZE) {
+			throw new LogException("InvalidLogSize",
+					"logItems' size exceeds maximum limitation : "
+							+ Consts.CONST_MAX_PUT_SIZE
+							+ " bytes",
+					"");
+		} else if (bodySize > Consts.CONST_MAX_POST_BODY_SIZE) {
+			throw new LogException("PostBodyTooLarge",
+					"body size " + bodySize + " must little than " + Consts.CONST_MAX_POST_BODY_SIZE, "");
+		}
 	}
 
 	private ClientConnectionStatus GetGlobalConnectionStatus() throws LogException {
