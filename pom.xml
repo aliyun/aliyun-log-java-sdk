@@ -11,7 +11,7 @@
 
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.105</version>
+    <version>0.6.106</version>
     <packaging>jar</packaging>
 
     <name>Aliyun LOG Java SDK</name>
@@ -190,7 +190,6 @@
                 <configuration>
                     <artifactSet>
                         <excludes>
-                            <exclude>com.alibaba:fastjson:jar:</exclude>
                             <exclude>net.jpountz.lz4:lz4:jar:</exclude>
                         </excludes>
                     </artifactSet>
@@ -199,6 +198,10 @@
                             <pattern>com.google.protobuf</pattern>
                             <shadedPattern>com.aliyun.log.thirdparty.com.google.protobuf
                             </shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.alibaba.fastjson</pattern>
+                            <shadedPattern>com.aliyun.log.thirdparty.com.alibaba:fastjson</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.apache.http</pattern>

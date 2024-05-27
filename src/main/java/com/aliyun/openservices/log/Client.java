@@ -5963,68 +5963,6 @@ public class Client implements LogService {
 		}
 		return new ListSqlInstanceResponse(resHeaders, sqlInstances);
 	}
-
-	@Override
-	public CreateMetricAggRulesResponse createMetricAggRules(CreateMetricAggRulesRequest request) throws LogException {
-		MetricAggRules metricAggRules = request.getMetricAggRules();
-		CodingUtils.assertParameterNotNull(metricAggRules, "metricAggRules");
-		ETLV2 etl = metricAggRules.createScheduledETL(metricAggRules);
-		JobSchedule jobSchedule = new JobSchedule();
-		jobSchedule.setType(JobScheduleType.RESIDENT);
-		etl.setSchedule(jobSchedule);
-		CreateETLV2Response createETLV2Response = createETLV2(new CreateETLV2Request(request.GetProject(), etl));
-		return new CreateMetricAggRulesResponse(createETLV2Response.GetAllHeaders());
-	}
-
-	@Override
-	public ListMetricAggRulesResponse listMetricAggRules(ListMetricAggRulesRequest request) throws LogException {
-		ListETLV2Response listETLV2Response = listETLV2(request);
-		List<ETLV2> etls = listETLV2Response.getResults();
-		List<MetricAggRules> metricAggRulesList = new ArrayList<MetricAggRules>();
-		for(ETLV2 etl : etls){
-			ETLConfiguration configuration = etl.getConfiguration();
-			if(configuration!=null){
-				Map<String, String> parameters = configuration.getParameters();
-				if(parameters.containsKey("config.ml.scheduled_sql")
-						&& parameters.get("config.ml.scheduled_sql") != null
-						&& !parameters.get("config.ml.scheduled_sql").isEmpty()){
-					MetricAggRules metricAggRules = new MetricAggRules();
-					metricAggRules.deserialize(etl);
-					metricAggRulesList.add(metricAggRules);
-				}
-			}
-		}
-		ListMetricAggRulesResponse listResp = new ListMetricAggRulesResponse(listETLV2Response.GetAllHeaders(), metricAggRulesList.size());
-		listResp.setMetricAggRules(metricAggRulesList);
-		return listResp;
-	}
-
-	@Override
-	public GetMetricAggRulesResponse getMetricAggRules(GetMetricAggRulesRequest request) throws LogException {
-		GetETLV2Response getETLV2Response = getETLV2(request);
-		ETLV2 etl = getETLV2Response.getEtl();
-		MetricAggRules metricAggRules = new MetricAggRules();
-		metricAggRules.deserialize(etl);
-		GetMetricAggRulesResponse getMetricAggRulesResponse = new GetMetricAggRulesResponse(getETLV2Response.GetAllHeaders());
-		getMetricAggRulesResponse.setMetricAggRules(metricAggRules);
-		return getMetricAggRulesResponse;
-	}
-
-	@Override
-	public UpdateMetricAggRulesResponse updateMetricAggRules(UpdateMetricAggRulesRequest request) throws LogException {
-		MetricAggRules metricAggRules = request.getMetricAggRules();
-		CodingUtils.assertParameterNotNull(metricAggRules, "metricAggRules");
-		ETLV2 etl = metricAggRules.createScheduledETL(metricAggRules);
-		UpdateETLV2Response updateETLV2Response = updateETLV2(new UpdateETLV2Request(request.GetProject(), etl));
-		return new UpdateMetricAggRulesResponse(updateETLV2Response.GetAllHeaders());
-	}
-
-	@Override
-	public DeleteMetricAggRulesResponse deleteMetricAggRules(DeleteMetricAggRulesRequest request) throws LogException {
-		DeleteETLV2Response deleteETLV2Response = deleteETLV2(request);
-		return new DeleteMetricAggRulesResponse(deleteETLV2Response.GetAllHeaders());
-	}
-
 	@Override
 	public SetProjectPolicyResponse setProjectPolicy(String projectName, String policyText) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(projectName, "project");
