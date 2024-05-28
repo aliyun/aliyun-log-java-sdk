@@ -87,6 +87,7 @@ public class Consts {
     public static final String CONST_CONTENT_MD5 = "Content-MD5";
     public static final String CONST_AUTHORIZATION = "Authorization";
     public static final String CONST_SLS_JSON = "application/json";
+    public static final String CONST_BATCH_GROUP = "batch_group";
 
     public static final String CONST_X_SLS_APIVERSION = "x-log-apiversion";
     public static final String CONST_X_SLS_COMPRESSTYPE = "x-log-compresstype";
@@ -96,6 +97,7 @@ public class Consts {
     public static final String CONST_X_SLS_SIGNATUREMETHOD = "x-log-signaturemethod";
     public static final String CONST_X_SLS_REQUESTID = "x-log-requestid";
     public static final String CONST_X_SLS_HOSTIP = "x-log-hostip";
+    public static final String CONST_X_LOG_MODE = "x-log-mode";
     public static final String CONST_X_SLS_IP = "x-log-ip";
     public static final String CONST_X_SLS_SSL = "x-log-ssl";
     public static final String CONST_X_SLS_PREFIX = "x-log-";

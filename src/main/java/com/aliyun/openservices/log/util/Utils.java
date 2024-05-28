@@ -4,6 +4,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.aliyun.openservices.log.common.Consts.CompressType;
+import com.aliyun.openservices.log.exception.LogException;
+
 public final class Utils {
     private static final String ENDPOINT_REGEX_PATTERN = "^(?:http[s]?:\\/\\/)?([a-z-0-9]+)\\.(?:sls|log)\\.aliyuncs\\.com$";
     private Utils() {
@@ -143,5 +146,24 @@ public final class Utils {
             }
         }
         return region;
+    }
+
+    public static boolean isBlank(String str) {
+        return str == null || str.isEmpty();
+    }
+
+    public static byte[] compressLogBytes(byte[] logBytes, CompressType compressType) throws LogException {
+		switch (compressType) {
+			case LZ4:
+				// Why clone here?
+				return LZ4Encoder.compressToLhLz4Chunk(logBytes.clone());
+			case GZIP:
+				return GzipUtils.compress(logBytes);
+			case ZSTD:
+				return ZSTDEncoder.compress(logBytes);
+			case NONE:
+				return logBytes;
+		}
+		return logBytes;
     }
 }
