@@ -23,6 +23,7 @@ public class GetHistogramsResponse extends Response {
     private static final long serialVersionUID = 5169979404935069850L;
     private boolean mIsCompleted = false;
     private long mCount = 0;
+    private long mScanBytes = 0;
     private ArrayList<Histogram> mHistogram = new ArrayList<Histogram>();
 
     /**
@@ -33,6 +34,9 @@ public class GetHistogramsResponse extends Response {
     public GetHistogramsResponse(Map<String, String> headers) {
         super(headers);
         this.SetProcessStatus(headers.get(Consts.CONST_X_SLS_PROCESS));
+        if (headers.containsKey(Consts.CONST_X_SLS_SCANBYTES)) {
+            mScanBytes = Long.parseLong(headers.get(Consts.CONST_X_SLS_SCANBYTES));
+        }
     }
 
     /**
@@ -42,6 +46,15 @@ public class GetHistogramsResponse extends Response {
      */
     public long GetTotalCount() {
         return mCount;
+    }
+
+    /**
+     * Get query scan bytes
+     *
+     * @return scan bytes
+     */
+    public long GetScanBytes() {
+        return mScanBytes;
     }
 
     /**
