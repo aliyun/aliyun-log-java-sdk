@@ -67,6 +67,7 @@ public class MetricsConfig implements Serializable {
         this.parallelConfig = parallelConfig;
         this.downSamplingConfig = downSamplingConfig;
         this.pushdownConfig = pushdownConfig;
+
     }
 
     public MetricsConfig(MetricQueryCacheConfig queryCacheConfig, MetricParallelConfig parallelConfig, MetricDownSamplingConfig downSamplingConfig, MetricPushdownConfig pushdownConfig, MetricRemoteWriteConfig remoteWriteConfig) {
@@ -100,6 +101,7 @@ public class MetricsConfig implements Serializable {
     public void setPushdownConfig(MetricPushdownConfig pushdownConfig) {
         this.pushdownConfig = pushdownConfig;
     }
+
 
     public MetricRemoteWriteConfig getRemoteWriteConfig() {
         return remoteWriteConfig;
