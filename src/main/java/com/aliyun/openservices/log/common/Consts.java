@@ -94,6 +94,8 @@ public class Consts {
     public static final String CONST_X_SLS_BODYRAWSIZE = "x-log-bodyrawsize";
     public static final String CONST_X_SLS_RAWDATACOUNT = "x-log-rawdatacount";
     public static final String CONST_X_SLS_RAWDATASIZE = "x-log-rawdatasize";
+    public static final String CONST_X_LOG_CURSOR_TIME = "x-log-cursor-time";
+    public static final String CONST_X_LOG_END_OF_CURSOR = "x-log-end-of-cursor";
     public static final String CONST_X_SLS_SIGNATUREMETHOD = "x-log-signaturemethod";
     public static final String CONST_X_SLS_REQUESTID = "x-log-requestid";
     public static final String CONST_X_SLS_HOSTIP = "x-log-hostip";

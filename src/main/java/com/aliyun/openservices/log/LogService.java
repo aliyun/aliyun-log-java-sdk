@@ -1616,24 +1616,6 @@ public interface LogService {
 	 *
 	 * @param project
 	 *            the project name
-	 * @param internallogStore
-	 *            the config
-	 * @return the create log store response
-	 * @throws LogException
-	 *             if any error happen when creasting logstore
-	 *
-	 * @throws NullPointerException
-	 *             if any parameter is null
-	 * @throws IllegalArgumentException
-	 *             if project is empty
-	 */
-    CreateLogStoreInternalResponse CreateLogStoreInternal(String project, InternalLogStore internallogStore) throws LogException;
-
-	/**
-	 * create a logstore in a project
-	 *
-	 * @param project
-	 *            the project name
 	 * @param logStore
 	 *            the config
 	 * @return the create log store response
@@ -1689,25 +1671,6 @@ public interface LogService {
      */
     CreateLinkStoreResponse CreateLinkStore(CreateLinkStoreRequest request)
             throws LogException;
-
-	/**
-	 * Update log store config
-	 *
-	 * @param project
-	 *            the project name
-	 * @param internalLogStore
-	 *            the logsotre config
-	 * @return update logstore response
-	 * @throws LogException
-	 *             if any error happen when updating logstore
-	 *
-	 * @throws NullPointerException
-	 *             if any parameter is null
-	 * @throws IllegalArgumentException
-	 *             if project is empty
-	 */
-    UpdateLogStoreInternalResponse UpdateLogStoreInternal(String project,
-                                                          InternalLogStore internalLogStore) throws LogException;
 
 	/**
 	 * Update log store config

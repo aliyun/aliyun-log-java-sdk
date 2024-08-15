@@ -2203,36 +2203,6 @@ public class Client implements LogService {
 	}
 
 	@Override
-    public UpdateLogStoreInternalResponse UpdateLogStoreInternal(String project, InternalLogStore internalLogStore) throws LogException {
-        CodingUtils.assertStringNotNullOrEmpty(project, "project");
-        CodingUtils.assertParameterNotNull(internalLogStore, "InternallogStore");
-        Map<String, String> headParameter = GetCommonHeadPara(project);
-        byte[] body = encodeToUtf8(internalLogStore.ToRequestString());
-        headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-        String resourceUri = "/logstores/" + internalLogStore.GetLogStoreName();
-        Map<String, String> urlParameter = Collections.singletonMap("type", "inner");
-        ResponseMessage response = SendData(project, HttpMethod.PUT,
-                resourceUri, urlParameter, headParameter, body);
-        Map<String, String> resHeaders = response.getHeaders();
-        return new UpdateLogStoreInternalResponse(resHeaders);
-    }
-
-	@Override
-	public CreateLogStoreInternalResponse CreateLogStoreInternal(String project, InternalLogStore internalLogStore) throws LogException {
-        CodingUtils.assertStringNotNullOrEmpty(project, "project");
-        CodingUtils.assertParameterNotNull(internalLogStore, "InternallogStore");
-        Map<String, String> headParameter = GetCommonHeadPara(project);
-        byte[] body = encodeToUtf8(internalLogStore.ToRequestString());
-        headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-        String resourceUri = "/logstores";
-        Map<String, String> urlParameter = Collections.singletonMap("type", "inner");
-        ResponseMessage response = SendData(project, HttpMethod.POST,
-                resourceUri, urlParameter, headParameter, body);
-        Map<String, String> resHeaders = response.getHeaders();
-        return new CreateLogStoreInternalResponse(resHeaders);
-	}
-
-	@Override
 	public CreateLogStoreResponse CreateLogStore(String project,
 			LogStore logStore) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");

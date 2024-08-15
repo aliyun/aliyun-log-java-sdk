@@ -25,25 +25,25 @@ public class Machine implements Serializable {
 	public Machine() {
 	}
 
-    /**
-     * Construct a machine
-     *
-     * @param ip
-     *            machine ip
-     * @param machine_unique_id
-     *            machine unique id
-     * @param user_defined_id
-     *            machine user defined id
-     * @param heartbeat_time
-     *            machine last update time
-     */
-    public Machine(String ip, String machine_unique_id, String user_defined_id,
-                   long heartbeat_time) {
-        this.ip = ip;
-        this.machine_unique_id = machine_unique_id;
-        this.user_defined_id = user_defined_id;
-        this.heartbeat_time = heartbeat_time;
-    }
+	/**
+	 * Construct a machine
+	 *
+	 * @param ip
+	 *            machine ip
+	 * @param machine_unique_id
+	 *            machine unique id
+	 * @param user_defined_id
+	 *            machine user defined id
+	 * @param heartbeat_time
+	 *            machine last update time
+	 */
+	public Machine(String ip, String machine_unique_id, String user_defined_id,
+			long heartbeat_time) {
+		this.ip = ip;
+		this.machine_unique_id = machine_unique_id;
+		this.user_defined_id = user_defined_id;
+		this.heartbeat_time = heartbeat_time;
+	}
 
 	/**
 	 * Construct a machine
@@ -61,8 +61,7 @@ public class Machine implements Serializable {
 	 * @param hostId
 	 *            machine host-id
 	 */
-	public Machine(String ip, String machine_unique_id, String user_defined_id,
-			long heartbeat_time, String version, String hostId) {
+	public Machine(String ip, String machine_unique_id, String user_defined_id, long heartbeat_time, String version, String hostId) {
 		this.ip = ip;
 		this.machine_unique_id = machine_unique_id;
 		this.user_defined_id = user_defined_id;
