@@ -1,15 +1,13 @@
 package com.aliyun.openservices.log.functiontest;
 
 
-import com.aliyun.openservices.log.common.Consts;
-import com.aliyun.openservices.log.common.LogGroupData;
-import com.aliyun.openservices.log.common.LogStore;
-import com.aliyun.openservices.log.common.Logs;
+import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.PullLogsRequest;
 import com.aliyun.openservices.log.response.GetCursorResponse;
 import com.aliyun.openservices.log.response.PullLogsResponse;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 
 import java.util.ArrayList;
@@ -36,24 +34,33 @@ public class LogTest extends FunctionTest {
         createOrUpdateLogStore(project, logStore);
     }
 
-    protected List<Logs.LogGroup> pullAllLogGroups(String project, String logStore, int shardNum) throws LogException {
-        List<Logs.LogGroup> groups = new ArrayList<Logs.LogGroup>();
+    protected List<FastLogGroup> pullAllLogGroups(String project, String logStore, int shardNum) throws LogException {
+        List<FastLogGroup> groups = new ArrayList<>();
         for (int i = 0; i < shardNum; i++) {
             pullForShard(project, logStore, i, groups);
         }
         return groups;
     }
 
-    private void pullForShard(String project, String logStore, int shard, List<Logs.LogGroup> results) throws LogException {
+    private void pullForShard(String project, String logStore, int shard, List<FastLogGroup> results) throws LogException {
         GetCursorResponse cursorResponse = client.GetCursor(project, logStore, shard, Consts.CursorMode.BEGIN);
         String cursor = cursorResponse.GetCursor();
         while (true) {
             PullLogsRequest request = new PullLogsRequest(project, logStore, shard, 1000, cursor);
             PullLogsResponse response = client.pullLogs(request);
-            for (LogGroupData data : response.getLogGroups()) {
-                results.add(data.GetLogGroup());
+            List<LogGroupData> logGroupDataList = response.getLogGroups();
+            if (!logGroupDataList.isEmpty()) {
+                Assert.assertTrue(response.getCursorTime() > 0);
+            } else {
+                Assert.assertEquals(0, response.getCursorTime());
+            }
+            for (LogGroupData data : logGroupDataList) {
+                results.add(data.GetFastLogGroup());
             }
             final String nextCursor = response.getNextCursor();
+            if (cursor.equals(nextCursor)) {
+                Assert.assertTrue(shard + "$" + cursor, response.isEndOfCursor());
+            }
             if (nextCursor == null || nextCursor.equals(cursor)) {
                 break;
             }
@@ -61,8 +68,8 @@ public class LogTest extends FunctionTest {
         }
     }
 
-    protected void checkLogGroup(Logs.LogGroup logGroup) {
-        for (Logs.Log log : logGroup.getLogsList()) {
+    protected void checkLogGroup(FastLogGroup logGroup) {
+        for (FastLog log : logGroup.getLogs()) {
             assertEquals(log.getContentsCount(), 1);
             assertEquals("ID", log.getContents(0).getKey());
             assertTrue(log.getContents(0).getValue().startsWith("id_"));
@@ -70,9 +77,9 @@ public class LogTest extends FunctionTest {
     }
 
     int countAppended(String project, String logStore, int numShard, Predicate predicate) throws LogException {
-        List<Logs.LogGroup> logGroups = pullAllLogGroups(project, logStore, numShard);
+        List<FastLogGroup> logGroups = pullAllLogGroups(project, logStore, numShard);
         int n = 0;
-        for (Logs.LogGroup group : logGroups) {
+        for (FastLogGroup group : logGroups) {
             if (predicate.test(group)) {
                 ++n;
             }
@@ -84,12 +91,12 @@ public class LogTest extends FunctionTest {
     int countLogGroupWithClientIpTag(String project, String logStore, int numShard) throws LogException {
         Predicate predicate = new Predicate() {
             @Override
-            public boolean test(Logs.LogGroup group) {
+            public boolean test(FastLogGroup group) {
                 int clientIp = 0;
                 int receiveTime = 0;
                 System.out.println("Tag count: " + group.getLogTagsCount());
-                for (Logs.LogTag tag : group.getLogTagsList()) {
-                    System.out.println(tag);
+                for (int i = 0; i < group.getLogTagsCount(); ++i) {
+                    FastLogTag tag = group.getLogTags(i);
                     if ("__client_ip__".equals(tag.getKey())) {
                         ++clientIp;
                     }
@@ -105,7 +112,7 @@ public class LogTest extends FunctionTest {
 
     public interface Predicate {
 
-        boolean test(Logs.LogGroup logGroup);
+        boolean test(FastLogGroup logGroup);
     }
 
     @AfterClass

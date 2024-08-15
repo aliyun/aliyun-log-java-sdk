@@ -16,12 +16,14 @@ public class PullLogsResponse extends Response {
 
     private static final long serialVersionUID = -2027711570684362279L;
     private List<LogGroupData> logGroups;
-    private int rawSize;
-    private int count;
+    private final int rawSize;
+    private final int count;
     private long rawDataSize = -1;
     private int rawDataCount = -1;
     private final byte[] rawData;
     private final String compressType;
+    private final long cursorTime;
+    private final boolean isEndOfCursor;
 
     /**
      * Construct the response with http headers
@@ -43,6 +45,10 @@ public class PullLogsResponse extends Response {
                 rawDataCount = Integer.parseInt(headers.get(Consts.CONST_X_SLS_RAWDATACOUNT));
             }
             compressType = headers.get(Consts.CONST_X_SLS_COMPRESSTYPE);
+            String cursorTimeHeader = headers.get(Consts.CONST_X_LOG_CURSOR_TIME);
+            cursorTime = cursorTimeHeader != null && !cursorTimeHeader.isEmpty()
+                    ? Long.parseLong(cursorTimeHeader.trim()) : 0;
+            isEndOfCursor = "1".equals(headers.get(Consts.CONST_X_LOG_END_OF_CURSOR));
         } catch (NumberFormatException e) {
             throw new LogException("ParseLogGroupListRawSizeError", e.getMessage(), e, GetRequestId());
         }
@@ -61,6 +67,14 @@ public class PullLogsResponse extends Response {
 
     public int getRawDataCount() {
         return rawDataCount;
+    }
+
+    public long getCursorTime() {
+        return cursorTime;
+    }
+
+    public boolean isEndOfCursor() {
+        return isEndOfCursor;
     }
 
     private void parseLogGroupsIfNeeded() throws LogException {
