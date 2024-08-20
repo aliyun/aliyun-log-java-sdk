@@ -15,6 +15,7 @@ public class CodingUtils {
     private static final Pattern CONSUMER_GROUP_PATTERN = Pattern.compile("^[0-9a-zA-Z-_]{1,128}$");
     private static final Pattern DASHBOARD_PATTERN = Pattern.compile("^[0-9a-z][0-9a-z_-]{0,126}[0-9a-z]$");
     private static final Pattern LOGSTORE_PATTERN = Pattern.compile("^[0-9a-z][0-9a-z_-]{0,62}[0-9a-z]$");
+    private static final Pattern LOGSTORE_SEARCH_PATTERN = Pattern.compile("^[A-Za-z0-9_\\\\*-]+$");
     private static final Pattern METASTORE_PATTERN = Pattern.compile("^[a-z][0-9a-z_.]{1,125}[0-9a-z]$");
     private static final Pattern SAVEDSEARCH_PATTERN = Pattern.compile("^[0-9a-z][0-9a-z_-]{0,62}[0-9a-z]$");
     private static final Pattern JOB_PATTERN = Pattern.compile("^[0-9a-zA-Z-_]{1,63}$");
@@ -49,6 +50,12 @@ public class CodingUtils {
     public static void validateLogstore(String logstore) throws LogException {
         assertParameterNotNull(logstore, "logstore");
         if (!LOGSTORE_PATTERN.matcher(logstore).matches()) {
+            throw new LogException(ErrorCodes.INVALID_PARAMETER, "Invalid logstore: " + logstore, "");
+        }
+    }
+    public static void validateLogstoreSearch(String logstore) throws LogException {
+        assertParameterNotNull(logstore, "logstore");
+        if (!LOGSTORE_SEARCH_PATTERN.matcher(logstore).matches()) {
             throw new LogException(ErrorCodes.INVALID_PARAMETER, "Invalid logstore: " + logstore, "");
         }
     }
