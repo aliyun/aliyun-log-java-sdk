@@ -1035,7 +1035,7 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = request.GetAllParams();
 		String project = request.GetProject();
 		String logStore = request.GetLogStore();
-		CodingUtils.validateLogstore(logStore);
+		CodingUtils.validateLogstoreSearch(logStore);
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		CompressType compressType = request.getCompressType();
 		if (compressType != null && compressType != CompressType.NONE) {
@@ -1057,7 +1057,7 @@ public class Client implements LogService {
 		String logstore = request.getLogstore();
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		headParameter.put(Consts.CONST_ACCEPT_ENCODING, request.getAcceptEncoding());
-		CodingUtils.validateLogstore(logstore);
+		CodingUtils.validateLogstoreSearch(logstore);
 		String resourceUri = "/logstores/" + logstore + "/logs";
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, request.getRequestBody());
