@@ -6,6 +6,9 @@ import com.aliyun.openservices.log.common.IndexJsonKey;
 import com.aliyun.openservices.log.common.IndexKey;
 import com.aliyun.openservices.log.common.IndexKeys;
 import com.aliyun.openservices.log.exception.LogException;
+
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -17,22 +20,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class SlsIndexJsonFunctionTest {
-
-    static final Credentials credentials = Credentials.load();
-    static private String accessId = credentials.getAccessKeyId();
-    static private String accessKey = credentials.getAccessKey();
-
-    static private String project = "test-lichao-3";
-    static private String host = credentials.getEndpoint();
-    static private String logStore = "test-java-sdk";
-    static private Client client = new Client(host, accessId, accessKey);
-
-    public SlsIndexJsonFunctionTest() {
-    }
+public class SlsIndexJsonFunctionTest extends BaseDataTest{
 
     @Test
-    public void TestUpdateIndex() {
+    public void TestUpdateIndex() throws LogException {
         Index index = new Index();
         index.setMaxTextLen(100);
         List<String> whiteBlackList = Arrays.asList("123","456");
@@ -64,27 +55,30 @@ public class SlsIndexJsonFunctionTest {
         keys.AddKey("json1", indexJsonKey);
         index.SetKeys(keys);
         try {
-            client.UpdateIndex(project, logStore, index);
-            Index res = client.GetIndex(project, logStore).GetIndex();
-            assertEquals(res.getMaxTextLen(), index.getMaxTextLen());
-            assertEquals(res.getLogReduceWhiteList(), whiteBlackList);
-            assertEquals(res.getLogReduceBlackList(), whiteBlackList);
-            IndexKeys resKeys = res.GetKeys();
-            assertEquals(index.GetKeys().GetKeys().size(), resKeys.GetKeys().size());
-            assertTrue(resKeys.GetKeys().containsKey("json1"));
-            IndexKey resKey = resKeys.GetKeys().get("json1");
-            assertEquals(keyContent.GetCaseSensitive(), resKey.GetCaseSensitive());
-            assertEquals(keyContent.GetToken().size(), resKey.GetToken().size());
-            for (int i = 0; i < keyContent.GetToken().size(); i++) {
-                assertEquals(keyContent.GetToken().get(i), resKey.GetToken().get(i));
-            }
-            assertTrue(resKey instanceof IndexJsonKey);
-            IndexKeys indexKeys = ((IndexJsonKey) resKey).getJsonKeys();
-            assertTrue(indexKeys.GetKeys().containsKey("json1_sub3"));
-            assertTrue(indexKeys.GetKeys().containsKey("json1_sub4"));
+            client.UpdateIndex(project, logStore.GetLogStoreName(), index);
+            fail();
         } catch (LogException e) {
-            fail(e.GetErrorCode() + ":" + e.GetErrorMessage());
+            Assert.assertTrue(e.getMessage().contains("index is not created"));
         }
+        client.CreateIndex(project, logStore.GetLogStoreName(), index);
+        Index res = client.GetIndex(project, logStore.GetLogStoreName()).GetIndex();
+        assertEquals(res.getMaxTextLen(), index.getMaxTextLen());
+        assertEquals(res.getLogReduceWhiteList(), whiteBlackList);
+        assertEquals(res.getLogReduceBlackList(), whiteBlackList);
+        IndexKeys resKeys = res.GetKeys();
+        assertEquals(index.GetKeys().GetKeys().size(), resKeys.GetKeys().size());
+        assertTrue(resKeys.GetKeys().containsKey("json1"));
+        IndexKey resKey = resKeys.GetKeys().get("json1");
+        assertEquals(keyContent.GetCaseSensitive(), resKey.GetCaseSensitive());
+        assertEquals(keyContent.GetToken().size(), resKey.GetToken().size());
+        for (int i = 0; i < keyContent.GetToken().size(); i++) {
+            assertEquals(keyContent.GetToken().get(i), resKey.GetToken().get(i));
+        }
+        assertTrue(resKey instanceof IndexJsonKey);
+        IndexKeys indexKeys = ((IndexJsonKey) resKey).getJsonKeys();
+        assertTrue(indexKeys.GetKeys().containsKey("json1_sub3"));
+        assertTrue(indexKeys.GetKeys().containsKey("json1_sub4"));
+        
     }
 
 

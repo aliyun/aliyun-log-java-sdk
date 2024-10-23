@@ -44,6 +44,7 @@ public class ClientConfiguration {
     private int maxErrorRetry = 3;
     protected SignVersion signatureVersion = DEFAULT_SIGNATURE_VERSION;
     private String region;
+    private boolean retryDisabled = false;
 
     private Map<String, String> defaultHeaders = new HashMap<String, String>();
 
@@ -323,5 +324,21 @@ public class ClientConfiguration {
      */
     public void addDefaultHeader(String key, String value) {
         this.defaultHeaders.put(key, value);
+    }
+
+    /**
+     * Returns true if retry is disabled. If retryStrategy is set, will not disable retry when network exception occurs.
+     */
+    public boolean getRetryDisabled() {
+        return retryDisabled;
+    }
+
+    /**
+     * Set disable retry for client. If retryStrategy is set, will not disable retry when network exception occurs.
+     * 
+     * @param retryDisabled no retry will be performed if retryDisabled is true.
+     */
+    public void setRetryDisabled(boolean retryDisabled) {
+        this.retryDisabled = retryDisabled;
     }
 }

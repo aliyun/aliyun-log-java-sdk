@@ -189,7 +189,7 @@ public class ProjectFunctionTest extends FunctionTest {
         verifyUpdate(chinese, chinese);
     }
 
-    @Test
+    // @Test // can only test in 3az
     public void testCreateHaProject() throws LogException {
         String project = TEST_PROJECT;
         client.createProject(new CreateProjectRequest(project, "abc", null, DataRedundancyType.ZRS));

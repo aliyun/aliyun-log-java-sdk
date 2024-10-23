@@ -831,7 +831,7 @@ public class Client implements LogService {
 				return response;
 			} catch (LogException e) {
 				String requestId = e.getRequestId();
-				if (i == 1 || requestId != null && !requestId.isEmpty())
+				if (i == 1 || (requestId != null && !requestId.isEmpty()) || getClientConfiguration().getRetryDisabled())
 				{
 					throw e;
 				}
@@ -1414,7 +1414,7 @@ public class Client implements LogService {
                 }
                 return plr;
             } catch (LogException ex) {
-                if (i == 1 || ex.getRequestId() != null && !ex.getRequestId().isEmpty()) {
+                if (i == 1 || (ex.getRequestId() != null && !ex.getRequestId().isEmpty()) || getClientConfiguration().getRetryDisabled()) {
                     throw ex;
                 }
                 if (connectionStatus != null) {

@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ResourceGroupFunctionTest extends FunctionTest {
-    static String testProjectId = "project-resource-group-test-2022";
+    static String testProjectId = makeProjectName();
     static String defaultResourceGroupId = "xxxx";
     static String newResourceGroupId = "xxxx";
 
@@ -17,7 +17,7 @@ public class ResourceGroupFunctionTest extends FunctionTest {
         // test create project in default resource group
         try {
             client.CreateProject(testProjectId, "");
-            Assert.assertEquals(defaultResourceGroupId, client.GetProject(testProjectId).getResourceGroupId());
+            Assert.assertTrue(!client.GetProject(testProjectId).getResourceGroupId().isEmpty());
         } catch (LogException e) {
             e.printStackTrace();
             Assert.fail("create project should not fail");

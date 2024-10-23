@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.common.IngestionConfiguration;
 import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.common.JobScheduleType;
 import com.aliyun.openservices.log.common.JobState;
+import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateIngestionRequest;
 import com.aliyun.openservices.log.request.GetIngestionRequest;
@@ -18,10 +19,23 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import org.junit.Before;
+
 
 public class MaxComputeTest extends JobIntgTest {
     private static String getIngestionName() {
         return "ingestion-" + getNowTimestamp();
+    }
+
+    @Before
+    @Override
+    public void setUp() {
+        super.setUp();
+        try {
+            client.CreateLogStore(TEST_PROJECT, new LogStore("test-logstore2", 1, 1));
+        } catch (LogException e) {
+            assertEquals("LogStoreAlreadyExist", e.GetErrorCode());
+        }
     }
 
     private Ingestion createIngestion() {
@@ -53,7 +67,7 @@ public class MaxComputeTest extends JobIntgTest {
     public void testCrud() throws Exception {
         Ingestion ingestion = createIngestion();
         String jobName = ingestion.getName();
-        String project = "sls-jsk-log";
+        String project = TEST_PROJECT;
         client.createIngestion(new CreateIngestionRequest(project, ingestion));
         client.updateIngestion(new UpdateIngestionRequest(project, ingestion));
         GetIngestionResponse response = client.getIngestion(new GetIngestionRequest(project, jobName));
@@ -71,7 +85,7 @@ public class MaxComputeTest extends JobIntgTest {
             client.stopIngestion(new StopIngestionRequest(project, jobName));
             fail();
         } catch (LogException ex) {
-            assertEquals("The job to stop has already stopped", ex.GetErrorMessage());
+            assertEquals("The job to disable has already disabled", ex.GetErrorMessage());
             assertEquals("ParameterInvalid", ex.GetErrorCode());
         }
         client.startIngestion(new StartIngestionRequest(project, jobName));
@@ -83,11 +97,12 @@ public class MaxComputeTest extends JobIntgTest {
             client.startIngestion(new StartIngestionRequest(project, jobName));
             fail();
         } catch (LogException ex) {
-            assertEquals("The job to start has already started", ex.GetErrorMessage());
+            assertEquals("The job to enable has already enabled", ex.GetErrorMessage());
             assertEquals("ParameterInvalid", ex.GetErrorCode());
         }
         JobSchedule schedule = new JobSchedule();
-        schedule.setType(JobScheduleType.RESIDENT);
+        schedule.setType(JobScheduleType.FIXED_RATE); // The schedule type change not allowed
+        schedule.setInterval("1h");
         ingestion.setSchedule(schedule);
         client.updateIngestion(new UpdateIngestionRequest(project, ingestion));
     }

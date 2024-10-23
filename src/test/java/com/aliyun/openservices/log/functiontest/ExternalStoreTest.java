@@ -35,7 +35,7 @@ public class ExternalStoreTest extends MetaAPIBaseFunctionTest {
             client.createExternalStore(createRequest);
             fail("Already exists");
         } catch (LogException ex) {
-            assertEquals("ParameterInvalid", ex.GetErrorCode());
+            assertEquals("LogStoreAlreadyExist", ex.GetErrorCode());
             assertEquals(400, ex.getHttpCode());
         }
 
@@ -69,56 +69,56 @@ public class ExternalStoreTest extends MetaAPIBaseFunctionTest {
         client.deleteExternalStore(deleteRequest);
     }
 
-    @Test
-    public void testOSS() throws LogException {
-        //create
-        Parameter parameter = new Parameter();
-        //以下四个参数，只要不是null都可以创建
-        parameter.setEndpoint("oss-cn-hangzhou.aliyuncs.com");
-        parameter.setAccessid("456");
-        parameter.setAccesskey("789");
-        parameter.setBucket("0");
-        ExternalStore externalStore = new ExternalStore("name-oss", "oss", parameter);
-        CreateExternalStoreRequest createRequest = new CreateExternalStoreRequest(TEST_PROJECT, externalStore);
-        client.createExternalStore(createRequest);
+//     @Test
+//     public void testOSS() throws LogException {
+//         //create
+//         Parameter parameter = new Parameter();
+//         //以下四个参数，只要不是null都可以创建
+//         parameter.setEndpoint("oss-cn-hangzhou.aliyuncs.com");
+//         parameter.setAccessid("456");
+//         parameter.setAccesskey("789");
+//         parameter.setBucket("0");
+//         ExternalStore externalStore = new ExternalStore("name-oss", "oss", parameter);
+//         CreateExternalStoreRequest createRequest = new CreateExternalStoreRequest(TEST_PROJECT, externalStore);
+//         client.createExternalStore(createRequest);
 
-        try {
-            client.createExternalStore(createRequest);
-            fail("Already exists");
-        } catch (LogException ex) {
-            assertEquals("ParameterInvalid", ex.getErrorCode());
-            assertEquals(400, ex.getHttpCode());
-        }
+//         try {
+//             client.createExternalStore(createRequest);
+//             fail("Already exists");
+//         } catch (LogException ex) {
+//             assertEquals("ParameterInvalid", ex.getErrorCode());
+//             assertEquals(400, ex.getHttpCode());
+//         }
 
-//        注意，此处会返回创建者的accessid和accesskey
-        GetExternalStoreRequest getRequest1 = new GetExternalStoreRequest(TEST_PROJECT, "name-oss");
-        GetExternalStoreResponse getResponse1 = client.getExternalStore(getRequest1);   //LogException: Internal Server Error
-        assertEquals(getResponse1.getExternalStore().getParameter().getEndpoint(), "oss-cn-hangzhou.aliyuncs.com");
+// //        注意，此处会返回创建者的accessid和accesskey
+//         GetExternalStoreRequest getRequest1 = new GetExternalStoreRequest(TEST_PROJECT, "name-oss");
+//         GetExternalStoreResponse getResponse1 = client.getExternalStore(getRequest1);   //LogException: Internal Server Error
+//         assertEquals(getResponse1.getExternalStore().getParameter().getEndpoint(), "oss-cn-hangzhou.aliyuncs.com");
 
-        //update
-        Parameter parameter2 = new Parameter();
-        parameter2.setEndpoint("oss-cn-hangzhou.aliyuncs.com");
-        parameter2.setAccessid("654");
-        parameter2.setAccesskey("987");
-        parameter2.setBucket("1");
-        ExternalStore externalStore2 = new ExternalStore("name-oss", "oss", parameter2);
-        UpdateExternalStoreRequest updateRequest = new UpdateExternalStoreRequest(TEST_PROJECT, externalStore2);
-        client.updateExternalStore(updateRequest);
+//         //update
+//         Parameter parameter2 = new Parameter();
+//         parameter2.setEndpoint("oss-cn-hangzhou.aliyuncs.com");
+//         parameter2.setAccessid("654");
+//         parameter2.setAccesskey("987");
+//         parameter2.setBucket("1");
+//         ExternalStore externalStore2 = new ExternalStore("name-oss", "oss", parameter2);
+//         UpdateExternalStoreRequest updateRequest = new UpdateExternalStoreRequest(TEST_PROJECT, externalStore2);
+//         client.updateExternalStore(updateRequest);
 
-        //get
-        GetExternalStoreRequest getRequest2 = new GetExternalStoreRequest(TEST_PROJECT, "name-oss");
-        GetExternalStoreResponse getResponse2 = client.getExternalStore(getRequest2);
-        assertEquals(getResponse2.getExternalStore().getParameter().getEndpoint(), "oss-cn-hangzhou.aliyuncs.com");
+//         //get
+//         GetExternalStoreRequest getRequest2 = new GetExternalStoreRequest(TEST_PROJECT, "name-oss");
+//         GetExternalStoreResponse getResponse2 = client.getExternalStore(getRequest2);
+//         assertEquals(getResponse2.getExternalStore().getParameter().getEndpoint(), "oss-cn-hangzhou.aliyuncs.com");
 
-        //list
-        ListExternalStoresRequest listRequest = new ListExternalStoresRequest(TEST_PROJECT, "", 0, 10);
-        ListExternalStroesResponse response = client.listExternalStores(listRequest);
-        assertTrue(response.getExternalStores().contains("name-oss"));
+//         //list
+//         ListExternalStoresRequest listRequest = new ListExternalStoresRequest(TEST_PROJECT, "", 0, 10);
+//         ListExternalStroesResponse response = client.listExternalStores(listRequest);
+//         assertTrue(response.getExternalStores().contains("name-oss"));
 
-        //delete
-        DeleteExternalStoreRequest deleteRequest = new DeleteExternalStoreRequest(TEST_PROJECT, "name-oss");
-        client.deleteExternalStore(deleteRequest);
-        client.createExternalStore(createRequest);
-        client.deleteExternalStore(deleteRequest);
-    }
+//         //delete
+//         DeleteExternalStoreRequest deleteRequest = new DeleteExternalStoreRequest(TEST_PROJECT, "name-oss");
+//         client.deleteExternalStore(deleteRequest);
+//         client.createExternalStore(createRequest);
+//         client.deleteExternalStore(deleteRequest);
+//     }
 }

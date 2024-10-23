@@ -1,6 +1,7 @@
-package com.aliyun.openservices.log;
+package com.aliyun.openservices.log.functiontest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -12,7 +13,9 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.Topostore;
 import com.aliyun.openservices.log.common.TopostoreNode;
 import com.aliyun.openservices.log.common.TopostoreRelation;
@@ -56,17 +59,83 @@ import com.aliyun.openservices.log.response.UpsertTopostoreRelationResponse;
 
 import org.junit.Test;
 
-public class ClientTopostoreTest {
-    @Test
-    public void testCreateTopostore() throws LogException{
+public class ClientTopostoreTest extends MetaAPIBaseFunctionTest {
 
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+    static final String TOPOSTORE_NAME_PREFIX = "sls-sdk-testp-";
+
+    private static String makeTopoStoreName() {
+        return TOPOSTORE_NAME_PREFIX + randomBetween(0, 10000) + "-" + getNowTimestamp();
+    }
+
+    private void safeDeleteTopoStore(String name) {
+        try{ 
+            DeleteTopostoreRequest request = new DeleteTopostoreRequest(name);
+            client.deleteTopostore(request);
+        }catch(LogException e)
+        {
+        
+        }
+    }
+    private void safeCreateTopoStore(String name) throws LogException {
+        Topostore topostore = new Topostore(name);
+        CreateTopostoreRequest request = new CreateTopostoreRequest(topostore);
+        client.createTopostore(request);
+    }
+
+    @Test
+    public void testCurd() throws LogException, InterruptedException{
+        String name = makeTopoStoreName();
+        try{
+            testCreateTopostore(name);
+            testUpdateTopostore(name);
+            testGetTopostore(name);
+            testListTopostore();
+            testDeleteTopostore(name);
+        } finally {
+            safeDeleteTopoStore(name);
+        }
+    }
+
+    @Test
+    public void testNodeCurd()  throws LogException, InterruptedException{
+        String name = makeTopoStoreName();
+        try{
+            safeCreateTopoStore(name);
+            testCreateTopostoreNode(name);
+            testUpsertTopostoreNode(name);
+            testUpdateTopostoreNode(name);
+            testGetTopostoreNode(name);
+            testDeleteTopostoreNode(name);
+            testCreateTopostoreRelation(name);
+            testUpdateTopostoreRelation(name);
+            testUpsertTopostoreRelation(name);
+            testGetTopostoreRelation(name);
+            testListTopostoreRelation(name);
+            testDeleteTopostoreRelation(name);
+
+            testGetTopostoreProperities();
+            testListTopostoreNodeRelationsWithCycle();
+            testListTopostoreNodeRelations();
+            testListTopostoreNodeRelations222();
+        } finally {
+            safeDeleteTopoStore(name);
+        }
+    }
+
+    @Test
+    public void testRelationCurd()  throws LogException, InterruptedException{
+    }
+
+
+    public void testCreateTopostore(String name) throws LogException, InterruptedException{
+        Thread.sleep(1000 * 60);
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
-        Topostore topostore = new Topostore("hello_topostore");
+        Topostore topostore = new Topostore(name);
         Map<String, String> tag = new HashMap<String,String>();
         tag.put("hello", "world");
         topostore.setTag(tag);
@@ -75,16 +144,15 @@ public class ClientTopostoreTest {
         System.out.println(response.toString());
     }
 
-    @Test
-    public void testUpdateTopostore() throws LogException{
-
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+    public void testUpdateTopostore(String name) throws LogException, InterruptedException{
+        Thread.sleep(1000 * 60);
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
-        Topostore topostore = new Topostore("hello_topostore");
+        Topostore topostore = new Topostore(name);
         Map<String, String> tag = new HashMap<String,String>();
         tag.put("hello", "world22");
         topostore.setTag(tag);
@@ -94,26 +162,24 @@ public class ClientTopostoreTest {
         System.out.println(response.toString());
     }
 
-    @Test
-    public void testGetTopostore() throws LogException{
+    public void testGetTopostore(String name) throws LogException{
 
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
-        GetTopostoreRequest request = new GetTopostoreRequest("hello_topostore");
+        GetTopostoreRequest request = new GetTopostoreRequest(name);
         GetTopostoreResponse response = client.getTopostore(request);
         System.out.println(response.getTopostore().ToJsonString());
     }
 
-    @Test
     public void testListTopostore() throws LogException{
 
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
@@ -139,41 +205,38 @@ public class ClientTopostoreTest {
 
     }
 
-    @Test
-    public void testDeleteTopostore() throws LogException{
+    public void testDeleteTopostore(String name) throws LogException{
 
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
-        DeleteTopostoreRequest request = new DeleteTopostoreRequest("hello_topostore");
+        DeleteTopostoreRequest request = new DeleteTopostoreRequest(name);
         DeleteTopostoreResponse response = client.deleteTopostore(request);
         System.out.println(response.toString());
     }
 
-    @Test
-    public void testCreateTopostoreNode() throws LogException{
-
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+    public void testCreateTopostoreNode(String name) throws LogException, InterruptedException{
+        Thread.sleep(1000 * 60);
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
         TopostoreNode topostoreNode = new TopostoreNode("machine1", "server");
-        CreateTopostoreNodeRequest request = new CreateTopostoreNodeRequest("hello_topostore",topostoreNode);
+        CreateTopostoreNodeRequest request = new CreateTopostoreNodeRequest(name,topostoreNode);
         CreateTopostoreNodeResponse response = client.createTopostoreNode(request);
         System.out.println(response.toString());
     }
 
-    @Test
-    public void testUpsertTopostoreNode() throws LogException{
+    public void testUpsertTopostoreNode(String name) throws LogException{
 
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
@@ -184,66 +247,62 @@ public class ClientTopostoreTest {
         List<TopostoreNode> nodes = new ArrayList<TopostoreNode>();
         nodes.add(topostoreNode);
 
-        UpsertTopostoreNodeRequest request = new UpsertTopostoreNodeRequest("hello_topostore", nodes);
+        UpsertTopostoreNodeRequest request = new UpsertTopostoreNodeRequest(name, nodes);
         UpsertTopostoreNodeResponse response = client.upsertTopostoreNode(request);
         System.out.println(response.toString());
     }
 
 
-    @Test
-    public void testUpdateTopostoreNode() throws LogException{
+    public void testUpdateTopostoreNode(String name) throws LogException{
 
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
         TopostoreNode topostoreNode = new TopostoreNode("machine1", "server");
         topostoreNode.setDisplayName("login_server");
-        UpdateTopostoreNodeRequest request = new UpdateTopostoreNodeRequest("hello_topostore",topostoreNode);
+        UpdateTopostoreNodeRequest request = new UpdateTopostoreNodeRequest(name,topostoreNode);
         UpdateTopostoreNodeResponse response = client.updateTopostoreNode(request);
         System.out.println(response.toString());
     }
 
-    @Test
-    public void testGetTopostoreNode() throws LogException{
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+    public void testGetTopostoreNode(String name) throws LogException{
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
-        GetTopostoreNodeRequest request = new GetTopostoreNodeRequest("hello_topostore","machine1");
+        GetTopostoreNodeRequest request = new GetTopostoreNodeRequest(name,"machine1");
         GetTopostoreNodeResponse response = client.getTopostoreNode(request);
         System.out.println(response.getTopostoreNode().ToJsonString());
     }
 
-    @Test
-    public void testDeleteTopostoreNode() throws LogException{
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+    public void testDeleteTopostoreNode(String name) throws LogException{
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
         List<String> nodeIds = new ArrayList<String>();
         nodeIds.add("machine1");
-        DeleteTopostoreNodeRequest request = new DeleteTopostoreNodeRequest("hello_topostore",nodeIds);
+        DeleteTopostoreNodeRequest request = new DeleteTopostoreNodeRequest(name, nodeIds);
         DeleteTopostoreNodeResponse response = client.deleteTopostoreNode(request);
         System.out.println(response.toString());
     }
 
-    @Test
-    public void testCreateTopostoreRelation() throws LogException{
-
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+    public void testCreateTopostoreRelation(String name) throws LogException, InterruptedException{
+        Thread.sleep(1000 * 60);
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
-        String topostoreName = "hello_topostore";
+        String topostoreName = name;
         // prepare nodes
         List<TopostoreNode> nodes = new ArrayList<TopostoreNode>();
         TopostoreNode topostoreNode1 = new TopostoreNode("machine1", "server");
@@ -279,16 +338,15 @@ public class ClientTopostoreTest {
 
     }
 
-    @Test
-    public void testUpdateTopostoreRelation() throws LogException{
+    public void testUpdateTopostoreRelation(String name) throws LogException{
 
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
-        String topostoreName = "hello_topostore";
+        String topostoreName = name;
 
         // relation op
         TopostoreRelation relation = new TopostoreRelation();
@@ -304,16 +362,15 @@ public class ClientTopostoreTest {
 
     }
 
-    @Test
-    public void testUpsertTopostoreRelation() throws LogException{
+    public void testUpsertTopostoreRelation(String name) throws LogException{
 
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
-        String topostoreName = "hello_topostore";
+        String topostoreName = name;
 
         // relation op
         TopostoreRelation relation1 = new TopostoreRelation();
@@ -340,16 +397,15 @@ public class ClientTopostoreTest {
 
     }
 
-    @Test
-    public void testGetTopostoreRelation() throws LogException{
+    public void testGetTopostoreRelation(String name) throws LogException{
 
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
-        String topostoreName = "hello_topostore";
+        String topostoreName = name;
 
         // relation op
         GetTopostoreRelationRequest request = new GetTopostoreRelationRequest(topostoreName, "relation1");
@@ -358,16 +414,15 @@ public class ClientTopostoreTest {
     }
 
 
-    @Test
-    public void testListTopostoreRelation() throws LogException{
+    public void testListTopostoreRelation(String name) throws LogException{
 
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
-        String topostoreName = "hello_topostore";
+        String topostoreName = name;
 
         // relation op
         ListTopostoreRelationRequest request = new ListTopostoreRelationRequest(topostoreName);
@@ -378,16 +433,15 @@ public class ClientTopostoreTest {
     }
 
 
-    @Test
-    public void testDeleteTopostoreRelation() throws LogException{
+    public void testDeleteTopostoreRelation(String name) throws LogException{
 
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
-        String topostoreName = "hello_topostore";
+        String topostoreName = name;
 
         // relation op
         List<String> relationIds = new ArrayList<String>();
@@ -399,11 +453,10 @@ public class ClientTopostoreTest {
         System.out.println(response.toString());
     }
 
-    @Test
     public void testGetTopostoreProperities() throws LogException{
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
@@ -450,9 +503,9 @@ public class ClientTopostoreTest {
     }
 
     private void prepareTopoForquery(String topoName) throws LogException{
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
@@ -551,11 +604,10 @@ public class ClientTopostoreTest {
     }
 
 
-    @Test
     public void testListTopostoreNodeRelationsWithCycle() throws LogException{
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
@@ -682,11 +734,10 @@ public class ClientTopostoreTest {
     }
 
 
-    @Test
     public void testListTopostoreNodeRelations() throws LogException{
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
 
@@ -771,11 +822,10 @@ public class ClientTopostoreTest {
         listNodeRelationResultCheck(resp, new ArrayList<String>(), new ArrayList<String>());
     }
 
-    @Test
     public void testListTopostoreNodeRelations222() throws LogException{
-        String endpoint = System.getenv("LOG_TEST_ENDPOINT");
-        String accessKeyId = System.getenv("LOG_TEST_ACCESS_KEY_ID");
-        String accessKeySecret = System.getenv("LOG_TEST_ACCESS_KEY_SECRET");
+        String endpoint = TEST_ENDPOINT;
+        String accessKeyId = credentials.getAccessKeyId();
+        String accessKeySecret = credentials.getAccessKey();
 
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
         String  s = "        {\"depth\":1,\"direction\":\"both\",\"from\":0,\"nodeIds\":[\"sls-mall_trace-type_sls-mall\"],\"nodeProperities\":{},\"nodeTypes\":[],\"to\":0,\"topostoreName\":\"SLS_DEFAULT_DATA_EXPRESSION\"}\n";

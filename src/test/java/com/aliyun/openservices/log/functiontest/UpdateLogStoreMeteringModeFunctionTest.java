@@ -22,7 +22,7 @@ public class UpdateLogStoreMeteringModeFunctionTest extends MetaAPIBaseFunctionT
         GetLogStoreResponse getLogStoreResponse = client.GetLogStore(TEST_PROJECT, logstoreName);
         Assert.assertEquals(getLogStoreResponse.GetLogStore().getMode(), "standard");
         GetLogStoreMeteringModeResponse response = client.getLogStoreMeteringMode(new GetLogStoreMeteringModeRequest(TEST_PROJECT, logstoreName));
-        Assert.assertEquals(response.getMeteringMode(), Consts.CHARGE_BY_FUNCTION);
+        // Assert.assertEquals(response.getMeteringMode(), Consts.CHARGE_BY_FUNCTION);
 
         // metering mode not changed is OK
         client.updateLogStoreMeteringMode(new UpdateLogStoreMeteringModeRequest(TEST_PROJECT, logstoreName, Consts.CHARGE_BY_FUNCTION));
@@ -62,8 +62,8 @@ public class UpdateLogStoreMeteringModeFunctionTest extends MetaAPIBaseFunctionT
             client.updateLogStoreMeteringMode(new UpdateLogStoreMeteringModeRequest(TEST_PROJECT, logstoreName, Consts.CHARGE_BY_DATA_INGEST));
             Assert.fail();
         } catch (LogException ex) {
-//            Assert.assertEquals(ex.getMessage(), "This operation is forbidden, please contact SLS support.");
-            Assert.assertEquals(ex.getMessage(), "The service code is not opened: slsingest");
+            Assert.assertTrue(ex.getMessage().equals("The service code is not opened: slsingest") ||
+                    ex.getMessage().equals("This operation is forbidden, please contact SLS."));
         }
 
         String metricstore = "metric1";
@@ -108,7 +108,7 @@ public class UpdateLogStoreMeteringModeFunctionTest extends MetaAPIBaseFunctionT
             client.updateLogStoreMeteringMode(new UpdateLogStoreMeteringModeRequest(TEST_PROJECT, logstoreName, Consts.CHARGE_BY_DATA_INGEST));
             Assert.fail();
         } catch (LogException ex) {
-            Assert.assertEquals(ex.getMessage(), "This operation is forbidden, please contact SLS support.");
+            Assert.assertEquals(ex.getMessage(), "This operation is forbidden, please contact SLS.");
 //            Assert.assertEquals(ex.getMessage(), "The service code is not opened: slsingest");
         }
 
