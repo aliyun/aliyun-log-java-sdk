@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ScheduledSqlE2E extends FunctionTest {
-    private final String sourceProject = "scheduled-sql-pub-test";
+    private final String sourceProject = makeProjectName();
     private final String roleArn = "acs:ram::" + credentials.getAliuid() + ":role/aliyunlogscheduledsqlrole";
     private final String sourceLogstoreIndex = "{\"line\": {\"token\": [\",\", \" \", \"'\", \"\\\"\", \";\", \"=\", \"(\", \")\", \"[\", \"]\", \"{\", \"}\", \"?\", \"@\", \"&\", \"<\", \">\", \"/\", \":\", \"\\n\", \"\\t\", \"\\r\"], \"caseSensitive\": false, \"chn\": false}, \"keys\": {\"dev\": {\"type\": \"text\", \"token\": [\",\", \" \", \"'\", \"\\\"\", \";\", \"=\", \"(\", \")\", \"[\", \"]\", \"{\", \"}\", \"?\", \"@\", \"&\", \"<\", \">\", \"/\", \":\", \"\\n\", \"\\t\", \"\\r\"], \"caseSensitive\": false, \"alias\": \"\", \"doc_value\": true, \"chn\": false}, \"id\": {\"type\": \"long\", \"alias\": \"\", \"doc_value\": true}}, \"log_reduce\": false, \"max_text_len\": 2048}";
     private final String destLogstoreIndex = "{\"keys\":{\"__tag__:__schedule_time__\":{\"alias\":\"\",\"caseSensitive\":false,\"chn\":false,\"doc_value\":true,\"token\":[\",\",\" \",\"'\",\"\\\"\",\";\",\"=\",\"(\",\")\",\"[\",\"]\",\"{\",\"}\",\"?\",\"@\",\"&\",\"<\",\">\",\"/\",\":\",\"\\n\",\"\\t\",\"\\r\"],\"type\":\"text\"},\"number_id\":{\"alias\":\"\",\"doc_value\":true,\"type\":\"long\"}},\"line\":{\"caseSensitive\":false,\"chn\":false,\"token\":[\",\",\" \",\"'\",\"\\\"\",\";\",\"=\",\"(\",\")\",\"[\",\"]\",\"{\",\"}\",\"?\",\"@\",\"&\",\"<\",\">\",\"/\",\":\",\"\\n\",\"\\t\",\"\\r\"]},\"log_reduce\":false,\"max_text_len\":16384}";

@@ -47,6 +47,11 @@ public class TagResourcesTest extends MetaAPIBaseFunctionTest {
         Dashboard dashboard = new Dashboard(dashboardName, "Dashboard", new ArrayList<Chart>());
         client.createDashboard(new CreateDashboardRequest(TEST_PROJECT, dashboard));
     }
+    @Test
+    public void testTagAndUntag() throws Exception {
+        testTagSources();
+        testUnTagSources();
+    }
 
     public void tagSources(String resourceType, String resourceId) throws LogException {
         String wrongResourceType = resourceType + "-1";
@@ -104,7 +109,6 @@ public class TagResourcesTest extends MetaAPIBaseFunctionTest {
         client.untagResources(untagResourcesRequest);
     }
 
-    @Test
     public void testTagSources() throws LogException {
         for (String resourceType : supportedTypeAndResourceId.keySet()) {
             tagSources(resourceType, supportedTypeAndResourceId.get(resourceType));
@@ -157,7 +161,6 @@ public class TagResourcesTest extends MetaAPIBaseFunctionTest {
 
     }
 
-    @Test
     public void testUnTagSources() throws LogException {
         for (String resourceType : supportedTypeAndResourceId.keySet()) {
             unTagSources(resourceType, supportedTypeAndResourceId.get(resourceType));

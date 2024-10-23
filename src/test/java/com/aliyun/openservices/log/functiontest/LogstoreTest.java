@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.functiontest;
 
 import com.aliyun.openservices.log.common.Index;
+import com.aliyun.openservices.log.common.IndexLine;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.Project;
 import com.aliyun.openservices.log.exception.LogException;
@@ -9,11 +10,11 @@ import com.aliyun.openservices.log.response.GetLogStoreResponse;
 import com.aliyun.openservices.log.response.ListLogStoresResponse;
 import com.aliyun.openservices.log.response.ListProjectResponse;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertEquals;
@@ -87,6 +88,7 @@ public class LogstoreTest extends FunctionTest {
         Index index = new Index();
         index.FromJsonString(INDEX_STRING);
         client.CreateProject(project, "");
+        Map<Integer, Integer> autoDetectEnabled = new HashMap<>();
 
         int numberOfLogstore = randomInt(100) + 1;
         for (int i = 0; i < numberOfLogstore; i++) {
@@ -101,6 +103,14 @@ public class LogstoreTest extends FunctionTest {
             } catch (LogException ex) {
                 assertEquals("IndexConfigNotExist", ex.GetErrorCode());
             }
+            if (randomBoolean()) {
+                index.GetLine().setAutoKeyDetect(true);
+                int autoKeyLimit = randomInt();
+                index.GetLine().setAutoKeyCountLimit(autoKeyLimit);
+                autoDetectEnabled.put(i, autoKeyLimit);
+            } else {
+                index.GetLine().setAutoKeyDetect(false);
+            }
             client.CreateIndex(project, logStore.GetLogStoreName(), index);
         }
         for (int i = 0; i < numberOfLogstore; i++) {
@@ -110,6 +120,15 @@ public class LogstoreTest extends FunctionTest {
             assertEquals(2, logStore.GetShardCount());
 
             GetIndexResponse response1 = client.GetIndex(project, logStore.GetLogStoreName());
+            Index index1 = response1.GetIndex();
+            IndexLine indexLine = index1.GetLine();
+            Integer expectedLimit = autoDetectEnabled.get(i);
+            if (expectedLimit != null) {
+                Assert.assertTrue(indexLine.isAutoKeyDetect());
+                Assert.assertEquals(expectedLimit, indexLine.getAutoKeyCountLimit());
+            } else {
+                Assert.assertFalse(indexLine.isAutoKeyDetect());
+            }
 
             int total = 0;
             String query = "logstore-" + i;

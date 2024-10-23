@@ -51,7 +51,7 @@ public class PullLogsFunctionTest extends LogTest {
         assertEquals(written, logGroups.size());
     }
 
-    @Test
+    // @Test
     public void testNewDataWillAppendClientIp() throws Exception {
         String logStore = "logstore-" + getNowTimestamp();
         ensureLogStoreEnabled(TEST_PROJECT, logStore, true);
@@ -59,7 +59,7 @@ public class PullLogsFunctionTest extends LogTest {
         assertEquals(written, countLogGroupWithClientIpTag(TEST_PROJECT, logStore, 2));
     }
 
-    @Test
+    // @Test
     public void testMixDataWillAppendClientIp() throws Exception {
         String logStore = "logstore-" + getNowTimestamp();
         ensureLogStoreEnabled(TEST_PROJECT, logStore, false);

@@ -36,6 +36,7 @@ public class LoggingFunctionTest extends MetaAPIBaseFunctionTest {
     private static List<String> TEST_LOGSTORES;
 
     @Before
+    @Override
     public void setUp() {
         super.setUp();
         TEST_LOGSTORES = new ArrayList<String>();
@@ -51,7 +52,7 @@ public class LoggingFunctionTest extends MetaAPIBaseFunctionTest {
         }
     }
 
-    @Test
+
     public void testCreateLogging() throws Exception {
         // testing a not exist logstore
         List<LoggingDetail> details = new ArrayList<LoggingDetail>();
@@ -97,6 +98,8 @@ public class LoggingFunctionTest extends MetaAPIBaseFunctionTest {
 
         createShouldFail(createLoggingRequest,
                 "Logging already exists for project '" + TEST_PROJECT + "'", "LoggingAlreadyExist");
+
+        client.deleteLogging(new DeleteLoggingRequest(TEST_PROJECT));
     }
 
     private void createShouldFail(CreateLoggingRequest request,
@@ -111,7 +114,7 @@ public class LoggingFunctionTest extends MetaAPIBaseFunctionTest {
         }
     }
 
-    @Test
+
     public void testGetLogging() throws Exception {
         GetLoggingRequest getLoggingRequest = new GetLoggingRequest(TEST_PROJECT);
         try {
@@ -140,9 +143,11 @@ public class LoggingFunctionTest extends MetaAPIBaseFunctionTest {
         LoggingDetail createdItem = createdDetails.get(0);
         assertEquals(goodType, createdItem.getType());
         assertEquals(goodLogstore, createdItem.getLogstore());
+
+        client.deleteLogging(new DeleteLoggingRequest(TEST_PROJECT));
     }
 
-    @Test
+
     public void testDeleteLogging() throws Exception {
         DeleteLoggingRequest deleteLoggingRequest = new DeleteLoggingRequest(TEST_PROJECT);
         try {
@@ -166,7 +171,7 @@ public class LoggingFunctionTest extends MetaAPIBaseFunctionTest {
         client.deleteLogging(deleteLoggingRequest);
     }
 
-    @Test
+
     public void testUpdateLogging() throws Exception {
         // testing update a not exist logstore
         List<LoggingDetail> details = new ArrayList<LoggingDetail>();
@@ -235,6 +240,7 @@ public class LoggingFunctionTest extends MetaAPIBaseFunctionTest {
         for (LoggingDetail detail : details) {
             assertTrue(typeCreated.contains(detail.getType()));
         }
+        client.deleteLogging(new DeleteLoggingRequest(TEST_PROJECT));
     }
 
     private void updateShouldFail(UpdateLoggingRequest request, String errorMessage, String errorCode) {
@@ -247,7 +253,7 @@ public class LoggingFunctionTest extends MetaAPIBaseFunctionTest {
         }
     }
 
-    @Test
+
     public void testDeleteProjectWillDeleteLogging() throws Exception {
         List<LoggingDetail> details = new ArrayList<LoggingDetail>();
         String goodType = randomFrom(TYPES_ALLOWED);
@@ -269,5 +275,14 @@ public class LoggingFunctionTest extends MetaAPIBaseFunctionTest {
                 assertEquals(ex.GetErrorCode(), "LoggingNotExist");
             }
         }
+    }
+
+    @Test
+    public void testLogging() throws Exception {
+        testCreateLogging();
+        testGetLogging();
+        testDeleteLogging();
+        testUpdateLogging();
+        testDeleteProjectWillDeleteLogging();
     }
 }

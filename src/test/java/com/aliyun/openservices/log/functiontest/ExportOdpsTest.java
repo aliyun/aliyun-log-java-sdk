@@ -2,26 +2,33 @@ package com.aliyun.openservices.log.functiontest;
 
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.*;
+import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateExportRequest;
 import com.aliyun.openservices.log.request.DeleteExportRequest;
 import com.aliyun.openservices.log.response.CreateExportResponse;
 import com.aliyun.openservices.log.response.DeleteExportResponse;
 import com.aliyun.openservices.log.response.GetExportResponse;
 import com.aliyun.openservices.log.request.GetExportRequest;
-import org.junit.After;
+
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
-public class ExportOdpsTest extends FunctionTest {
-    private String project = "111111";
+public class ExportOdpsTest extends MetaAPIBaseFunctionTest {
+    private String project = TEST_PROJECT;
 
     @Before
+    @Override
     public void setUp() {
+        super.setUp();
+        try {
+            client.CreateLogStore(project, new LogStore("source-log", 1, 1));
+        } catch (LogException e) {
+            assertEquals("LogStoreAlreadyExist", e.GetErrorCode());
+        }
     }
 
-    @After
-    public void clearUp() {
-    }
     private Export createExport() throws Exception {
         AliyunODPSSink sink = new AliyunODPSSink();
         sink.setOdpsRolearn("acs:ram::111111111:role/aliyunlogdefaultrole");

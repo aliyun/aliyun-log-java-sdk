@@ -199,7 +199,7 @@ public abstract class FunctionTest {
         }
     }
 
-    private static boolean safeCreateLogStore(String project, LogStore logStore) {
+    protected static boolean safeCreateLogStore(String project, LogStore logStore) {
         try {
             client.CreateLogStore(project, logStore);
             return true;

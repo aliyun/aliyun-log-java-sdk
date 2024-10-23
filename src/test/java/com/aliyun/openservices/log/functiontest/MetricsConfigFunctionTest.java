@@ -78,10 +78,13 @@ public class MetricsConfigFunctionTest extends FunctionTest {
     static String NOTSUPPORTED = "NotSupported";
 
     @Before
-    public void setUp() throws LogException {
+    public void setUp() throws LogException, InterruptedException {
         client.CreateProject(PROJECTEXIST, "");
+        Thread.sleep(1000 * 10);
         client.createMetricStore(PROJECTEXIST, new LogStore(METRICSEXIST, 1, 1));
+        Thread.sleep(1000 * 10);
         client.CreateLogStore(PROJECTEXIST, new LogStore(LOGSTOREEXIST, 1, 1));
+        Thread.sleep(1000 * 10);
     }
 
     @After
@@ -274,8 +277,11 @@ public class MetricsConfigFunctionTest extends FunctionTest {
             Assert.fail("should not fail");
         }
         try {
-            GetMetricsConfigResponse response = client.getMetricsConfig(new GetMetricsConfigRequest(PROJECTEXIST, METRICSEXIST));
-            boolean isEquals = CONFIG.equals(response.getMetricsConfig());
+            GetMetricsConfigResponse response = client
+                    .getMetricsConfig(new GetMetricsConfigRequest(PROJECTEXIST, METRICSEXIST));
+            // todo: fix this, override equals
+            // boolean isEquals = CONFIG.equals(response.getMetricsConfig());
+            boolean isEquals = isConfigEquals(CONFIG, response.getMetricsConfig());
             Assert.assertTrue(isEquals);
         } catch (LogException e) {
             Assert.fail("should not fail");
@@ -312,7 +318,9 @@ public class MetricsConfigFunctionTest extends FunctionTest {
             Assert.assertEquals(response.getMetricsConfigList().size(), 1);
             ListMetricsConfigResponse.MetricsConfigWrap metricsConfigWrap = response.getMetricsConfigList().get(0);
             Assert.assertEquals(metricsConfigWrap.getMetricStore(), METRICSEXIST);
-            boolean isEquals = CONFIG.equals(metricsConfigWrap.getMetricsConfig());
+            // todo: fix this, override equals
+            // boolean isEquals = CONFIG.equals(metricsConfigWrap.getMetricsConfig());
+            boolean isEquals = isConfigEquals(CONFIG, metricsConfigWrap.getMetricsConfig());
             Assert.assertTrue(isEquals);
 
             response = client.listMetricsConfig(new ListMetricsConfigRequest(PROJECTEXIST, 2, 5));
@@ -323,5 +331,16 @@ public class MetricsConfigFunctionTest extends FunctionTest {
         } catch (LogException e) {
             Assert.fail("should not fail");
         }
+    }
+
+    private static boolean isConfigEquals(MetricsConfig expected, MetricsConfig actual) {
+        if (expected == actual) {
+            return true;
+        }
+        if (null == expected || null == actual) {
+            return false;
+        }
+        return JSON.toJSONString(expected).equals(JSON.toJSONString(actual));
+
     }
 }

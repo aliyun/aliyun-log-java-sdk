@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.common.JobScheduleType;
+import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.ScheduledSQL;
 import com.aliyun.openservices.log.common.ScheduledSQLConfiguration;
 import com.aliyun.openservices.log.exception.LogException;
@@ -53,6 +54,7 @@ public class ScheduledSQLTest extends FunctionTest {
     public void setUp() {
         safeCreateProject(project, "ScheduledSQLTest");
         safeCreateProject(destProject, "ScheduledSQLTest dest");
+        assertTrue(safeCreateLogStore(project, new LogStore(sourceLogstore, 1, 1))); 
     }
 
     @After

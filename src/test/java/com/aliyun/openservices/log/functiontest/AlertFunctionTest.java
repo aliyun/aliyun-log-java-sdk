@@ -28,6 +28,8 @@ import com.aliyun.openservices.log.request.UpdateAlertRequest;
 import com.aliyun.openservices.log.response.GetAlertResponse;
 import com.aliyun.openservices.log.response.ListAlertResponse;
 import com.aliyun.openservices.log.response.ListDashboardResponse;
+
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.runners.MethodSorters;
 
 import static org.junit.Assert.assertEquals;
 
@@ -172,6 +175,16 @@ public class AlertFunctionTest extends JobIntgTest {
     }
 
     @Test
+    public void testV1() throws Exception {
+        testCreateAlertV2();
+        testCrudV2();
+        testCrud();
+        testCreateDingTalkWithTitle();
+        testCreateWebHookWithHeaders();
+        testCreateVoiceNotification();
+        testCreateEmail();
+    }
+
     public void testCreateAlertV2() throws Exception {
         // test list jobs
         Alert alert = createAlertV2();
@@ -196,7 +209,6 @@ public class AlertFunctionTest extends JobIntgTest {
         assertEquals(alert2.getStatus(), "ENABLED");
     }
 
-    @Test
     public void testCrudV2() throws Exception {
         // test list jobs
         ListAlertRequest listReq = new ListAlertRequest(TEST_PROJECT);
@@ -284,7 +296,6 @@ public class AlertFunctionTest extends JobIntgTest {
         assertEquals(10, (int) listJobsResponse.getCount());
     }
 
-    @Test
     public void testCrud() throws Exception {
         // test list jobs
         ListAlertRequest listReq = new ListAlertRequest(TEST_PROJECT);
@@ -384,7 +395,6 @@ public class AlertFunctionTest extends JobIntgTest {
         assertEquals(10, (int) listJobsResponse.getCount());
     }
 
-    @Test
     public void testCreateDingTalkWithTitle() throws Exception {
         createDashboard();
         Alert alert = createAlert();
@@ -410,7 +420,6 @@ public class AlertFunctionTest extends JobIntgTest {
         client.deleteAlert(new DeleteAlertRequest(TEST_PROJECT, alert.getName()));
     }
 
-    @Test
     public void testCreateWebHookWithHeaders() throws Exception {
         createDashboard();
         Alert alert = createAlert();
@@ -439,7 +448,6 @@ public class AlertFunctionTest extends JobIntgTest {
         client.deleteAlert(new DeleteAlertRequest(TEST_PROJECT, alert.getName()));
     }
 
-    @Test
     public void testCreateVoiceNotification() throws Exception {
         createDashboard();
         Alert alert = createAlert();
@@ -463,7 +471,6 @@ public class AlertFunctionTest extends JobIntgTest {
         client.deleteAlert(new DeleteAlertRequest(TEST_PROJECT, alert.getName()));
     }
 
-    @Test
     public void testCreateEmail() throws Exception {
         createDashboard();
         Alert alert = createAlert();

@@ -5,16 +5,26 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.*;
+
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class IngestionElasticTest extends JobIntgTest {
 
-    private static final String TEST_PROJECT = "test-ingestion-1";
     private static final String TEST_LOGSTORE = "chuzhi-test-etl20";
     private static final String TEST_JOB = "ingest-es-unittest-" + System.currentTimeMillis();
+
+    @Before
+    @Override
+    public void setUp() {
+        super.setUp();
+        assertTrue(safeCreateLogStore(TEST_PROJECT, new LogStore(TEST_LOGSTORE, 1, 1))); 
+    }
 
     @Test
     public void testLifeCycle() throws Exception {

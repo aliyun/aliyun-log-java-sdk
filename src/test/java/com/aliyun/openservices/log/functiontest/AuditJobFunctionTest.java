@@ -17,9 +17,9 @@ import com.aliyun.openservices.log.response.StopAuditJobResponse;
 import com.aliyun.openservices.log.response.UpdateAuditJobResponse;
 import org.junit.Test;
 
-public class AuditJobFunctionTest extends FunctionTest {
+public class AuditJobFunctionTest extends MetaAPIBaseFunctionTest {
 
-    String project = "project-to-test-alert";
+    String project = TEST_PROJECT;
     String jobName = "test_audit_job";
 
     @Test
