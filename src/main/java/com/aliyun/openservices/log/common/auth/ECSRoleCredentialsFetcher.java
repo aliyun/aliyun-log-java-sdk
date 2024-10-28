@@ -26,10 +26,10 @@ public class ECSRoleCredentialsFetcher extends HttpCredentialsFetcher {
         String accessKeyId = response.getString("AccessKeyId");
         String accessKeySecret = response.getString("AccessKeySecret");
         String securityToken = response.getString("SecurityToken");
-        long expiration = DateUtil.stringToLong(response.getString("Expiration"));
-        long lastUpdated = DateUtil.stringToLong(response.getString("LastUpdated"));
+        long expirationInMills = DateUtil.stringToLong(response.getString("Expiration"));
+        long updateTimeInMIlls = DateUtil.stringToLong(response.getString("LastUpdated"));
         return new TemporaryCredentials(accessKeyId, accessKeySecret,
-                securityToken, expiration, lastUpdated);
+                securityToken, expirationInMills, updateTimeInMIlls);
     }
 
     @Override

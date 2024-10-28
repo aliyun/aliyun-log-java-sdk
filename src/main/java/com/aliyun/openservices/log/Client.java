@@ -2063,7 +2063,13 @@ public class Client implements LogService {
 		if (resourceOwnerAccount != null && !resourceOwnerAccount.isEmpty()) {
 			headers.put(Consts.CONST_X_LOG_RESOURCEOWNERACCOUNT, resourceOwnerAccount);
 		}
-		signer.sign(method, headers, resourceUri, parameters, body);
+		try {
+			signer.sign(method, headers, resourceUri, parameters, body);
+		} catch (Exception e) {
+			throw new LogException("ClientSignatureError",
+					"Fail to calculate signature for request, error:" + e.getMessage(), "");
+		}
+		
 		URI uri;
 		if (serverIp == null) {
 			uri = GetHostURI(project);
@@ -2109,7 +2115,12 @@ public class Client implements LogService {
 		if (resourceOwnerAccount != null && !resourceOwnerAccount.isEmpty()) {
 			headers.put(Consts.CONST_X_LOG_RESOURCEOWNERACCOUNT, resourceOwnerAccount);
 		}
-		signer.sign(method, headers, resourceUri, parameters, body);
+		try {
+			signer.sign(method, headers, resourceUri, parameters, body);
+		} catch (Exception e) {
+			throw new LogException("ClientSignatureError",
+					"Fail to calculate signature for request, error:" + e.getMessage(), "");
+		}
 		URI uri;
 		if (serverIp == null) {
 			uri = GetHostURI(project);
