@@ -5082,6 +5082,25 @@ public class Client implements LogService {
 		return new ListResourceRecordResponse(response.getHeaders(), count, total, records);
 	}
 
+	@Override
+	public ListNextResourceRecordResponse listNextResourceRecord(ListNextResourceRecordRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		CodingUtils.assertStringNotNullOrEmpty(request.getResourceName(), "resourceName");
+
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		String resourceUri = String.format(Consts.CONST_NEXT_RESOURCE_RECORD_URI, request.getResourceName());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		Map<String, String> urlParameter = request.GetAllParams();
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = parseResponseBody(response, requestId);
+		int total = object.getIntValue(Consts.CONST_TOTAL);
+		int maxResults = object.getIntValue(Consts.CONST_MAX_RESULTS);
+		String nextToken = object.getString(Consts.CONST_NEXT_TOKEN);
+		List<ResourceRecord> records = extractResourceRecords(object, requestId);
+		return new ListNextResourceRecordResponse(response.getHeaders(), maxResults, total, nextToken, records);
+	}
+
 	protected List<ResourceRecord> extractResourceRecords(JSONObject object, String requestId) throws LogException {
 		List<ResourceRecord> records = new ArrayList<ResourceRecord>();
 		if (object == null) {

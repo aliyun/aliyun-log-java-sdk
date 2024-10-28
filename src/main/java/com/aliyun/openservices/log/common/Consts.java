@@ -294,6 +294,8 @@ public class Consts {
     public static final String CONST_LASTMODIFYTIME = "lastModifyTime";
     public static final String CONST_TOTAL = "total";
     public static final String CONST_SIZE = "size";
+    public static final String CONST_NEXT_TOKEN = "nextToken";
+    public static final String CONST_MAX_RESULTS = "maxResults";
     public static final String RESULTS = "results";
 
     // project relate
@@ -397,6 +399,7 @@ public class Consts {
     public static final String CONST_MIGRATION_NAME_URI = CONST_MIGRATION_URI + "/%s";
 
     public static final String CONST_RESOURCE_RECORD_URI = CONST_RESOURCE_NAME_URI + "/records";
+    public static final String CONST_NEXT_RESOURCE_RECORD_URI = CONST_RESOURCE_NAME_URI + "/next_records";
     public static final String CONST_RESOURCE_RECORD_ID_URI = CONST_RESOURCE_RECORD_URI + "/%s";
     public static final String RESOURCE_RECORD_ID = "id";
     public static final String RESOURCE_RECORD_IDS = "ids";
