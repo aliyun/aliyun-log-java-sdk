@@ -5,42 +5,21 @@ package com.aliyun.openservices.log.common.auth;
  */
 public class TemporaryCredentials implements Credentials {
 
-    public static final double DEFAULT_EXPIRED_FACTOR = 0.8;
-
     /**
      * Constructs TemporaryCredentials.
      *
-     * @param expiration  the expiration of the credentials, in millisecond format.
-     * @param lastUpdated the last updated time of the credentials, in millisecond format.
+     * @param expirationInMillis  the expiration of the credentials, in millisecond format.
+     * @param updateTimeInMillis the last updated time of the credentials, in millisecond format.
      */
     public TemporaryCredentials(String accessKeyId, String accessKeySecret, String securityToken,
-                                long expiration, long lastUpdated) {
+                                long expirationInMillis, long updateTimeInMillis) {
         this.accessKeyId = accessKeyId;
         this.accessKeySecret = accessKeySecret;
         this.securityToken = securityToken;
-        this.expiration = expiration;
-        this.lastUpdated = lastUpdated;
+        this.expirationInMills = expirationInMillis;
+        this.updateTimeInMillis = updateTimeInMillis;
     }
 
-    /**
-     * Whether the credentials should be refreshed.
-     */
-    public boolean shouldRefresh() {
-        long now = System.currentTimeMillis();
-        return (now - lastUpdated) >= (expiration - lastUpdated) * expiredFactor;
-    }
-
-    /**
-     * Constructs TemporaryCredentials.
-     *
-     * @param expiredFactor the expiration factor of the credentials, the
-     *                      value should be less than 1.0 and greater than 0. Determines when
-     *                      to refresh the credentials.
-     */
-    public TemporaryCredentials withExpiredFactor(double expiredFactor) {
-        this.expiredFactor = expiredFactor;
-        return this;
-    }
 
     @Override
     public String getAccessKeyId() {
@@ -72,12 +51,29 @@ public class TemporaryCredentials implements Credentials {
         this.securityToken = securityToken;
     }
 
+    public long getExpirationInMills() {
+        return expirationInMills;
+    }
+
+
+    public void setExpirationInMills(long expiration) {
+        this.expirationInMills = expiration;
+    }
+
+
+    public long getUpdateTimeInMillis() {
+        return updateTimeInMillis;
+    }
+
+
+    public void setUpdateTimeInMillis(long lastUpdated) {
+        this.updateTimeInMillis = lastUpdated;
+    }
+
     protected String accessKeyId;
     protected String accessKeySecret;
     protected String securityToken;
 
-    protected long expiration;
-    protected long lastUpdated;
-    protected double expiredFactor = DEFAULT_EXPIRED_FACTOR;
-
+    protected long expirationInMills;
+    protected long updateTimeInMillis;
 }

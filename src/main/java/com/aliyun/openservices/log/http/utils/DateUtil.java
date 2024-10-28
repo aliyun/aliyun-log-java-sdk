@@ -41,6 +41,9 @@ public class DateUtil {
         return rfc822DateFormat;
     }
 
+    /**
+     * @return Returns the number of millisecondssince January 1, 1970, 00:00:00 GMT
+     */
     public static long stringToLong(String time) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT_TYPE);
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
