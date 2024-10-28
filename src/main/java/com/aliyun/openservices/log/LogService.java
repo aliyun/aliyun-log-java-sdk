@@ -3716,6 +3716,7 @@ public interface LogService {
 	GetResourceRecordResponse    getResourceRecord(GetResourceRecordRequest request) throws LogException;
 	DeleteResourceRecordResponse deleteResourceRecord(DeleteResourceRecordRequest request) throws LogException;
 	ListResourceRecordResponse   listResourceRecord(ListResourceRecordRequest request) throws LogException;
+	ListNextResourceRecordResponse   listNextResourceRecord(ListNextResourceRecordRequest request) throws LogException;
 	CreateOrUpdateSqlInstanceResponse createSqlInstance(CreateOrUpdateSqlInstanceRequest request) throws LogException;
 	CreateOrUpdateSqlInstanceResponse updateSqlInstance(CreateOrUpdateSqlInstanceRequest request) throws LogException;
 	ListSqlInstanceResponse listSqlInstance(ListSqlInstanceRequest request) throws LogException;
