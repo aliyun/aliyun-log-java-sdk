@@ -1,6 +1,10 @@
 package com.aliyun.openservices.log.request;
 
 import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.util.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class ListNextResourceRecordRequest extends RecordRequest {
@@ -11,6 +15,7 @@ public class ListNextResourceRecordRequest extends RecordRequest {
     private String searchedJson;
     private String jsonPath;
     private String jsonPathValue;
+    private List<String> recordIds = new ArrayList<String>();
 
     public String getNextToken() {
         return nextToken;
@@ -68,6 +73,14 @@ public class ListNextResourceRecordRequest extends RecordRequest {
         this.jsonPath = jsonPath;
     }
 
+    public List<String> getRecordIds() {
+        return recordIds;
+    }
+
+    public void setRecordIds(List<String> recordIds) {
+        this.recordIds = recordIds;
+    }
+
     public ListNextResourceRecordRequest(String resourceName) {
         this(resourceName, null, null, 100);
     }
@@ -107,6 +120,10 @@ public class ListNextResourceRecordRequest extends RecordRequest {
 
         if (jsonPathValue != null && !jsonPathValue.isEmpty()) {
             SetParam(Consts.RESOURCE_JSON_PATH_VALUE, jsonPathValue);
+        }
+
+        if (recordIds != null && !recordIds.isEmpty()) {
+            SetParam(Consts.RESOURCE_RECORD_IDS, Utils.join(",", recordIds));
         }
 
         return super.GetAllParams();
