@@ -26,6 +26,7 @@ public class PutLogsRequest extends Request {
     private String mContentType = Consts.CONST_PROTO_BUF;
     private byte[] mLogGroupBytes = null;
     private Integer hashRouteKeySeqId;
+    private String processor;
 
     /**
      * @return the compressType
@@ -257,5 +258,13 @@ public class PutLogsRequest extends Request {
 
     public void setHashRouteKeySeqId(Integer hashRouteKeySeqId) {
         this.hashRouteKeySeqId = hashRouteKeySeqId;
+    }
+
+    public String getProcessor() {
+        return processor;
+    }
+
+    public void setProcessor(String processor) {
+        this.processor = processor;
     }
 }
