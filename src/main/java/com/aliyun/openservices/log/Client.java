@@ -805,6 +805,9 @@ public class Client implements LogService {
 				urlParameter.put("seqid", String.valueOf(request.getHashRouteKeySeqId()));
 			}
 		}
+		if (request.getProcessor() != null && !request.getProcessor().isEmpty()) {
+			urlParameter.put("processor", request.getProcessor());
+		}
 		ResponseMessage response = sendLogBytes(project, logBytes, resourceUri, urlParameter, headParameter);
 		if (response != null) {
 			return new PutLogsResponse(response.getHeaders());
