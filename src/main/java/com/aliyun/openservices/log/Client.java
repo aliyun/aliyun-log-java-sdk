@@ -2154,7 +2154,7 @@ public class Client implements LogService {
 					}
 					if (null == object) {
 						throw new LogException(ErrorCodes.BAD_RESPONSE,
-								"The response json is null : " + body, requestId);
+								"The response is not valid json string : " + body, requestId);
 					}
 					ErrorCheck(object, requestId, statusCode, responseBody);
 				} catch (LogException ex) {
