@@ -2145,13 +2145,18 @@ public class Client implements LogService {
 				String requestId = GetRequestId(response.getHeaders());
 				try {
 					String responseBody = encodeResponseBodyToUtf8String(response, requestId);
+					JSONObject object = null;
 					try {
-						JSONObject object = JSONObject.parseObject(responseBody, Feature.DisableSpecialKeyDetect);
-						ErrorCheck(object, requestId, statusCode, responseBody);
+						object = JSONObject.parseObject(responseBody, Feature.DisableSpecialKeyDetect);
 					} catch (JSONException ex) {
 						throw new LogException(ErrorCodes.BAD_RESPONSE,
 								"The response is not valid json string : " + body, ex, requestId);
 					}
+					if (null == object) {
+						throw new LogException(ErrorCodes.BAD_RESPONSE,
+								"The response is not valid json string : " + body, requestId);
+					}
+					ErrorCheck(object, requestId, statusCode, responseBody);
 				} catch (LogException ex) {
 					ex.setHttpCode(response.getStatusCode());
 					throw ex;
