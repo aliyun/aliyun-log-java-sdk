@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Parameter implements Serializable {
     //rds-vpc
@@ -26,6 +27,12 @@ public class Parameter implements Serializable {
     private String endpoint;
     private String bucket;
 
+    // csv
+    private String externalStoreCsv;
+    private int externalStoreCsvSize;
+    private List<String> objects;
+    private List<String> columns;
+
     public Parameter(String vpcId, String instanceId, String host, String port, String username, String password, String database, String table, String region, String accessid, String accesskey, String endpoint, String bucket) {
         this.vpcId = vpcId;
         this.instanceId = instanceId;
@@ -40,6 +47,14 @@ public class Parameter implements Serializable {
         this.accesskey = accesskey;
         this.endpoint = endpoint;
         this.bucket = bucket;
+    }
+
+    // csv
+    public Parameter(String externalStoreCsv, int externalStoreCsvSize, List<String> objects, List<String> columns) {
+        this.externalStoreCsv = externalStoreCsv;
+        this.externalStoreCsvSize = externalStoreCsvSize;
+        this.objects = objects;
+        this.columns = columns;
     }
 
     public Parameter() {
@@ -149,6 +164,38 @@ public class Parameter implements Serializable {
         this.endpoint = endpoint;
     }
 
+    public String getExternalStoreCsv() {
+        return externalStoreCsv;
+    }
+
+    public void setExternalStoreCsv(String externalStoreCsv) {
+        this.externalStoreCsv = externalStoreCsv;
+    }
+
+    public int getExternalStoreCsvSize() {
+        return externalStoreCsvSize;
+    }
+
+    public void setExternalStoreCsvSize(int externalStoreCsvSize) {
+        this.externalStoreCsvSize = externalStoreCsvSize;
+    }
+
+    public List<String> getObjects() {
+        return objects;
+    }
+
+    public void setObjects(List<String> objects) {
+        this.objects = objects;
+    }
+
+    public List<String> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<String> columns) {
+        this.columns = columns;
+    }
+
     @Override
     public String toString() {
         return "Parameter{" +
@@ -157,11 +204,14 @@ public class Parameter implements Serializable {
                 ", host='" + host + '\'' +
                 ", port='" + port + '\'' +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", database='" + database + '\'' +
                 ", table='" + table + '\'' +
                 ", region='" + region + '\'' +
                 ", bucket='" + bucket + '\'' +
+                ", endpoint='" + endpoint + '\'' +
+                ", externalStoreCsvSize=" + externalStoreCsvSize +
+                ", objects=" + objects +
+                ", columns=" + columns +
                 '}';
     }
 }
