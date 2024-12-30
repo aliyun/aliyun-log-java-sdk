@@ -2931,6 +2931,65 @@ public class Client implements LogService {
 		return listExternalStroesResponse;
 	}
 
+	public CreateCsvExternalStoreResponse createCsvExternalStore(CreateCsvExternalStoreRequest request)
+			throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CsvExternalStore externalStore = request.getCsvExternalStore();
+		CodingUtils.assertParameterNotNull(externalStore, "ExternalStore");
+		String externalStoreName = externalStore.getExternalStoreName();
+		CodingUtils.assertStringNotNullOrEmpty(externalStoreName, "externalStoreName");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		byte[] body = encodeToUtf8(externalStore.toJson().toJSONString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = "/externalstores";
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, urlParameter, headParameter, body);
+		Map<String, String> resHeaders = response.getHeaders();
+		return new CreateCsvExternalStoreResponse(resHeaders);
+	}
+
+	public UpdateCsvExternalStoreResponse updateCsvExternalStore(UpdateCsvExternalStoreRequest request)
+			throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CsvExternalStore externalStore = request.getCsvExternalStore();
+		CodingUtils.assertParameterNotNull(externalStore, "ExternalStore");
+		String externalStoreName = externalStore.getExternalStoreName();
+		CodingUtils.assertStringNotNullOrEmpty(externalStoreName, "externalStoreName");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		byte[] body = encodeToUtf8(externalStore.toJson().toJSONString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = "/externalstores/" + externalStoreName;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.PUT,
+				resourceUri, urlParameter, headParameter, body);
+		Map<String, String> resHeaders = response.getHeaders();
+		return new UpdateCsvExternalStoreResponse(resHeaders);
+	}
+
+	public GetCsvExternalStoreResponse getCsvExternalStore(GetCsvExternalStoreRequest request) throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		String externalStoreName = request.getExternalStoreName();
+		CodingUtils.assertStringNotNullOrEmpty(externalStoreName, "externalStoreName");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/externalstores/" + externalStoreName;
+		Map<String, String> urlParameter = request.GetAllParams();
+		ResponseMessage response = SendData(project, HttpMethod.GET, resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		String requestId = GetRequestId(resHeaders);
+		JSONObject object = parseResponseBody(response, requestId);
+		CsvExternalStore externalStore = new CsvExternalStore(object);
+		externalStore.setExternalStoreName(externalStoreName);
+		return new GetCsvExternalStoreResponse(resHeaders, externalStore);
+	}
+
+	public DeleteExternalStoreResponse deleteCsvExternalStore(DeleteExternalStoreRequest request) throws LogException {
+		return deleteExternalStore(request);
+	}
+
 	@Override
 	public CreateIndexResponse CreateIndex(String project, String logStore,
 										   String indexJsonString) throws LogException {

@@ -8,9 +8,9 @@ import java.io.Serializable;
 
 public class ExternalStore implements Serializable {
     private static final long serialVersionUID = 6493904490967634292L;
-    private String externalStoreName;
-    private String storeType;
-    private Parameter parameter;
+    protected String externalStoreName;
+    protected String storeType;
+    protected Parameter parameter;
 
     public ExternalStore() {
     }
