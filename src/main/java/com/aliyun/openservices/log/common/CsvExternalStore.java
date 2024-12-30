@@ -34,18 +34,22 @@ public class CsvExternalStore extends ExternalStore {
      */
     public static CsvExternalStore CreateCsvExternalStore(String externalStoreName, String csvFilePath,
             List<CsvColumn> columns) throws LogException {
+
         List<String> objects = Arrays.asList(csvFilePath);
         String csvFilePathTrimmed = csvFilePath;
         if (csvFilePath.startsWith("file://")) {
             csvFilePathTrimmed = csvFilePath.substring(7);
         }
+
+        // encode to gzip compressed base64
         byte[] fileContent = readCsvFile(csvFilePathTrimmed);
         byte[] compressed = GzipUtils.compress(fileContent);
         if (compressed.length > MAX_FILE_SIZE_COMPRESSED) {
             throw new LogException("InvalidExternalStoreCsvConfig",
-                    "The size of csv file after compressed too large, max is" + MAX_FILE_SIZE_COMPRESSED, "-1");
+                    "The compressed csv file is too large, max size is" + MAX_FILE_SIZE_COMPRESSED, "");
         }
         String fileContentBase64 = new String(Base64.encodeBase64(compressed));
+
         Parameter parameter = new Parameter(fileContentBase64, fileContent.length, objects, columns);
         return new CsvExternalStore(externalStoreName, STORE_TYPE_CSV, parameter);
     }
@@ -68,33 +72,33 @@ public class CsvExternalStore extends ExternalStore {
 
     private static byte[] readCsvFile(String csvFilePath) throws LogException {
         if (csvFilePath == null || csvFilePath.isEmpty()) {
-            throw new LogException("InvalidExternalStoreCsvConfig", "The csv file path is empty", "-1");
+            throw new LogException("InvalidExternalStoreCsvConfig", "The csv file path is empty", "");
         }
         Path path = Paths.get(csvFilePath);
         if (!Files.exists(path)) {
-            throw new LogException("InvalidExternalStoreCsvConfig", "The csv file path is not exist", "-1");
+            throw new LogException("InvalidExternalStoreCsvConfig", "The csv file path is not exist", "");
         }
         try {
             if (Files.size(path) > MAX_FILE_SIZE) {
                 throw new LogException("InvalidExternalStoreCsvConfig",
-                        "The csv file size too large, max is " + MAX_FILE_SIZE,
-                        "-1");
+                        "The csv file is too large, max size is " + MAX_FILE_SIZE,
+                        "");
             }
         } catch (IOException e) {
-            throw new LogException("InvalidExternalStoreCsvConfig", "Read csv file size error", e, "-1");
+            throw new LogException("InvalidExternalStoreCsvConfig", "Read csv file size error", e, "");
         }
 
         byte[] bytes = null;
         try {
             bytes = Files.readAllBytes(path);
         } catch (IOException e) {
-            throw new LogException("InvalidExternalStoreCsvConfig", "Read csv file error", e, "-1");
+            throw new LogException("InvalidExternalStoreCsvConfig", "Read csv file rror", e, "");
         }
 
         if (bytes.length > MAX_FILE_SIZE) {
             throw new LogException("InvalidExternalStoreCsvConfig",
-                    "The csv file size too large, max is " + MAX_FILE_SIZE,
-                    "-1");
+                    "The csv file is too large, max size is " + MAX_FILE_SIZE,
+                    "");
         }
         return bytes;
     }

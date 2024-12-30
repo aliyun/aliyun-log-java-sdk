@@ -11,7 +11,7 @@ public class GetCsvExternalStoreResponse extends Response {
 
     public GetCsvExternalStoreResponse(Map<String, String> headers, CsvExternalStore csvExternalStore) {
         super(headers);
-        setCsvExternalStore(csvExternalStore);
+        this.csvExternalStore = csvExternalStore;
     }
 
     public CsvExternalStore getCsvExternalStore() {
