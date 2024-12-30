@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class CsvColumn implements Serializable {
     public static final long serialVersionUID = 1382671890031L;
@@ -61,5 +62,10 @@ public class CsvColumn implements Serializable {
 
         CsvColumn other = (CsvColumn) obj;
         return name.equals(other.name) && type.equals(other.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, type);
     }
 }

@@ -28,6 +28,7 @@ import org.apache.http.conn.HttpClientConnectionManager;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static com.aliyun.openservices.log.common.Consts.CONST_LOGSTORE_REPLICATION;
@@ -2150,11 +2151,13 @@ public class Client implements LogService {
 						object = JSONObject.parseObject(responseBody, Feature.DisableSpecialKeyDetect);
 					} catch (JSONException ex) {
 						throw new LogException(ErrorCodes.BAD_RESPONSE,
-								"The response is not valid json string : " + body, ex, requestId);
+								"The response is not valid json string : " + new String(body, StandardCharsets.UTF_8),
+								ex, requestId);
 					}
 					if (null == object) {
 						throw new LogException(ErrorCodes.BAD_RESPONSE,
-								"The response is not valid json string : " + body, requestId);
+								"The response is not valid json string : " + new String(body, StandardCharsets.UTF_8),
+								requestId);
 					}
 					ErrorCheck(object, requestId, statusCode, responseBody);
 				} catch (LogException ex) {
