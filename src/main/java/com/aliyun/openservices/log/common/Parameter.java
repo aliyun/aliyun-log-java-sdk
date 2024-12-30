@@ -31,7 +31,7 @@ public class Parameter implements Serializable {
     private String externalStoreCsv;
     private int externalStoreCsvSize;
     private List<String> objects;
-    private List<String> columns;
+    private List<CsvColumn> columns;
 
     public Parameter(String vpcId, String instanceId, String host, String port, String username, String password, String database, String table, String region, String accessid, String accesskey, String endpoint, String bucket) {
         this.vpcId = vpcId;
@@ -50,7 +50,7 @@ public class Parameter implements Serializable {
     }
 
     // csv
-    public Parameter(String externalStoreCsv, int externalStoreCsvSize, List<String> objects, List<String> columns) {
+    public Parameter(String externalStoreCsv, int externalStoreCsvSize, List<String> objects, List<CsvColumn> columns) {
         this.externalStoreCsv = externalStoreCsv;
         this.externalStoreCsvSize = externalStoreCsvSize;
         this.objects = objects;
@@ -188,11 +188,11 @@ public class Parameter implements Serializable {
         this.objects = objects;
     }
 
-    public List<String> getColumns() {
+    public List<CsvColumn> getColumns() {
         return columns;
     }
 
-    public void setColumns(List<String> columns) {
+    public void setColumns(List<CsvColumn> columns) {
         this.columns = columns;
     }
 

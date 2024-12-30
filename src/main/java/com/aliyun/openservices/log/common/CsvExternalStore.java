@@ -33,7 +33,7 @@ public class CsvExternalStore extends ExternalStore {
      *                          same order as the csv file
      */
     public static CsvExternalStore CreateCsvExternalStore(String externalStoreName, String csvFilePath,
-            List<String> columns) throws LogException {
+            List<CsvColumn> columns) throws LogException {
         List<String> objects = Arrays.asList(csvFilePath);
         String csvFilePathTrimmed = csvFilePath;
         if (csvFilePath.startsWith("file://")) {
@@ -50,7 +50,7 @@ public class CsvExternalStore extends ExternalStore {
         return new CsvExternalStore(externalStoreName, STORE_TYPE_CSV, parameter);
     }
 
-    public List<String> getColumns() {
+    public List<CsvColumn> getColumns() {
         return getParameter().getColumns();
     }
 
