@@ -21,9 +21,9 @@ public class CsvExternalStore extends ExternalStore {
 
     /**
      * @param externalStoreName external store name
-     * @param csvFilePath       csv file path on the local file system, either
-     *                          relative path or absolute path
-     * @param columns           column names in the csv file, must be in the exact
+     * @param csvFileContent    csv file content, eg: "Name,Age,City\nJohn
+     *                          Doe,30,New York\nTom,18,Beijing\n"
+     * @param columns           column in the csv file, must be in the exact
      *                          same order as the csv file
      */
     public CsvExternalStore(String externalStoreName, byte[] csvFileContent,
