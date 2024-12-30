@@ -2,9 +2,6 @@ package com.aliyun.openservices.log.functiontest;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,28 +23,22 @@ public class CsvExternalStoreTest extends BaseDataTest {
             new CsvColumn("Age", CsvColumnType.BIGINT),
             new CsvColumn("City", CsvColumnType.VARCHAR));
 
-    File prepareCsvFile() throws Exception {
-        File tempFile = File.createTempFile("tempCSV", ".csv");
-        tempFile.deleteOnExit();
+    byte[] prepareCsvFile() throws Exception {
+        String result = "";
 
-        FileWriter fw = new FileWriter(tempFile);
-        BufferedWriter bw = new BufferedWriter(fw);
-
-        bw.write("Name,Age,City,score\n");
-        bw.write("John Doe,30,New York,99.5\n");
-        bw.write("Jane Smith,25,London,88.5\n");
-        bw.write("Bob Johnson,35,Paris,59\n");
-        bw.close();
-        return tempFile;
+        result += "Name,Age,City,score\n";
+        result += "John Doe,30,New York,99.5\n";
+        result += "Jane Smith,25,London,88.5\n";
+        result += "Bob Johnson,35,Paris,59\n";
+        return result.getBytes();
     }
 
     @Test
     public void testCurd() throws Exception {
         String externalStoreName = "test_external";
-        File tempFile = prepareCsvFile();
+        byte[] tempFile = prepareCsvFile();
 
-        String p = tempFile.getAbsolutePath();
-        CsvExternalStore store = CsvExternalStore.CreateCsvExternalStore(externalStoreName, p, csvColumns);
+        CsvExternalStore store = new CsvExternalStore(externalStoreName, tempFile, csvColumns);
         client.createCsvExternalStore(new CreateCsvExternalStoreRequest(project, store));
 
         CsvExternalStore resp = client.getCsvExternalStore(new GetCsvExternalStoreRequest(project, externalStoreName))
