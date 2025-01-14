@@ -2151,12 +2151,14 @@ public class Client implements LogService {
 						object = JSONObject.parseObject(responseBody, Feature.DisableSpecialKeyDetect);
 					} catch (JSONException ex) {
 						throw new LogException(ErrorCodes.BAD_RESPONSE,
-								"The response is not valid json string : " + new String(body, StandardCharsets.UTF_8),
+								"The response is not valid json string : " + responseBody + ", statusCode: "
+										+ statusCode + ", requestId: " + requestId,
 								ex, requestId);
 					}
 					if (null == object) {
 						throw new LogException(ErrorCodes.BAD_RESPONSE,
-								"The response is not valid json string : " + new String(body, StandardCharsets.UTF_8),
+								"The response is not valid json string : " + responseBody + ", statusCode: "
+										+ statusCode + ", requestId: " + requestId,
 								requestId);
 					}
 					ErrorCheck(object, requestId, statusCode, responseBody);
