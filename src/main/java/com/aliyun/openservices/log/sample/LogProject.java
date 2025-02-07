@@ -6,33 +6,27 @@ import com.aliyun.openservices.log.response.GetProjectResponse;
 
 public class LogProject {
 
-	public static void main(String args[]) throws LogException {
- 
-		//String accessId = "";
-		//String accessKey = "=";
+	public static void main(String args[]) {
 
-		String accessId = "";
-		String accessKey = "";
-		
-		String project = "";
-		String host = "";
-		String logStore = "";
-		String topic = "";
+		String endpoint = "";
+		String accessKeyID = "test_accessKeyId";
+		String accessKeySecret = "test_accessKey";
 
-		int shardId = 0;
+		String project = "test-project";
+		// create a client
+		Client client = new Client(endpoint, accessKeyID, accessKeySecret);
 
-		/*
-		 * 构建一个client
-		 */
-		Client client = new Client(host, accessId, accessKey);
-		//client.CreateProject(project, "sample_");
-		//client.DeleteProject(project);
-		client.CreateProject(project, "sample_");
-		GetProjectResponse r = client.GetProject(project);
-		System.out.println(r.GetProjectOwner());
-		System.out.println(r.GetProjectRegion());
-		System.out.println(r.GetProjectStatus());
-		System.out.println(r.GetProjectDescription());
+		try {
+			client.CreateProject(project, "this is a sample project");
+
+			GetProjectResponse r = client.GetProject(project);
+			System.out.println(r.GetProjectOwner());
+			System.out.println(r.GetProjectRegion());
+			System.out.println(r.GetProjectStatus());
+			System.out.println(r.GetProjectDescription());
+		} catch (LogException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
