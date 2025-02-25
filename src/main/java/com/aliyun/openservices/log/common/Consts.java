@@ -411,6 +411,7 @@ public class Consts {
     public static final String RESOURCE_SEARCHED_VALUE = "search";
     public static final String RESOURCE_JSON_PATH = "jsonPath";
     public static final String RESOURCE_JSON_PATH_VALUE = "jsonPathValue";
+    public static final String RESOURCE_REVERSE = "reverse";
 
     public static final String TOPOSTORE_URI = "/topostores";
     public static final String TOPOSTORE_OWNER = "owner";
