@@ -15,6 +15,7 @@ public class ListNextResourceRecordRequest extends RecordRequest {
     private String searchedJson;
     private String jsonPath;
     private String jsonPathValue;
+    private Boolean reverse;
     private List<String> recordIds = new ArrayList<String>();
 
     public String getNextToken() {
@@ -73,6 +74,14 @@ public class ListNextResourceRecordRequest extends RecordRequest {
         this.jsonPath = jsonPath;
     }
 
+    public Boolean getReverse() {
+        return reverse;
+    }
+
+    public void setReverse(Boolean reverse) {
+        this.reverse = reverse;
+    }
+
     public List<String> getRecordIds() {
         return recordIds;
     }
@@ -90,6 +99,7 @@ public class ListNextResourceRecordRequest extends RecordRequest {
         this.tag = tag;
         this.nextToken = nextToken;
         this.maxResults = maxResults;
+        this.reverse = false;
     }
 
     @Override
@@ -120,6 +130,10 @@ public class ListNextResourceRecordRequest extends RecordRequest {
 
         if (jsonPathValue != null && !jsonPathValue.isEmpty()) {
             SetParam(Consts.RESOURCE_JSON_PATH_VALUE, jsonPathValue);
+        }
+
+        if (reverse) {
+            SetParam(Consts.RESOURCE_REVERSE, "true");
         }
 
         if (recordIds != null && !recordIds.isEmpty()) {
