@@ -12,6 +12,9 @@ String accessKey = "your_access_key";
 String host = "your_endpoint";
 Client client = new Client(host, accessId, accessKey);
 
+// 以下参数仅在 Metricstore 使用时设置，对于大时间线基数Metricstore，可提升时序数据检索性能
+// 注意：请勿 Logstore 设置，会产生写入失败等问题。
+client.setUseMetricStoreUrl(true);
 ```
 
 ### sample 2 : 创建Logstore

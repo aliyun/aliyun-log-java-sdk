@@ -58,6 +58,16 @@ public class Client implements LogService {
 	private String realServerIP = null;
 	private String resourceOwnerAccount = null;
 	private SlsSigner signer;
+	private boolean useMetricStoreUrl;
+
+
+	public boolean isUseMetricStoreUrl() {
+		return useMetricStoreUrl;
+	}
+
+	public void setUseMetricStoreUrl(final boolean useMetricStoreUrl) {
+		this.useMetricStoreUrl = useMetricStoreUrl;
+	}
 
 	public String getUserAgent() {
 		return userAgent;
@@ -676,18 +686,21 @@ public class Client implements LogService {
 		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(logBytes.length));
 		headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
 		checkBodyRawSize(logBytes.length);
-
-		String resourceUri = "/logstores/" + request.getLogStore();
+		StringBuilder resourceUriBuilder=new StringBuilder();
 		String shardKey = request.getHashKey();
 		Map<String, String> urlParameter = request.GetAllParams();
-		if (shardKey == null || shardKey.isEmpty()) {
-			resourceUri += "/shards/lb";
-		} else {
-			resourceUri += "/shards/route";
-			urlParameter.put("key", shardKey);
-		}
-
-		ResponseMessage response = sendLogBytes(project, logBytes, resourceUri, urlParameter, headParameter);
+        if (isUseMetricStoreUrl()) {
+			resourceUriBuilder.append("/prometheus/").
+							  append(request.GetProject()).
+							  append("/").
+							  append(request.getLogStore()).append("/api/v1/write");
+        } else if (shardKey == null || shardKey.isEmpty()) {
+			resourceUriBuilder.append("/logstores/").append(request.getLogStore()).append("/shards/lb");
+        } else {
+			resourceUriBuilder.append("/logstores/").append(request.getLogStore()).append("/shards/route");
+            urlParameter.put("key", shardKey);
+        }
+		ResponseMessage response = sendLogBytes(project, logBytes, resourceUriBuilder.toString(), urlParameter, headParameter);
 		if (response != null) {
 			return new BatchPutLogsResponse(response.getHeaders());
 		}
@@ -796,11 +809,16 @@ public class Client implements LogService {
 		}
 		logBytes = Utils.compressLogBytes(logBytes, request.getCompressType());
 		Map<String, String> urlParameter = request.GetAllParams();
-		String resourceUri = "/logstores/" + logStore;
-		if (shardKey == null || shardKey.length() == 0) {
-			resourceUri += "/shards/lb";
+		StringBuilder resourceUriBuilder =new StringBuilder();
+		if (isUseMetricStoreUrl()) {
+			resourceUriBuilder.append("/prometheus/").
+							  append(request.GetProject()).
+							  append("/").
+							  append(logStore).append("/api/v1/write");
+		} else if (shardKey == null || shardKey.isEmpty()) {
+			resourceUriBuilder.append("/logstores/").append(logStore).append("/shards/lb");
 		} else {
-			resourceUri += "/shards/route";
+			resourceUriBuilder.append("/logstores/").append(logStore).append("/shards/route");
 			urlParameter.put("key", shardKey);
 			if (request.getHashRouteKeySeqId() != null) {
 				urlParameter.put("seqid", String.valueOf(request.getHashRouteKeySeqId()));
@@ -809,7 +827,7 @@ public class Client implements LogService {
 		if (request.getProcessor() != null && !request.getProcessor().isEmpty()) {
 			urlParameter.put("processor", request.getProcessor());
 		}
-		ResponseMessage response = sendLogBytes(project, logBytes, resourceUri, urlParameter, headParameter);
+		ResponseMessage response = sendLogBytes(project, logBytes, resourceUriBuilder.toString(), urlParameter, headParameter);
 		if (response != null) {
 			return new PutLogsResponse(response.getHeaders());
 		}
@@ -2073,7 +2091,7 @@ public class Client implements LogService {
 			throw new LogException("ClientSignatureError",
 					"Fail to calculate signature for request, error:" + e.getMessage(), "");
 		}
-		
+
 		URI uri;
 		if (serverIp == null) {
 			uri = GetHostURI(project);
