@@ -686,16 +686,17 @@ public class Client implements LogService {
 		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(logBytes.length));
 		headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
 		checkBodyRawSize(logBytes.length);
-		StringBuilder resourceUriBuilder=new StringBuilder();
-		String shardKey = request.getHashKey();
-		Map<String, String> urlParameter = request.GetAllParams();
+        String resourceUri = "/logstores/" + request.getLogStore();
+        String shardKey = request.getHashKey();
+        Map<String, String> urlParameter = request.GetAllParams();
         if (shardKey == null || shardKey.isEmpty()) {
-            resourceUriBuilder.append("/logstores/").append(request.getLogStore()).append("/shards/lb");
+            resourceUri += "/shards/lb";
         } else {
-            resourceUriBuilder.append("/logstores/").append(request.getLogStore()).append("/shards/route");
+            resourceUri += "/shards/route";
             urlParameter.put("key", shardKey);
         }
-        ResponseMessage response = sendLogBytes(project, logBytes, resourceUriBuilder.toString(), urlParameter, headParameter);
+
+        ResponseMessage response = sendLogBytes(project, logBytes, resourceUri, urlParameter, headParameter);
         if (response != null) {
             return new BatchPutLogsResponse(response.getHeaders());
         }
