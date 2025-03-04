@@ -60,7 +60,6 @@ public class Client implements LogService {
 	private SlsSigner signer;
 	private boolean useMetricStoreUrl;
 
-
 	public boolean isUseMetricStoreUrl() {
 		return useMetricStoreUrl;
 	}
@@ -665,7 +664,7 @@ public class Client implements LogService {
 
 	@Override
 	public BatchPutLogsResponse batchPutLogs(BatchPutLogsRequest request)
-			throws LogException {
+		throws LogException {
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(request.getLogStore(), "logStore");
@@ -686,20 +685,20 @@ public class Client implements LogService {
 		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(logBytes.length));
 		headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
 		checkBodyRawSize(logBytes.length);
-        String resourceUri = "/logstores/" + request.getLogStore();
-        String shardKey = request.getHashKey();
-        Map<String, String> urlParameter = request.GetAllParams();
-        if (shardKey == null || shardKey.isEmpty()) {
-            resourceUri += "/shards/lb";
-        } else {
-            resourceUri += "/shards/route";
-            urlParameter.put("key", shardKey);
-        }
+		String resourceUri = "/logstores/" + request.getLogStore();
+		String shardKey = request.getHashKey();
+		Map<String, String> urlParameter = request.GetAllParams();
+		if (shardKey == null || shardKey.isEmpty()) {
+			resourceUri += "/shards/lb";
+		} else {
+			resourceUri += "/shards/route";
+			urlParameter.put("key", shardKey);
+		}
 
-        ResponseMessage response = sendLogBytes(project, logBytes, resourceUri, urlParameter, headParameter);
-        if (response != null) {
-            return new BatchPutLogsResponse(response.getHeaders());
-        }
+		ResponseMessage response = sendLogBytes(project, logBytes, resourceUri, urlParameter, headParameter);
+		if (response != null) {
+			return new BatchPutLogsResponse(response.getHeaders());
+		}
 		// never happen
 		return null;
 	}
@@ -749,7 +748,7 @@ public class Client implements LogService {
 					for (LogContent content : item.mContents) {
 						CodingUtils.assertStringNotNullOrEmpty(content.mKey, "key");
 						Logs.Log.Content.Builder contentBuilder = log
-								.addContentsBuilder();
+							.addContentsBuilder();
 						contentBuilder.setKey(content.mKey);
 						if (content.mValue == null) {
 							contentBuilder.setValue("");
@@ -786,7 +785,7 @@ public class Client implements LogService {
 						tagObj.put(tag.getKey(), tag.getValue());
 					}
 				}
-				if (this.mUUIDTag)  {
+				if (this.mUUIDTag) {
 					tagObj.put("__pack_unique_id__", UUID.randomUUID().toString() + "-" + Math.random());
 				}
 				if (tagObj.size() > 0) {
@@ -805,7 +804,7 @@ public class Client implements LogService {
 		}
 		logBytes = Utils.compressLogBytes(logBytes, request.getCompressType());
 		Map<String, String> urlParameter = request.GetAllParams();
-		StringBuilder resourceUriBuilder =new StringBuilder();
+		StringBuilder resourceUriBuilder = new StringBuilder();
 		if (isUseMetricStoreUrl()) {
 			resourceUriBuilder.append("/prometheus/").
 							  append(request.GetProject()).
