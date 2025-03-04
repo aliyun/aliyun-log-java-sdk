@@ -689,17 +689,14 @@ public class Client implements LogService {
 		StringBuilder resourceUriBuilder=new StringBuilder();
 		String shardKey = request.getHashKey();
 		Map<String, String> urlParameter = request.GetAllParams();
-        if (isUseMetricStoreUrl()) {
-			resourceUriBuilder.append("/prometheus/").
-							  append(request.GetProject()).
-							  append("/").
-							  append(request.getLogStore()).append("/api/v1/write");
-        } else if (shardKey == null || shardKey.isEmpty()) {
+		if (isUseMetricStoreUrl()) {
+			resourceUriBuilder.append("/prometheus/").append(request.GetProject()).append("/").append(request.getLogStore()).append("/api/v1/write");
+		} else if (shardKey == null || shardKey.isEmpty()) {
 			resourceUriBuilder.append("/logstores/").append(request.getLogStore()).append("/shards/lb");
-        } else {
+		} else {
 			resourceUriBuilder.append("/logstores/").append(request.getLogStore()).append("/shards/route");
-            urlParameter.put("key", shardKey);
-        }
+			urlParameter.put("key", shardKey);
+		}
 		ResponseMessage response = sendLogBytes(project, logBytes, resourceUriBuilder.toString(), urlParameter, headParameter);
 		if (response != null) {
 			return new BatchPutLogsResponse(response.getHeaders());
