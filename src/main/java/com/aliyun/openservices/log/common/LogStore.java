@@ -81,6 +81,7 @@ public class LogStore implements Serializable {
         this.hotTTL = logStore.hotTTL;
         this.mode = logStore.mode;
         this.infrequentAccessTTL = logStore.infrequentAccessTTL;
+        this.hashConfig = logStore.hashConfig;
     }
 
     public long getPreserveStorage() {
