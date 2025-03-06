@@ -28,6 +28,7 @@ public class LogStore implements Serializable {
     private int hotTTL = -1;
     private String mode = null;
     private int infrequentAccessTTL = -1;
+    private HashConfig hashConfig = null;
 
     public String getTelemetryType() {
         return telemetryType;
@@ -218,6 +219,14 @@ public class LogStore implements Serializable {
         this.mode = mode;
     }
 
+    public HashConfig getHashConfig() {
+        return hashConfig;
+    }
+
+    public void setHashConfig(HashConfig hashConfig) {
+        this.hashConfig = hashConfig;
+    }
+
     public JSONObject ToRequestJson() {
         JSONObject logStoreDict = new JSONObject();
         logStoreDict.put("logstoreName", GetLogStoreName());
@@ -245,6 +254,10 @@ public class LogStore implements Serializable {
         if (mode != null) {
             logStoreDict.put("mode", mode);
         }
+        if (hashConfig != null) {
+            logStoreDict.put("hashConfig", hashConfig.ToJsonObject());
+        }
+
         return logStoreDict;
     }
 
@@ -319,6 +332,12 @@ public class LogStore implements Serializable {
             if (dict.containsKey("mode")) {
                 this.mode = dict.getString("mode");
             }
+            if (dict.containsKey("hashConfig")) {
+                HashConfig hashConfig = new HashConfig();
+                hashConfig.FromJsonObject(dict.getJSONObject("hashConfig"));
+                this.hashConfig = hashConfig;
+            }
+
         } catch (JSONException e) {
             throw new LogException("FailToGenerateLogStore", e.getMessage(), e, "");
         }
