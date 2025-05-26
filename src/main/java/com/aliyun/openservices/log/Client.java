@@ -30,6 +30,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.aliyun.openservices.log.common.Consts.CONST_LOGSTORE_REPLICATION;
 
@@ -6366,5 +6367,116 @@ public class Client implements LogService {
 			getClientConfiguration().setSignatureVersion(SignVersion.V4);
 			getClientConfiguration().setRegion(region);
 		}
+	}
+
+	private byte[] decompressResponseData(ResponseMessage response) throws Exception {
+		Map<String, String> headers = response.getHeaders();
+		String compressType = headers.getOrDefault(Consts.CONST_X_SLS_COMPRESSTYPE, "");
+		int rawSize = Integer.parseInt(headers.getOrDefault(Consts.CONST_X_SLS_BODYRAWSIZE, "0"));
+		if (!compressType.isEmpty() && rawSize > 0) {
+			Consts.CompressType type = Consts.CompressType.fromString(compressType);
+			switch (type) {
+				case LZ4:
+					return LZ4Encoder.decompressFromLhLz4Chunk(response.GetRawBody(), rawSize);
+				case ZSTD:
+					return ZSTDEncoder.decompress(response.GetRawBody(), rawSize);
+				default:
+					throw new LogException("DecompressException", "The compress type is invalid: " + type, headers.get(Consts.CONST_X_SLS_REQUESTID));
+			}
+		}
+		return response.GetRawBody();
+	}
+
+	private String getNormalizedEmptyString(String msg) {
+		if (msg != null && msg.isEmpty()) {
+			return null;
+		}
+		return msg;
+	}
+
+	private Map<String, String> getAsyncSqlHeaders(String project) {
+		Map<String, String> headers = GetCommonHeadPara(project);
+		headers.put(Consts.CONST_ACCEPT_ENCODING, CompressType.LZ4.toString());
+		headers.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		headers.put(Consts.CONST_HTTP_ACCEPT, Consts.CONST_PROTO_BUF);
+		return headers;
+	}
+
+	@Override
+	public SubmitAsyncSqlResponse submitAsyncSql(SubmitAsyncSqlRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		Map<String, String> headers = getAsyncSqlHeaders(project);
+		Map<String, String> urlParameter = request.GetAllParams();
+		byte[] body = request.getRequestBody();
+
+		for (int i = 0; i < 3; i++) {
+			ResponseMessage response = SendData(project, HttpMethod.POST, "/asyncsql", urlParameter, headers, body, null, realServerIP);
+			if (response != null) {
+				try {
+					AsyncSql.AsyncSqlResponsePB responsePb = AsyncSql.AsyncSqlResponsePB.parseFrom(decompressResponseData(response));
+					return new SubmitAsyncSqlResponse(
+							response.getHeaders(),
+							responsePb.getId(),
+							responsePb.getState(),
+							getNormalizedEmptyString(responsePb.getErrorCode()),
+							getNormalizedEmptyString(responsePb.getErrorMessage())
+					);
+				}
+				catch (Throwable e) {
+					throw new LogException("ParseAsyncResponseError", e.getMessage(), response.getHeaders().get(Consts.CONST_X_SLS_REQUESTID));
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public GetAsyncSqlResponse getAsyncSql(GetAsyncSqlRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		Map<String, String> headers = getAsyncSqlHeaders(project);
+		String resourceUri = "/asyncsql/" + request.getQueryId();
+		Map<String, String> urlParameter = request.GetAllParams();
+
+		ResponseMessage response = SendData(project, HttpMethod.GET, resourceUri, urlParameter, headers, new byte[0], null, realServerIP);
+		if (response != null) {
+			try {
+				AsyncSql.AsyncSqlResponsePB responsePb = AsyncSql.AsyncSqlResponsePB.parseFrom(decompressResponseData(response));
+				GetAsyncSqlResponse.AsyncSqlMeta meta = new GetAsyncSqlResponse.AsyncSqlMeta(
+						responsePb.getMeta().getResultRows(),
+						responsePb.getMeta().getProcessedRows(),
+						responsePb.getMeta().getProcessedBytes(),
+						responsePb.getMeta().getElapsedMilli(),
+						responsePb.getMeta().getCpuSec(),
+						"Complete".equalsIgnoreCase(responsePb.getMeta().getProgress())
+				);
+				return new GetAsyncSqlResponse(
+						response.getHeaders(),
+						responsePb.getId(),
+						responsePb.getState(),
+						getNormalizedEmptyString(responsePb.getErrorCode()),
+						getNormalizedEmptyString(responsePb.getErrorMessage()),
+						meta,
+						responsePb.getMeta().getKeysList(),
+						responsePb.getRowsList().stream().map(AsyncSql.AsyncSqlRowPB::getColumnsList).collect(Collectors.toList())
+				);
+			}
+			catch (Throwable e) {
+				throw new LogException("ParseAsyncResponseError", e.getMessage(), response.getHeaders().get(Consts.CONST_X_SLS_REQUESTID));
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public void deleteAsyncSql(DeleteAsyncSqlRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		Map<String, String> headers = getAsyncSqlHeaders(project);
+		String resourceUri = "/asyncsql/" + request.getQueryId();
+		Map<String, String> urlParameter = request.GetAllParams();
+
+		SendData(project, HttpMethod.DELETE, resourceUri, urlParameter, headers, new byte[0], null, realServerIP);
 	}
 }

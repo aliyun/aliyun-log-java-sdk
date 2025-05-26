@@ -3746,4 +3746,8 @@ public interface LogService {
 	CreateShipperMigrationResponse createShipperMigration(CreateShipperMigrationRequest request) throws LogException;
 	GetShipperMigrationResponse getShipperMigration(GetShipperMigrationRequest request) throws LogException;
 	ListShipperMigrationResponse listShipperMigration(ListShipperMigrationRequest request) throws LogException;
+
+	SubmitAsyncSqlResponse submitAsyncSql(SubmitAsyncSqlRequest request) throws LogException;
+	GetAsyncSqlResponse getAsyncSql(GetAsyncSqlRequest request) throws LogException;
+	void deleteAsyncSql(DeleteAsyncSqlRequest request) throws LogException;
 }
