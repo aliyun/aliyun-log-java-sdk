@@ -1,6 +1,5 @@
 package com.aliyun.openservices.log.common;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,17 +8,16 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
-public class ShardGroup implements Serializable {
-    private static final long serialVersionUID = 7411017377132041832L;
+public class ShardHash {
+    private static final long serialVersionUID = 7411057377132011832L;
     private List<String> keys = new ArrayList<String>();
-    private int groupCount = 1;
+    private int maxHashCount = 1;
 
-    public ShardGroup() {
-
+    public ShardHash() {
     }
 
-    public ShardGroup(int groupCount, List<String> keys) {
-        this.groupCount = groupCount;
+    public ShardHash(int maxHashCount, List<String> keys) {
+        this.maxHashCount = maxHashCount;
         this.keys = keys;
     }
 
@@ -31,17 +29,17 @@ public class ShardGroup implements Serializable {
         this.keys = keys;
     }
 
-    public int getGroupCount() {
-        return groupCount;
+    public int getMaxHashCount() {
+        return maxHashCount;
     }
 
-    public void setGroupCount(int groupCount) {
-        this.groupCount = groupCount;
+    public void setMaxHashCount(int maxHashCount) {
+        this.maxHashCount = maxHashCount;
     }
 
     public JSONObject ToJsonObject() {
         JSONObject dict = new JSONObject();
-        dict.put("groupCount", this.groupCount);
+        dict.put("maxHashCount", this.maxHashCount);
         JSONArray keysArray = new JSONArray();
         for (String key : keys) {
             keysArray.add(key);
@@ -56,7 +54,7 @@ public class ShardGroup implements Serializable {
 
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
-            setGroupCount(dict.getIntValue("groupCount"));
+            setMaxHashCount(dict.getIntValue("maxHashCount"));
             List<String> keys = new ArrayList<String>();
             JSONArray keysArray = dict.getJSONArray("keys");
             for (int i = 0; i < keysArray.size(); i++) {
@@ -64,7 +62,7 @@ public class ShardGroup implements Serializable {
             }
             setKeys(keys);
         } catch (JSONException e) {
-            throw new LogException("The shardGroup config is invalid", e.getMessage(), e, "");
+            throw new LogException("The shardHash config is invalid", e.getMessage(), e, "");
         }
     }
 
@@ -73,7 +71,7 @@ public class ShardGroup implements Serializable {
             JSONObject dict = JSONObject.parseObject(logStoreString);
             FromJsonObject(dict);
         } catch (JSONException e) {
-            throw new LogException("The shardGroup config is invalid", e.getMessage(), e, "");
+            throw new LogException("The shardHash config is invalid", e.getMessage(), e, "");
         }
     }
 }

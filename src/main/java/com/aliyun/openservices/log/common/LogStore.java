@@ -28,7 +28,7 @@ public class LogStore implements Serializable {
     private int hotTTL = -1;
     private String mode = null;
     private int infrequentAccessTTL = -1;
-    private HashConfig hashConfig = null;
+    private ShardingPolicy shardingPolicy = null;
 
     public String getTelemetryType() {
         return telemetryType;
@@ -81,7 +81,7 @@ public class LogStore implements Serializable {
         this.hotTTL = logStore.hotTTL;
         this.mode = logStore.mode;
         this.infrequentAccessTTL = logStore.infrequentAccessTTL;
-        this.hashConfig = logStore.hashConfig;
+        this.shardingPolicy = logStore.shardingPolicy;
     }
 
     public long getPreserveStorage() {
@@ -220,12 +220,12 @@ public class LogStore implements Serializable {
         this.mode = mode;
     }
 
-    public HashConfig getHashConfig() {
-        return hashConfig;
+    public ShardingPolicy getShardingPolicy() {
+        return shardingPolicy;
     }
 
-    public void setHashConfig(HashConfig hashConfig) {
-        this.hashConfig = hashConfig;
+    public void setShardingPolicy(ShardingPolicy shardingPolicy) {
+        this.shardingPolicy = shardingPolicy;
     }
 
     public JSONObject ToRequestJson() {
@@ -255,8 +255,8 @@ public class LogStore implements Serializable {
         if (mode != null) {
             logStoreDict.put("mode", mode);
         }
-        if (hashConfig != null) {
-            logStoreDict.put("hashConfig", hashConfig.ToJsonObject());
+        if (shardingPolicy != null) {
+            logStoreDict.put("shardingPolicy", shardingPolicy.ToJsonObject());
         }
 
         return logStoreDict;
@@ -334,9 +334,9 @@ public class LogStore implements Serializable {
                 this.mode = dict.getString("mode");
             }
             if (dict.containsKey("hashConfig")) {
-                HashConfig hashConfig = new HashConfig();
+                ShardingPolicy hashConfig = new ShardingPolicy();
                 hashConfig.FromJsonObject(dict.getJSONObject("hashConfig"));
-                this.hashConfig = hashConfig;
+                this.shardingPolicy = hashConfig;
             }
 
         } catch (JSONException e) {
