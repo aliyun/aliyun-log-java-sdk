@@ -9,9 +9,9 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * The config of a machine
- * 
+ *
  * @author log-service-dev
- * 
+ *
  */
 public class Machine implements Serializable {
 	private static final long serialVersionUID = 5945880426501816900L;
@@ -19,13 +19,15 @@ public class Machine implements Serializable {
 	protected String machine_unique_id = "";
 	protected String user_defined_id = "";
 	protected long heartbeat_time = 0;
+	protected String version = "";
+	protected String hostId = "";
 
 	public Machine() {
 	}
 
 	/**
 	 * Construct a machine
-	 * 
+	 *
 	 * @param ip
 	 *            machine ip
 	 * @param machine_unique_id
@@ -44,8 +46,33 @@ public class Machine implements Serializable {
 	}
 
 	/**
+	 * Construct a machine
+	 *
+	 * @param ip
+	 *            machine ip
+	 * @param machine_unique_id
+	 *            machine unique id
+	 * @param user_defined_id
+	 *            machine user defined id
+	 * @param heartbeat_time
+	 *            machine last update time
+	 * @param version
+	 *            machine version
+	 * @param hostId
+	 *            machine host-id
+	 */
+	public Machine(String ip, String machine_unique_id, String user_defined_id, long heartbeat_time, String version, String hostId) {
+		this.ip = ip;
+		this.machine_unique_id = machine_unique_id;
+		this.user_defined_id = user_defined_id;
+		this.heartbeat_time = heartbeat_time;
+		this.version = version;
+		this.hostId = hostId;
+	}
+
+	/**
 	 * Return the Jonsobject of the machine
-	 * 
+	 *
 	 * @return the Jonsobject of the machine
 	 */
 	public JSONObject ToJsonObject() {
@@ -54,13 +81,15 @@ public class Machine implements Serializable {
 		jsonObj.put("machine-uniqueid", machine_unique_id);
 		jsonObj.put("userdefined-id", user_defined_id);
 		jsonObj.put("lastHeartbeatTime", heartbeat_time);
+		jsonObj.put("version", version);
+		jsonObj.put("host-id", hostId);
 
 		return jsonObj;
 	}
 
 	/**
 	 * Return the json string of the machine
-	 * 
+	 *
 	 * @return the json string of the machine
 	 */
 	public String ToJsonString() {
@@ -69,7 +98,7 @@ public class Machine implements Serializable {
 
 	/**
 	 * Construct a machine from a json object
-	 * 
+	 *
 	 * @param dict
 	 *            the json object config
 	 * @throws LogException
@@ -82,6 +111,8 @@ public class Machine implements Serializable {
 			this.user_defined_id = dict.getString("userdefined-id");
 
 			this.heartbeat_time = dict.getIntValue("lastHeartbeatTime");
+			this.version = dict.getString("binary");
+			this.hostId = dict.getString("host-id");
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateMachine", e.getMessage(), e,
 					"");
@@ -90,7 +121,7 @@ public class Machine implements Serializable {
 
 	/**
 	 * Construct a machine from a json string
-	 * 
+	 *
 	 * @param machineString
 	 *            the json string
 	 * @throws LogException
@@ -108,7 +139,7 @@ public class Machine implements Serializable {
 
 	/**
 	 * construct a machine
-	 * 
+	 *
 	 * @param machine
 	 *            exist machine
 	 */
@@ -116,11 +147,13 @@ public class Machine implements Serializable {
 		this.ip = machine.ip;
 		this.machine_unique_id = machine.machine_unique_id;
 		this.user_defined_id = machine.user_defined_id;
+		this.version = machine.version;
+		this.hostId = machine.hostId;
 		this.heartbeat_time = machine.heartbeat_time;
 	}
 
 	/**
-	 * 
+	 *
 	 * @return machine ip
 	 */
 	public String GetIp() {
@@ -128,7 +161,7 @@ public class Machine implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return machine unique id
 	 */
 	public String GetMachineUniqueId() {
@@ -136,7 +169,7 @@ public class Machine implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return user defined id
 	 */
 	public String GetUserDefinedId() {
@@ -144,7 +177,21 @@ public class Machine implements Serializable {
 	}
 
 	/**
-	 * 
+	 * @return machine version
+	 */
+	public String GetVersion() {
+		return this.version;
+	}
+
+	/**
+	 * @return machine host id
+	 */
+	public String GetHostId() {
+		return this.hostId;
+	}
+
+	/**
+	 *
 	 * @return machine last update heart beat time
 	 */
 	public long GetLastHeartBeatTime() {

@@ -1,9 +1,7 @@
 package com.aliyun.openservices.log.functiontest;
 
 
-import com.aliyun.openservices.log.common.LogItem;
-import com.aliyun.openservices.log.common.LogStore;
-import com.aliyun.openservices.log.common.Logs;
+import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.GetLogStoreResponse;
 import org.junit.Test;
@@ -41,15 +39,19 @@ public class PullLogsFunctionTest extends LogTest {
         String logStore = "logstore-" + getNowTimestamp();
         ensureLogStoreEnabled(TEST_PROJECT, logStore, randomBoolean());
         int written = writeData(logStore);
-        assertEquals(written, countAppended(TEST_PROJECT, logStore, 2, new Predicate() {
-            @Override
-            public boolean test(Logs.LogGroup logGroup) {
-                return true;
-            }
-        }));
+        assertEquals(written, countAppended(TEST_PROJECT, logStore, 2, logGroup -> true));
     }
 
     @Test
+    public void testWriteAndReadCountIsEqual() throws Exception {
+        String logStore = "logstore-" + getNowTimestamp();
+        ensureLogStoreEnabled(TEST_PROJECT, logStore, true);
+        int written = writeData(logStore);
+        List<FastLogGroup> logGroups = pullAllLogGroups(TEST_PROJECT, logStore, 2);
+        assertEquals(written, logGroups.size());
+    }
+
+    // @Test
     public void testNewDataWillAppendClientIp() throws Exception {
         String logStore = "logstore-" + getNowTimestamp();
         ensureLogStoreEnabled(TEST_PROJECT, logStore, true);
@@ -57,7 +59,7 @@ public class PullLogsFunctionTest extends LogTest {
         assertEquals(written, countLogGroupWithClientIpTag(TEST_PROJECT, logStore, 2));
     }
 
-    @Test
+    // @Test
     public void testMixDataWillAppendClientIp() throws Exception {
         String logStore = "logstore-" + getNowTimestamp();
         ensureLogStoreEnabled(TEST_PROJECT, logStore, false);

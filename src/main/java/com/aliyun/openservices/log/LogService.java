@@ -508,6 +508,25 @@ public interface LogService {
 	 */
     PutLogsResponse PutLogs(PutLogsRequest request) throws LogException;
 
+
+		/**
+	 * Send Data to log service server in batches
+	 *
+	 * @param request
+	 *            the batch put log request
+	 *
+	 * @return The batch put logs response
+	 *
+	 * @throws LogException
+	 *             if any error happen when send data to the server
+	 * @throws NullPointerException
+	 *             if any parameter is null
+	 * @throws IllegalArgumentException
+	 *             if project or logstore is empty, or the total logGroup log count
+	 *             exceed 4096, or the total data size exceed 5MB
+	 */
+    BatchPutLogsResponse batchPutLogs(BatchPutLogsRequest request) throws LogException;
+
 	/**
 	 * Get cursor from log service server
 	 *
@@ -1597,24 +1616,6 @@ public interface LogService {
 	 *
 	 * @param project
 	 *            the project name
-	 * @param internallogStore
-	 *            the config
-	 * @return the create log store response
-	 * @throws LogException
-	 *             if any error happen when creasting logstore
-	 *
-	 * @throws NullPointerException
-	 *             if any parameter is null
-	 * @throws IllegalArgumentException
-	 *             if project is empty
-	 */
-    CreateLogStoreInternalResponse CreateLogStoreInternal(String project, InternalLogStore internallogStore) throws LogException;
-
-	/**
-	 * create a logstore in a project
-	 *
-	 * @param project
-	 *            the project name
 	 * @param logStore
 	 *            the config
 	 * @return the create log store response
@@ -1670,25 +1671,6 @@ public interface LogService {
      */
     CreateLinkStoreResponse CreateLinkStore(CreateLinkStoreRequest request)
             throws LogException;
-
-	/**
-	 * Update log store config
-	 *
-	 * @param project
-	 *            the project name
-	 * @param internalLogStore
-	 *            the logsotre config
-	 * @return update logstore response
-	 * @throws LogException
-	 *             if any error happen when updating logstore
-	 *
-	 * @throws NullPointerException
-	 *             if any parameter is null
-	 * @throws IllegalArgumentException
-	 *             if project is empty
-	 */
-    UpdateLogStoreInternalResponse UpdateLogStoreInternal(String project,
-                                                          InternalLogStore internalLogStore) throws LogException;
 
 	/**
 	 * Update log store config
@@ -3734,16 +3716,10 @@ public interface LogService {
 	GetResourceRecordResponse    getResourceRecord(GetResourceRecordRequest request) throws LogException;
 	DeleteResourceRecordResponse deleteResourceRecord(DeleteResourceRecordRequest request) throws LogException;
 	ListResourceRecordResponse   listResourceRecord(ListResourceRecordRequest request) throws LogException;
+	ListNextResourceRecordResponse   listNextResourceRecord(ListNextResourceRecordRequest request) throws LogException;
 	CreateOrUpdateSqlInstanceResponse createSqlInstance(CreateOrUpdateSqlInstanceRequest request) throws LogException;
 	CreateOrUpdateSqlInstanceResponse updateSqlInstance(CreateOrUpdateSqlInstanceRequest request) throws LogException;
 	ListSqlInstanceResponse listSqlInstance(ListSqlInstanceRequest request) throws LogException;
-
-	CreateMetricAggRulesResponse createMetricAggRules(CreateMetricAggRulesRequest request) throws LogException;
-	ListMetricAggRulesResponse listMetricAggRules(ListMetricAggRulesRequest request) throws LogException;
-	GetMetricAggRulesResponse getMetricAggRules(GetMetricAggRulesRequest request) throws LogException;
-	UpdateMetricAggRulesResponse updateMetricAggRules(UpdateMetricAggRulesRequest request) throws LogException;
-	DeleteMetricAggRulesResponse deleteMetricAggRules(DeleteMetricAggRulesRequest request) throws LogException;
-
 	SetProjectPolicyResponse setProjectPolicy(String projectName, String policyText) throws LogException;
 	GetProjectPolicyReponse getProjectPolicy(String projectName) throws LogException;
 	DeleteProjectPolicyReponse deleteProjectPolicy(String projectName) throws LogException;
@@ -3770,4 +3746,8 @@ public interface LogService {
 	CreateShipperMigrationResponse createShipperMigration(CreateShipperMigrationRequest request) throws LogException;
 	GetShipperMigrationResponse getShipperMigration(GetShipperMigrationRequest request) throws LogException;
 	ListShipperMigrationResponse listShipperMigration(ListShipperMigrationRequest request) throws LogException;
+
+	SubmitAsyncSqlResponse submitAsyncSql(SubmitAsyncSqlRequest request) throws LogException;
+	GetAsyncSqlResponse getAsyncSql(GetAsyncSqlRequest request) throws LogException;
+	void deleteAsyncSql(DeleteAsyncSqlRequest request) throws LogException;
 }

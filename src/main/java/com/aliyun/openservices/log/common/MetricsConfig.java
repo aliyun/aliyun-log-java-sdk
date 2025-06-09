@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -23,6 +24,10 @@ public class MetricsConfig implements Serializable {
 
     @JSONField(name = "remote_write_config")
     private MetricRemoteWriteConfig remoteWriteConfig;
+
+    @JSONField(name = "store_view_routing_config")
+    private List<MetricStoreViewRoutingConfig> storeViewRoutingConfigs;
+
 
     public MetricsConfig(MetricDownSamplingConfig downSamplingConfig) {
         this.downSamplingConfig = downSamplingConfig;
@@ -77,6 +82,15 @@ public class MetricsConfig implements Serializable {
         this.remoteWriteConfig = remoteWriteConfig;
     }
 
+    public MetricsConfig(MetricQueryCacheConfig queryCacheConfig, MetricParallelConfig parallelConfig, MetricDownSamplingConfig downSamplingConfig, MetricPushdownConfig pushdownConfig, MetricRemoteWriteConfig remoteWriteConfig, List<MetricStoreViewRoutingConfig> storeViewRoutingConfigs) {
+        this.queryCacheConfig = queryCacheConfig;
+        this.parallelConfig = parallelConfig;
+        this.downSamplingConfig = downSamplingConfig;
+        this.pushdownConfig = pushdownConfig;
+        this.remoteWriteConfig = remoteWriteConfig;
+        this.storeViewRoutingConfigs = storeViewRoutingConfigs;
+    }
+
     public MetricQueryCacheConfig getQueryCacheConfig() {
         return queryCacheConfig;
     }
@@ -117,4 +131,11 @@ public class MetricsConfig implements Serializable {
         this.downSamplingConfig = downSamplingConfig;
     }
 
+    public List<MetricStoreViewRoutingConfig> getStoreViewRoutingConfigs() {
+        return storeViewRoutingConfigs;
+    }
+
+    public void setStoreViewRoutingConfigs(List<MetricStoreViewRoutingConfig> storeViewRoutingConfigs) {
+        this.storeViewRoutingConfigs = storeViewRoutingConfigs;
+    }
 }

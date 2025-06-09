@@ -23,6 +23,8 @@ public class IndexKey implements Serializable {
 	private boolean chn;
 	private String alias = "";
 	private String type = "text";
+	private String embedding ="";
+	private String vector_index = "";
 	
 	public IndexKey() {
 	}
@@ -56,6 +58,16 @@ public class IndexKey implements Serializable {
 		this.alias = alias;
 		this.chn = false;
 	}
+	public IndexKey(List<String> token, boolean caseSensitive, String type, String alias, String embedding, String vector_index) {
+		SetToken(token);
+		this.caseSensitive = caseSensitive;
+		this.type = type;
+		this.docValue = true;
+		this.alias = alias;
+		this.chn = false;
+		this.embedding = embedding;
+		this.vector_index = vector_index;
+	}
 	
 	/**
 	 * create index config from another index key
@@ -68,6 +80,8 @@ public class IndexKey implements Serializable {
 		this.docValue = other.IsDocValue();
 		this.alias = other.alias;
 		this.chn = other.chn;
+		this.embedding = other.embedding;
+		this.vector_index = other.vector_index;
 	}
 
 
@@ -141,7 +155,35 @@ public class IndexKey implements Serializable {
 	public void SetCaseSensitive(boolean caseSensitive) {
 		this.caseSensitive = caseSensitive;
 	}
-	
+
+	/**
+	 * @return the embedding
+	 */
+	public String getEmbedding() {
+		return embedding;
+	}
+
+	/**
+	 * @return the vector_index
+	 */
+	public String getVectorIndex() {
+		return vector_index;
+	}
+
+	/**
+	 * @param embedding
+	 */
+	public void setEmbedding(String embedding) {
+		this.embedding = embedding;
+	}
+
+	/**
+	 * @param vector_index
+	 */
+	public void setVectorIndex(String vector_index) {
+		this.vector_index = vector_index;
+	}
+
 	public JSONObject ToRequestJson() throws LogException {
 		JSONObject allKeys = new JSONObject();
 		JSONArray tokenDict = new JSONArray();
@@ -157,7 +199,13 @@ public class IndexKey implements Serializable {
 		
 		allKeys.put("doc_value", IsDocValue());
 		allKeys.put("alias", getAlias());
-		
+
+		if(getEmbedding().equals("") == false) {
+			allKeys.put("embedding",getEmbedding());
+		}
+		if(getVectorIndex().equals("") == false) {
+			allKeys.put("vector_index",getVectorIndex());
+		}
 		return allKeys;
 	}
 	
@@ -202,6 +250,12 @@ public class IndexKey implements Serializable {
 			token = new ArrayList<String>();
 			for (int i = 0;i < tokenDict.size();i++) {
 				token.add(tokenDict.getString(i));
+			}
+			if (dict.containsKey("embedding")) {
+				setEmbedding(dict.getString("embedding"));
+			}
+			if (dict.containsKey("vector_index")) {
+				setVectorIndex(dict.getString("vector_index"));
 			}
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateIndexKey", e.getMessage(), e, "");

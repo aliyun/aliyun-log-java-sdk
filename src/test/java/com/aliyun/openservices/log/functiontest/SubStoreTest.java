@@ -16,7 +16,9 @@ import com.aliyun.openservices.log.response.UpdateLogStoreResponse;
 import com.aliyun.openservices.log.response.UpdateSubStoreTTLResponse;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SubStoreTest extends FunctionTest {
     static int timestamp = getNowTimestamp();
     static String PROJECT = makeProjectName();

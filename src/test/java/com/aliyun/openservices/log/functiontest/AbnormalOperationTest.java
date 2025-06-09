@@ -7,10 +7,19 @@ import com.aliyun.openservices.log.response.GetCursorResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
 import com.aliyun.openservices.log.response.PullLogsResponse;
 import org.junit.Test;
+import org.junit.rules.Timeout;
+import org.junit.runners.MethodSorters;
 
 import static org.junit.Assert.*;
 
+import org.junit.FixMethodOrder;
+import org.junit.Rule;
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AbnormalOperationTest extends BaseDataTest {
+
+    @Rule
+    public Timeout testTimeout = new Timeout(300000);
 
     @Test
     public void testGetLogsByNotEnableIndex() {
@@ -73,7 +82,7 @@ public class AbnormalOperationTest extends BaseDataTest {
     @Test
     public void testGetLogsByErrorParameter() throws LogException {
         enableIndex();
-        prepareLogs();
+        prepareLogs(10, 20);
         //  project error
         try {
             GetLogsResponse logs = client.GetLogs(project + "-fake", logStore.GetLogStoreName(),
@@ -99,7 +108,7 @@ public class AbnormalOperationTest extends BaseDataTest {
             fail();
         } catch (LogException e) {
             assertEquals("ParameterInvalid", e.GetErrorCode());
-            assertEquals("from : -1 pair is invalid", e.GetErrorMessage());
+            assertEquals("The parameter from must be a positive integer", e.GetErrorMessage());
         }
 
         //  query error
@@ -136,7 +145,7 @@ public class AbnormalOperationTest extends BaseDataTest {
             fail();
         } catch (LogException e) {
             assertEquals("ParameterInvalid", e.GetErrorCode());
-            assertEquals("offset : -1 pair is invalid", e.GetErrorMessage());
+            assertEquals("limit expression is required", e.GetErrorMessage());
         }
     }
 }

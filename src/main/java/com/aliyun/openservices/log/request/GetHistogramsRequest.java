@@ -71,6 +71,34 @@ public class GetHistogramsRequest extends Request {
 	}
 
 	/**
+	 * Construct a request
+	 *
+	 * @param project
+	 *            sls project
+	 * @param logStore
+	 *            the logstore in the project
+	 * @param topic
+	 *            the topic of the logstore
+	 * @param query
+	 *            user defined query
+	 * @param from
+	 *            the begin time
+	 * @param to
+	 *            the end time
+	 * @param accurate
+	 * 			  accurate flag
+	 * @param reverse
+	 *            reverse flag
+	 */
+	public GetHistogramsRequest(String project, String logStore, String topic,
+								String query, int from, int to, boolean accurate, boolean reverse) {
+		this(project, logStore, topic, query, from, to);
+		SetAccurate(accurate);
+		SetReverse(reverse);
+	}
+
+
+	/**
 	 * Set log store
 	 * 
 	 * @param logStore
@@ -191,6 +219,30 @@ public class GetHistogramsRequest extends Request {
 			return false;
 		} else {
 			return Boolean.parseBoolean(accurate);
+		}
+	}
+
+	/**
+	 * Set request reverse flag
+	 *
+	 * @param reverse
+	 *            reverse flag
+	 */
+	public void SetReverse(boolean reverse) {
+		SetParam(Consts.CONST_REVERSE, String.valueOf(reverse));
+	}
+
+	/**
+	 * Get request reverse flag
+	 *
+	 * @return reverse flag
+	 */
+	public boolean GetReverse() {
+		String reverse = GetParam(Consts.CONST_REVERSE);
+		if (reverse.isEmpty()) {
+			return false;
+		} else {
+			return Boolean.parseBoolean(reverse);
 		}
 	}
 

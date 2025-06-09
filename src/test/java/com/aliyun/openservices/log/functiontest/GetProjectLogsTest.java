@@ -14,6 +14,7 @@ public class GetProjectLogsTest extends BaseDataTest {
     public void testGetProjectLogs() throws LogException {
         enableIndex();
         int count = prepareLogs();
+        waitForSeconds(20);
         //Correct
         String sql1 = "SELECT * FROM " + logStore.GetLogStoreName() + " where __time__ > " + (timestamp - 1800)
                 + " and __time__ < " + (timestamp + 1800) + " LIMIT 1000;";

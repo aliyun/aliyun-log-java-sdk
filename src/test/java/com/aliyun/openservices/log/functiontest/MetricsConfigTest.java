@@ -6,7 +6,9 @@ import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.MetricsConfig;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateMetricsConfigRequest;
+import com.aliyun.openservices.log.request.GetMetricsConfigRequest;
 import com.aliyun.openservices.log.request.UpdateMetricsConfigRequest;
+import com.aliyun.openservices.log.response.GetMetricsConfigResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,15 +41,29 @@ public class MetricsConfigTest {
     }
 
     @Test
+    public void testStoreViewRoutingConfig() {
+        String conf = "{\"store_view_routing_config\":[{\"metric_names\":[\".*api.*\"],\"project_stores\":[{\"metricstore\":\"prometheus\",\"project\":\"haoqi-sls-metric-test\"}]},{\"metric_names\":[\".*batch.*\"],\"project_stores\":[{\"metricstore\":\"prometheus-1\",\"project\":\"haoqi-sls-metric-test\"}]}]}";
+        MetricsConfig metricsConfig = JSONObject.parseObject(conf, MetricsConfig.class);
+        final String jsonString = JSONObject.toJSONString(metricsConfig);
+        Assert.assertEquals(conf, jsonString);
+        System.out.println(jsonString);
+    }
+
+    @Test
     public void testCreateRemoteWriteConfig(){
         Client client = new Client(
                 "pub-cn-hangzhou-staging-share.log.aliyuncs.com", "xxx", "xxx");
 
         String conf = "{\"downsampling_config\":null,\"parallel_config\":null,\"query_cache_config\":null,\"pushdown_config\":null,\"remote_write_config\":{\"enable\":true,\"replica_field\":\"\",\"replica_timeout_seconds\":0,\"history_interval\":0,\"future_interval\":0,\"shard_group_strategy_list\":{\"strategies\":[{\"metric_names\":[\".*_bucket\", \"apiserver_.*\"],\"hash_labels\":[],\"shard_group_count\":1,\"priority\":2},{\"metric_names\":[\".*_total\", \".*_count\", \".*_sum\"],\"hash_labels\":[],\"shard_group_count\":8,\"priority\":3},{\"metric_names\":[\".*\"],\"hash_labels\":[],\"shard_group_count\":32,\"priority\":4}],\"try_other_shard\":true,\"last_update_time\":1709192903}}}";
+
         MetricsConfig metricsConfig = JSONObject.parseObject(conf, MetricsConfig.class);
+        final String jsonString = JSONObject.toJSONString(metricsConfig);
+        System.out.println(jsonString);
         try{
-            //client.createMetricsConfig(new CreateMetricsConfigRequest("haoqi-sls-metric-test", "asi-chengdu-classd-unit1-shardgroup", metricsConfig));
-            client.updateMetricsConfig(new UpdateMetricsConfigRequest("haoqi-sls-metric-test", "asi-chengdu-classd-unit1-shardgroup", metricsConfig));
+            client.createMetricsConfig(new CreateMetricsConfigRequest("haoqi-sls-metric-test", "view_test", metricsConfig));
+//            client.updateMetricsConfig(new UpdateMetricsConfigRequest("haoqi-sls-metric-test", "view_test", metricsConfig));
+            GetMetricsConfigResponse test = client.getMetricsConfig(new GetMetricsConfigRequest("haoqi-sls-metric-test", "view_test"));
+            System.out.println(JSONObject.toJSON(test.getMetricsConfig()));
         } catch (LogException e) {
             System.out.println(e);
         }

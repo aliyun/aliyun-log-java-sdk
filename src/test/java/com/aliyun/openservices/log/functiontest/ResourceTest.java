@@ -36,8 +36,8 @@ public class ResourceTest extends FunctionTest {
         resourceUser.setCountryCode("86");
         resourceUser.setPhone("13888888888");
         resourceUser.setEmail(new ArrayList<String>() {{
-            add("test_a@test.com");
-            add("test_b@test.com");
+            add("java_log_sdk_regresstion_test_a@test.com");
+            add("java_log_sdk_regresstion_test_b@test.com");
         }});
         resourceUser.setEnabled(true);
         resourceUser.setVoiceEnabled(false);

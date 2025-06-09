@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -131,7 +130,7 @@ public abstract class FunctionTest {
     }
 
     static void createOrUpdateLogStore(String project, LogStore logStore) {
-        createProjectIfNotExist(project, "");
+        safeCreateProject(project, "");
         try {
             client.CreateLogStore(project, logStore);
             waitOneMinutes();
@@ -178,13 +177,10 @@ public abstract class FunctionTest {
     }
 
     static void reCreateLogStore(String project, LogStore logStore) {
-        createProjectIfNotExist(project, "");
-        if (safeDeleteLogStore(project, logStore.GetLogStoreName())) {
-            waitOneMinutes();
-        }
-        if (safeCreateLogStore(project, logStore)) {
-            waitOneMinutes();
-        }
+        safeCreateProject(project, "");
+        safeDeleteLogStore(project, logStore.GetLogStoreName());
+        safeCreateLogStore(project, logStore);
+        waitOneMinutes();
     }
 
     static boolean safeCreateProject(String project, String desc) {
@@ -203,7 +199,7 @@ public abstract class FunctionTest {
         }
     }
 
-    private static boolean safeCreateLogStore(String project, LogStore logStore) {
+    protected static boolean safeCreateLogStore(String project, LogStore logStore) {
         try {
             client.CreateLogStore(project, logStore);
             return true;
@@ -219,7 +215,7 @@ public abstract class FunctionTest {
 
     static void waitForSeconds(int seconds) {
         try {
-            TimeUnit.SECONDS.sleep(seconds);
+            Thread.sleep(seconds * 1000L);
         } catch (InterruptedException e) {
             e.printStackTrace();
             Thread.currentThread().interrupt();

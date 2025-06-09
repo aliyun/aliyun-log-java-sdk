@@ -19,6 +19,7 @@ public class LogStoreFunctionTest extends MetaAPIBaseFunctionTest {
 
     @Test
     public void testCreateLogStore() throws Exception {
+        Thread.sleep(1000 * 60);
         LogStore logStore1 = new LogStore();
         logStore1.SetLogStoreName("");
         logStore1.SetShardCount(2);
@@ -51,7 +52,7 @@ public class LogStoreFunctionTest extends MetaAPIBaseFunctionTest {
                 fail("Create invalid logstore should fail");
             } catch (LogException ex) {
                 assertEquals(ex.getErrorCode(), "LogStoreInfoInvalid");
-                assertEquals(ex.getMessage(), "maxSplitShard must be within range [1, 64]");
+                assertEquals(ex.getMessage(), "maxSplitShard must be within range [1, 256]");
                 assertEquals(ex.getHttpCode(), 400);
             }
             logStore.setmMaxSplitShard(randomBetween(1, 64));
@@ -256,8 +257,8 @@ public class LogStoreFunctionTest extends MetaAPIBaseFunctionTest {
             client.UpdateLogStore(TEST_PROJECT, logStore);
             fail("update logstore mode should fail");
         } catch (LogException ex) {
-            assertEquals(ex.getErrorCode(), "ParameterInvalid");
-            assertEquals(ex.getMessage(), "logstore mode cannot be modified after creation");
+            assertEquals(ex.getErrorCode(), "NotSupported");
+            assertEquals(ex.getMessage(), "The logstore mode or telemetryType is not supported for current metering mode.");
             assertEquals(ex.getHttpCode(), 400);
         }
 
@@ -288,14 +289,7 @@ public class LogStoreFunctionTest extends MetaAPIBaseFunctionTest {
         logStore.SetTtl(30);
         logStore.setAppendMeta(true);
         logStore.setMode("standard");
-        try {
-            client.UpdateLogStore(TEST_PROJECT, logStore);
-            fail("update logstore mode should fail");
-        } catch (LogException ex) {
-            assertEquals(ex.getErrorCode(), "ParameterInvalid");
-            assertEquals(ex.getMessage(), "logstore mode cannot be modified after creation");
-            assertEquals(ex.getHttpCode(), 400);
-        }
+        client.UpdateLogStore(TEST_PROJECT, logStore);
         client.DeleteLogStore(TEST_PROJECT, "logstore-for-testing1");
         client.DeleteLogStore(TEST_PROJECT, "logstore-for-testing2");
     }

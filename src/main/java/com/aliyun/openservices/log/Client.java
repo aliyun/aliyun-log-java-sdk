@@ -28,7 +28,9 @@ import org.apache.http.conn.HttpClientConnectionManager;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.aliyun.openservices.log.common.Consts.CONST_LOGSTORE_REPLICATION;
 
@@ -57,6 +59,15 @@ public class Client implements LogService {
 	private String realServerIP = null;
 	private String resourceOwnerAccount = null;
 	private SlsSigner signer;
+	private boolean useMetricStoreUrl;
+
+	public boolean isUseMetricStoreUrl() {
+		return useMetricStoreUrl;
+	}
+
+	public void setUseMetricStoreUrl(final boolean useMetricStoreUrl) {
+		this.useMetricStoreUrl = useMetricStoreUrl;
+	}
 
 	public String getUserAgent() {
 		return userAgent;
@@ -652,6 +663,47 @@ public class Client implements LogService {
 		return PutLogs(request);
 	}
 
+	@Override
+	public BatchPutLogsResponse batchPutLogs(BatchPutLogsRequest request)
+		throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(request.getLogStore(), "logStore");
+		final CompressType compressType = request.getCompressType();
+		CodingUtils.assertParameterNotNull(compressType, "compressType");
+		if (compressType != CompressType.ZSTD && compressType != CompressType.LZ4) {
+			throw new LogException(ErrorCodes.INVALID_PARAMETER, "Unsupported compress type:" + compressType, "");
+		}
+		List<LogGroup> logGroups = request.getLogGroups();
+		if (logGroups == null || logGroups.isEmpty()) {
+			throw new LogException(ErrorCodes.INVALID_PARAMETER, "LogGroups is empty", "");
+		}
+
+		byte[] logBytes = request.serializeToPb();
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		headParameter.put(Consts.CONST_X_LOG_MODE, Consts.CONST_BATCH_GROUP);
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_PROTO_BUF);
+		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(logBytes.length));
+		headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
+		checkBodyRawSize(logBytes.length);
+		String resourceUri = "/logstores/" + request.getLogStore();
+		String shardKey = request.getHashKey();
+		Map<String, String> urlParameter = request.GetAllParams();
+		if (shardKey == null || shardKey.isEmpty()) {
+			resourceUri += "/shards/lb";
+		} else {
+			resourceUri += "/shards/route";
+			urlParameter.put("key", shardKey);
+		}
+
+		ResponseMessage response = sendLogBytes(project, logBytes, resourceUri, urlParameter, headParameter);
+		if (response != null) {
+			return new BatchPutLogsResponse(response.getHeaders());
+		}
+		// never happen
+		return null;
+	}
+
 	public PutLogsResponse PutLogs(PutLogsRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
@@ -697,7 +749,7 @@ public class Client implements LogService {
 					for (LogContent content : item.mContents) {
 						CodingUtils.assertStringNotNullOrEmpty(content.mKey, "key");
 						Logs.Log.Content.Builder contentBuilder = log
-								.addContentsBuilder();
+							.addContentsBuilder();
 						contentBuilder.setKey(content.mKey);
 						if (content.mValue == null) {
 							contentBuilder.setValue("");
@@ -734,7 +786,7 @@ public class Client implements LogService {
 						tagObj.put(tag.getKey(), tag.getValue());
 					}
 				}
-				if (this.mUUIDTag)  {
+				if (this.mUUIDTag) {
 					tagObj.put("__pack_unique_id__", UUID.randomUUID().toString() + "-" + Math.random());
 				}
 				if (tagObj.size() > 0) {
@@ -743,50 +795,43 @@ public class Client implements LogService {
 				logBytes = encodeToUtf8(jsonObj.toString());
 			}
 		}
-		int bodySize = logBytes.length;
-		if (bodySize > Consts.CONST_MAX_PUT_SIZE) {
-			throw new LogException("InvalidLogSize",
-					"logItems' size exceeds maximum limitation : "
-							+ Consts.CONST_MAX_PUT_SIZE
-							+ " bytes", "");
-		} else if (bodySize > Consts.CONST_MAX_POST_BODY_SIZE) {
-			throw new LogException("PostBodyTooLarge",
-					"body size " + bodySize + " must little than " + Consts.CONST_MAX_POST_BODY_SIZE, "");
-		}
+		checkBodyRawSize(logBytes.length);
 
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		headParameter.put(Consts.CONST_CONTENT_TYPE, request.getContentType());
-		long originalSize = logBytes.length;
-		switch (compressType) {
-			case LZ4:
-				// Why clone here?
-				logBytes = LZ4Encoder.compressToLhLz4Chunk(logBytes.clone());
-				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
-				break;
-			case GZIP:
-				logBytes = GzipUtils.compress(logBytes);
-				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
-				break;
-			case ZSTD:
-				logBytes = ZSTDEncoder.compress(logBytes);
-				headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, compressType.toString());
-				break;
+		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(logBytes.length));
+		if (request.getCompressType() != CompressType.NONE) {
+			headParameter.put(Consts.CONST_X_SLS_COMPRESSTYPE, request.getCompressType().toString());
 		}
-		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(originalSize));
-
+		logBytes = Utils.compressLogBytes(logBytes, request.getCompressType());
 		Map<String, String> urlParameter = request.GetAllParams();
-		String resourceUri = "/logstores/" + logStore;
-		if (shardKey == null || shardKey.length() == 0) {
-			resourceUri += "/shards/lb";
+		StringBuilder resourceUriBuilder = new StringBuilder();
+		if (isUseMetricStoreUrl()) {
+			resourceUriBuilder.append("/prometheus/").
+							  append(request.GetProject()).
+							  append("/").
+							  append(logStore).append("/api/v1/write");
+		} else if (shardKey == null || shardKey.isEmpty()) {
+			resourceUriBuilder.append("/logstores/").append(logStore).append("/shards/lb");
 		} else {
-			resourceUri += "/shards/route";
+			resourceUriBuilder.append("/logstores/").append(logStore).append("/shards/route");
 			urlParameter.put("key", shardKey);
 			if (request.getHashRouteKeySeqId() != null) {
 				urlParameter.put("seqid", String.valueOf(request.getHashRouteKeySeqId()));
 			}
 		}
-		long cmp_size = logBytes.length;
+		if (request.getProcessor() != null && !request.getProcessor().isEmpty()) {
+			urlParameter.put("processor", request.getProcessor());
+		}
+		ResponseMessage response = sendLogBytes(project, logBytes, resourceUriBuilder.toString(), urlParameter, headParameter);
+		if (response != null) {
+			return new PutLogsResponse(response.getHeaders());
+		}
+		// never happen
+		return null;
+	}
 
+	private ResponseMessage sendLogBytes(String project, byte[] logBytes, String resourceUri, Map<String, String> urlParameter, Map<String, String> headParameter) throws LogException {
 		for (int i = 0; i < 2; i++) {
 			String server_ip = this.realServerIP;
 			ClientConnectionStatus connection_status = null;
@@ -797,16 +842,14 @@ public class Client implements LogService {
 			try {
 				ResponseMessage response = SendData(project, HttpMethod.POST, resourceUri, urlParameter, headParameter,
 						logBytes, null, server_ip);
-				Map<String, String> resHeaders = response.getHeaders();
-				PutLogsResponse putLogsResponse = new PutLogsResponse(resHeaders);
 				if (connection_status != null) {
-					connection_status.AddSendDataSize(cmp_size);
+					connection_status.AddSendDataSize(logBytes.length);
 					connection_status.UpdateLastUsedTime(System.nanoTime());
 				}
-				return putLogsResponse;
+				return response;
 			} catch (LogException e) {
 				String requestId = e.getRequestId();
-				if (i == 1 || requestId != null && !requestId.isEmpty())
+				if (i == 1 || (requestId != null && !requestId.isEmpty()) || getClientConfiguration().getRetryDisabled())
 				{
 					throw e;
 				}
@@ -816,7 +859,20 @@ public class Client implements LogService {
 				}
 			}
 		}
-		return null; // never happen
+		return null;
+	}
+
+	private void checkBodyRawSize(int bodySize) throws LogException {
+		if (bodySize > Consts.CONST_MAX_PUT_SIZE) {
+			throw new LogException("InvalidLogSize",
+					"logItems' size exceeds maximum limitation : "
+							+ Consts.CONST_MAX_PUT_SIZE
+							+ " bytes",
+					"");
+		} else if (bodySize > Consts.CONST_MAX_POST_BODY_SIZE) {
+			throw new LogException("PostBodyTooLarge",
+					"body size " + bodySize + " must little than " + Consts.CONST_MAX_POST_BODY_SIZE, "");
+		}
 	}
 
 	private ClientConnectionStatus GetGlobalConnectionStatus() throws LogException {
@@ -997,7 +1053,7 @@ public class Client implements LogService {
 		Map<String, String> urlParameter = request.GetAllParams();
 		String project = request.GetProject();
 		String logStore = request.GetLogStore();
-		CodingUtils.validateLogstore(logStore);
+		CodingUtils.validateLogstoreSearch(logStore);
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		CompressType compressType = request.getCompressType();
 		if (compressType != null && compressType != CompressType.NONE) {
@@ -1019,7 +1075,7 @@ public class Client implements LogService {
 		String logstore = request.getLogstore();
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		headParameter.put(Consts.CONST_ACCEPT_ENCODING, request.getAcceptEncoding());
-		CodingUtils.validateLogstore(logstore);
+		CodingUtils.validateLogstoreSearch(logstore);
 		String resourceUri = "/logstores/" + logstore + "/logs";
 		ResponseMessage response = SendData(project, HttpMethod.POST,
 				resourceUri, urlParameter, headParameter, request.getRequestBody());
@@ -1376,7 +1432,7 @@ public class Client implements LogService {
                 }
                 return plr;
             } catch (LogException ex) {
-                if (i == 1 || ex.getRequestId() != null && !ex.getRequestId().isEmpty()) {
+                if (i == 1 || (ex.getRequestId() != null && !ex.getRequestId().isEmpty()) || getClientConfiguration().getRetryDisabled()) {
                     throw ex;
                 }
                 if (connectionStatus != null) {
@@ -2025,7 +2081,13 @@ public class Client implements LogService {
 		if (resourceOwnerAccount != null && !resourceOwnerAccount.isEmpty()) {
 			headers.put(Consts.CONST_X_LOG_RESOURCEOWNERACCOUNT, resourceOwnerAccount);
 		}
-		signer.sign(method, headers, resourceUri, parameters, body);
+		try {
+			signer.sign(method, headers, resourceUri, parameters, body);
+		} catch (Exception e) {
+			throw new LogException("ClientSignatureError",
+					"Fail to calculate signature for request, error:" + e.getMessage(), "");
+		}
+
 		URI uri;
 		if (serverIp == null) {
 			uri = GetHostURI(project);
@@ -2071,7 +2133,12 @@ public class Client implements LogService {
 		if (resourceOwnerAccount != null && !resourceOwnerAccount.isEmpty()) {
 			headers.put(Consts.CONST_X_LOG_RESOURCEOWNERACCOUNT, resourceOwnerAccount);
 		}
-		signer.sign(method, headers, resourceUri, parameters, body);
+		try {
+			signer.sign(method, headers, resourceUri, parameters, body);
+		} catch (Exception e) {
+			throw new LogException("ClientSignatureError",
+					"Fail to calculate signature for request, error:" + e.getMessage(), "");
+		}
 		URI uri;
 		if (serverIp == null) {
 			uri = GetHostURI(project);
@@ -2093,13 +2160,22 @@ public class Client implements LogService {
 				String requestId = GetRequestId(response.getHeaders());
 				try {
 					String responseBody = encodeResponseBodyToUtf8String(response, requestId);
+					JSONObject object = null;
 					try {
-						JSONObject object = JSONObject.parseObject(responseBody, Feature.DisableSpecialKeyDetect);
-						ErrorCheck(object, requestId, statusCode, responseBody);
+						object = JSONObject.parseObject(responseBody, Feature.DisableSpecialKeyDetect);
 					} catch (JSONException ex) {
 						throw new LogException(ErrorCodes.BAD_RESPONSE,
-								"The response is not valid json string : " + body, ex, requestId);
+								"The response is not valid json string : " + responseBody + ", statusCode: "
+										+ statusCode + ", requestId: " + requestId,
+								ex, requestId);
 					}
+					if (null == object) {
+						throw new LogException(ErrorCodes.BAD_RESPONSE,
+								"The response is not valid json string : " + responseBody + ", statusCode: "
+										+ statusCode + ", requestId: " + requestId,
+								requestId);
+					}
+					ErrorCheck(object, requestId, statusCode, responseBody);
 				} catch (LogException ex) {
 					ex.setHttpCode(response.getStatusCode());
 					throw ex;
@@ -2162,36 +2238,6 @@ public class Client implements LogService {
 							+ array.toString() + e.getMessage(), e, requestId);
 		}
 		return shards;
-	}
-
-	@Override
-    public UpdateLogStoreInternalResponse UpdateLogStoreInternal(String project, InternalLogStore internalLogStore) throws LogException {
-        CodingUtils.assertStringNotNullOrEmpty(project, "project");
-        CodingUtils.assertParameterNotNull(internalLogStore, "InternallogStore");
-        Map<String, String> headParameter = GetCommonHeadPara(project);
-        byte[] body = encodeToUtf8(internalLogStore.ToRequestString());
-        headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-        String resourceUri = "/logstores/" + internalLogStore.GetLogStoreName();
-        Map<String, String> urlParameter = Collections.singletonMap("type", "inner");
-        ResponseMessage response = SendData(project, HttpMethod.PUT,
-                resourceUri, urlParameter, headParameter, body);
-        Map<String, String> resHeaders = response.getHeaders();
-        return new UpdateLogStoreInternalResponse(resHeaders);
-    }
-
-	@Override
-	public CreateLogStoreInternalResponse CreateLogStoreInternal(String project, InternalLogStore internalLogStore) throws LogException {
-        CodingUtils.assertStringNotNullOrEmpty(project, "project");
-        CodingUtils.assertParameterNotNull(internalLogStore, "InternallogStore");
-        Map<String, String> headParameter = GetCommonHeadPara(project);
-        byte[] body = encodeToUtf8(internalLogStore.ToRequestString());
-        headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-        String resourceUri = "/logstores";
-        Map<String, String> urlParameter = Collections.singletonMap("type", "inner");
-        ResponseMessage response = SendData(project, HttpMethod.POST,
-                resourceUri, urlParameter, headParameter, body);
-        Map<String, String> resHeaders = response.getHeaders();
-        return new CreateLogStoreInternalResponse(resHeaders);
 	}
 
 	@Override
@@ -2902,6 +2948,65 @@ public class Client implements LogService {
 		listExternalStroesResponse.setTotal(object.getIntValue(Consts.CONST_TOTAL));
 		listExternalStroesResponse.setCount(object.getIntValue(Consts.CONST_COUNT));
 		return listExternalStroesResponse;
+	}
+
+	public CreateCsvExternalStoreResponse createCsvExternalStore(CreateCsvExternalStoreRequest request)
+			throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CsvExternalStore externalStore = request.getCsvExternalStore();
+		CodingUtils.assertParameterNotNull(externalStore, "ExternalStore");
+		String externalStoreName = externalStore.getExternalStoreName();
+		CodingUtils.assertStringNotNullOrEmpty(externalStoreName, "externalStoreName");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		byte[] body = encodeToUtf8(externalStore.toJson().toJSONString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = "/externalstores";
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, urlParameter, headParameter, body);
+		Map<String, String> resHeaders = response.getHeaders();
+		return new CreateCsvExternalStoreResponse(resHeaders);
+	}
+
+	public UpdateCsvExternalStoreResponse updateCsvExternalStore(UpdateCsvExternalStoreRequest request)
+			throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CsvExternalStore externalStore = request.getCsvExternalStore();
+		CodingUtils.assertParameterNotNull(externalStore, "ExternalStore");
+		String externalStoreName = externalStore.getExternalStoreName();
+		CodingUtils.assertStringNotNullOrEmpty(externalStoreName, "externalStoreName");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		byte[] body = encodeToUtf8(externalStore.toJson().toJSONString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = "/externalstores/" + externalStoreName;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.PUT,
+				resourceUri, urlParameter, headParameter, body);
+		Map<String, String> resHeaders = response.getHeaders();
+		return new UpdateCsvExternalStoreResponse(resHeaders);
+	}
+
+	public GetCsvExternalStoreResponse getCsvExternalStore(GetCsvExternalStoreRequest request) throws LogException {
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		String externalStoreName = request.getExternalStoreName();
+		CodingUtils.assertStringNotNullOrEmpty(externalStoreName, "externalStoreName");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/externalstores/" + externalStoreName;
+		Map<String, String> urlParameter = request.GetAllParams();
+		ResponseMessage response = SendData(project, HttpMethod.GET, resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		String requestId = GetRequestId(resHeaders);
+		JSONObject object = parseResponseBody(response, requestId);
+		CsvExternalStore externalStore = new CsvExternalStore(object);
+		externalStore.setExternalStoreName(externalStoreName);
+		return new GetCsvExternalStoreResponse(resHeaders, externalStore);
+	}
+
+	public DeleteExternalStoreResponse deleteCsvExternalStore(DeleteExternalStoreRequest request) throws LogException {
+		return deleteExternalStore(request);
 	}
 
 	@Override
@@ -5074,6 +5179,25 @@ public class Client implements LogService {
 		return new ListResourceRecordResponse(response.getHeaders(), count, total, records);
 	}
 
+	@Override
+	public ListNextResourceRecordResponse listNextResourceRecord(ListNextResourceRecordRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		CodingUtils.assertStringNotNullOrEmpty(request.getResourceName(), "resourceName");
+
+		Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+		String resourceUri = String.format(Consts.CONST_NEXT_RESOURCE_RECORD_URI, request.getResourceName());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		Map<String, String> urlParameter = request.GetAllParams();
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject object = parseResponseBody(response, requestId);
+		int total = object.getIntValue(Consts.CONST_TOTAL);
+		int maxResults = object.getIntValue(Consts.CONST_MAX_RESULTS);
+		String nextToken = object.getString(Consts.CONST_NEXT_TOKEN);
+		List<ResourceRecord> records = extractResourceRecords(object, requestId);
+		return new ListNextResourceRecordResponse(response.getHeaders(), maxResults, total, nextToken, records);
+	}
+
 	protected List<ResourceRecord> extractResourceRecords(JSONObject object, String requestId) throws LogException {
 		List<ResourceRecord> records = new ArrayList<ResourceRecord>();
 		if (object == null) {
@@ -5963,68 +6087,6 @@ public class Client implements LogService {
 		}
 		return new ListSqlInstanceResponse(resHeaders, sqlInstances);
 	}
-
-	@Override
-	public CreateMetricAggRulesResponse createMetricAggRules(CreateMetricAggRulesRequest request) throws LogException {
-		MetricAggRules metricAggRules = request.getMetricAggRules();
-		CodingUtils.assertParameterNotNull(metricAggRules, "metricAggRules");
-		ETLV2 etl = metricAggRules.createScheduledETL(metricAggRules);
-		JobSchedule jobSchedule = new JobSchedule();
-		jobSchedule.setType(JobScheduleType.RESIDENT);
-		etl.setSchedule(jobSchedule);
-		CreateETLV2Response createETLV2Response = createETLV2(new CreateETLV2Request(request.GetProject(), etl));
-		return new CreateMetricAggRulesResponse(createETLV2Response.GetAllHeaders());
-	}
-
-	@Override
-	public ListMetricAggRulesResponse listMetricAggRules(ListMetricAggRulesRequest request) throws LogException {
-		ListETLV2Response listETLV2Response = listETLV2(request);
-		List<ETLV2> etls = listETLV2Response.getResults();
-		List<MetricAggRules> metricAggRulesList = new ArrayList<MetricAggRules>();
-		for(ETLV2 etl : etls){
-			ETLConfiguration configuration = etl.getConfiguration();
-			if(configuration!=null){
-				Map<String, String> parameters = configuration.getParameters();
-				if(parameters.containsKey("config.ml.scheduled_sql")
-						&& parameters.get("config.ml.scheduled_sql") != null
-						&& !parameters.get("config.ml.scheduled_sql").isEmpty()){
-					MetricAggRules metricAggRules = new MetricAggRules();
-					metricAggRules.deserialize(etl);
-					metricAggRulesList.add(metricAggRules);
-				}
-			}
-		}
-		ListMetricAggRulesResponse listResp = new ListMetricAggRulesResponse(listETLV2Response.GetAllHeaders(), metricAggRulesList.size());
-		listResp.setMetricAggRules(metricAggRulesList);
-		return listResp;
-	}
-
-	@Override
-	public GetMetricAggRulesResponse getMetricAggRules(GetMetricAggRulesRequest request) throws LogException {
-		GetETLV2Response getETLV2Response = getETLV2(request);
-		ETLV2 etl = getETLV2Response.getEtl();
-		MetricAggRules metricAggRules = new MetricAggRules();
-		metricAggRules.deserialize(etl);
-		GetMetricAggRulesResponse getMetricAggRulesResponse = new GetMetricAggRulesResponse(getETLV2Response.GetAllHeaders());
-		getMetricAggRulesResponse.setMetricAggRules(metricAggRules);
-		return getMetricAggRulesResponse;
-	}
-
-	@Override
-	public UpdateMetricAggRulesResponse updateMetricAggRules(UpdateMetricAggRulesRequest request) throws LogException {
-		MetricAggRules metricAggRules = request.getMetricAggRules();
-		CodingUtils.assertParameterNotNull(metricAggRules, "metricAggRules");
-		ETLV2 etl = metricAggRules.createScheduledETL(metricAggRules);
-		UpdateETLV2Response updateETLV2Response = updateETLV2(new UpdateETLV2Request(request.GetProject(), etl));
-		return new UpdateMetricAggRulesResponse(updateETLV2Response.GetAllHeaders());
-	}
-
-	@Override
-	public DeleteMetricAggRulesResponse deleteMetricAggRules(DeleteMetricAggRulesRequest request) throws LogException {
-		DeleteETLV2Response deleteETLV2Response = deleteETLV2(request);
-		return new DeleteMetricAggRulesResponse(deleteETLV2Response.GetAllHeaders());
-	}
-
 	@Override
 	public SetProjectPolicyResponse setProjectPolicy(String projectName, String policyText) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(projectName, "project");
@@ -6305,5 +6367,116 @@ public class Client implements LogService {
 			getClientConfiguration().setSignatureVersion(SignVersion.V4);
 			getClientConfiguration().setRegion(region);
 		}
+	}
+
+	private byte[] decompressResponseData(ResponseMessage response) throws Exception {
+		Map<String, String> headers = response.getHeaders();
+		String compressType = headers.getOrDefault(Consts.CONST_X_SLS_COMPRESSTYPE, "");
+		int rawSize = Integer.parseInt(headers.getOrDefault(Consts.CONST_X_SLS_BODYRAWSIZE, "0"));
+		if (!compressType.isEmpty() && rawSize > 0) {
+			Consts.CompressType type = Consts.CompressType.fromString(compressType);
+			switch (type) {
+				case LZ4:
+					return LZ4Encoder.decompressFromLhLz4Chunk(response.GetRawBody(), rawSize);
+				case ZSTD:
+					return ZSTDEncoder.decompress(response.GetRawBody(), rawSize);
+				default:
+					throw new LogException("DecompressException", "The compress type is invalid: " + type, headers.get(Consts.CONST_X_SLS_REQUESTID));
+			}
+		}
+		return response.GetRawBody();
+	}
+
+	private String getNormalizedEmptyString(String msg) {
+		if (msg != null && msg.isEmpty()) {
+			return null;
+		}
+		return msg;
+	}
+
+	private Map<String, String> getAsyncSqlHeaders(String project) {
+		Map<String, String> headers = GetCommonHeadPara(project);
+		headers.put(Consts.CONST_ACCEPT_ENCODING, CompressType.LZ4.toString());
+		headers.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		headers.put(Consts.CONST_HTTP_ACCEPT, Consts.CONST_PROTO_BUF);
+		return headers;
+	}
+
+	@Override
+	public SubmitAsyncSqlResponse submitAsyncSql(SubmitAsyncSqlRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		Map<String, String> headers = getAsyncSqlHeaders(project);
+		Map<String, String> urlParameter = request.GetAllParams();
+		byte[] body = request.getRequestBody();
+
+		for (int i = 0; i < 3; i++) {
+			ResponseMessage response = SendData(project, HttpMethod.POST, "/asyncsql", urlParameter, headers, body, null, realServerIP);
+			if (response != null) {
+				try {
+					AsyncSql.AsyncSqlResponsePB responsePb = AsyncSql.AsyncSqlResponsePB.parseFrom(decompressResponseData(response));
+					return new SubmitAsyncSqlResponse(
+							response.getHeaders(),
+							responsePb.getId(),
+							responsePb.getState(),
+							getNormalizedEmptyString(responsePb.getErrorCode()),
+							getNormalizedEmptyString(responsePb.getErrorMessage())
+					);
+				}
+				catch (Throwable e) {
+					throw new LogException("ParseAsyncResponseError", e.getMessage(), response.getHeaders().get(Consts.CONST_X_SLS_REQUESTID));
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public GetAsyncSqlResponse getAsyncSql(GetAsyncSqlRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		Map<String, String> headers = getAsyncSqlHeaders(project);
+		String resourceUri = "/asyncsql/" + request.getQueryId();
+		Map<String, String> urlParameter = request.GetAllParams();
+
+		ResponseMessage response = SendData(project, HttpMethod.GET, resourceUri, urlParameter, headers, new byte[0], null, realServerIP);
+		if (response != null) {
+			try {
+				AsyncSql.AsyncSqlResponsePB responsePb = AsyncSql.AsyncSqlResponsePB.parseFrom(decompressResponseData(response));
+				GetAsyncSqlResponse.AsyncSqlMeta meta = new GetAsyncSqlResponse.AsyncSqlMeta(
+						responsePb.getMeta().getResultRows(),
+						responsePb.getMeta().getProcessedRows(),
+						responsePb.getMeta().getProcessedBytes(),
+						responsePb.getMeta().getElapsedMilli(),
+						responsePb.getMeta().getCpuSec(),
+						"Complete".equalsIgnoreCase(responsePb.getMeta().getProgress())
+				);
+				return new GetAsyncSqlResponse(
+						response.getHeaders(),
+						responsePb.getId(),
+						responsePb.getState(),
+						getNormalizedEmptyString(responsePb.getErrorCode()),
+						getNormalizedEmptyString(responsePb.getErrorMessage()),
+						meta,
+						responsePb.getMeta().getKeysList(),
+						responsePb.getRowsList().stream().map(AsyncSql.AsyncSqlRowPB::getColumnsList).collect(Collectors.toList())
+				);
+			}
+			catch (Throwable e) {
+				throw new LogException("ParseAsyncResponseError", e.getMessage(), response.getHeaders().get(Consts.CONST_X_SLS_REQUESTID));
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public void deleteAsyncSql(DeleteAsyncSqlRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		Map<String, String> headers = getAsyncSqlHeaders(project);
+		String resourceUri = "/asyncsql/" + request.getQueryId();
+		Map<String, String> urlParameter = request.GetAllParams();
+
+		SendData(project, HttpMethod.DELETE, resourceUri, urlParameter, headers, new byte[0], null, realServerIP);
 	}
 }

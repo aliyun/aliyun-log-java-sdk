@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.common.Ingestion;
 import com.aliyun.openservices.log.common.IngestionConfiguration;
 import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.common.JobScheduleType;
+import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateIngestionRequest;
 import com.aliyun.openservices.log.request.DeleteIngestionRequest;
@@ -17,7 +18,10 @@ import com.aliyun.openservices.log.response.GetIngestionResponse;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import org.junit.Before;
 
 public class IngestionFunctionTest extends JobIntgTest {
 
@@ -25,7 +29,15 @@ public class IngestionFunctionTest extends JobIntgTest {
         return "ingestion-" + getNowTimestamp();
     }
 
-    private Ingestion createIngestion() {
+    @Before
+    @Override
+    public void setUp() {
+        super.setUp();
+        assertTrue(safeCreateLogStore(TEST_PROJECT, new LogStore("test-logstore1", 1, 1))); 
+    }
+
+    private Ingestion createIngestion() throws InterruptedException {
+        Thread.sleep(1000 * 10);
         Ingestion ingestion = new Ingestion();
         String jobName = getIngestionName();
         ingestion.setName(jobName);
@@ -74,7 +86,7 @@ public class IngestionFunctionTest extends JobIntgTest {
             client.stopIngestion(new StopIngestionRequest(project, jobName));
             fail();
         } catch (LogException ex) {
-            assertEquals("The job to stop has already stopped", ex.GetErrorMessage());
+            assertEquals("The job to disable has already disabled", ex.GetErrorMessage());
             assertEquals("ParameterInvalid", ex.GetErrorCode());
         }
         client.startIngestion(new StartIngestionRequest(project, jobName));
@@ -85,15 +97,15 @@ public class IngestionFunctionTest extends JobIntgTest {
             client.startIngestion(new StartIngestionRequest(project, jobName));
             fail();
         } catch (LogException ex) {
-            assertEquals("The job to start has already started", ex.GetErrorMessage());
+            assertEquals("The job to enable has already enabled", ex.GetErrorMessage());
             assertEquals("ParameterInvalid", ex.GetErrorCode());
         }
         // Long live
         // Can we forbid this?
         JobSchedule schedule = new JobSchedule();
-        schedule.setType(JobScheduleType.RESIDENT);
+        schedule.setType(JobScheduleType.FIXED_RATE); // The schedule type change not allowed
+        schedule.setInterval("1h");
         ingestion.setSchedule(schedule);
-        client.updateIngestion(new UpdateIngestionRequest(project, ingestion));
         client.deleteIngestion(new DeleteIngestionRequest(project, ingestion.getName()));
     }
 }

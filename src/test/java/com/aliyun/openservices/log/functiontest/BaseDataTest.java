@@ -1,5 +1,7 @@
 package com.aliyun.openservices.log.functiontest;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateIndexRequest;
@@ -9,13 +11,28 @@ import com.aliyun.openservices.log.request.PutLogsRequest;
 import com.aliyun.openservices.log.response.GetCursorResponse;
 import com.aliyun.openservices.log.response.GetLogsResponse;
 import com.aliyun.openservices.log.response.PullLogsResponse;
+import com.aliyun.openservices.log.util.LZ4Encoder;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.Before;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.Deflater;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public abstract class BaseDataTest extends FunctionTest {
@@ -46,7 +63,11 @@ public abstract class BaseDataTest extends FunctionTest {
     }
 
     protected int prepareLogs() throws LogException {
-        int logGroupCount = randomBetween(50, 100);
+        return prepareLogs(1, 5);
+    }
+
+    protected int prepareLogs(int low, int high) throws LogException {
+        int logGroupCount = randomBetween(low, high);
         for (int i = 1; i <= logGroupCount; i++) {
             List<LogItem> logItems = new ArrayList<LogItem>(10);
             for (int j = 1; j <= 10; j++) {
@@ -101,7 +122,12 @@ public abstract class BaseDataTest extends FunctionTest {
         do {
             GetLogsRequest getLogsRequest = new GetLogsRequest(project, logStore.GetLogStoreName(), timestamp - 1800,
                     timestamp + 1800, "", "", totalSize, 100, true);
-            getLogsRequest.setCompressType(randomFrom(Consts.CompressType.values()));
+            Consts.CompressType[] types = new Consts.CompressType[]{
+                Consts.CompressType.GZIP,
+                Consts.CompressType.LZ4,
+                Consts.CompressType.NONE,
+            };
+            getLogsRequest.setCompressType(randomFrom(types));
             GetLogsResponse logs = client.GetLogs(getLogsRequest);
             size = logs.GetCount();
             totalSize += size;
@@ -124,7 +150,12 @@ public abstract class BaseDataTest extends FunctionTest {
         GetLogsRequest getLogsRequest = new GetLogsRequest(project, logStore.GetLogStoreName(), timestamp - 1800,
                 timestamp + 1800, "", "* | select * limit " + totalSize);
         while (true) {
-            getLogsRequest.setCompressType(randomFrom(Consts.CompressType.values()));
+            Consts.CompressType[] types = new Consts.CompressType[]{
+                Consts.CompressType.GZIP,
+                Consts.CompressType.LZ4,
+                Consts.CompressType.NONE,
+            };
+            getLogsRequest.setCompressType(randomFrom(types));
             GetLogsResponse response = client.GetLogs(getLogsRequest);
             if (!response.IsCompleted()) {
                 System.out.println("Query result is not complete, wait 15s");
@@ -172,4 +203,114 @@ public abstract class BaseDataTest extends FunctionTest {
         waitOneMinutes();
     }
 
+    protected void putLogs() throws LogException {
+        int count = prepareLogs();
+        int logGroupSize = verifyPull();
+        assertEquals(count, logGroupSize);
+    }
+
+    protected byte[] compressData(byte[] data, Consts.CompressType type) throws LogException {
+        if (type.equals(Consts.CompressType.GZIP)) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
+            Deflater compressor = new Deflater();
+            compressor.setInput(data);
+            compressor.finish();
+
+            byte[] buf = new byte[10240];
+            while (!compressor.finished()) {
+                int count = compressor.deflate(buf);
+                out.write(buf, 0, count);
+            }
+            return out.toByteArray();
+        } else {
+            return LZ4Encoder.compressToLhLz4Chunk(data);
+        }
+    }
+
+    protected static class Response {
+        private int status;
+        private String body;
+
+        Response(int status, String body) {
+            this.status = status;
+            this.body = body;
+        }
+    }
+
+    protected int mockPostRequest(Consts.CompressType type) {
+        int count = randomBetween(1, 5);
+        JSONObject object = new JSONObject();
+        JSONArray array = new JSONArray();
+        JSONObject log = new JSONObject();
+        for (int j = 1; j <= 10; j++) {
+            log.put("key-" + j, "value-" + j);
+        }
+        array.add(log);
+        object.put("__logs__", array);
+        if (Consts.CompressType.GZIP.equals(type)) {
+            for (int i = 0; i < count; i++) {
+                postTestLogs(object, true, Consts.CompressType.GZIP);
+            }
+        } else {
+            for (int i = 0; i < count; i++) {
+                postTestLogs(object, true, Consts.CompressType.LZ4);
+            }
+        }
+        waitForSeconds(10);
+        return count;
+    }
+
+    private Response postTestLogs(JSONObject log, boolean compress, Consts.CompressType type) {
+        CloseableHttpClient httpclient = null;
+        try {
+            httpclient = HttpClients.createDefault();
+            String URL = "http://" + project + "." + TEST_ENDPOINT + "/logstores/" + logStore.GetLogStoreName()
+                    + "/track";
+
+            HttpPost httpPost = new HttpPost(URL);
+            String body = log.toString();
+            httpPost.addHeader("Content-Type", "application/json;charset=UTF-8");
+            httpPost.addHeader(Consts.CONST_X_SLS_APIVERSION, Consts.DEFAULT_API_VESION);
+            if (compress) {
+                byte[] toBytes = body.getBytes("UTF-8");
+                byte[] bytes;
+                if (type.equals(Consts.CompressType.GZIP)) {
+                    bytes = compressData(toBytes, type);
+                    httpPost.addHeader(Consts.CONST_X_SLS_COMPRESSTYPE, Consts.CompressType.GZIP.toString());
+                } else {
+                    bytes = compressData(toBytes, type);
+                    httpPost.addHeader(Consts.CONST_X_SLS_COMPRESSTYPE, Consts.CompressType.LZ4.toString());
+                }
+                ByteArrayEntity entity = new ByteArrayEntity(bytes);
+                httpPost.setEntity(entity);
+                entity.setContentEncoding("UTF-8");
+                httpPost.addHeader(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(toBytes.length));
+            } else {
+                StringEntity stringEntity = new StringEntity(log.toString(), "UTF-8");
+                stringEntity.setContentEncoding("UTF-8");
+                httpPost.setEntity(stringEntity);
+                httpPost.addHeader(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(body.length()));
+            }
+            ResponseHandler<Response> responseHandler = new ResponseHandler<Response>() {
+                @Override
+                public Response handleResponse(final HttpResponse response) throws IOException {
+                    int status = response.getStatusLine().getStatusCode();
+                    HttpEntity entity = response.getEntity();
+                    String body = entity != null ? EntityUtils.toString(entity) : null;
+                    return new Response(status, body);
+                }
+            };
+            return httpclient.execute(httpPost, responseHandler);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (httpclient != null) {
+                try {
+                    httpclient.close();
+                } catch (IOException e) {
+                    // do not care
+                }
+            }
+        }
+    }
 }

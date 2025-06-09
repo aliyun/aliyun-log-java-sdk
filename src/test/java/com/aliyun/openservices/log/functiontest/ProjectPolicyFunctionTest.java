@@ -18,7 +18,6 @@ public class ProjectPolicyFunctionTest extends MetaAPIBaseFunctionTest {
     String projectWithOwnerShip = TEST_PROJECT;
     String policyText = "{\"Version\":\"1\",\"Statement\":[{\"Action\":[\"log:Post*\"],\"Resource\":\"acs:log:*:*:project/" + projectWithOwnerShip + "/*\",\"Effect\":\"Allow\"}]}";
 
-    @Test
     public void testNormalPolicy() throws LogException {
         try {
             System.out.println(projectWithOwnerShip);
@@ -46,7 +45,6 @@ public class ProjectPolicyFunctionTest extends MetaAPIBaseFunctionTest {
         }
     }
 
-    @Test
     public void testUnnormalSetPolicy() {
 
         // set non-existent project
@@ -67,7 +65,6 @@ public class ProjectPolicyFunctionTest extends MetaAPIBaseFunctionTest {
         }
     }
 
-    @Test
     public void testUnnormalGetPolicy() throws LogException {
         // get non-existent project
         try {
@@ -83,7 +80,6 @@ public class ProjectPolicyFunctionTest extends MetaAPIBaseFunctionTest {
 
     }
 
-    @Test
     public void testUnnormalDeletePolicy() {
 
         // delete non-existent project
@@ -100,6 +96,14 @@ public class ProjectPolicyFunctionTest extends MetaAPIBaseFunctionTest {
             Assert.fail("DeleteProjectPolicy err" + e.getMessage());
         }
 
+    }
+
+    @Test
+    public void testPolicy() throws LogException {
+        testNormalPolicy();
+        testUnnormalSetPolicy();
+        testUnnormalGetPolicy();
+        testUnnormalDeletePolicy();
     }
 
     @Test

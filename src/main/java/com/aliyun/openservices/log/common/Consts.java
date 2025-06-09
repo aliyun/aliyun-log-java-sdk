@@ -87,15 +87,19 @@ public class Consts {
     public static final String CONST_CONTENT_MD5 = "Content-MD5";
     public static final String CONST_AUTHORIZATION = "Authorization";
     public static final String CONST_SLS_JSON = "application/json";
+    public static final String CONST_BATCH_GROUP = "batch_group";
 
     public static final String CONST_X_SLS_APIVERSION = "x-log-apiversion";
     public static final String CONST_X_SLS_COMPRESSTYPE = "x-log-compresstype";
     public static final String CONST_X_SLS_BODYRAWSIZE = "x-log-bodyrawsize";
     public static final String CONST_X_SLS_RAWDATACOUNT = "x-log-rawdatacount";
     public static final String CONST_X_SLS_RAWDATASIZE = "x-log-rawdatasize";
+    public static final String CONST_X_LOG_CURSOR_TIME = "x-log-cursor-time";
+    public static final String CONST_X_LOG_END_OF_CURSOR = "x-log-end-of-cursor";
     public static final String CONST_X_SLS_SIGNATUREMETHOD = "x-log-signaturemethod";
     public static final String CONST_X_SLS_REQUESTID = "x-log-requestid";
     public static final String CONST_X_SLS_HOSTIP = "x-log-hostip";
+    public static final String CONST_X_LOG_MODE = "x-log-mode";
     public static final String CONST_X_SLS_IP = "x-log-ip";
     public static final String CONST_X_SLS_SSL = "x-log-ssl";
     public static final String CONST_X_SLS_PREFIX = "x-log-";
@@ -103,6 +107,7 @@ public class Consts {
     public static final String CONST_X_SLS_CURSOR = "x-log-cursor";
     public static final String CONST_X_SLS_COUNT = "x-log-count";
     public static final String CONST_X_SLS_PROCESS = "x-log-progress";
+    public static final String CONST_X_SLS_SCANBYTES = "x-log-scanbytes";
     public static final String CONST_X_SLS_NEXT_TOKEN = "x-log-nexttoken";
     public static final String CONST_X_ACS_SECURITY_TOKEN = "x-acs-security-token";
     public static final String CONST_X_LOG_RESOURCEOWNERACCOUNT = "x-log-resourceowneraccount";
@@ -289,6 +294,8 @@ public class Consts {
     public static final String CONST_LASTMODIFYTIME = "lastModifyTime";
     public static final String CONST_TOTAL = "total";
     public static final String CONST_SIZE = "size";
+    public static final String CONST_NEXT_TOKEN = "nextToken";
+    public static final String CONST_MAX_RESULTS = "maxResults";
     public static final String RESULTS = "results";
 
     // project relate
@@ -392,6 +399,7 @@ public class Consts {
     public static final String CONST_MIGRATION_NAME_URI = CONST_MIGRATION_URI + "/%s";
 
     public static final String CONST_RESOURCE_RECORD_URI = CONST_RESOURCE_NAME_URI + "/records";
+    public static final String CONST_NEXT_RESOURCE_RECORD_URI = CONST_RESOURCE_NAME_URI + "/next_records";
     public static final String CONST_RESOURCE_RECORD_ID_URI = CONST_RESOURCE_RECORD_URI + "/%s";
     public static final String RESOURCE_RECORD_ID = "id";
     public static final String RESOURCE_RECORD_IDS = "ids";
@@ -403,6 +411,7 @@ public class Consts {
     public static final String RESOURCE_SEARCHED_VALUE = "search";
     public static final String RESOURCE_JSON_PATH = "jsonPath";
     public static final String RESOURCE_JSON_PATH_VALUE = "jsonPathValue";
+    public static final String RESOURCE_REVERSE = "reverse";
 
     public static final String TOPOSTORE_URI = "/topostores";
     public static final String TOPOSTORE_OWNER = "owner";

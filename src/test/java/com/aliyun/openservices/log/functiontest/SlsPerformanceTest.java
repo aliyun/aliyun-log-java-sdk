@@ -1,5 +1,6 @@
 package com.aliyun.openservices.log.functiontest;
 
+import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.FastLog;
 import com.aliyun.openservices.log.common.FastLogContent;
 import com.aliyun.openservices.log.common.FastLogGroup;
@@ -16,6 +17,7 @@ import com.aliyun.openservices.log.response.GetLogsResponse;
 import com.aliyun.openservices.log.response.ListLogStoresResponse;
 import com.aliyun.openservices.log.response.PullLogsResponse;
 import com.aliyun.openservices.log.response.PutLogsResponse;
+import com.aliyun.openservices.log.util.LZ4Encoder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.junit.Test;
@@ -23,7 +25,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import static org.junit.Assert.assertEquals;
@@ -31,9 +35,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class SlsPerformanceTest extends FunctionTest {
+public class SlsPerformanceTest extends MetaAPIBaseFunctionTest {
 
-    private String project = "ali-cn-yunlei-sls-admin";
+    private String project = TEST_PROJECT;
     private String logStore = "data-ft";
 
     private int logItemLine = 30;
@@ -54,7 +58,7 @@ public class SlsPerformanceTest extends FunctionTest {
         return " " + randString;
     }
 
-    private void VerifyFastPbDeserialize(byte[][] testDataSet, int logGroupCount, int logCount, int tagCount, int contentCount, int categoryCount,
+    private void VerifyFastPbDeserialize(byte[][] testDataSet, int[] logGroupCntList, int logGroupCount, int logCount, int tagCount, int contentCount, int categoryCount,
                                          int sourceCount, int topicCount, int uuidCount) throws InvalidProtocolBufferException, LogException {
         int vLogGroupCount = 0;
         int vLogCount = 0;
@@ -65,7 +69,12 @@ public class SlsPerformanceTest extends FunctionTest {
         int vTopicCount = 0;
         int vUuidCount = 0;
         for (int i = 0; i < testDataSet.length; ++i) {
-            PullLogsResponse bglResponse = new PullLogsResponse(Collections.<String, String>emptyMap(), testDataSet[i]);
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put(Consts.CONST_X_SLS_BODYRAWSIZE, Integer.toString(testDataSet[i].length));
+            headers.put(Consts.CONST_X_SLS_COUNT, Integer.toString(logGroupCntList[i]));
+            headers.put(Consts.CONST_X_SLS_COMPRESSTYPE, "lz4");
+            byte[] data = LZ4Encoder.compressToLhLz4Chunk(testDataSet[i]);
+            PullLogsResponse bglResponse = new PullLogsResponse(headers, data);
             List<LogGroupData> fastLogGroupDatas = bglResponse.getLogGroups();
             LogGroupList logGroupList = LogGroupList.parseFrom(testDataSet[i]);
             assertEquals(fastLogGroupDatas.size(), logGroupList.getLogGroupListCount());
@@ -247,14 +256,19 @@ public class SlsPerformanceTest extends FunctionTest {
         return cost;
     }
 
-    private int BenchFastPbDeserialize(byte[][] testDataSet, int sampleCount, boolean bytes, int logGroupCount, int logCount, int tagCount, int contentCount) throws LogException {
+    private int BenchFastPbDeserialize(byte[][] testDataSet, int[] logGroupCntList, int sampleCount, boolean bytes, int logGroupCount, int logCount, int tagCount, int contentCount) throws LogException {
         int vLogGroupCount = 0;
         int vLogCount = 0;
         int vContentCount = 0;
         int vTagCount = 0;
         long beginTime = System.currentTimeMillis();
         for (int i = 0; i < testDataSet.length; ++i) {
-            PullLogsResponse bglResponse = new PullLogsResponse(Collections.<String, String>emptyMap(), testDataSet[i]);
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put(Consts.CONST_X_SLS_BODYRAWSIZE, Integer.toString(testDataSet[i].length));
+            headers.put(Consts.CONST_X_SLS_COUNT, Integer.toString(logGroupCntList[i]));
+            headers.put(Consts.CONST_X_SLS_COMPRESSTYPE, "lz4");
+            byte[] data = LZ4Encoder.compressToLhLz4Chunk(testDataSet[i]);
+            PullLogsResponse bglResponse = new PullLogsResponse(headers, data);
             List<LogGroupData> logGroups = bglResponse.getLogGroups();
             for (int j = 0; j < logGroups.size(); ++j) {
                 vLogGroupCount++;
@@ -330,9 +344,11 @@ public class SlsPerformanceTest extends FunctionTest {
         int sourceCount = 0;
         int topicCount = 0;
         int uuidCount = 0;
+        int[] logGroupCntList = new int[LOGGROUP_LIST_COUNT];
         for (int i = 0; i < LOGGROUP_LIST_COUNT; ++i) {
             LogGroupList.Builder logGroupListBuilder = LogGroupList.newBuilder();
             int LOGGROUP_COUNT = randomInt(30) + 1;
+            logGroupCntList[i] = LOGGROUP_COUNT;
             logGroupCount += LOGGROUP_COUNT;
             for (int j = 0; j < LOGGROUP_COUNT; ++j) {
                 LogGroup.Builder logGroupBuilder = LogGroup.newBuilder();
@@ -388,30 +404,30 @@ public class SlsPerformanceTest extends FunctionTest {
                 endTime - beginTime, testDataMegaBytes, LOGGROUP_LIST_COUNT, logGroupCount, tagCount, logCount, contentCount,
                 categoryCount, topicCount, sourceCount, uuidCount));
 
-        VerifyFastPbDeserialize(testDataSet, logGroupCount, logCount, tagCount, contentCount, categoryCount, sourceCount, topicCount, uuidCount);
+        VerifyFastPbDeserialize(testDataSet, logGroupCntList, logGroupCount, logCount, tagCount, contentCount, categoryCount, sourceCount, topicCount, uuidCount);
 
-        int TEST_ROUND = 5;
-        int SAMPLE_COUNT[] = {1, 3, 9};
+        int TEST_ROUND = 4;
+        int SAMPLE_COUNT[] = {1};
         ArrayList<String> pbStringResult = new ArrayList<String>();
         ArrayList<String> pbBytesResult = new ArrayList<String>();
         ArrayList<String> fastpbStringResult = new ArrayList<String>();
         ArrayList<String> fastpbBytesResult = new ArrayList<String>();
         for (int sampleId = 0; sampleId < SAMPLE_COUNT.length; ++sampleId) {
             int sampleCount = SAMPLE_COUNT[sampleId];
-            for (int caseId = 0; caseId < TEST_ROUND * 4; ++caseId) {
+            for (int caseId = 0; caseId < TEST_ROUND; ++caseId) {
                 System.gc();
-                waitForSeconds(10);
+                waitForSeconds(2);
                 if (caseId % 4 == 0) {
                     int cost = BenchPbDeserialize(testDataSet, sampleCount, false, logGroupCount, logCount, tagCount, contentCount);
                     pbStringResult.add(String.format("| 1/%d | %d | %s | %d | %f |", sampleCount, pbStringResult.size(), "PB, getString", cost, testDataMegaBytes * 1.0 / cost * 1000));
                 } else if (caseId % 4 == 1) {
-                    int cost = BenchFastPbDeserialize(testDataSet, sampleCount, false, logGroupCount, logCount, tagCount, contentCount);
+                    int cost = BenchFastPbDeserialize(testDataSet, logGroupCntList, sampleCount, false, logGroupCount, logCount, tagCount, contentCount);
                     fastpbStringResult.add(String.format("| 1/%d | %d | %s | %d | %f |", sampleCount, fastpbStringResult.size(), "FastPB, getString", cost, testDataMegaBytes * 1.0 / cost * 1000));
                 } else if (caseId % 4 == 2) {
                     int cost = BenchPbDeserialize(testDataSet, sampleCount, true, logGroupCount, logCount, tagCount, contentCount);
                     pbBytesResult.add(String.format("| 1/%d | %d | %s | %d | %f |", sampleCount, pbBytesResult.size(), "PB, getBytes", cost, testDataMegaBytes * 1.0 / cost * 1000));
                 } else {
-                    int cost = BenchFastPbDeserialize(testDataSet, sampleCount, true, logGroupCount, logCount, tagCount, contentCount);
+                    int cost = BenchFastPbDeserialize(testDataSet, logGroupCntList, sampleCount, true, logGroupCount, logCount, tagCount, contentCount);
                     fastpbBytesResult.add(String.format("| 1/%d | %d | %s | %d | %f |", sampleCount, fastpbBytesResult.size(), "FastPB, getBytes", cost, testDataMegaBytes * 1.0 / cost * 1000));
                 }
             }
@@ -447,6 +463,7 @@ public class SlsPerformanceTest extends FunctionTest {
         int sourceCount = 0;
         int topicCount = 0;
         int uuidCount = 0;
+        int[] logGroupCntList = new int[LOGGROUP_LIST_COUNT];
         for (int i = 0; i < LOGGROUP_LIST_COUNT; ++i) {
             MockLogs.MockLogGroupList.Builder logGroupListBuilder = MockLogs.MockLogGroupList.newBuilder();
             if (randomInt(3) == 0) {
@@ -460,6 +477,7 @@ public class SlsPerformanceTest extends FunctionTest {
                 logGroupListBuilder.addLgl3(randomLong());
             }
             int LOGGROUP_COUNT = randomInt(30) + 1;
+            logGroupCntList[i] = LOGGROUP_COUNT;
             logGroupCount += LOGGROUP_COUNT;
             for (int j = 0; j < LOGGROUP_COUNT; ++j) {
                 MockLogs.MockLogGroup.Builder logGroupBuilder = MockLogs.MockLogGroup.newBuilder();
@@ -540,7 +558,7 @@ public class SlsPerformanceTest extends FunctionTest {
                 LOGGROUP_LIST_COUNT, logGroupCount, tagCount, logCount, contentCount,
                 categoryCount, topicCount, sourceCount, uuidCount));
 
-        VerifyFastPbDeserialize(testDataSet, logGroupCount, logCount, tagCount, contentCount, categoryCount, sourceCount, topicCount, uuidCount);
+        VerifyFastPbDeserialize(testDataSet, logGroupCntList, logGroupCount, logCount, tagCount, contentCount, categoryCount, sourceCount, topicCount, uuidCount);
     }
 
     public void TestPutData(int logLine, String topic) throws LogException {

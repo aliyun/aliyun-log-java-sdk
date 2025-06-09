@@ -167,7 +167,17 @@ public class DefaultServiceClient extends ServiceClient {
 
     @Override
     protected RetryStrategy getDefaultRetryStrategy() {
+        if (config.getRetryDisabled()) {
+            return new NeverRetryStrategy();
+        }
         return new DefaultRetryStrategy();
+    }
+
+    private static class NeverRetryStrategy extends RetryStrategy {
+        @Override
+        public boolean shouldRetry(Exception ex, RequestMessage request, int retries) {
+            return false;
+        }
     }
 
     private static class DefaultRetryStrategy extends RetryStrategy {

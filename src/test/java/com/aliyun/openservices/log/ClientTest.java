@@ -2,6 +2,7 @@ package com.aliyun.openservices.log;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.Histogram;
 import com.aliyun.openservices.log.common.Shard;
