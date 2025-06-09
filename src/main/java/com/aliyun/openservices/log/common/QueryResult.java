@@ -30,7 +30,6 @@ public class QueryResult {
     private int queryMode = 0;
     private boolean isPhraseQuery = false;
     private PhraseQueryInfo phraseQueryInfo;
-    private int shard = 0;
     private long scanBytes = 0;
     private List<List<LogContent>> highlights;
     private List<String> columnTypes;
@@ -158,14 +157,6 @@ public class QueryResult {
 
     public void setPhraseQueryInfo(PhraseQueryInfo phraseQueryInfo) {
         this.phraseQueryInfo = phraseQueryInfo;
-    }
-
-    public int getShard() {
-        return shard;
-    }
-
-    public void setShard(int shard) {
-        this.shard = shard;
     }
 
     public long getScanBytes() {
@@ -308,9 +299,6 @@ public class QueryResult {
                 isPhraseQuery = true;
         }
         setPhraseQueryInfo(PhraseQueryInfo.deserializeFrom(asJsonObj.getJSONObject("phraseQueryInfo")));
-        if (asJsonObj.containsKey("shard")) {
-            shard = asJsonObj.getIntValue("shard");
-        }
         if (asJsonObj.containsKey("scanBytes")) {
             scanBytes = asJsonObj.getLongValue("scanBytes");
         }
