@@ -333,10 +333,10 @@ public class LogStore implements Serializable {
             if (dict.containsKey("mode")) {
                 this.mode = dict.getString("mode");
             }
-            if (dict.containsKey("hashConfig")) {
-                ShardingPolicy hashConfig = new ShardingPolicy();
-                hashConfig.FromJsonObject(dict.getJSONObject("hashConfig"));
-                this.shardingPolicy = hashConfig;
+            if (dict.containsKey("shardingPolicy")) {
+                ShardingPolicy shardingPolicy = new ShardingPolicy();
+                shardingPolicy.FromJsonObject(dict.getJSONObject("shardingPolicy"));
+                this.shardingPolicy = shardingPolicy;
             }
 
         } catch (JSONException e) {
