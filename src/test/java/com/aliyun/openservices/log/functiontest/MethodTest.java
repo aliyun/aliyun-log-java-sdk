@@ -4,6 +4,7 @@ import com.aliyun.openservices.log.common.FastLogGroup;
 import com.aliyun.openservices.log.common.LogGroupData;
 import com.aliyun.openservices.log.common.Logs;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.functiontest.logstore.FunctionTest;
 import com.aliyun.openservices.log.response.BatchGetLogResponse;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.junit.Test;
