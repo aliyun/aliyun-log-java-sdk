@@ -15,7 +15,16 @@ public class ListResourceRecordRequest extends RecordRequest {
     private String searchedJson;
     private String jsonPath;
     private String jsonPathValue;
+    private Boolean includeSystemRecords;
     private List<String> recordIds = new ArrayList<String>();
+
+    public Boolean getIncludeSystemRecords() {
+        return includeSystemRecords;
+    }
+
+    public void setIncludeSystemRecords(Boolean includeSystemRecords) {
+        this.includeSystemRecords = includeSystemRecords;
+    }
 
     public String getSearchedValue() {
         return searchedValue;
@@ -77,11 +86,24 @@ public class ListResourceRecordRequest extends RecordRequest {
         this(resourceName, null, 0, 100);
     }
 
+    public ListResourceRecordRequest(String resourceName, Boolean includeSystemRecords) {
+        this(resourceName, null, 0, 100, includeSystemRecords);
+    }
+
     public ListResourceRecordRequest(String resourceName, String tag, int offset, int size) {
         super(resourceName);
         this.tag = tag;
         this.size = size;
         this.offset = offset;
+        this.includeSystemRecords = false;
+    }
+
+    public ListResourceRecordRequest(String resourceName, String tag, int offset, int size, Boolean includeSystemRecords) {
+        super(resourceName);
+        this.tag = tag;
+        this.size = size;
+        this.offset = offset;
+        this.includeSystemRecords = includeSystemRecords;
     }
 
     @Override
@@ -116,6 +138,10 @@ public class ListResourceRecordRequest extends RecordRequest {
 
         if (jsonPathValue != null && !jsonPathValue.isEmpty()) {
             SetParam(Consts.RESOURCE_JSON_PATH_VALUE, jsonPathValue);
+        }
+
+        if (includeSystemRecords) {
+            SetParam(Consts.RESOURCE_SYSTEM_RECORDS, "true");
         }
 
         return super.GetAllParams();
