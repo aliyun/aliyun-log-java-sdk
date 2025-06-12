@@ -5143,8 +5143,11 @@ public class Client implements LogService {
 		String resourceUri = String.format(Consts.CONST_RESOURCE_RECORD_ID_URI,
 				request.getResourceName(), request.getRecordId());
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
-		Map<String, String> urlParameter = new HashMap<String, String>();
-		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, request.GetAllParams(), headParameter);
+		Map<String, String> urlParameter = request.GetAllParams();
+		if (request.getIncludeSystemRecords()) {
+			urlParameter.put(Consts.RESOURCE_SYSTEM_RECORDS, "true");
+		}
+		ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET, resourceUri, urlParameter, headParameter);
 		String requestId = GetRequestId(response.getHeaders());
 		JSONObject object = parseResponseBody(response, requestId);
 		ResourceRecord record = extractResourceRecordFromResponse(object, requestId);
