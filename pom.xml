@@ -155,15 +155,15 @@
                     <excludes>
                         <exclude>**/odps/**</exclude>
                         <exclude>**/oms/**</exclude>
-                        <exclude>com.aliyun.openservices.log.functiontest.CnameFunctionTest.java</exclude>
-                        <exclude>com.aliyun.openservices.log.functiontest.LogstoreReplicationTest.java</exclude>
-                        <exclude>com.aliyun.openservices.log.functiontest.AuditJobFunctionTest.java</exclude>
-                        <exclude>com.aliyun.openservices.log.functiontest.ResourceGroupFunctionTest.java</exclude>
-                        <exclude>com.aliyun.openservices.log.functiontest.ExportOdpsTest.java</exclude>
-                        <exclude>com.aliyun.openservices.log.functiontest.ExportOSSTest.java</exclude>
-                        <exclude>com.aliyun.openservices.log.functiontest.LogstoreTest.java</exclude>
-                        <exclude>com.aliyun.openservices.log.functiontest.RebuildIndexFunctionTest.java</exclude>
-                        <exclude>com.aliyun.openservices.log.functiontest.RandomDataTest.java</exclude>
+                        <exclude>com.aliyun.openservices.log.functiontest.project.CnameFunctionTest.java</exclude>
+                        <exclude>com.aliyun.openservices.log.functiontest.logstore.LogstoreReplicationTest.java</exclude>
+                        <exclude>com.aliyun.openservices.log.functiontest.audit.AuditJobFunctionTest.java</exclude>
+                        <exclude>com.aliyun.openservices.log.functiontest.project.ResourceGroupFunctionTest.java</exclude>
+                        <exclude>com.aliyun.openservices.log.functiontest.shipper.ExportOdpsTest.java</exclude>
+                        <exclude>com.aliyun.openservices.log.functiontest.shipper.ExportOSSTest.java</exclude>
+                        <exclude>com.aliyun.openservices.log.functiontest.logstore.LogstoreTest.java</exclude>
+                        <exclude>com.aliyun.openservices.log.functiontest.etl.RebuildIndexFunctionTest.java</exclude>
+                        <exclude>com.aliyun.openservices.log.functiontest.logstore.RandomDataTest.java</exclude>
                         <exclude>com.aliyun.openservices.log.functiontest.SlsClientUnitTest.java</exclude>
                         <exclude>com.aliyun.openservices.log.functiontest.java</exclude>
                     </excludes>

@@ -1,5 +1,7 @@
 package com.aliyun.openservices.log.functiontest;
 
+import com.aliyun.openservices.log.functiontest.logstore.FunctionTest;
+
 /**
  * SlsClientData defines the test data used by the unittest
  */
