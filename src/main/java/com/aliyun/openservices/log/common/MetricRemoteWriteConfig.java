@@ -27,6 +27,12 @@ public class MetricRemoteWriteConfig {
     @JSONField(name = "shard_group_strategy_list")
     private ShardGroupStrategyList shardGroupStrategyList;
 
+    @JSONField(name = "trim_same_labels")
+    private boolean trimSameLabels;
+
+    @JSONField(name = "trim_empty_labels")
+    private boolean trimEmptyLabels;
+
     public int getHistoryInterval() {
         return historyInterval;
     }
@@ -73,6 +79,22 @@ public class MetricRemoteWriteConfig {
 
     public void setShardGroupStrategyList(ShardGroupStrategyList shardGroupStrategyList) {
         this.shardGroupStrategyList = shardGroupStrategyList;
+    }
+
+    public boolean isTrimSameLabels() {
+        return trimSameLabels;
+    }
+
+    public void setTrimSameLabels(boolean trimSameLabels) {
+        this.trimSameLabels = trimSameLabels;
+    }
+
+    public boolean isTrimEmptyLabels() {
+        return trimEmptyLabels;
+    }
+
+    public void setTrimEmptyLabels(boolean trimEmptyLabels) {
+        this.trimEmptyLabels = trimEmptyLabels;
     }
 
 
