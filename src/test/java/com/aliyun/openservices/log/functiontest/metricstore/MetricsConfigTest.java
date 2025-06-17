@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.MetricsConfig;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateMetricsConfigRequest;
+import com.aliyun.openservices.log.request.DeleteMetricsConfigRequest;
 import com.aliyun.openservices.log.request.GetMetricsConfigRequest;
 import com.aliyun.openservices.log.response.GetMetricsConfigResponse;
 import org.junit.Assert;
@@ -67,5 +68,27 @@ public class MetricsConfigTest {
             System.out.println(e);
         }
         //asi-chengdu-classd-unit1-shardgroup
+    }
+
+    @Test
+    public void testSetTrimLabels(){
+        String project = "workspace-default-cms-1654218965343050-cn-hangzhou";
+        String metricStore = "aliyun-prom-zhnbih7ixy";
+        Client client = new Client("pub-cn-hangzhou-staging-share.log.aliyuncs.com", "xxx", "xxx");
+
+        String conf = "{\"query_cache_config\":null,\"parallel_config\":null,\"downsampling_config\":null,\"pushdown_config\":null,\"remote_write_config\":{\"enable\":true,\"history_interval\":0,\"future_interval\":0,\"replica_field\":\"\",\"replica_timeout_seconds\":0,\"shard_group_strategy_list\":{\"strategies\":null,\"try_other_shard\":false,\"last_update_time\":0},\"trim_same_labels\":true,\"trim_empty_labels\":true},\"store_view_routing_config\":null,\"agg_service_config\":null}";
+
+        MetricsConfig metricsConfig = JSONObject.parseObject(conf, MetricsConfig.class);
+        final String jsonString = JSONObject.toJSONString(metricsConfig);
+        System.out.println(jsonString);
+        try{
+//            client.createMetricsConfig(new CreateMetricsConfigRequest(project, metricStore, metricsConfig));
+            client.updateMetricsConfig(new UpdateMetricsConfigRequest(project, metricStore, metricsConfig));
+//            client.deleteMetricsConfig(new DeleteMetricsConfigRequest(project, metricStore));
+            GetMetricsConfigResponse test = client.getMetricsConfig(new GetMetricsConfigRequest(project, metricStore));
+            System.out.println(JSONObject.toJSON(test.getMetricsConfig()));
+        } catch (LogException e) {
+            System.out.println(e);
+        }
     }
 }
