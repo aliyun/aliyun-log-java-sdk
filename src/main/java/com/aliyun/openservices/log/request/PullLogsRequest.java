@@ -17,6 +17,7 @@ public class PullLogsRequest extends Request {
     private String cursor;
     private String endCursor;
     private String query;
+    private String processor;
     private String pullMode;
     private Consts.CompressType compressType = Consts.CompressType.LZ4;
 
@@ -74,7 +75,6 @@ public class PullLogsRequest extends Request {
                            String query, String pullmode) {
         this(project, logStore, shardId, count, cursor, endCursor);
         setQuery(query);
-        setPullMode(pullmode);
     }
 
     public String getLogStore() {
@@ -127,11 +127,17 @@ public class PullLogsRequest extends Request {
 
     public void setQuery(String query) {
         this.query = query;
-        if (query != null && !query.isEmpty()) {
-            setPullMode("scan_on_stream");
-        }
     }
 
+    public String getProcessor() {
+        return processor;
+    }
+
+    public void setProcessor(String processor) {
+        this.processor = processor;
+    }
+
+    @Deprecated
     public void setPullMode(String pullMode) {
         this.pullMode = pullMode;
     }
@@ -152,12 +158,11 @@ public class PullLogsRequest extends Request {
         if (endCursor != null && !endCursor.isEmpty()) {
             SetParam(Consts.CONST_END_CURSOR, endCursor);
         }
-        if (pullMode != null && !pullMode.isEmpty()) {
-            SetParam(Consts.CONST_PULL_MODE, pullMode);
-        }
-
         if (query != null && !query.isEmpty()) {
             SetParam(Consts.CONST_QUERY, query);
+        }
+        if (processor != null && !processor.isEmpty()) {
+            SetParam(Consts.CONST_PROCESSOR, processor);
         }
 
         return super.GetAllParams();
