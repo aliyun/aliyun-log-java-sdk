@@ -6,7 +6,7 @@ import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.MetricsConfig;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.request.CreateMetricsConfigRequest;
-import com.aliyun.openservices.log.request.DeleteMetricsConfigRequest;
+import com.aliyun.openservices.log.request.UpdateMetricsConfigRequest;
 import com.aliyun.openservices.log.request.GetMetricsConfigRequest;
 import com.aliyun.openservices.log.response.GetMetricsConfigResponse;
 import org.junit.Assert;
