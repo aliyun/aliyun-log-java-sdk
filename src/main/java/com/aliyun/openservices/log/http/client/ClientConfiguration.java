@@ -45,6 +45,7 @@ public class ClientConfiguration {
     protected SignVersion signatureVersion = DEFAULT_SIGNATURE_VERSION;
     private String region;
     private boolean retryDisabled = false;
+    private boolean isCname = false;
 
     private Map<String, String> defaultHeaders = new HashMap<String, String>();
 
@@ -335,10 +336,18 @@ public class ClientConfiguration {
 
     /**
      * Set disable retry for client. If retryStrategy is set, will not disable retry when network exception occurs.
-     * 
+     *
      * @param retryDisabled no retry will be performed if retryDisabled is true.
      */
     public void setRetryDisabled(boolean retryDisabled) {
         this.retryDisabled = retryDisabled;
+    }
+
+    public boolean isCname() {
+        return isCname;
+    }
+
+    public void setCname(boolean cname) {
+        isCname = cname;
     }
 }
