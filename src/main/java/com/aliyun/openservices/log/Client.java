@@ -60,6 +60,7 @@ public class Client implements LogService {
 	private String resourceOwnerAccount = null;
 	private SlsSigner signer;
 	private boolean useMetricStoreUrl;
+	private ClientConfiguration clientConfiguration;
 
 	public boolean isUseMetricStoreUrl() {
 		return useMetricStoreUrl;
@@ -184,8 +185,8 @@ public class Client implements LogService {
 	}
 
 	public Client(String endpoint, Credentials credentials, String sourceIp) {
-		ClientConfiguration clientConfig = getDefaultClientConfiguration();
-		this.serviceClient = buildServiceClient(clientConfig);
+		this.clientConfiguration = getDefaultClientConfiguration();
+		this.serviceClient = buildServiceClient(clientConfiguration);
 		configure(endpoint, credentials, sourceIp);
 	}
 
@@ -224,6 +225,7 @@ public class Client implements LogService {
 	 */
 	public Client(String endpoint, CredentialsProvider credentialsProvider, ServiceClient serviceClient, String sourceIp) {
 		this.serviceClient = serviceClient;
+		this.clientConfiguration = serviceClient.getClientConfiguration();
 		configure(endpoint, credentialsProvider, sourceIp);
 	}
 
@@ -238,12 +240,14 @@ public class Client implements LogService {
 		clientConfig.setMaxConnections(connectMaxCount);
 		clientConfig.setConnectionTimeout(connectTimeout);
 		clientConfig.setSocketTimeout(sendTimeout);
+		this.clientConfiguration = clientConfig;
 		this.serviceClient = buildServiceClient(clientConfig);
 		configure(endpoint, new DefaultCredentials(accessId, accessKey), sourceIp);
 	}
 
     public Client(String endpoint, String accessId, String accessKey, ServiceClient serviceClient) {
         this.serviceClient = serviceClient;
+		this.clientConfiguration = serviceClient.getClientConfiguration();
 		configure(endpoint, new DefaultCredentials(accessId, accessKey), null);
     }
 
@@ -296,6 +300,7 @@ public class Client implements LogService {
 				  ClientConfiguration config,
 				  String sourceIp) {
 		Args.notNull(config, "Config");
+		this.clientConfiguration = config;
 		this.serviceClient = buildServiceClient(config);
 		configure(endpoint, credentialsProvider, sourceIp);
 	}
@@ -399,7 +404,9 @@ public class Client implements LogService {
 			if (!Utils.validateProject(project)) {
 				throw new IllegalArgumentException("Invalid project: " + project);
 			}
-			endPointUrl = this.httpType + project + "." + this.hostName;
+			if (!clientConfiguration.isCname()) {
+				endPointUrl = this.httpType + project + "." + this.hostName;
+			}
 		}
 		try {
 			return new URI(endPointUrl);
@@ -2044,7 +2051,7 @@ public class Client implements LogService {
 		headParameter.put(Consts.CONST_USER_AGENT, userAgent);
 		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, "0");
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_PROTO_BUF);
-		if (!project.isEmpty()) {
+		if (project != null && !project.isEmpty() && !clientConfiguration.isCname()) {
 			headParameter.put(Consts.CONST_HOST, project + "." + this.hostName);
 		} else {
 			headParameter.put(Consts.CONST_HOST, this.hostName);
