@@ -61,6 +61,7 @@ public class Client implements LogService {
 	private SlsSigner signer;
 	private boolean useMetricStoreUrl;
 	private ClientConfiguration clientConfiguration;
+	private boolean isCname = false;
 
 	public boolean isUseMetricStoreUrl() {
 		return useMetricStoreUrl;
@@ -77,6 +78,14 @@ public class Client implements LogService {
 	public void setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
 	}
+
+	public boolean isCname() {
+        return isCname;
+    }
+
+    public void setCname(boolean cname) {
+        isCname = cname;
+    }
 
 	public String getRealIpForConsole() {
 		return realIpForConsole;
@@ -404,7 +413,7 @@ public class Client implements LogService {
 			if (!Utils.validateProject(project)) {
 				throw new IllegalArgumentException("Invalid project: " + project);
 			}
-			if (!clientConfiguration.isCname()) {
+			if (!isCname) {
 				endPointUrl = this.httpType + project + "." + this.hostName;
 			}
 		}
@@ -2051,7 +2060,7 @@ public class Client implements LogService {
 		headParameter.put(Consts.CONST_USER_AGENT, userAgent);
 		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, "0");
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_PROTO_BUF);
-		if (project != null && !project.isEmpty() && !clientConfiguration.isCname()) {
+		if (project != null && !project.isEmpty() && !isCname) {
 			headParameter.put(Consts.CONST_HOST, project + "." + this.hostName);
 		} else {
 			headParameter.put(Consts.CONST_HOST, this.hostName);
