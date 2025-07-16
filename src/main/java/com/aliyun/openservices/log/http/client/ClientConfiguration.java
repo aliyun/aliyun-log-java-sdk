@@ -45,7 +45,6 @@ public class ClientConfiguration {
     protected SignVersion signatureVersion = DEFAULT_SIGNATURE_VERSION;
     private String region;
     private boolean retryDisabled = false;
-    private boolean isCname = false;
 
     private Map<String, String> defaultHeaders = new HashMap<String, String>();
 
@@ -343,11 +342,4 @@ public class ClientConfiguration {
         this.retryDisabled = retryDisabled;
     }
 
-    public boolean isCname() {
-        return isCname;
-    }
-
-    public void setCname(boolean cname) {
-        isCname = cname;
-    }
 }
