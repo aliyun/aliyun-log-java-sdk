@@ -2,7 +2,6 @@ package com.aliyun.openservices.log.sample;
 
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.http.client.ClientConfiguration;
 
 public class CnameSample {
 
@@ -10,12 +9,11 @@ public class CnameSample {
         // project not used
         String project = "test-project";
         String logStoreName = "test-logstore";
-        String endpoint = "";
+        String endpoint = "your custom domain";
         String accessId = "";
         String accessKey = "";
-        ClientConfiguration clientConfiguration = new ClientConfiguration();
-        clientConfiguration.setCname(true);
-        Client client = new Client(endpoint, accessId, accessKey, clientConfiguration);
+        Client client = new Client(endpoint, accessId, accessKey);
+        client.setCname(true);
         try {
             client.ListShard(project, logStoreName);
         } catch (LogException e) {
