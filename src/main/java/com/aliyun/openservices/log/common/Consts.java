@@ -329,9 +329,6 @@ public class Consts {
     public static final String CONST_INDEX_LONG = "long";
     public static final String CONST_INDEX_DOUBLE = "double";
 
-    // oss shipper
-    public static final String CONST_OSSSHIPPER_STORAGEFORMAT = "format";
-
     public static final String ENABLE = "enable";
     public static final String DISABLE = "disable";
     // ETL
@@ -394,9 +391,6 @@ public class Consts {
     public static final String RESOURCE_ACL = "acl";
     public static final String RESOURCE_CREATE_TIME = "createTime";
     public static final String RESOURCE_LAST_MODIFY_TIME = "lastModifyTime";
-
-    public static final String CONST_MIGRATION_URI = "/shippermigrations";
-    public static final String CONST_MIGRATION_NAME_URI = CONST_MIGRATION_URI + "/%s";
 
     public static final String CONST_RESOURCE_RECORD_URI = CONST_RESOURCE_NAME_URI + "/records";
     public static final String CONST_NEXT_RESOURCE_RECORD_URI = CONST_RESOURCE_NAME_URI + "/next_records";
