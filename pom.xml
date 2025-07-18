@@ -159,8 +159,8 @@
                         <exclude>com.aliyun.openservices.log.functiontest.logstore.LogstoreReplicationTest.java</exclude>
                         <exclude>com.aliyun.openservices.log.functiontest.audit.AuditJobFunctionTest.java</exclude>
                         <exclude>com.aliyun.openservices.log.functiontest.project.ResourceGroupFunctionTest.java</exclude>
-                        <exclude>com.aliyun.openservices.log.functiontest.shipper.ExportOdpsTest.java</exclude>
-                        <exclude>com.aliyun.openservices.log.functiontest.shipper.ExportOSSTest.java</exclude>
+                        <exclude>com.aliyun.openservices.log.functiontest.export.ExportOdpsTest.java</exclude>
+                        <exclude>com.aliyun.openservices.log.functiontest.export.ExportOSSTest.java</exclude>
                         <exclude>com.aliyun.openservices.log.functiontest.logstore.LogstoreTest.java</exclude>
                         <exclude>com.aliyun.openservices.log.functiontest.etl.RebuildIndexFunctionTest.java</exclude>
                         <exclude>com.aliyun.openservices.log.functiontest.logstore.RandomDataTest.java</exclude>

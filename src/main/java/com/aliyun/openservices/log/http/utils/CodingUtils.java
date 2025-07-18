@@ -21,7 +21,6 @@ public class CodingUtils {
     private static final Pattern JOB_PATTERN = Pattern.compile("^[0-9a-zA-Z-_]{1,63}$");
     private static final Pattern CONFIG_PATTERN = Pattern.compile("^[0-9a-zA-Z][0-9a-zA-Z_-]{0,126}[0-9a-zA-Z]$");
     private static final Pattern MACHINE_GROUP_PATTERN = Pattern.compile("^[0-9a-zA-Z][0-9a-zA-Z_-]{0,126}[0-9a-zA-Z]$");
-    private static final Pattern SHIPPER_PATTERN = Pattern.compile("^[0-9a-zA-Z][0-9a-zA-Z_-]{0,126}[0-9a-zA-Z]$");
     private static final Pattern RESOURCE_PATTERN = Pattern.compile("^[a-z][0-9a-z_.]{1,125}[0-9a-z]$");
     private static final Pattern RECORD_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9_:.-]{0,63}$");
     private static final Pattern ETL_JOB_PATTERN = Pattern.compile("^[0-9a-z][0-9a-z_-]{0,126}[0-9a-z]$");
@@ -106,13 +105,6 @@ public class CodingUtils {
         assertParameterNotNull(machineGroup, "machineGroup");
         if (!MACHINE_GROUP_PATTERN.matcher(machineGroup).matches()) {
             throw new LogException(ErrorCodes.INVALID_PARAMETER, "Invalid machineGroupName: " + machineGroup, "");
-        }
-    }
-
-    public static void validateShipper(String shipperName) throws LogException {
-        assertParameterNotNull(shipperName, "shipperName");
-        if (!SHIPPER_PATTERN.matcher(shipperName).matches()) {
-            throw new LogException(ErrorCodes.INVALID_PARAMETER, "Invalid shipperName: " + shipperName, "");
         }
     }
 
