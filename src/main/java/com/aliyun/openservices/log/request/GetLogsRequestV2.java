@@ -8,7 +8,6 @@ public class GetLogsRequestV2 extends Request {
 
     private static final long DEFAULT_OFFSET = -1;
     private static final long DEFAULT_LINE = -1;
-    private static final int DEFAULT_SHARD = -1;
     private static final long serialVersionUID = 3360163999513216113L;
 
     private String logstore;
@@ -21,7 +20,6 @@ public class GetLogsRequestV2 extends Request {
     private boolean reverse;
     private boolean powerSql;
     private boolean forward;
-    private int shard = DEFAULT_SHARD;
     private String session;
     private boolean accurate;
     private boolean highlight;
@@ -133,10 +131,6 @@ public class GetLogsRequestV2 extends Request {
         this.forward = forward;
     }
 
-    public int getShard() {
-        return shard;
-    }
-
     public void SetAccurate(boolean accurate) {
         this.accurate = accurate;
     }
@@ -151,11 +145,6 @@ public class GetLogsRequestV2 extends Request {
 
     public boolean GetNeedHighlight() {
         return highlight;
-    }
-
-    public void setShard(int shard) {
-        Args.check(shard >= 0, "shard must be >= 0");
-        this.shard = shard;
     }
 
     public String getSession() {
@@ -184,9 +173,6 @@ public class GetLogsRequestV2 extends Request {
         body.put(Consts.CONST_POWER_SQL, powerSql);
         if (session != null)
             body.put(Consts.CONST_SESSION, session);
-        if (shard >= 0) {
-            body.put(Consts.CONST_SHARD, shard);
-        }
         body.put(Consts.CONST_TOPIC, topic);
         body.put(Consts.CONST_QUERY, query);
         body.put(Consts.CONST_FORWARD, forward);

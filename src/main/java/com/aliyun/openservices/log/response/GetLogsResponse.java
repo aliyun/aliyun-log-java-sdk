@@ -49,7 +49,6 @@ public class GetLogsResponse extends BasicGetLogsResponse {
     private long mBeginOffset = 0;
     private long mEndOffset = 0;
     private long mEndTime = 0;
-    private int mShard = 0;
     private long mScanBytes = 0;
     private int mQueryMode = 0;
 
@@ -145,10 +144,6 @@ public class GetLogsResponse extends BasicGetLogsResponse {
                 }
             }
 
-            if (object.containsKey("shard")) {
-                mShard = object.getIntValue("shard");
-            }
-
             if (object.containsKey("scanBytes")) {
                 mScanBytes = object.getLongValue("scanBytes");
             }
@@ -212,7 +207,6 @@ public class GetLogsResponse extends BasicGetLogsResponse {
             mEndOffset = queryInfo.getEndOffset();
             mEndTime = queryInfo.getEndTime();
         }
-        mShard = result.getShard();
         mScanBytes = result.getScanBytes();
         mHighlights = result.getHighlights();
         mColumnTypes = result.getColumnTypes();
@@ -242,10 +236,6 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 
     public long GetEndTime() {
         return mEndTime;
-    }
-
-    public int GetShard() {
-        return mShard;
     }
 
     public long GetScanBytes() {
