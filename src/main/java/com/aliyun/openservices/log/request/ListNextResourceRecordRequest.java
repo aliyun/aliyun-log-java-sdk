@@ -17,7 +17,16 @@ public class ListNextResourceRecordRequest extends RecordRequest {
     private String jsonPathValue;
     private Boolean reverse;
     private Boolean includeSystemRecords;
+    private Boolean jsonFilterAcc = false;
     private List<String> recordIds = new ArrayList<String>();
+
+    public Boolean getJsonFilterAcc() {
+        return jsonFilterAcc;
+    }
+
+    public void setJsonFilterAcc(Boolean jsonFilterAcc) {
+        this.jsonFilterAcc = jsonFilterAcc;
+    }
 
     public String getNextToken() {
         return nextToken;
@@ -161,6 +170,10 @@ public class ListNextResourceRecordRequest extends RecordRequest {
 
         if (includeSystemRecords) {
             SetParam(Consts.RESOURCE_SYSTEM_RECORDS, "true");
+        }
+
+        if (jsonFilterAcc) {
+            SetParam(Consts.RESOURCE_JSON_FILTER_ACC, "true");
         }
 
         if (recordIds != null && !recordIds.isEmpty()) {

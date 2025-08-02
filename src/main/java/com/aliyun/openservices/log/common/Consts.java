@@ -96,6 +96,7 @@ public class Consts {
     public static final String CONST_X_SLS_RAWDATASIZE = "x-log-rawdatasize";
     public static final String CONST_X_LOG_CURSOR_TIME = "x-log-cursor-time";
     public static final String CONST_X_LOG_END_OF_CURSOR = "x-log-end-of-cursor";
+    public static final String CONST_X_READ_LAST_CURSOR = "x-log-read-last-cursor";
     public static final String CONST_X_SLS_SIGNATUREMETHOD = "x-log-signaturemethod";
     public static final String CONST_X_SLS_REQUESTID = "x-log-requestid";
     public static final String CONST_X_SLS_HOSTIP = "x-log-hostip";
@@ -413,6 +414,7 @@ public class Consts {
     public static final String RESOURCE_JSON_PATH_VALUE = "jsonPathValue";
     public static final String RESOURCE_REVERSE = "reverse";
     public static final String RESOURCE_SYSTEM_RECORDS = "includeSystemRecords";
+    public static final String RESOURCE_JSON_FILTER_ACC = "jsonFilterAcc";
 
     public static final String TOPOSTORE_URI = "/topostores";
     public static final String TOPOSTORE_OWNER = "owner";

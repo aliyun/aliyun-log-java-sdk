@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.util.Utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ListResourceRecordRequest extends RecordRequest {
     private Integer offset;
@@ -16,7 +17,16 @@ public class ListResourceRecordRequest extends RecordRequest {
     private String jsonPath;
     private String jsonPathValue;
     private Boolean includeSystemRecords;
+    private Boolean jsonFilterAcc = false;
     private List<String> recordIds = new ArrayList<String>();
+
+    public Boolean getJsonFilterAcc() {
+        return jsonFilterAcc;
+    }
+
+    public void setJsonFilterAcc(Boolean jsonFilterAcc) {
+        this.jsonFilterAcc = jsonFilterAcc;
+    }
 
     public Boolean getIncludeSystemRecords() {
         return includeSystemRecords;
@@ -142,6 +152,10 @@ public class ListResourceRecordRequest extends RecordRequest {
 
         if (includeSystemRecords) {
             SetParam(Consts.RESOURCE_SYSTEM_RECORDS, "true");
+        }
+
+        if (jsonFilterAcc) {
+            SetParam(Consts.RESOURCE_JSON_FILTER_ACC, "true");
         }
 
         return super.GetAllParams();
