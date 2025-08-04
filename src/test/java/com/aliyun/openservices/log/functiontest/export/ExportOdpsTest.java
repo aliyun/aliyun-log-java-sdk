@@ -1,4 +1,4 @@
-package com.aliyun.openservices.log.functiontest.shipper;
+package com.aliyun.openservices.log.functiontest.export;
 
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.*;
