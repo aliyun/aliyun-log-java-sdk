@@ -642,6 +642,9 @@ public class Client implements LogService {
 	}
 
 	public PutLogsResponse PutLogs(String project, String logStore, byte[] logGroupBytes, String compressType, String shardHash) throws LogException {
+		if (isUseMetricStoreUrl()) {
+			shardHash = Consts.METRICS_STORE_AUTO_HASH;
+		}
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(logGroupBytes, "logGroupBytes");
@@ -655,6 +658,9 @@ public class Client implements LogService {
 	public PutLogsResponse PutLogs(String project, String logStore,
 			String topic, List<LogItem> logItems, String source,
 			String shardHash) throws LogException {
+		if (isUseMetricStoreUrl()) {
+			shardHash = Consts.METRICS_STORE_AUTO_HASH;
+		}
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
@@ -669,12 +675,13 @@ public class Client implements LogService {
 	public PutLogsResponse PutLogs(String project, String logStore,
 			String topic, List<LogItem> logItems, String source)
 			throws LogException {
+		String shardHash = isUseMetricStoreUrl() ? Consts.METRICS_STORE_AUTO_HASH : null;
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
 		CodingUtils.assertParameterNotNull(logItems, "logGroup");
 		PutLogsRequest request = new PutLogsRequest(project, logStore, topic,
-				source, logItems, null);
+				source, logItems, shardHash);
 		request.SetCompressType(CompressType.LZ4);
 		return PutLogs(request);
 	}
@@ -721,6 +728,9 @@ public class Client implements LogService {
 	}
 
 	public PutLogsResponse PutLogs(PutLogsRequest request) throws LogException {
+		if (isUseMetricStoreUrl()) {
+			request.setHashKey(Consts.METRICS_STORE_AUTO_HASH);
+		}
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -822,13 +832,13 @@ public class Client implements LogService {
 		logBytes = Utils.compressLogBytes(logBytes, request.getCompressType());
 		Map<String, String> urlParameter = request.GetAllParams();
 		StringBuilder resourceUriBuilder = new StringBuilder();
-		if (isUseMetricStoreUrl()) {
+		if (shardKey == null || shardKey.isEmpty()) {
+			resourceUriBuilder.append("/logstores/").append(logStore).append("/shards/lb");
+		} else if (Consts.METRICS_STORE_AUTO_HASH.equals(shardKey)) {
 			resourceUriBuilder.append("/prometheus/").
 							  append(request.GetProject()).
 							  append("/").
 							  append(logStore).append("/api/v1/write");
-		} else if (shardKey == null || shardKey.isEmpty()) {
-			resourceUriBuilder.append("/logstores/").append(logStore).append("/shards/lb");
 		} else {
 			resourceUriBuilder.append("/logstores/").append(logStore).append("/shards/route");
 			urlParameter.put("key", shardKey);
