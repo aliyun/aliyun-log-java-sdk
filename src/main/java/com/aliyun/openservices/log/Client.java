@@ -63,14 +63,6 @@ public class Client implements LogService {
 	private ClientConfiguration clientConfiguration;
 	private boolean isCname = false;
 
-	public boolean isUseMetricStoreUrl() {
-		return useMetricStoreUrl;
-	}
-
-	public void setUseMetricStoreUrl(final boolean useMetricStoreUrl) {
-		this.useMetricStoreUrl = useMetricStoreUrl;
-	}
-
 	public String getUserAgent() {
 		return userAgent;
 	}
