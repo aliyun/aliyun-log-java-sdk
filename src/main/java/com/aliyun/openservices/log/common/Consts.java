@@ -521,4 +521,5 @@ public class Consts {
 
     public static final String CHARGE_BY_DATA_INGEST = "ChargeByDataIngest";
     public static final String CHARGE_BY_FUNCTION = "ChargeByFunction";
+    public static final String METRICS_STORE_AUTO_HASH = "__sls_metrics_auto_hash__";
 }
