@@ -12,10 +12,9 @@ String accessKey = "your_access_key";
 String host = "your_endpoint";
 Client client = new Client(host, accessId, accessKey);
 
-// UseMetricStoreUrl 使用注意:
-// 1. 作用域为 Client 全局设置, 自动追加 Hash Key(METRICS_STORE_AUTO_HASH), 仅供发送 Store 为 Metricstore 时设置，对于大时间线基数 Metricstore，可提升时序数据检索性能
-// 2. 当同时存在 Logstore/Metricstore 写入时, 用户需要手动指定 HashKey 为 METRICS_STORE_AUTO_HASH 手动触发写入 Metricstore 自动 Hash 写功能.
-client.setUseMetricStoreUrl(true);
+// 指标库写入方式：推荐使用 PutLogsWithMetricStoreUrl 系列方法进行指标库写入
+// 这将自动使用 METRICS_STORE_AUTO_HASH 并通过 /prometheus/{project}/{logstore}/api/v1/write 发送
+// 若为普通日志库写入，继续使用 PutLogs 系列方法即可
 ```
 
 ### sample 2 : 创建Logstore
@@ -30,7 +29,7 @@ CreateLogStoreResponse res = client.CreateLogStore(project, store);
 
 ```
 
-### sample 3 : 写数据
+### sample 3 : 写数据（普通日志库）
 ```
 
 int numLogGroup = 10;
@@ -61,6 +60,26 @@ for (int i = 0; i < numLogGroup; i++) {
         throw e;
     }
 
+}
+
+```
+
+### sample 3.1 : 写数据（指标库 Metricstore）
+```
+
+int numLogGroup = 1;
+List<LogItem> logGroup = new ArrayList<LogItem>();
+LogItem logItem = new LogItem((int) (new Date().getTime() / 1000));
+logGroup.add(logItem);
+
+try {
+    // 推荐：使用新接口发送到指标库写入 URL（Prometheus Remote Write）
+    client.PutLogsWithMetricStoreUrl(project, metricStore, "", logGroup, "");
+} catch (LogException e) {
+    System.out.println("error code :" + e.GetErrorCode());
+    System.out.println("error message :" + e.GetErrorMessage());
+    System.out.println("error requestId :" + e.GetRequestId());
+    throw e;
 }
 
 ```

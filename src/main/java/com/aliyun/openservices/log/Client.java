@@ -641,10 +641,7 @@ public class Client implements LogService {
 		return histogramResponse;
 	}
 
-	public PutLogsResponse PutLogs(String project, String logStore, byte[] logGroupBytes, String compressType, String shardHash) throws LogException {
-		if (isUseMetricStoreUrl()) {
-			shardHash = Consts.METRICS_STORE_AUTO_HASH;
-		}
+    public PutLogsResponse PutLogs(String project, String logStore, byte[] logGroupBytes, String compressType, String shardHash) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(logGroupBytes, "logGroupBytes");
@@ -655,12 +652,9 @@ public class Client implements LogService {
 	}
 
 	@Override
-	public PutLogsResponse PutLogs(String project, String logStore,
-			String topic, List<LogItem> logItems, String source,
-			String shardHash) throws LogException {
-		if (isUseMetricStoreUrl()) {
-			shardHash = Consts.METRICS_STORE_AUTO_HASH;
-		}
+    public PutLogsResponse PutLogs(String project, String logStore,
+            String topic, List<LogItem> logItems, String source,
+            String shardHash) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
@@ -672,10 +666,10 @@ public class Client implements LogService {
 	}
 
 	@Override
-	public PutLogsResponse PutLogs(String project, String logStore,
-			String topic, List<LogItem> logItems, String source)
-			throws LogException {
-		String shardHash = isUseMetricStoreUrl() ? Consts.METRICS_STORE_AUTO_HASH : null;
+    public PutLogsResponse PutLogs(String project, String logStore,
+            String topic, List<LogItem> logItems, String source)
+            throws LogException {
+        String shardHash = null;
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
 		CodingUtils.assertParameterNotNull(topic, "topic");
@@ -727,10 +721,7 @@ public class Client implements LogService {
 		return null;
 	}
 
-	public PutLogsResponse PutLogs(PutLogsRequest request) throws LogException {
-		if (isUseMetricStoreUrl()) {
-			request.setHashKey(Consts.METRICS_STORE_AUTO_HASH);
-		}
+    public PutLogsResponse PutLogs(PutLogsRequest request) throws LogException {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
@@ -856,6 +847,31 @@ public class Client implements LogService {
 		// never happen
 		return null;
 	}
+
+    public PutLogsResponse PutLogsWithMetricStoreUrl(String project, String logStore, byte[] logGroupBytes, String compressType) throws LogException {
+        CodingUtils.assertStringNotNullOrEmpty(project, "project");
+        CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+        CodingUtils.assertParameterNotNull(logGroupBytes, "logGroupBytes");
+        PutLogsRequest request = new PutLogsRequest(project, logStore, null, null, logGroupBytes, Consts.METRICS_STORE_AUTO_HASH);
+        request.SetCompressType(CompressType.fromString(compressType));
+        return PutLogs(request);
+    }
+
+    public PutLogsResponse PutLogsWithMetricStoreUrl(String project, String logStore, String topic, List<LogItem> logItems, String source) throws LogException {
+        CodingUtils.assertStringNotNullOrEmpty(project, "project");
+        CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+        CodingUtils.assertParameterNotNull(topic, "topic");
+        CodingUtils.assertParameterNotNull(logItems, "logGroup");
+        PutLogsRequest request = new PutLogsRequest(project, logStore, topic, source, logItems, Consts.METRICS_STORE_AUTO_HASH);
+        request.SetCompressType(CompressType.LZ4);
+        return PutLogs(request);
+    }
+
+    public PutLogsResponse PutLogsWithMetricStoreUrl(PutLogsRequest request) throws LogException {
+        CodingUtils.assertParameterNotNull(request, "request");
+        request.setHashKey(Consts.METRICS_STORE_AUTO_HASH);
+        return PutLogs(request);
+    }
 
 	private ResponseMessage sendLogBytes(String project, byte[] logBytes, String resourceUri, Map<String, String> urlParameter, Map<String, String> headParameter) throws LogException {
 		for (int i = 0; i < 2; i++) {
