@@ -6498,4 +6498,36 @@ public class Client implements LogService {
 
 		SendData(project, HttpMethod.DELETE, resourceUri, urlParameter, headers, new byte[0], null, realServerIP);
 	}
+
+	@Override
+	public void createMaterializedView(CreateMaterializedViewRequest request) throws LogException {
+		Map<String, String> headers = GetCommonHeadPara(request.GetProject());
+		headers.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		SendData(request.GetProject(), HttpMethod.POST, "/materializedviews", request.GetAllParams(), headers, request.getRequestBody(), null, realServerIP);
+	}
+
+	@Override
+	public void deleteMaterializedView(String project, String materializedView) throws LogException {
+		Map<String, String> headers = GetCommonHeadPara(project);
+		headers.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		SendData(project, HttpMethod.DELETE, "/materializedviews/" + materializedView, Collections.emptyMap(), headers, new byte[0], null, realServerIP);
+	}
+
+	public ListMaterializedViewsResponse listMaterializedViews(ListMaterializedViewsRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		Map<String, String> urlParameter = request.GetAllParams();
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/materializedviews";
+		ResponseMessage response = SendData(project, HttpMethod.GET, resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		String requestId = GetRequestId(resHeaders);
+		JSONObject object = parseResponseBody(response, requestId);
+		ListMaterializedViewsResponse mvResponse = new ListMaterializedViewsResponse(resHeaders);
+		mvResponse.setMaterializedViews(ExtractJsonArray(Consts.CONST_RESULT_MATERIALIZED_VIEWS, object));
+		mvResponse.setTotal(object.getIntValue(Consts.CONST_TOTAL));
+		mvResponse.setCount(object.getIntValue(Consts.CONST_COUNT));
+		return mvResponse;
+	}
 }

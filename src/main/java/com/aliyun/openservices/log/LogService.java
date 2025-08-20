@@ -3750,4 +3750,8 @@ public interface LogService {
 	SubmitAsyncSqlResponse submitAsyncSql(SubmitAsyncSqlRequest request) throws LogException;
 	GetAsyncSqlResponse getAsyncSql(GetAsyncSqlRequest request) throws LogException;
 	void deleteAsyncSql(DeleteAsyncSqlRequest request) throws LogException;
+
+	void createMaterializedView(CreateMaterializedViewRequest request) throws LogException;
+	void deleteMaterializedView(String project, String materializedView) throws LogException;
+	ListMaterializedViewsResponse listMaterializedViews(ListMaterializedViewsRequest request) throws LogException;
 }

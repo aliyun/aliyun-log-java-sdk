@@ -21,10 +21,10 @@ import java.util.Map;
 public class GetHistogramsResponse extends Response {
 
     private static final long serialVersionUID = 5169979404935069850L;
-    private boolean mIsCompleted = false;
-    private long mCount = 0;
-    private long mScanBytes = 0;
-    private ArrayList<Histogram> mHistogram = new ArrayList<Histogram>();
+    private boolean isCompleted = false;
+    private long count = 0;
+    private long scanBytes = 0;
+    private ArrayList<Histogram> histogram = new ArrayList<Histogram>();
 
     /**
      * Construct a histogram response
@@ -35,7 +35,7 @@ public class GetHistogramsResponse extends Response {
         super(headers);
         this.SetProcessStatus(headers.get(Consts.CONST_X_SLS_PROCESS));
         if (headers.containsKey(Consts.CONST_X_SLS_SCANBYTES)) {
-            mScanBytes = Long.parseLong(headers.get(Consts.CONST_X_SLS_SCANBYTES));
+            scanBytes = Long.parseLong(headers.get(Consts.CONST_X_SLS_SCANBYTES));
         }
     }
 
@@ -45,7 +45,7 @@ public class GetHistogramsResponse extends Response {
      * @return hit count
      */
     public long GetTotalCount() {
-        return mCount;
+        return count;
     }
 
     /**
@@ -54,7 +54,7 @@ public class GetHistogramsResponse extends Response {
      * @return scan bytes
      */
     public long GetScanBytes() {
-        return mScanBytes;
+        return scanBytes;
     }
 
     /**
@@ -64,9 +64,9 @@ public class GetHistogramsResponse extends Response {
      */
     public void SetProcessStatus(String processStatus) {
         if (processStatus.equals(Consts.CONST_RESULT_COMPLETE)) {
-            mIsCompleted = true;
+            isCompleted = true;
         } else {
-            mIsCompleted = false;
+            isCompleted = false;
         }
     }
 
@@ -76,7 +76,7 @@ public class GetHistogramsResponse extends Response {
      * @return true if the query is complete in the sls server
      */
     public boolean IsCompleted() {
-        return mIsCompleted;
+        return isCompleted;
     }
 
     /**
@@ -89,8 +89,8 @@ public class GetHistogramsResponse extends Response {
     }
 
     public void addHistogram(Histogram histogram) {
-        mHistogram.add(histogram);
-        mCount += histogram.GetCount();
+        this.histogram.add(histogram);
+        count += histogram.GetCount();
     }
 
     /**
@@ -99,7 +99,7 @@ public class GetHistogramsResponse extends Response {
      * @param histograms all time range histogram
      */
     public void SetHistograms(List<Histogram> histograms) {
-        mHistogram = new ArrayList<Histogram>(histograms);
+        this.histogram = new ArrayList<Histogram>(histograms);
     }
 
     /**
@@ -108,12 +108,12 @@ public class GetHistogramsResponse extends Response {
      * @return all time range histogram
      */
     public ArrayList<Histogram> GetHistograms() {
-        return mHistogram;
+        return histogram;
     }
 
     public void fromJSON(JSONArray items) {
-        mHistogram.clear();
-        mCount = 0;
+        histogram.clear();
+        count = 0;
         if (items == null) {
             return;
         }

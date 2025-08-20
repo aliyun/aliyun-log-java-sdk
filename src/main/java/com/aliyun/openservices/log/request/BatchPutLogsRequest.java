@@ -13,49 +13,49 @@ import java.util.List;
 
 public class BatchPutLogsRequest extends Request {
     private static final long serialVersionUID = 3221252831212912821L;
-    private final List<LogGroup> mLogGroups = new ArrayList<LogGroup>();
-    private String mLogStore;
-    private String mHashKey;
-    private CompressType mCompressType = CompressType.LZ4;
+    private final List<LogGroup> logGroups = new ArrayList<LogGroup>();
+    private String logStore;
+    private String hashKey;
+    private CompressType compressType = CompressType.LZ4;
 
     public BatchPutLogsRequest(String project, String logStore, List<LogGroup> logGroups, String hashKey) {
         super(project);
-        mLogStore = logStore;
-        mHashKey = hashKey;
-        mLogGroups.addAll(logGroups);
+        this.logStore = logStore;
+        this.hashKey = hashKey;
+        this.logGroups.addAll(logGroups);
     }
 
     public String getLogStore() {
-        return mLogStore;
+        return logStore;
     }
 
     public void setLogStore(String logStore) {
-        mLogStore = logStore;
+        this.logStore = logStore;
     }
 
     public String getHashKey() {
-        return mHashKey;
+        return hashKey;
     }
 
     public void setHashKey(String hashKey) {
-        mHashKey = hashKey;
+        this.hashKey = hashKey;
     }
 
     public List<LogGroup> getLogGroups() {
-        return mLogGroups;
+        return logGroups;
     }
 
     public void setLogGroups(List<LogGroup> logGroups) {
-        mLogGroups.clear();
-        mLogGroups.addAll(logGroups);
+        this.logGroups.clear();
+        this.logGroups.addAll(logGroups);
     }
 
     public CompressType getCompressType() {
-        return mCompressType;
+        return compressType;
     }
 
     public void setCompressType(CompressType compressType) {
-        mCompressType = compressType;
+        this.compressType = compressType;
     }
 
     public byte[] serializeToPb() throws LogException {
@@ -75,7 +75,7 @@ public class BatchPutLogsRequest extends Request {
         }
 
         Logs.SlsLogPackageList.Builder builder = Logs.SlsLogPackageList.newBuilder();
-        for (LogGroup logGroup : mLogGroups) {
+        for (LogGroup logGroup : logGroups) {
             byte[] logGroupBytes = logGroup.serializeToPb();
             Logs.SlsLogPackage.Builder packageBuilder = builder.addPackagesBuilder();
             packageBuilder.setUncompressSize(logGroupBytes.length);

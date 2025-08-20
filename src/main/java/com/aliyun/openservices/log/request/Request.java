@@ -17,8 +17,8 @@ public class Request implements Serializable {
      *
      */
     private static final long serialVersionUID = -5830692390140453699L;
-    private Map<String, String> mParams = new HashMap<String, String>();
-    private String mProject;
+    private Map<String, String> params = new HashMap<String, String>();
+    private String project;
 
     /**
      * Construct the base request
@@ -26,7 +26,7 @@ public class Request implements Serializable {
      * @param project project name
      */
     public Request(String project) {
-        mProject = project;
+        this.project = project;
     }
 
     /**
@@ -35,7 +35,7 @@ public class Request implements Serializable {
      * @return project name
      */
     public String GetProject() {
-        return mProject;
+        return project;
     }
 
     /**
@@ -45,8 +45,8 @@ public class Request implements Serializable {
      * @return value of the key
      */
     public String GetParam(String key) {
-        if (mParams.containsKey(key)) {
-            return mParams.get(key);
+        if (params.containsKey(key)) {
+            return params.get(key);
         } else {
             return "";
         }
@@ -60,9 +60,9 @@ public class Request implements Serializable {
      */
     public void SetParam(String key, String value) {
         if (value == null) {
-            mParams.put(key, "");
+            params.put(key, "");
         } else {
-            mParams.put(key, value);
+            params.put(key, value);
         }
     }
 
@@ -72,7 +72,7 @@ public class Request implements Serializable {
      * @return all parameter
      */
     public Map<String, String> GetAllParams() {
-        return mParams;
+        return params;
     }
 
 }
