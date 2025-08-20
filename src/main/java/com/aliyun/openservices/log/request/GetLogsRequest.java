@@ -11,7 +11,7 @@ import com.aliyun.openservices.log.common.Consts;
 public class GetLogsRequest extends Request {
     private static final long serialVersionUID = -484272901258629068L;
 
-    private String mLogStore;
+    private String logStore;
 
     private int from;
     private int to;
@@ -45,7 +45,7 @@ public class GetLogsRequest extends Request {
     public GetLogsRequest(String project, String logStore, int from, int to,
                           String topic, String query) {
         super(project);
-        mLogStore = logStore;
+        this.logStore = logStore;
         SetTopic(topic);
         SetQuery(query);
         SetFromTime(from);
@@ -185,7 +185,7 @@ public class GetLogsRequest extends Request {
      * @param logStore log store name
      */
     public void SetLogStore(String logStore) {
-        mLogStore = logStore;
+        this.logStore = logStore;
     }
 
     /**
@@ -194,7 +194,7 @@ public class GetLogsRequest extends Request {
      * @return log store name
      */
     public String GetLogStore() {
-        return mLogStore;
+        return logStore;
     }
 
     /**

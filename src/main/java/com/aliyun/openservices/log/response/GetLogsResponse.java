@@ -32,31 +32,31 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 
     private static final long serialVersionUID = -7866328557378599379L;
 
-    private boolean mIsCompleted = false;
+    private boolean isCompleted = false;
 
-    private String mMarker = "";
-    private String mAggQuery = "";
-    private String mWhereQuery = "";
-    private boolean mHasSQL = false;
-    private long mProcessedRow = 0;
-    private long mElapsedMilliSecond = 0;
-    private long mLimited = 0;
-    private double mCpuSec = 0;
-    private long mCpuCores = 0;
+    private String marker = "";
+    private String aggQuery = "";
+    private String whereQuery = "";
+    private boolean hasSQL = false;
+    private long processedRow = 0;
+    private long elapsedMilliSecond = 0;
+    private long limited = 0;
+    private double cpuSec = 0;
+    private long cpuCores = 0;
 
-    private boolean mIsPhraseQuery = false;
-    private boolean mScanAll = false;
-    private long mBeginOffset = 0;
-    private long mEndOffset = 0;
-    private long mEndTime = 0;
-    private int mShard = 0;
-    private long mScanBytes = 0;
-    private int mQueryMode = 0;
+    private boolean isPhraseQuery = false;
+    private boolean scanAll = false;
+    private long beginOffset = 0;
+    private long endOffset = 0;
+    private long endTime = 0;
+    private int shard = 0;
+    private long scanBytes = 0;
+    private int queryMode = 0;
 
-    private ArrayList<String> mKeys;
-    private ArrayList<ArrayList<String>> mTerms;
-    private List<List<LogContent>> mHighlights;
-    private List<String> mColumnTypes;
+    private ArrayList<String> keys;
+    private ArrayList<ArrayList<String>> terms;
+    private List<List<LogContent>> highlights;
+    private List<String> columnTypes;
 
     private String rawQueryResult;
 
@@ -94,15 +94,15 @@ public class GetLogsResponse extends BasicGetLogsResponse {
         if (headers.containsKey(Consts.CONST_X_LOG_QUERY_INFO)) {
             com.alibaba.fastjson.JSONObject object = com.alibaba.fastjson.JSONObject.parseObject(headers.get(Consts.CONST_X_LOG_QUERY_INFO));
             JSONArray keys = object.getJSONArray("keys");
-            mKeys = new ArrayList<String>();
+            this.keys = new ArrayList<String>();
             if (keys != null) {
                 for (int i = 0; i < keys.size(); ++i) {
-                    mKeys.add(keys.getString(i));
+                    this.keys.add(keys.getString(i));
                 }
             }
 
             JSONArray terms = object.getJSONArray("terms");
-            mTerms = new ArrayList<ArrayList<String>>();
+            this.terms = new ArrayList<ArrayList<String>>();
             if (terms != null) {
                 for (int i = 0; i < terms.size(); ++i) {
                     ArrayList<String> list = new ArrayList<String>();
@@ -111,55 +111,55 @@ public class GetLogsResponse extends BasicGetLogsResponse {
                         list.add(term.getString(0));
                         list.add(term.getString(1));
                     }
-                    mTerms.add(list);
+                    this.terms.add(list);
                 }
             }
 
             if (object.containsKey("limited")) {
-                mLimited = Long.parseLong(object.getString("limited"));
+                this.limited = Long.parseLong(object.getString("limited"));
             }
 
             if (object.containsKey("marker")) {
-                mMarker = object.getString("marker");
+                this.marker = object.getString("marker");
             }
 
             if (object.containsKey("mode")) {
-                mQueryMode = object.getIntValue("mode");
-                if (mQueryMode == 1)
-                    mIsPhraseQuery = true;
+                this.queryMode = object.getIntValue("mode");
+                if (this.queryMode == 1)
+                    this.isPhraseQuery = true;
             }
 
             if (object.containsKey("phraseQueryInfo")) {
                 JSONObject phraseQueryInfo = object.getJSONObject("phraseQueryInfo");
                 if (phraseQueryInfo.containsKey("scanAll")) {
-                    mScanAll = Boolean.parseBoolean(phraseQueryInfo.getString("scanAll"));
+                    this.scanAll = Boolean.parseBoolean(phraseQueryInfo.getString("scanAll"));
                 }
                 if (phraseQueryInfo.containsKey("beginOffset")) {
-                    mBeginOffset = Long.parseLong(phraseQueryInfo.getString("beginOffset"));
+                    this.beginOffset = Long.parseLong(phraseQueryInfo.getString("beginOffset"));
                 }
                 if (phraseQueryInfo.containsKey("endOffset")) {
-                    mEndOffset = Long.parseLong(phraseQueryInfo.getString("endOffset"));
+                    this.endOffset = Long.parseLong(phraseQueryInfo.getString("endOffset"));
                 }
                 if (phraseQueryInfo.containsKey("endTime")) {
-                    mEndTime = Long.parseLong(phraseQueryInfo.getString("endTime"));
+                    this.endTime = Long.parseLong(phraseQueryInfo.getString("endTime"));
                 }
             }
 
             if (object.containsKey("shard")) {
-                mShard = object.getIntValue("shard");
+                this.shard = object.getIntValue("shard");
             }
 
             if (object.containsKey("scanBytes")) {
-                mScanBytes = object.getLongValue("scanBytes");
+                this.scanBytes = object.getLongValue("scanBytes");
             }
 
             JSONArray highlights = object.getJSONArray("highlights");
             if (highlights != null) {
-                mHighlights = new ArrayList<List<LogContent>>(highlights.size());
+                this.highlights = new ArrayList<List<LogContent>>(highlights.size());
                 for (int i = 0; i < highlights.size(); ++i) {
                     JSONObject jsonObject = highlights.getJSONObject(i);
                     if (jsonObject == null) {
-                        mHighlights.add(new ArrayList<LogContent>());
+                        this.highlights.add(new ArrayList<LogContent>());
                     } else {
                         ArrayList<LogContent> logContents = new ArrayList<LogContent>(jsonObject.size());
                         Set<String> keySey = jsonObject.keySet();
@@ -167,16 +167,16 @@ public class GetLogsResponse extends BasicGetLogsResponse {
                             String value = jsonObject.getString(key);
                             logContents.add(new LogContent(key, value));
                         }
-                        mHighlights.add(logContents);
+                        this.highlights.add(logContents);
                     }
                 }
             }
 
             JSONArray columnTypesAsJson = object.getJSONArray("columnTypes");
             if (columnTypesAsJson != null) {
-                mColumnTypes = new ArrayList<String>(columnTypesAsJson.size());
+                this.columnTypes = new ArrayList<String>(columnTypesAsJson.size());
                 for (int i = 0; i < columnTypesAsJson.size(); ++i) {
-                    mColumnTypes.add(columnTypesAsJson.getString(i));
+                    this.columnTypes.add(columnTypesAsJson.getString(i));
                 }
             }
         }
@@ -184,7 +184,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
 
     public GetLogsResponse(Map<String, String> headers, QueryResult result) {
         super(headers);
-        mIsCompleted = result.isCompleted();
+        isCompleted = result.isCompleted();
         setAggQuery(result.getAggQuery());
         setWhereQuery(result.getWhereQuery());
         setHasSQL(result.isHasSQL());
@@ -192,30 +192,30 @@ public class GetLogsResponse extends BasicGetLogsResponse {
         setElapsedMilliSecond(result.getElapsedMillisecond());
         setCpuCores(result.getCpuCores());
         setCpuSec(result.getCpuSec());
-        mKeys = new ArrayList<String>(result.getKeys());
+        keys = new ArrayList<String>(result.getKeys());
         List<QueryResult.Term> terms = result.getTerms();
-        mTerms = new ArrayList<ArrayList<String>>();
+        this.terms = new ArrayList<ArrayList<String>>();
         for (QueryResult.Term term : terms) {
             ArrayList<String> list = new ArrayList<String>();
             list.add(term.getTerm());
             list.add(term.getKey());
-            mTerms.add(list);
+            this.terms.add(list);
         }
-        setmLimited(result.getLimited());
-        setmMarker(result.getMarker());
-        mQueryMode = result.getQueryMode();
-        mIsPhraseQuery = result.isPhraseQuery();
+        setLimited(result.getLimited());
+        setMarker(result.getMarker());
+        queryMode = result.getQueryMode();
+        isPhraseQuery = result.isPhraseQuery();
         QueryResult.PhraseQueryInfo queryInfo = result.getPhraseQueryInfo();
         if (queryInfo != null) {
-            mScanAll = queryInfo.isScanAll();
-            mBeginOffset = queryInfo.getBeginOffset();
-            mEndOffset = queryInfo.getEndOffset();
-            mEndTime = queryInfo.getEndTime();
+            scanAll = queryInfo.isScanAll();
+            beginOffset = queryInfo.getBeginOffset();
+            endOffset = queryInfo.getEndOffset();
+            endTime = queryInfo.getEndTime();
         }
-        mShard = result.getShard();
-        mScanBytes = result.getScanBytes();
-        mHighlights = result.getHighlights();
-        mColumnTypes = result.getColumnTypes();
+        shard = result.getShard();
+        scanBytes = result.getScanBytes();
+        highlights = result.getHighlights();
+        columnTypes = result.getColumnTypes();
         this.logs = (ArrayList<QueriedLog>) result.getLogs();
     }
 
@@ -225,109 +225,109 @@ public class GetLogsResponse extends BasicGetLogsResponse {
     }
 
     public boolean IsPhraseQuery() {
-        return mIsPhraseQuery;
+        return isPhraseQuery;
     }
 
     public boolean IsScanAll() {
-        return mScanAll;
+        return scanAll;
     }
 
     public long GetBeginOffset() {
-        return mBeginOffset;
+        return beginOffset;
     }
 
     public long GetEndOffset() {
-        return mEndOffset;
+        return endOffset;
     }
 
     public long GetEndTime() {
-        return mEndTime;
+        return endTime;
     }
 
     public int GetShard() {
-        return mShard;
+        return shard;
     }
 
     public long GetScanBytes() {
-        return mScanBytes;
+        return scanBytes;
     }
 
     public int GetQueryMode() {
-        return mQueryMode;
+        return queryMode;
     }
 
-    public String getmMarker() {
-        return mMarker;
+    public String getMarker() {
+        return marker;
     }
 
-    public void setmMarker(String mMarker) {
-        this.mMarker = mMarker;
+    public void setMarker(String marker) {
+        this.marker = marker;
     }
 
-    public long getmLimited() {
-        return mLimited;
+    public long getLimited() {
+        return limited;
     }
 
-    public void setmLimited(long mLimited) {
-        this.mLimited = mLimited;
+    public void setLimited(long limited) {
+        this.limited = limited;
     }
 
-    public void setAggQuery(String mAggQuery) {
-        this.mAggQuery = mAggQuery;
+    public void setAggQuery(String aggQuery) {
+        this.aggQuery = aggQuery;
     }
 
     public String getAggQuery() {
-        return mAggQuery;
+        return aggQuery;
     }
 
     public long getElapsedMilliSecond() {
-        return mElapsedMilliSecond;
+        return elapsedMilliSecond;
     }
 
-    public void setElapsedMilliSecond(long mElapsedMilliSecond) {
-        this.mElapsedMilliSecond = mElapsedMilliSecond;
+    public void setElapsedMilliSecond(long elapsedMilliSecond) {
+        this.elapsedMilliSecond = elapsedMilliSecond;
     }
 
-    public void setCpuSec(double mCpuSec) {
-        this.mCpuSec = mCpuSec;
+    public void setCpuSec(double cpuSec) {
+        this.cpuSec = cpuSec;
     }
 
     public double getCpuSec() {
-        return this.mCpuSec;
+        return this.cpuSec;
     }
 
     public long getCpuCores() {
-        return this.mCpuCores;
+        return this.cpuCores;
     }
 
-    public void setCpuCores(long mCpuCores) {
-        this.mCpuCores = mCpuCores;
+    public void setCpuCores(long cpuCores) {
+        this.cpuCores = cpuCores;
     }
 
     public long getProcessedRow() {
-        return mProcessedRow;
+        return processedRow;
     }
 
-    public void setProcessedRow(long mProcessedRow) {
-        this.mProcessedRow = mProcessedRow;
+    public void setProcessedRow(long processedRow) {
+        this.processedRow = processedRow;
     }
 
     public boolean isHasSQL() {
 
-        return mHasSQL;
+        return hasSQL;
     }
 
-    public void setHasSQL(boolean mHasSQL) {
-        this.mHasSQL = mHasSQL;
+    public void setHasSQL(boolean hasSQL) {
+        this.hasSQL = hasSQL;
     }
 
     public String getWhereQuery() {
 
-        return mWhereQuery;
+        return whereQuery;
     }
 
-    public void setWhereQuery(String mWhereQuery) {
-        this.mWhereQuery = mWhereQuery;
+    public void setWhereQuery(String whereQuery) {
+        this.whereQuery = whereQuery;
     }
 
     /**
@@ -336,7 +336,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
      * @param processStatus process status(Complete/InComplete only)
      */
     public void SetProcessStatus(String processStatus) {
-        mIsCompleted = processStatus.equals(Consts.CONST_RESULT_COMPLETE);
+        isCompleted = processStatus.equals(Consts.CONST_RESULT_COMPLETE);
     }
 
     /**
@@ -345,7 +345,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
      * @return true if the query is complete in the sls server
      */
     public boolean IsCompleted() {
-        return mIsCompleted;
+        return isCompleted;
     }
 
     /**
@@ -394,7 +394,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
      * @return log keys
      */
     public ArrayList<String> getKeys() {
-        return mKeys;
+        return keys;
     }
 
     /**
@@ -403,15 +403,15 @@ public class GetLogsResponse extends BasicGetLogsResponse {
      * @return log terms
      */
     public ArrayList<ArrayList<String>> getTerms() {
-        return mTerms;
+        return terms;
     }
 
     public List<List<LogContent>> getHighlights() {
-        return mHighlights;
+        return highlights;
     }
 
     public List<String> getColumnTypes() {
-        return mColumnTypes;
+        return columnTypes;
     }
 
     public String getRawQueryResult() {

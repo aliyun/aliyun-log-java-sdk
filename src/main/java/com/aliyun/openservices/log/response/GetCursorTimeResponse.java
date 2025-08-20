@@ -7,7 +7,7 @@ public class GetCursorTimeResponse  extends Response {
 	private static final long serialVersionUID = 83320847206807600L;
 
 	
-	private int mCursorTime;
+	private int cursorTime;
 
 	/**
 	 * Construct the response with http headers
@@ -16,14 +16,14 @@ public class GetCursorTimeResponse  extends Response {
 	 */
 	public GetCursorTimeResponse(Map<String, String> headers, int cursorTime) {
 		super(headers);
-		mCursorTime = cursorTime;
+		this.cursorTime = cursorTime;
 	}
 
 	/**
 	 * @return the cursor
 	 */
 	public int GetCursorTime() {
-		return mCursorTime;
+		return cursorTime;
 	}
 }
 

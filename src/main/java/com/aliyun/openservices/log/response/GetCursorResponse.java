@@ -6,7 +6,7 @@ public class GetCursorResponse extends Response {
 
 	private static final long serialVersionUID = 9167468569342193358L;
 
-	private String mCursor;
+	private String cursor;
 
 	/**
 	 * Construct the response with http headers
@@ -15,13 +15,13 @@ public class GetCursorResponse extends Response {
 	 */
 	public GetCursorResponse(Map<String, String> headers, String cursor) {
 		super(headers);
-		mCursor = cursor;
+		this.cursor = cursor;
 	}
 
 	/**
 	 * @return the cursor
 	 */
 	public String GetCursor() {
-		return mCursor;
+		return cursor;
 	}
 }
