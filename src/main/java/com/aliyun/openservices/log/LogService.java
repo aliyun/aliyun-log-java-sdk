@@ -527,6 +527,24 @@ public interface LogService {
 	 */
     BatchPutLogsResponse batchPutLogs(BatchPutLogsRequest request) throws LogException;
 
+    /**
+     * Send data to metric store write URL (Prometheus remote write style)
+     * Equivalent to calling PutLogs with shard key set to METRICS_STORE_AUTO_HASH
+     */
+    PutLogsResponse PutLogsWithMetricStoreUrl(String project, String logStore, byte[] logGroupBytes, String compressType) throws LogException;
+
+    /**
+     * Send data to metric store write URL (Prometheus remote write style)
+     * Equivalent to calling PutLogs with shard key set to METRICS_STORE_AUTO_HASH
+     */
+    PutLogsResponse PutLogsWithMetricStoreUrl(String project, String logStore, String topic, List<LogItem> logItems, String source) throws LogException;
+
+    /**
+     * Send data to metric store write URL (Prometheus remote write style)
+     * Equivalent to calling PutLogs with shard key set to METRICS_STORE_AUTO_HASH
+     */
+    PutLogsResponse PutLogsWithMetricStoreUrl(PutLogsRequest request) throws LogException;
+
 	/**
 	 * Get cursor from log service server
 	 *
