@@ -3754,4 +3754,31 @@ public interface LogService {
 	void createMaterializedView(CreateMaterializedViewRequest request) throws LogException;
 	void deleteMaterializedView(String project, String materializedView) throws LogException;
 	ListMaterializedViewsResponse listMaterializedViews(ListMaterializedViewsRequest request) throws LogException;
+
+	/**
+	 * Delete logs from a log store
+	 *
+	 * @param request An instance of {@link DeleteLogStoreLogsRequest}
+	 * @return An instance of {@link DeleteLogStoreLogsResponse}
+	 * @throws LogException if any error occurs
+	 */
+	DeleteLogStoreLogsResponse deleteLogStoreLogs(DeleteLogStoreLogsRequest request) throws LogException;
+
+	/**
+	 * Get delete log store logs task status
+	 *
+	 * @param request An instance of {@link GetDeleteLogStoreLogsTaskRequest}
+	 * @return An instance of {@link GetDeleteLogStoreLogsTaskResponse}
+	 * @throws LogException if any error occurs
+	 */
+	GetDeleteLogStoreLogsTaskResponse getDeleteLogStoreLogsTask(GetDeleteLogStoreLogsTaskRequest request) throws LogException;
+
+	/**
+	 * List delete log store logs tasks
+	 *
+	 * @param request An instance of {@link ListDeleteLogStoreLogsTasksRequest}
+	 * @return An instance of {@link ListDeleteLogStoreLogsTasksResponse}
+	 * @throws LogException if any error occurs
+	 */
+	ListDeleteLogStoreLogsTasksResponse listDeleteLogStoreLogsTasks(ListDeleteLogStoreLogsTasksRequest request) throws LogException;
 }

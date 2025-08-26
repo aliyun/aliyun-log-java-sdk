@@ -6530,4 +6530,61 @@ public class Client implements LogService {
 		mvResponse.setCount(object.getIntValue(Consts.CONST_COUNT));
 		return mvResponse;
 	}
+
+	@Override
+	public DeleteLogStoreLogsResponse deleteLogStoreLogs(DeleteLogStoreLogsRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "project");
+		CodingUtils.assertStringNotNullOrEmpty(request.getLogstore(), "logstore");
+		
+		ResponseMessage response = send(request);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject responseBody = parseResponseBody(response, requestId);
+		String taskId = responseBody.getString("taskId");
+		
+		return new DeleteLogStoreLogsResponse(response.getHeaders(), taskId);
+	}
+
+	@Override
+	public GetDeleteLogStoreLogsTaskResponse getDeleteLogStoreLogsTask(GetDeleteLogStoreLogsTaskRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "project");
+		CodingUtils.assertStringNotNullOrEmpty(request.getLogstore(), "logstore");
+		CodingUtils.assertStringNotNullOrEmpty(request.getTaskId(), "taskId");
+		
+		ResponseMessage response = send(request);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject responseBody = parseResponseBody(response, requestId);
+		
+		DeleteLogStoreLogsTask task = new DeleteLogStoreLogsTask();
+		task.fromJsonObject(responseBody);
+		
+		return new GetDeleteLogStoreLogsTaskResponse(response.getHeaders(), task);
+	}
+
+	@Override
+	public ListDeleteLogStoreLogsTasksResponse listDeleteLogStoreLogsTasks(ListDeleteLogStoreLogsTasksRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "project");
+		CodingUtils.assertStringNotNullOrEmpty(request.getLogstore(), "logstore");
+		
+		ResponseMessage response = send(request);
+		String requestId = GetRequestId(response.getHeaders());
+		JSONObject responseBody = parseResponseBody(response, requestId);
+		
+		int total = responseBody.getIntValue("total");
+		JSONArray tasksArray = responseBody.getJSONArray("tasks");
+		List<DeleteLogStoreLogsTask> tasks = new ArrayList<>();
+		
+		if (tasksArray != null) {
+			for (int i = 0; i < tasksArray.size(); i++) {
+				JSONObject taskObj = tasksArray.getJSONObject(i);
+				DeleteLogStoreLogsTask task = new DeleteLogStoreLogsTask();
+				task.fromJsonObject(taskObj);
+				tasks.add(task);
+			}
+		}
+		
+		return new ListDeleteLogStoreLogsTasksResponse(response.getHeaders(), total, tasks);
+	}
 }
