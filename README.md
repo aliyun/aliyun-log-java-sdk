@@ -12,8 +12,9 @@ String accessKey = "your_access_key";
 String host = "your_endpoint";
 Client client = new Client(host, accessId, accessKey);
 
-// 以下参数仅在 Metricstore 使用时设置，对于大时间线基数Metricstore，可提升时序数据检索性能
-// 注意：请勿 Logstore 设置，会产生写入失败等问题。
+// UseMetricStoreUrl 使用注意:
+// 1. 作用域为 Client 全局设置, 自动追加 Hash Key(METRICS_STORE_AUTO_HASH), 仅供发送 Store 为 Metricstore 时设置，对于大时间线基数 Metricstore，可提升时序数据检索性能
+// 2. 当同时存在 Logstore/Metricstore 写入时, 用户需要手动指定 HashKey 为 METRICS_STORE_AUTO_HASH 手动触发写入 Metricstore 自动 Hash 写功能.
 client.setUseMetricStoreUrl(true);
 ```
 
