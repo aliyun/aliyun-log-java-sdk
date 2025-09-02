@@ -822,7 +822,7 @@ public class Client implements LogService {
 		logBytes = Utils.compressLogBytes(logBytes, request.getCompressType());
 		Map<String, String> urlParameter = request.GetAllParams();
 		StringBuilder resourceUriBuilder = new StringBuilder();
-		if (isUseMetricStoreUrl()) {
+		if (isUseMetricStoreUrl() || request.isMetricsAutoHash()) {
 			resourceUriBuilder.append("/prometheus/").
 							  append(request.GetProject()).
 							  append("/").
