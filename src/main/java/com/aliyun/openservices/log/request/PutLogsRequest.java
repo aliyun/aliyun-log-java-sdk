@@ -27,6 +27,11 @@ public class PutLogsRequest extends Request {
     private byte[] logGroupBytes = null;
     private Integer hashRouteKeySeqId;
     private String processor;
+    private boolean metricsAutoHash = false;
+
+    public boolean isMetricsAutoHash() {
+        return metricsAutoHash;
+    }
 
     /**
      * @return the compressType
@@ -266,5 +271,9 @@ public class PutLogsRequest extends Request {
 
     public void setProcessor(String processor) {
         this.processor = processor;
+    }
+
+    public void setMetricsAutoHash(boolean metricsAutoHash) {
+        this.metricsAutoHash = metricsAutoHash;
     }
 }
