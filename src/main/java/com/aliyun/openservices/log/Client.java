@@ -479,6 +479,8 @@ public class Client implements LogService {
 		}
 	}
 
+	// use `tagResources(TagResourcesRequest request)` instead
+	@Deprecated
 	public TagResourcesResponse tagResources(String tagResourcesStr) throws LogException {
 		CodingUtils.assertParameterNotNull(tagResourcesStr, "tagResourcesStr");
 		Map<String, String> headParameter = GetCommonHeadPara("");
@@ -492,9 +494,17 @@ public class Client implements LogService {
 
 	public TagResourcesResponse tagResources(TagResourcesRequest request) throws LogException {
 		Args.notNull(request, "request");
-		return tagResources(JsonUtils.serialize(request));
+		Map<String, String> headParameter = GetCommonHeadPara("");
+		byte[] body = encodeToUtf8(JsonUtils.serialize(request));
+		String resourceUri = "/tag";
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(request.getProject(), HttpMethod.POST, resourceUri, urlParameter, headParameter, body);
+        Map<String, String> resHeaders = response.getHeaders();
+        return new TagResourcesResponse(resHeaders);
 	}
 
+	// use `untagResources(UntagResourcesRequest request)` instead
+	@Deprecated
 	public UntagResourcesResponse untagResources(String untagResourcesStr) throws LogException {
 		CodingUtils.assertParameterNotNull(untagResourcesStr, "tagResourcesStr");
 		Map<String, String> headParameter = GetCommonHeadPara("");
@@ -508,7 +518,13 @@ public class Client implements LogService {
 
 	public UntagResourcesResponse untagResources(UntagResourcesRequest request) throws LogException {
 		Args.notNull(request, "request");
-		return untagResources(JsonUtils.serialize(request));
+		Map<String, String> headParameter = GetCommonHeadPara("");
+		byte[] body = encodeToUtf8(JsonUtils.serialize(request));
+		String resourceUri = "/untag";
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(request.getProject(), HttpMethod.POST, resourceUri, urlParameter, headParameter, body);
+        Map<String, String> resHeaders = response.getHeaders();
+        return new UntagResourcesResponse(resHeaders);
 	}
 
 	public TagResourcesResponse tagResourcesSystemTags(TagResourcesSystemTagsRequest request) throws LogException {
