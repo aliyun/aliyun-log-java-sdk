@@ -46,4 +46,14 @@ public class TagResourcesRequest implements Serializable {
     public static String genResourceId(String project, String subResourceId) {
         return project + "#" + subResourceId;
     }
+
+
+    public String getProject() {
+        if (resourceId == null || resourceId.isEmpty())
+            return "";
+        String id = this.resourceId.get(0);
+        if (id == null)
+            return "";
+        return id.split("#")[0];
+    }
 }
