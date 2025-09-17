@@ -1,8 +1,11 @@
 package com.aliyun.openservices.log.sample;
 
+import com.alibaba.fastjson.JSON;
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.request.CreateMaterializedViewRequest;
 import com.aliyun.openservices.log.request.ListMaterializedViewsRequest;
+import com.aliyun.openservices.log.request.UpdateMaterializedViewRequest;
+import com.aliyun.openservices.log.response.GetMaterializedViewResponse;
 import com.aliyun.openservices.log.response.ListMaterializedViewsResponse;
 
 public class MaterializedViewTest
@@ -17,8 +20,10 @@ public class MaterializedViewTest
 
     public static void main(String[] args) throws Exception {
         testCreateMv();
-        // testDeleteMv();
+        testUpdateMv();
+        testGetMv();
         testLocalListMVs();
+        testDeleteMv();
     }
 
     public static void testCreateMv() throws Exception {
@@ -26,7 +31,7 @@ public class MaterializedViewTest
 
         CreateMaterializedViewRequest request = new CreateMaterializedViewRequest(
                 PROJECT_NAME,
-                "perf_test_1_mv_7",
+                "perf_test_1_mv",
                 logstore,
                 "not xyz | SELECT batchId % 10 as g, count(*) from log group by g",
                 5,
@@ -34,6 +39,20 @@ public class MaterializedViewTest
                 9
         );
         CLIENT.createMaterializedView(request);
+    }
+
+    public static void testGetMv() throws Exception {
+        GetMaterializedViewResponse response = CLIENT.getMaterializedView(PROJECT_NAME, "perf_test_1_mv");
+        System.out.println(JSON.toJSONString(response));
+    }
+
+    public static void testUpdateMv() throws Exception {
+        UpdateMaterializedViewRequest request = new UpdateMaterializedViewRequest(PROJECT_NAME, "perf_test_1_mv");
+        request.setAggIntervalMins(30);
+        request.setOriginalSql("not ttt | SELECT batchId % 100 as g, count(*) from log group by g");
+        request.setTTL(8);
+        request.setEnable(false);
+        CLIENT.updateMaterializedView(request);
     }
 
     public static void testCreateMvWithTS() throws Exception {

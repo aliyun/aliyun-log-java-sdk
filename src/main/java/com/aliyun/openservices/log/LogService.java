@@ -3752,6 +3752,8 @@ public interface LogService {
 	void deleteAsyncSql(DeleteAsyncSqlRequest request) throws LogException;
 
 	void createMaterializedView(CreateMaterializedViewRequest request) throws LogException;
+	GetMaterializedViewResponse getMaterializedView(String project, String materializedView) throws LogException;
+	void updateMaterializedView(UpdateMaterializedViewRequest request) throws LogException;
 	void deleteMaterializedView(String project, String materializedView) throws LogException;
 	ListMaterializedViewsResponse listMaterializedViews(ListMaterializedViewsRequest request) throws LogException;
 

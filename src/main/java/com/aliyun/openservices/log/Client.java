@@ -6532,6 +6532,34 @@ public class Client implements LogService {
 		SendData(request.GetProject(), HttpMethod.POST, "/materializedviews", request.GetAllParams(), headers, request.getRequestBody(), null, realServerIP);
 	}
 
+	public GetMaterializedViewResponse getMaterializedView(String project, String materializedView) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		Map<String, String> headers = GetCommonHeadPara(project);
+		headers.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = "/materializedviews/" + materializedView;
+		ResponseMessage response = SendData(project, HttpMethod.GET, resourceUri, Collections.emptyMap(), headers);
+		Map<String, String> resHeaders = response.getHeaders();
+		String requestId = GetRequestId(resHeaders);
+		JSONObject object = parseResponseBody(response, requestId);
+        return new GetMaterializedViewResponse(
+				resHeaders,
+				object.getString("name"),
+				object.getString("logstore"),
+				object.getString("originalSql"),
+				object.getIntValue("aggIntervalMins"),
+				object.getIntValue("startTime"),
+				object.getIntValue("ttl"),
+				object.getBoolean("enabled"));
+	}
+
+	@Override
+	public void updateMaterializedView(UpdateMaterializedViewRequest request) throws LogException {
+		request.checkValid();
+		Map<String, String> headers = GetCommonHeadPara(request.GetProject());
+		headers.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		SendData(request.GetProject(), HttpMethod.PUT, "/materializedviews/" + request.getName(), request.GetAllParams(), headers, request.getRequestBody(), null, realServerIP);
+	}
+
 	@Override
 	public void deleteMaterializedView(String project, String materializedView) throws LogException {
 		Map<String, String> headers = GetCommonHeadPara(project);
