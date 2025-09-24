@@ -11,7 +11,7 @@
 
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.138</version>
+    <version>0.6.139</version>
     <packaging>jar</packaging>
 
     <name>Aliyun LOG Java SDK</name>
@@ -223,7 +223,7 @@
                         </relocation>
                         <relocation>
                             <pattern>com.alibaba.fastjson</pattern>
-                            <shadedPattern>com.aliyun.log.thirdparty.com.alibaba:fastjson</shadedPattern>
+                            <shadedPattern>com.aliyun.log.thirdparty.com.alibaba.fastjson</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.apache.http</pattern>
