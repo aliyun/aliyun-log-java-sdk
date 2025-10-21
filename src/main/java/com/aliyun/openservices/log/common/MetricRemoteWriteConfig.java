@@ -33,6 +33,9 @@ public class MetricRemoteWriteConfig {
     @JSONField(name = "trim_empty_labels")
     private boolean trimEmptyLabels;
 
+    @JSONField(name = "utf8_write_enable")
+    private boolean utf8WriteEnable;
+
     public int getHistoryInterval() {
         return historyInterval;
     }
@@ -95,6 +98,14 @@ public class MetricRemoteWriteConfig {
 
     public void setTrimEmptyLabels(boolean trimEmptyLabels) {
         this.trimEmptyLabels = trimEmptyLabels;
+    }
+
+    public boolean isUtf8WriteEnable() {
+        return utf8WriteEnable;
+    }
+
+    public void setUtf8WriteEnable(boolean utf8WriteEnable) {
+        this.utf8WriteEnable = utf8WriteEnable;
     }
 
 

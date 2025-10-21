@@ -10,6 +10,8 @@ public class ListProjectRequest extends Request {
     private static final long serialVersionUID = -7830849975374540780L;
 
     private String resourceGroupId;
+    private String description;
+    private boolean fetchQuota = false;
 
     public void SetOffset(int offset) {
         SetParam(Consts.CONST_OFFSET, String.valueOf(offset));
@@ -42,6 +44,26 @@ public class ListProjectRequest extends Request {
     }
 
     public void setFetchQuota(boolean fetchQuota) {
+        this.fetchQuota = fetchQuota;
         SetParam("fetchQuota", String.valueOf(fetchQuota));
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+        if (description != null) {
+            SetParam("description", description);
+        }
+    }
+
+    public boolean isFetchQuota() {
+        return fetchQuota;
+    }
+
+    public String getResourceGroupId() {
+        return resourceGroupId;
     }
 }
