@@ -1811,7 +1811,7 @@ public interface LogService {
 	 *                    the config
 	 * @return the create metric store response
 	 * @throws LogException
-	 *                                  if any error happen when creasting logstore
+	 *                                  if any error happen when creating metric store
 	 *
 	 * @throws NullPointerException
 	 *                                  if any parameter is null
@@ -1825,10 +1825,10 @@ public interface LogService {
 	 * create a metric store in a project
 	 *
 	 * @param request
-	 *                logstore create request
+	 *                metricstore create request
 	 * @return the create metric store response
 	 * @throws LogException
-	 *                                  if any error happen when creasting logstore
+	 *                                  if any error happen when creating metric store
 	 *
 	 * @throws NullPointerException
 	 *                                  if required parameter is null
