@@ -10,16 +10,16 @@ public class GetMetricStoreRequest extends Request {
   }
 
   /**
-   * @return the metricStore
+   * @return the metricStore name
    */
-  public String GetMetricStore() {
+  public String getMetricStoreName() {
     return metricStore;
   }
 
   /**
-   * @param metricStore the metricStore to set
+   * @param metricStore the metricStore name to set
    */
-  public void SetMetricStore(String metricStore) {
+  public void setMetricStoreName(String metricStore) {
     this.metricStore = metricStore;
   }
 }

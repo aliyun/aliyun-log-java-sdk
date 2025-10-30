@@ -9,11 +9,11 @@ public class DeleteMetricStoreRequest extends Request {
     this.metricStoreName = metricStoreName;
   }
 
-  public String GetMetricStoreName() {
+  public String getMetricStoreName() {
     return metricStoreName;
   }
 
-  public void SetMetricStoreName(String metricStoreName) {
+  public void setMetricStoreName(String metricStoreName) {
     this.metricStoreName = metricStoreName;
   }
 }
