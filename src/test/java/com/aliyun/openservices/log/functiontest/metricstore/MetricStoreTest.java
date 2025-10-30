@@ -1,15 +1,17 @@
 package com.aliyun.openservices.log.functiontest.metricstore;
 
 
-import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.MetricStore;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.functiontest.logstore.FunctionTest;
-import com.aliyun.openservices.log.request.GetLogStoreRequest;
-import com.aliyun.openservices.log.request.UpdateLogStoreRequest;
-import com.aliyun.openservices.log.response.CreateLogStoreResponse;
-import com.aliyun.openservices.log.response.DeleteLogStoreResponse;
-import com.aliyun.openservices.log.response.GetLogStoreResponse;
-import com.aliyun.openservices.log.response.UpdateLogStoreResponse;
+import com.aliyun.openservices.log.request.CreateMetricStoreRequest;
+import com.aliyun.openservices.log.request.DeleteMetricStoreRequest;
+import com.aliyun.openservices.log.request.GetMetricStoreRequest;
+import com.aliyun.openservices.log.request.UpdateMetricStoreRequest;
+import com.aliyun.openservices.log.response.CreateMetricStoreResponse;
+import com.aliyun.openservices.log.response.DeleteMetricStoreResponse;
+import com.aliyun.openservices.log.response.GetMetricStoreResponse;
+import com.aliyun.openservices.log.response.UpdateMetricStoreResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,25 +37,25 @@ public class MetricStoreTest extends FunctionTest {
 
     @Test
     public void CRUDMetricStore() throws LogException {
-        LogStore metricStore = new LogStore(METRICSTORE, 30, 2);
-        CreateLogStoreResponse createMetricStoreRes = client.createMetricStore(PROJECT, metricStore);
+        MetricStore metricStore = new MetricStore(METRICSTORE, 30, 2);
+        CreateMetricStoreResponse createMetricStoreRes = client.createMetricStore(new CreateMetricStoreRequest(PROJECT, metricStore));
         assertNotNull(createMetricStoreRes);
 
-        GetLogStoreResponse getMetricStoreRes = client.getMetricStore(new GetLogStoreRequest(PROJECT, METRICSTORE));
+        GetMetricStoreResponse getMetricStoreRes = client.getMetricStore(new GetMetricStoreRequest(PROJECT, METRICSTORE));
         assertNotNull(getMetricStoreRes);
-        LogStore metricStore1 = getMetricStoreRes.GetLogStore();
+        MetricStore metricStore1 = getMetricStoreRes.GetMetricStore();
         assertEquals(30, metricStore1.GetTtl());
 
         metricStore.SetTtl(15);
-        UpdateLogStoreResponse updateMetricStoreRes = client.updateMetricStore(new UpdateLogStoreRequest(PROJECT, metricStore));
+        UpdateMetricStoreResponse updateMetricStoreRes = client.updateMetricStore(new UpdateMetricStoreRequest(PROJECT, metricStore));
         assertNotNull(updateMetricStoreRes);
 
-        getMetricStoreRes = client.getMetricStore(new GetLogStoreRequest(PROJECT, METRICSTORE));
+        getMetricStoreRes = client.getMetricStore(new GetMetricStoreRequest(PROJECT, METRICSTORE));
         assertNotNull(getMetricStoreRes);
-        metricStore = getMetricStoreRes.GetLogStore();
+        metricStore = getMetricStoreRes.GetMetricStore();
         assertEquals(15, metricStore.GetTtl());
 
-        DeleteLogStoreResponse deleteMetricStoreRes = client.deleteMetricStore(PROJECT, METRICSTORE);
+        DeleteMetricStoreResponse deleteMetricStoreRes = client.deleteMetricStore(new DeleteMetricStoreRequest(PROJECT, METRICSTORE));
         assertNotNull(deleteMetricStoreRes);
     }
 }
