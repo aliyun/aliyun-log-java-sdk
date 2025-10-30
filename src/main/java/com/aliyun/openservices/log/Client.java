@@ -2654,7 +2654,7 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		MetricStore metricStore = request.GetMetricStore();
+		MetricStore metricStore = request.getMetricStore();
 		CodingUtils.assertParameterNotNull(metricStore, "metricStore");
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		byte[] body = encodeToUtf8(metricStore.ToRequestString());
@@ -2684,7 +2684,7 @@ public class Client implements LogService {
 		CodingUtils.assertParameterNotNull(request, "request");
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		MetricStore metricStore = request.GetMetricStore();
+		MetricStore metricStore = request.getMetricStore();
 		CodingUtils.assertParameterNotNull(metricStore, "metricStore");
 		String metricStoreName = metricStore.getName();
 		CodingUtils.validateLogstore(metricStoreName);

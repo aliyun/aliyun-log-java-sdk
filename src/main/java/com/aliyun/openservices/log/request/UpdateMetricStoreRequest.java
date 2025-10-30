@@ -8,14 +8,14 @@ public class UpdateMetricStoreRequest extends Request {
 
 	public UpdateMetricStoreRequest(String project, MetricStore metricStore) {
 		super(project);
-		SetMetricStore(metricStore);
+		setMetricStore(metricStore);
 	}
 	
-	public MetricStore GetMetricStore() {
+	public MetricStore getMetricStore() {
 		return metricStore;
 	}
 
-	public void SetMetricStore(MetricStore metricStore) {
+	public void setMetricStore(MetricStore metricStore) {
 		this.metricStore = new MetricStore(metricStore);
 	}
 }
