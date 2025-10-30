@@ -2667,7 +2667,7 @@ public class Client implements LogService {
 		return new CreateMetricStoreResponse(resHeaders);
 	}
 
-	private MetricStore ExtractMetricStoreFromResponse(JSONObject dict,
+	private MetricStore extractMetricStoreFromResponse(JSONObject dict,
 			String requestId) throws LogException {
 		MetricStore metricStore = new MetricStore();
 		try {
@@ -2715,7 +2715,7 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = parseResponseBody(response, requestId);
-		MetricStore metricStore = ExtractMetricStoreFromResponse(object, requestId);
+		MetricStore metricStore = extractMetricStoreFromResponse(object, requestId);
 		return new GetMetricStoreResponse(resHeaders, metricStore);
 	}
 
