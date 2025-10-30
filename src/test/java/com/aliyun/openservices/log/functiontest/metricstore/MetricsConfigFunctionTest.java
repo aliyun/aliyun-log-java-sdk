@@ -5,6 +5,7 @@ import java.util.List;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.LogStore;
+import com.aliyun.openservices.log.common.MetricStore;
 import com.aliyun.openservices.log.common.MetricDownSamplingConfig;
 import com.aliyun.openservices.log.common.MetricRemoteWriteConfig;
 import com.aliyun.openservices.log.common.MetricDownSamplingConfig.MetricDownSamplingStatus;
@@ -81,7 +82,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
     public void setUp() throws LogException, InterruptedException {
         client.CreateProject(PROJECTEXIST, "");
         Thread.sleep(1000 * 10);
-        client.createMetricStore(PROJECTEXIST, new LogStore(METRICSEXIST, 1, 1));
+        client.createMetricStore(new CreateMetricStoreRequest(PROJECTEXIST, new MetricStore(METRICSEXIST, 1, 1)));
         Thread.sleep(1000 * 10);
         client.CreateLogStore(PROJECTEXIST, new LogStore(LOGSTOREEXIST, 1, 1));
         Thread.sleep(1000 * 10);
