@@ -11,14 +11,14 @@ public class GetMetricStoreResponse extends Response {
 
   public GetMetricStoreResponse(Map<String, String> headers, MetricStore metricStore) {
     super(headers);
-    SetMetricStore(metricStore);
+    setMetricStore(metricStore);
   }
 
-  public MetricStore GetMetricStore() {
+  public MetricStore getMetricStore() {
     return metricStore;
   }
 
-  public void SetMetricStore(MetricStore metricStore) {
+  public void setMetricStore(MetricStore metricStore) {
     this.metricStore = new MetricStore(metricStore);
   }
 }

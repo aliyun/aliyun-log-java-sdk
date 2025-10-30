@@ -43,7 +43,7 @@ public class MetricStoreTest extends FunctionTest {
 
         GetMetricStoreResponse getMetricStoreRes = client.getMetricStore(new GetMetricStoreRequest(PROJECT, METRICSTORE));
         assertNotNull(getMetricStoreRes);
-        MetricStore metricStore1 = getMetricStoreRes.GetMetricStore();
+        MetricStore metricStore1 = getMetricStoreRes.getMetricStore();
         assertEquals(30, metricStore1.getTtl());
 
         metricStore.setTtl(15);
@@ -52,7 +52,7 @@ public class MetricStoreTest extends FunctionTest {
 
         getMetricStoreRes = client.getMetricStore(new GetMetricStoreRequest(PROJECT, METRICSTORE));
         assertNotNull(getMetricStoreRes);
-        metricStore = getMetricStoreRes.GetMetricStore();
+        metricStore = getMetricStoreRes.getMetricStore();
         assertEquals(15, metricStore.getTtl());
 
         DeleteMetricStoreResponse deleteMetricStoreRes = client.deleteMetricStore(new DeleteMetricStoreRequest(PROJECT, METRICSTORE));
