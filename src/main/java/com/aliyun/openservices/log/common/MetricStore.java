@@ -15,8 +15,8 @@ public class MetricStore implements Serializable {
     private int ttl = -1;
     private int shardCount = -1;
     private boolean appendMeta = false;
-    private boolean mAutoSplit = false;
-    private int mMaxSplitShard = -1;
+    private boolean autoSplit = false;
+    private int maxSplitShard = -1;
     private int createTime = -1;
     private int lastModifyTime = -1;
     private int hotTTL = -1;
@@ -36,14 +36,14 @@ public class MetricStore implements Serializable {
     public MetricStore(MetricStore metricStore) {
         super();
         Args.notNull(metricStore, "MetricStore must not be null");
-        this.name = metricStore.GetName();
-        this.ttl = metricStore.GetTtl();
-        this.shardCount = metricStore.GetShardCount();
-        this.createTime = metricStore.GetCreateTime();
-        this.lastModifyTime = metricStore.GetLastModifyTime();
+        this.name = metricStore.getName();
+        this.ttl = metricStore.getTtl();
+        this.shardCount = metricStore.getShardCount();
+        this.createTime = metricStore.getCreateTime();
+        this.lastModifyTime = metricStore.getLastModifyTime();
         this.appendMeta = metricStore.isAppendMeta();
-        this.mAutoSplit = metricStore.ismAutoSplit();
-        this.mMaxSplitShard = metricStore.getmMaxSplitShard();
+        this.autoSplit = metricStore.isAutoSplit();
+        this.maxSplitShard = metricStore.getMaxSplitShard();
         this.hotTTL = metricStore.hotTTL;
         this.mode = metricStore.mode;
         this.infrequentAccessTTL = metricStore.infrequentAccessTTL;
@@ -59,27 +59,27 @@ public class MetricStore implements Serializable {
         this.createTime = logStore.GetCreateTime();
         this.lastModifyTime = logStore.GetLastModifyTime();
         this.appendMeta = logStore.isAppendMeta();
-        this.mAutoSplit = logStore.ismAutoSplit();
-        this.mMaxSplitShard = logStore.getmMaxSplitShard();
+        this.autoSplit = logStore.ismAutoSplit();
+        this.maxSplitShard = logStore.getmMaxSplitShard();
         this.hotTTL = logStore.getHotTTL();
         this.mode = logStore.getMode();
         this.infrequentAccessTTL = logStore.getInfrequentAccessTTL();
     }
 
-    public int getmMaxSplitShard() {
-        return mMaxSplitShard;
+    public int getMaxSplitShard() {
+        return maxSplitShard;
     }
 
-    public void setmMaxSplitShard(int mMaxSplitShard) {
-        this.mMaxSplitShard = mMaxSplitShard;
+    public void setMaxSplitShard(int mMaxSplitShard) {
+        this.maxSplitShard = mMaxSplitShard;
     }
 
-    public boolean ismAutoSplit() {
-        return mAutoSplit;
+    public boolean isAutoSplit() {
+        return autoSplit;
     }
 
-    public void setmAutoSplit(boolean mAutoSplit) {
-        this.mAutoSplit = mAutoSplit;
+    public void setAutoSplit(boolean mAutoSplit) {
+        this.autoSplit = mAutoSplit;
     }
 
     public boolean isAppendMeta() {
@@ -93,56 +93,56 @@ public class MetricStore implements Serializable {
     /**
      * @return the metricStoreName
      */
-    public String GetName() {
+    public String getName() {
         return name;
     }
 
     /**
      * @return the ttl
      */
-    public int GetTtl() {
+    public int getTtl() {
         return ttl;
     }
 
     /**
      * @return the shardCount
      */
-    public int GetShardCount() {
+    public int getShardCount() {
         return shardCount;
     }
 
     /**
      * @return the createTime
      */
-    public int GetCreateTime() {
+    public int getCreateTime() {
         return createTime;
     }
 
     /**
      * @return the lastModifyTime
      */
-    public int GetLastModifyTime() {
+    public int getLastModifyTime() {
         return lastModifyTime;
     }
 
     /**
      * @param name the metricStoreName to Set
      */
-    public void SetName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     /**
      * @param ttl the ttl to Set
      */
-    public void SetTtl(int ttl) {
+    public void setTtl(int ttl) {
         this.ttl = ttl;
     }
 
     /**
      * @param shardCount the shardCount to Set
      */
-    public void SetShardCount(int shardCount) {
+    public void setShardCount(int shardCount) {
         this.shardCount = shardCount;
     }
 
@@ -172,14 +172,14 @@ public class MetricStore implements Serializable {
 
     public JSONObject ToRequestJson() {
         JSONObject metricStoreDict = new JSONObject();
-        metricStoreDict.put("name", GetName());
-        metricStoreDict.put("shardCount", GetShardCount());
-        metricStoreDict.put("autoSplit", ismAutoSplit());
-        metricStoreDict.put("maxSplitShard", getmMaxSplitShard());
+        metricStoreDict.put("name", getName());
+        metricStoreDict.put("shardCount", getShardCount());
+        metricStoreDict.put("autoSplit", isAutoSplit());
+        metricStoreDict.put("maxSplitShard", getMaxSplitShard());
         metricStoreDict.put("appendMeta", isAppendMeta());
 
         if (ttl > 0) {
-            metricStoreDict.put("ttl", GetTtl());
+            metricStoreDict.put("ttl", getTtl());
         }
         if (hotTTL > 0) {
             metricStoreDict.put("hot_ttl", hotTTL);
@@ -199,8 +199,8 @@ public class MetricStore implements Serializable {
 
     public JSONObject ToJsonObject() {
         JSONObject dict = ToRequestJson();
-        dict.put("createTime", GetCreateTime());
-        dict.put("lastModifyTime", GetLastModifyTime());
+        dict.put("createTime", getCreateTime());
+        dict.put("lastModifyTime", getLastModifyTime());
         return dict;
     }
 
@@ -210,9 +210,9 @@ public class MetricStore implements Serializable {
 
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
-            SetName(dict.getString("name"));
-            SetTtl(dict.getIntValue("ttl"));
-            SetShardCount(dict.getIntValue("shardCount"));
+            setName(dict.getString("name"));
+            setTtl(dict.getIntValue("ttl"));
+            setShardCount(dict.getIntValue("shardCount"));
             if (dict.containsKey("createTime")) {
                 createTime = dict.getIntValue("createTime");
             }
@@ -222,10 +222,10 @@ public class MetricStore implements Serializable {
             }
 
             if (dict.containsKey("autoSplit")) {
-                mAutoSplit = dict.getBoolean("autoSplit");
+                autoSplit = dict.getBoolean("autoSplit");
             }
             if (dict.containsKey("maxSplitShard")) {
-                mMaxSplitShard = dict.getIntValue("maxSplitShard");
+                maxSplitShard = dict.getIntValue("maxSplitShard");
             }
             appendMeta = dict.containsKey("appendMeta") && dict.getBoolean("appendMeta");
             if (dict.containsKey("hot_ttl")) {

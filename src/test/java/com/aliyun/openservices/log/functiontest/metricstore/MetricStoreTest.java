@@ -44,16 +44,16 @@ public class MetricStoreTest extends FunctionTest {
         GetMetricStoreResponse getMetricStoreRes = client.getMetricStore(new GetMetricStoreRequest(PROJECT, METRICSTORE));
         assertNotNull(getMetricStoreRes);
         MetricStore metricStore1 = getMetricStoreRes.GetMetricStore();
-        assertEquals(30, metricStore1.GetTtl());
+        assertEquals(30, metricStore1.getTtl());
 
-        metricStore.SetTtl(15);
+        metricStore.setTtl(15);
         UpdateMetricStoreResponse updateMetricStoreRes = client.updateMetricStore(new UpdateMetricStoreRequest(PROJECT, metricStore));
         assertNotNull(updateMetricStoreRes);
 
         getMetricStoreRes = client.getMetricStore(new GetMetricStoreRequest(PROJECT, METRICSTORE));
         assertNotNull(getMetricStoreRes);
         metricStore = getMetricStoreRes.GetMetricStore();
-        assertEquals(15, metricStore.GetTtl());
+        assertEquals(15, metricStore.getTtl());
 
         DeleteMetricStoreResponse deleteMetricStoreRes = client.deleteMetricStore(new DeleteMetricStoreRequest(PROJECT, METRICSTORE));
         assertNotNull(deleteMetricStoreRes);

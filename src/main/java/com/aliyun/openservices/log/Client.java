@@ -2686,7 +2686,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		MetricStore metricStore = request.GetMetricStore();
 		CodingUtils.assertParameterNotNull(metricStore, "metricStore");
-		String metricStoreName = metricStore.GetName();
+		String metricStoreName = metricStore.getName();
 		CodingUtils.validateLogstore(metricStoreName);
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		byte[] body = encodeToUtf8(metricStore.ToRequestString());
