@@ -2642,6 +2642,34 @@ public class Client implements LogService {
 	}
 
 	@Override
+	public CreateMetricStoreResponse createMetricStore(String project,
+			MetricStore metricStore) throws LogException {
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertParameterNotNull(metricStore, "metricStore");
+		return createMetricStore(new CreateMetricStoreRequest(project, metricStore));
+	}
+
+	@Override
+	public CreateMetricStoreResponse createMetricStore(CreateMetricStoreRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		MetricStore metricStore = request.GetMetricStore();
+		CodingUtils.assertParameterNotNull(metricStore, "metricStore");
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		byte[] body = encodeToUtf8(metricStore.ToRequestString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = "/metricstores";
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.POST,
+				resourceUri, urlParameter, headParameter, body);
+		Map<String, String> resHeaders = response.getHeaders();
+		return new CreateMetricStoreResponse(resHeaders);
+	}
+
+	// use createMetricStore(String project, MetricStore metricStore) instead
+	@Deprecated
+	@Override
 	public CreateLogStoreResponse createMetricStore(String project,
 													LogStore metricStore) throws LogException {
 		metricStore.setTelemetryType("Metrics");
@@ -2661,6 +2689,8 @@ public class Client implements LogService {
 		return createLogStoreResponse;
 	}
 
+	// use createMetricStore(CreateMetricStoreRequest request) instead
+	@Deprecated
 	@Override
 	public CreateLogStoreResponse createMetricStore(CreateLogStoreRequest request)
 			throws LogException {

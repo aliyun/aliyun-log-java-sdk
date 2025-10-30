@@ -1806,6 +1806,42 @@ public interface LogService {
 	 * create a metric store in a project
 	 *
 	 * @param project
+	 *                    the project name
+	 * @param metricStore
+	 *                    the config
+	 * @return the create metric store response
+	 * @throws LogException
+	 *                                  if any error happen when creasting logstore
+	 *
+	 * @throws NullPointerException
+	 *                                  if any parameter is null
+	 * @throws IllegalArgumentException
+	 *                                  if project is empty
+	 */
+	CreateMetricStoreResponse createMetricStore(String project,
+			MetricStore metricStore) throws LogException;
+
+	/**
+	 * create a metric store in a project
+	 *
+	 * @param request
+	 *                logstore create request
+	 * @return the create metric store response
+	 * @throws LogException
+	 *                                  if any error happen when creasting logstore
+	 *
+	 * @throws NullPointerException
+	 *                                  if required parameter is null
+	 * @throws IllegalArgumentException
+	 *                                  if any required string parameter is empty
+	 */
+	CreateMetricStoreResponse createMetricStore(CreateMetricStoreRequest request)
+			throws LogException;
+
+	/**
+	 * create a metric store in a project
+	 *
+	 * @param project
 	 *            the project name
 	 * @param metricStore
 	 *            the config
