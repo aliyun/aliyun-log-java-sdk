@@ -1839,6 +1839,60 @@ public interface LogService {
 			throws LogException;
 
 	/**
+	 * Update metric store config
+	 *
+	 * @param request
+	 *                update metric store request
+	 * @return the update metric store response
+	 * @throws LogException
+	 *                                  if any error happen when updating metric
+	 *                                  store
+	 *
+	 * @throws NullPointerException
+	 *                                  if required parameter is null
+	 * @throws IllegalArgumentException
+	 *                                  if any required string parameter is empty
+	 */
+	UpdateMetricStoreResponse updateMetricStore(UpdateMetricStoreRequest request)
+			throws LogException;
+
+	/**
+	 * Get metric store config
+	 *
+	 * @param request
+	 *                get metric store request
+	 * @return the get metric store response
+	 * @throws LogException
+	 *                                  if any error happen when getting metric
+	 *                                  store
+	 *
+	 * @throws NullPointerException
+	 *                                  if required parameter is null
+	 * @throws IllegalArgumentException
+	 *                                  if any required string parameter is empty
+	 */
+	GetMetricStoreResponse getMetricStore(GetMetricStoreRequest request)
+			throws LogException;
+
+	/**
+	 * Delete the metric store
+	 *
+	 * @param request
+	 *                delete metric store request
+	 * @return the delete metric store response
+	 * @throws LogException
+	 *                                  if any error happen when deleting metric
+	 *                                  store
+	 *
+	 * @throws NullPointerException
+	 *                                  if required parameter is null
+	 * @throws IllegalArgumentException
+	 *                                  if any required string parameter is empty
+	 */
+	DeleteMetricStoreResponse deleteMetricStore(DeleteMetricStoreRequest request)
+			throws LogException;
+
+	/**
 	 * create a metric store in a project
 	 *
 	 * @param project

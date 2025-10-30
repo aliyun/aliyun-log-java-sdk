@@ -2667,6 +2667,75 @@ public class Client implements LogService {
 		return new CreateMetricStoreResponse(resHeaders);
 	}
 
+	private MetricStore ExtractMetricStoreFromResponse(JSONObject dict,
+			String requestId) throws LogException {
+		MetricStore metricStore = new MetricStore();
+		try {
+			metricStore.FromJsonString(dict.toString());
+		} catch (LogException e) {
+			throw new LogException(e.GetErrorCode(), e.GetErrorMessage(),
+					e.getCause(), requestId);
+		}
+		return metricStore;
+	}
+
+	@Override
+	public UpdateMetricStoreResponse updateMetricStore(UpdateMetricStoreRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		MetricStore metricStore = request.GetMetricStore();
+		CodingUtils.assertParameterNotNull(metricStore, "metricStore");
+		String metricStoreName = metricStore.GetName();
+		CodingUtils.validateLogstore(metricStoreName);
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		byte[] body = encodeToUtf8(metricStore.ToRequestString());
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		String resourceUri = "/metricstores/" + metricStoreName;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.PUT,
+				resourceUri, urlParameter, headParameter, body);
+		Map<String, String> resHeaders = response.getHeaders();
+		return new UpdateMetricStoreResponse(resHeaders);
+	}
+
+	@Override
+	public GetMetricStoreResponse getMetricStore(GetMetricStoreRequest request)
+			throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		String metricStoreName = request.GetMetricStore();
+		CodingUtils.validateLogstore(metricStoreName);
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/metricstores/" + metricStoreName;
+		Map<String, String> urlParameter = request.GetAllParams();
+		ResponseMessage response = SendData(project, HttpMethod.GET,
+				resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		String requestId = GetRequestId(resHeaders);
+		JSONObject object = parseResponseBody(response, requestId);
+		MetricStore metricStore = ExtractMetricStoreFromResponse(object, requestId);
+		return new GetMetricStoreResponse(resHeaders, metricStore);
+	}
+
+	@Override
+	public DeleteMetricStoreResponse deleteMetricStore(DeleteMetricStoreRequest request)
+			throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		String metricStoreName = request.GetMetricStoreName();
+		CodingUtils.validateLogstore(metricStoreName);
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		String resourceUri = "/metricstores/" + metricStoreName;
+		Map<String, String> urlParameter = new HashMap<String, String>();
+		ResponseMessage response = SendData(project, HttpMethod.DELETE,
+				resourceUri, urlParameter, headParameter);
+		Map<String, String> resHeaders = response.getHeaders();
+		return new DeleteMetricStoreResponse(resHeaders);
+	}
+
 	// use createMetricStore(String project, MetricStore metricStore) instead
 	@Deprecated
 	@Override
