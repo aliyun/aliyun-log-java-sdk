@@ -33,13 +33,6 @@ public class MetricStore implements Serializable {
         this.shardCount = shardCount;
     }
 
-    public MetricStore(String name, int ttl, int shardCount, boolean enableWebTracking) {
-        super();
-        this.name = name;
-        this.ttl = ttl;
-        this.shardCount = shardCount;
-    }
-
     public MetricStore(MetricStore metricStore) {
         super();
         Args.notNull(metricStore, "MetricStore must not be null");
