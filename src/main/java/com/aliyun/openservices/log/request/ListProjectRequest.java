@@ -22,12 +22,13 @@ public class ListProjectRequest extends Request {
     }
 
     public void SetProjectName(String projectName) {
-        SetParam(Consts.CONST_PROJECTNAME, String.valueOf(projectName));
+        SetParam(Consts.CONST_PROJECTNAME, projectName);
     }
 
     public void setResourceGroupId(String resourceGroupId) {
-        if(resourceGroupId != null) {
-            SetParam(Consts.CONST_RESOURCEGROUPID, String.valueOf(resourceGroupId));
+        this.resourceGroupId = resourceGroupId;
+        if (resourceGroupId != null) {
+            SetParam(Consts.CONST_RESOURCEGROUPID, resourceGroupId);
         }
     }
 

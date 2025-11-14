@@ -3329,6 +3329,27 @@ public interface LogService {
 	 */
 	ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException;
 
+	/**
+	 * Get the etl meta by etl meta name and etl meta key with specific tag.
+	 * 
+	 * @param project
+	 *            project name
+	 * @param etlMetaName
+	 *            etl meta name
+	 * @param etlMetaKey
+	 *            etl meta key
+	 * @param etlMetaTag
+	 *            etl meta tag
+	 * @return {@link ListEtlMetaResponse}
+	 * @throws LogException
+	 *             if any error occurs
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey, String etlMetaTag) throws LogException;
+
     /**
      * Create logging for project.
      *
