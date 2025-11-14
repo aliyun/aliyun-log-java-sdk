@@ -5846,13 +5846,19 @@ public class Client implements LogService {
 
 	@Override
 	public ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException {
+		return getEtlMeta(project, etlMetaName, etlMetaKey, Consts.CONST_ETLMETA_ALL_TAG_MATCH);
+	}
+
+	@Override
+	public ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey, String etlMetaTag) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(etlMetaName, "etlMetaName");
 		CodingUtils.assertStringNotNullOrEmpty(etlMetaKey, "etlMetaKey");
+		CodingUtils.assertParameterNotNull(etlMetaTag, "etlMetaTag");
 		ListEtlMetaRequest request = new ListEtlMetaRequest(project, 0, 1);
 		request.setEtlMetaName(etlMetaName);
 		request.setEtlMetaKey(etlMetaKey);
-		request.setEtlMetaTag(Consts.CONST_ETLMETA_ALL_TAG_MATCH);
+		request.setEtlMetaTag(etlMetaTag);
 		return listEtlMeta(request);
 	}
 
