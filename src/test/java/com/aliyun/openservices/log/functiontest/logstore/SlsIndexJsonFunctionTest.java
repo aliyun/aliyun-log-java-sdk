@@ -28,6 +28,7 @@ public class SlsIndexJsonFunctionTest extends BaseDataTest {
         index.setLogReduceWhiteList(whiteBlackList);
         index.setLogReduceBlackList(whiteBlackList);
         index.setLogReduceEnable(true);
+        index.setScanIndexEnable(true);
         IndexKeys keys = new IndexKeys();
         IndexKey keyContent = new IndexKey();
         keyContent.SetCaseSensitive(false);
@@ -63,6 +64,8 @@ public class SlsIndexJsonFunctionTest extends BaseDataTest {
         assertEquals(res.getMaxTextLen(), index.getMaxTextLen());
         assertEquals(res.getLogReduceWhiteList(), whiteBlackList);
         assertEquals(res.getLogReduceBlackList(), whiteBlackList);
+        assertEquals(res.isScanIndexEnable(), index.isScanIndexEnable());
+        assertTrue(res.isScanIndexEnable());
         IndexKeys resKeys = res.GetKeys();
         assertEquals(index.GetKeys().GetKeys().size(), resKeys.GetKeys().size());
         assertTrue(resKeys.GetKeys().containsKey("json1"));
@@ -79,5 +82,39 @@ public class SlsIndexJsonFunctionTest extends BaseDataTest {
         
     }
 
+    @Test
+    public void TestScanIndexEnable() throws LogException {
+        // Test scanIndexEnable field serialization and deserialization
+        Index index = new Index();
+        index.SetTtl(7);
+        index.setScanIndexEnable(true);
+        
+        IndexKeys keys = new IndexKeys();
+        IndexKey keyContent = new IndexKey();
+        keyContent.SetCaseSensitive(false);
+        List<String> token = new ArrayList<String>();
+        token.add(",");
+        keyContent.SetToken(token);
+        keys.AddKey("test_key", keyContent);
+        index.SetKeys(keys);
+        
+        // Test JSON serialization
+        String jsonStr = index.ToJsonString();
+        assertTrue(jsonStr.contains("\"scan_index\":true"));
+        
+        // Test JSON deserialization
+        Index indexFromJson = new Index();
+        indexFromJson.FromJsonString(jsonStr);
+        assertEquals(true, indexFromJson.isScanIndexEnable());
+        
+        // Test copy constructor
+        Index indexCopy = new Index(index);
+        assertEquals(index.isScanIndexEnable(), indexCopy.isScanIndexEnable());
+        assertTrue(indexCopy.isScanIndexEnable());
+        
+        // Test default value
+        Index indexDefault = new Index();
+        assertEquals(false, indexDefault.isScanIndexEnable());
+    }
 
 }

@@ -48,6 +48,7 @@ public class SlsIndexDataFunctionTest extends MetaAPIBaseFunctionTest {
     public void testCreateIndex() {
         Index index = new Index();
         index.SetTtl(7);
+        index.setScanIndexEnable(true);
 
         IndexLine line = new IndexLine();
         line.SetCaseSensitive(false);
@@ -66,6 +67,8 @@ public class SlsIndexDataFunctionTest extends MetaAPIBaseFunctionTest {
 
             Index res = client.GetIndex(project, logStore).GetIndex();
 //            assertEquals(index.GetTtl(), res.GetTtl());
+            assertEquals(index.isScanIndexEnable(), res.isScanIndexEnable());
+            assertTrue(res.isScanIndexEnable());
 
             assertEquals(index.GetLine().GetCaseSensitive(), res.GetLine().GetCaseSensitive());
             assertEquals(index.GetLine().GetToken().size(), res.GetLine().GetToken().size());
@@ -100,6 +103,7 @@ public class SlsIndexDataFunctionTest extends MetaAPIBaseFunctionTest {
     public void testUpdateIndex() {
         Index index = new Index();
         index.SetTtl(7);
+        index.setScanIndexEnable(false);
         IndexKeys keys = new IndexKeys();
         IndexKey keyContent = new IndexKey();
         keyContent.SetCaseSensitive(false);
@@ -115,6 +119,8 @@ public class SlsIndexDataFunctionTest extends MetaAPIBaseFunctionTest {
             waitForSeconds(60);
             Index res = client.GetIndex(project, logStore).GetIndex();
             // assertEquals(index.GetTtl(), res.GetTtl());//error // index ttl not work any more
+            assertEquals(index.isScanIndexEnable(), res.isScanIndexEnable());
+            assertEquals(false, res.isScanIndexEnable());
             IndexKeys resKeys = res.GetKeys();
             assertEquals(1, resKeys.GetKeys().size()); 
             org.junit.Assert.assertTrue(resKeys.GetKeys().containsKey(keyName));
