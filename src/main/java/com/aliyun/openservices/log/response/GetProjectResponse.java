@@ -27,7 +27,7 @@ public class GetProjectResponse extends Response {
     private ProjectQuota quota;
 
     private String transferAcceleration;
-    private String location;
+    private Boolean deletionProtection;
 
     public GetProjectResponse(Map<String, String> headers) {
         super(headers);
@@ -45,10 +45,9 @@ public class GetProjectResponse extends Response {
             transferAcceleration = obj.getString("transferAcceleration");
             setCreateTime(obj.getString(Consts.CONST_CREATTIME));
             setLastModifyTime(obj.getString(Consts.CONST_LASTMODIFYTIME));
-            location = obj.getString("location");
+            deletionProtection = obj.getBoolean("deletionProtection");
         } catch (JSONException e) {
-            throw new LogException("InvalidErrorResponse", e.getMessage(),
-                    GetRequestId());
+            throw new LogException("InvalidErrorResponse", e.getMessage(), GetRequestId());
         }
     }
 
@@ -112,11 +111,11 @@ public class GetProjectResponse extends Response {
         this.lastModifyTime = lastModifyTime;
     }
 
-    public String getLocation() {
-        return location;
+    public Boolean getDeletionProtection() {
+        return deletionProtection;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setDeletionProtection(Boolean deletionProtection) {
+        this.deletionProtection = deletionProtection;
     }
 }

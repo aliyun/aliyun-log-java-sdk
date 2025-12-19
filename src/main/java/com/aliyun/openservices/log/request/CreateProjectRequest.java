@@ -8,6 +8,7 @@ public class CreateProjectRequest extends Request {
     private String description;
     private String resourceGroupId;
     private DataRedundancyType dataRedundancyType;
+    private Boolean deletionProtection;
 
     public CreateProjectRequest(String project, String description, DataRedundancyType dataRedundancyType) {
         this(project, description, null, dataRedundancyType);
@@ -48,6 +49,14 @@ public class CreateProjectRequest extends Request {
         this.dataRedundancyType = dataRedundancyType;
     }
 
+    public Boolean getDeletionProtection() {
+        return deletionProtection;
+    }
+
+    public void setDeletionProtection(Boolean deletionProtection) {
+        this.deletionProtection = deletionProtection;
+    }
+
     public String getRequestBody() {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("projectName", GetProject());
@@ -59,6 +68,9 @@ public class CreateProjectRequest extends Request {
         }
         if (dataRedundancyType != null) {
             jsonBody.put("dataRedundancyType", dataRedundancyType.toString());
+        }
+        if (deletionProtection != null) {
+            jsonBody.put("deletionProtection", deletionProtection);
         }
         return jsonBody.toString();
     }
