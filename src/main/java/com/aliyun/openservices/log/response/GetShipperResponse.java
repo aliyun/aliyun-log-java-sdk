@@ -10,19 +10,19 @@ public class GetShipperResponse extends Response {
 	 */
 	private static final long serialVersionUID = -893143600187284633L;
 
-	private ShipperConfig mConfig = null;
+	private ShipperConfig config = null;
 	
 	public GetShipperResponse(Map<String, String> headers, ShipperConfig config) {
 		super(headers);
-		mConfig = config;
+		this.config = config;
 	}
 	
 	public ShipperConfig GetConfig()
 	{
-		return mConfig;
+		return config;
 	}
 	public void SetConfig(ShipperConfig config)
 	{
-		mConfig = config;
+		this.config = config;
 	}
 }

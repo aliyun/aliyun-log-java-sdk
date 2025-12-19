@@ -17,7 +17,7 @@ public class GetHistogramsRequest extends Request {
 	 */
 	private static final long serialVersionUID = -1714940205081492986L;
 
-	private String mLogStore;
+	private String logStore;
 
 	/**
 	 * Construct a request with full parameters
@@ -38,7 +38,7 @@ public class GetHistogramsRequest extends Request {
 	public GetHistogramsRequest(String project, String logStore, String topic,
 			String query, int from, int to) {
 		super(project);
-		mLogStore = logStore;
+		this.logStore = logStore;
 		SetTopic(topic);
 		SetQuery(query);
 		SetFromTime(from);
@@ -105,7 +105,7 @@ public class GetHistogramsRequest extends Request {
 	 *            log store name
 	 */
 	public void SetLogStore(String logStore) {
-		mLogStore = logStore;
+		this.logStore = logStore;
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class GetHistogramsRequest extends Request {
 	 * @return log store name
 	 */
 	public String GetLogStore() {
-		return mLogStore;
+		return logStore;
 	}
 
 	/**

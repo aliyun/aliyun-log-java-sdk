@@ -96,6 +96,7 @@ public class Consts {
     public static final String CONST_X_SLS_RAWDATASIZE = "x-log-rawdatasize";
     public static final String CONST_X_LOG_CURSOR_TIME = "x-log-cursor-time";
     public static final String CONST_X_LOG_END_OF_CURSOR = "x-log-end-of-cursor";
+    public static final String CONST_X_READ_LAST_CURSOR = "x-log-read-last-cursor";
     public static final String CONST_X_SLS_SIGNATUREMETHOD = "x-log-signaturemethod";
     public static final String CONST_X_SLS_REQUESTID = "x-log-requestid";
     public static final String CONST_X_SLS_HOSTIP = "x-log-hostip";
@@ -144,6 +145,7 @@ public class Consts {
     public static final String CONST_FROM_NS_PART = "fromNs";
     public static final String CONST_TO_NS_PART = "toNs";
     public static final String CONST_QUERY = "query";
+    public static final String CONST_PROCESSOR = "processor";
     public static final String CONST_TOKEN = "token";
     public static final String CONST_CURSOR = "cursor";
     public static final String CONST_END_CURSOR = "end_cursor";
@@ -160,7 +162,6 @@ public class Consts {
     public static final String CONST_ACTION_SPLIT = "split";
     public static final String CONST_ACTION_MERGE = "merge";
     public static final String CONST_ROUTE_KEY = "key";
-    public static final String CONST_PULL_MODE = "pullMode";
 
     // context logs
     public static final String CONST_PACK_META = "pack_meta";
@@ -253,6 +254,7 @@ public class Consts {
     public static final String CONST_RESULT_LOG_STORES = "logstores";
     public static final String CONST_RESULT_SUB_STORES = "substores";
     public static final String CONST_RESULT_EXTERNAL_STORES = "externalstores";
+    public static final String CONST_RESULT_MATERIALIZED_VIEWS = "materializedViews";
     public static final String CONST_EXTERNAL_NAME = "externalStoreName";
     public static final String CONST_RESULT_HISTOGRAMS = "histograms";
     public static final String CONST_RESULT_PROCESS = "progress";
@@ -411,6 +413,8 @@ public class Consts {
     public static final String RESOURCE_JSON_PATH = "jsonPath";
     public static final String RESOURCE_JSON_PATH_VALUE = "jsonPathValue";
     public static final String RESOURCE_REVERSE = "reverse";
+    public static final String RESOURCE_SYSTEM_RECORDS = "includeSystemRecords";
+    public static final String RESOURCE_JSON_FILTER_ACC = "jsonFilterAcc";
 
     public static final String TOPOSTORE_URI = "/topostores";
     public static final String TOPOSTORE_OWNER = "owner";
@@ -517,4 +521,5 @@ public class Consts {
 
     public static final String CHARGE_BY_DATA_INGEST = "ChargeByDataIngest";
     public static final String CHARGE_BY_FUNCTION = "ChargeByFunction";
+    public static final String METRICS_STORE_AUTO_HASH = "__sls_metrics_auto_hash__";
 }

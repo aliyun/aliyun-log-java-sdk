@@ -14,7 +14,7 @@ public class CodingUtils {
     private static final Pattern PROJECT_PATTERN = Pattern.compile("^[0-9a-zA-Z-_]{1,128}$");
     private static final Pattern CONSUMER_GROUP_PATTERN = Pattern.compile("^[0-9a-zA-Z-_]{1,128}$");
     private static final Pattern DASHBOARD_PATTERN = Pattern.compile("^[0-9a-z][0-9a-z_-]{0,126}[0-9a-z]$");
-    private static final Pattern LOGSTORE_PATTERN = Pattern.compile("^[0-9a-z][0-9a-z_-]{0,62}[0-9a-z]$");
+    private static final Pattern LOGSTORE_PATTERN = Pattern.compile("^[0-9a-z][0-9a-z_-]{0,78}[0-9a-z]$");
     private static final Pattern LOGSTORE_SEARCH_PATTERN = Pattern.compile("^[A-Za-z0-9_\\*-]+$");
     private static final Pattern METASTORE_PATTERN = Pattern.compile("^[a-z][0-9a-z_.]{1,125}[0-9a-z]$");
     private static final Pattern SAVEDSEARCH_PATTERN = Pattern.compile("^[0-9a-z][0-9a-z_-]{0,62}[0-9a-z]$");
@@ -24,7 +24,7 @@ public class CodingUtils {
     private static final Pattern SHIPPER_PATTERN = Pattern.compile("^[0-9a-zA-Z][0-9a-zA-Z_-]{0,126}[0-9a-zA-Z]$");
     private static final Pattern RESOURCE_PATTERN = Pattern.compile("^[a-z][0-9a-z_.]{1,125}[0-9a-z]$");
     private static final Pattern RECORD_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9_:.-]{0,63}$");
-    private static final Pattern ETL_JOB_PATTERN = Pattern.compile("^[0-9a-z][0-9a-z_-]{0,62}[0-9a-z]$");
+    private static final Pattern ETL_JOB_PATTERN = Pattern.compile("^[0-9a-z][0-9a-z_-]{0,126}[0-9a-z]$");
     private static final int MAX_OFFSET = Integer.MAX_VALUE;
 
     public static void assertParameterNotNull(Object param, String paramName) throws LogException {

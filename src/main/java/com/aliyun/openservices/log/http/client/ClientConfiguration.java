@@ -335,10 +335,11 @@ public class ClientConfiguration {
 
     /**
      * Set disable retry for client. If retryStrategy is set, will not disable retry when network exception occurs.
-     * 
+     *
      * @param retryDisabled no retry will be performed if retryDisabled is true.
      */
     public void setRetryDisabled(boolean retryDisabled) {
         this.retryDisabled = retryDisabled;
     }
+
 }

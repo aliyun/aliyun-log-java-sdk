@@ -6,7 +6,7 @@ import com.aliyun.openservices.log.response.GetProjectResponse;
 
 public class LogProject {
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 
 		String endpoint = "";
 		String accessKeyID = "test_accessKeyId";

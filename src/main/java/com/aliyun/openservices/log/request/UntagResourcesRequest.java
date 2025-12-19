@@ -59,4 +59,13 @@ public class UntagResourcesRequest implements Serializable {
     public void setAll(boolean all) {
         this.all = all;
     }
+
+    public String getProject() {
+        if (resourceId == null || resourceId.isEmpty())
+            return "";
+        String id = this.resourceId.get(0);
+        if (id == null)
+            return "";
+        return id.split("#")[0];
+    }
 }

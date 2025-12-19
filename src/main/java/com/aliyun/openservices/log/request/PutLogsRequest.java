@@ -16,15 +16,15 @@ import com.aliyun.openservices.log.common.TagContent;
  */
 public class PutLogsRequest extends Request {
     private static final long serialVersionUID = 7226856831224917838L;
-    private String mLogStore;
-    private String mTopic;
-    private String mSource;
-    private String mHashKey;
-    private ArrayList<LogItem> mlogItems;
-    private ArrayList<TagContent> mTags = null;
+    private String logStore;
+    private String topic;
+    private String source;
+    private String hashKey;
+    private ArrayList<LogItem> logItems;
+    private ArrayList<TagContent> tags = null;
     private CompressType compressType = CompressType.LZ4;
-    private String mContentType = Consts.CONST_PROTO_BUF;
-    private byte[] mLogGroupBytes = null;
+    private String contentType = Consts.CONST_PROTO_BUF;
+    private byte[] logGroupBytes = null;
     private Integer hashRouteKeySeqId;
     private String processor;
 
@@ -51,11 +51,11 @@ public class PutLogsRequest extends Request {
     }
 
     public String getContentType() {
-        return mContentType;
+        return contentType;
     }
 
     public void setContentType(String contentType) {
-        this.mContentType = contentType;
+        this.contentType = contentType;
     }
 
     /**
@@ -71,11 +71,11 @@ public class PutLogsRequest extends Request {
     public PutLogsRequest(String project, String logStore, String topic,
                           String source, List<LogItem> logItems, String hashKey) {
         super(project);
-        mLogStore = logStore;
-        mTopic = topic;
-        mSource = source;
-        mlogItems = new ArrayList<LogItem>(logItems);
-        mHashKey = hashKey;
+        this.logStore = logStore;
+        this.topic = topic;
+        this.source = source;
+        this.logItems = new ArrayList<LogItem>(logItems);
+        this.hashKey = hashKey;
     }
 
     /**
@@ -103,9 +103,9 @@ public class PutLogsRequest extends Request {
     public PutLogsRequest(String project, String logStore, String topic,
                           List<LogItem> logItems) {
         super(project);
-        mLogStore = logStore;
-        mTopic = topic;
-        mlogItems = new ArrayList<LogItem>(logItems);
+        this.logStore = logStore;
+        this.topic = topic;
+        this.logItems = new ArrayList<LogItem>(logItems);
     }
 
     /**
@@ -121,11 +121,11 @@ public class PutLogsRequest extends Request {
     public PutLogsRequest(String project, String logStore, String topic,
                           String source, byte[] logGroupBytes, String hashKey) {
         super(project);
-        mLogStore = logStore;
-        mTopic = topic;
-        mSource = source;
-        mLogGroupBytes = logGroupBytes;
-        mHashKey = hashKey;
+        this.logStore = logStore;
+        this.topic = topic;
+        this.source = source;
+        this.logGroupBytes = logGroupBytes;
+        this.hashKey = hashKey;
     }
 
     /**
@@ -134,7 +134,7 @@ public class PutLogsRequest extends Request {
      * @return log store
      */
     public String GetLogStore() {
-        return mLogStore;
+        return logStore;
     }
 
     /**
@@ -143,7 +143,7 @@ public class PutLogsRequest extends Request {
      * @param logStore log store name
      */
     public void SetLogStore(String logStore) {
-        mLogStore = logStore;
+        this.logStore = logStore;
     }
 
     /**
@@ -152,7 +152,7 @@ public class PutLogsRequest extends Request {
      * @return the topic
      */
     public String GetTopic() {
-        return mTopic;
+        return topic;
     }
 
     /**
@@ -161,7 +161,7 @@ public class PutLogsRequest extends Request {
      * @param topic topic value
      */
     public void SetTopic(String topic) {
-        mTopic = topic;
+        this.topic = topic;
     }
 
     /**
@@ -170,7 +170,7 @@ public class PutLogsRequest extends Request {
      * @return log source
      */
     public String GetSource() {
-        return mSource;
+        return source;
     }
 
     /**
@@ -179,7 +179,7 @@ public class PutLogsRequest extends Request {
      * @param source log source
      */
     public void SetSource(String source) {
-        mSource = source;
+        this.source = source;
     }
 
     /**
@@ -188,7 +188,7 @@ public class PutLogsRequest extends Request {
      * @return log data
      */
     public ArrayList<LogItem> GetLogItems() {
-        return mlogItems;
+        return logItems;
     }
 
     /**
@@ -197,7 +197,7 @@ public class PutLogsRequest extends Request {
      * @return tag
      */
     public ArrayList<TagContent> GetTags() {
-        return mTags;
+        return tags;
     }
 
     /**
@@ -206,7 +206,7 @@ public class PutLogsRequest extends Request {
      * @return logGroupBytes
      */
     public byte[] GetLogGroupBytes() {
-        return mLogGroupBytes;
+        return logGroupBytes;
     }
 
     /**
@@ -215,11 +215,11 @@ public class PutLogsRequest extends Request {
      * @param logItems log data
      */
     public void SetlogItems(List<LogItem> logItems) {
-        mlogItems = new ArrayList<LogItem>(logItems);
+        this.logItems = new ArrayList<LogItem>(logItems);
     }
 
     public void SetTags(List<TagContent> tags) {
-        mTags = new ArrayList<TagContent>(tags);
+        this.tags = new ArrayList<TagContent>(tags);
     }
 
     /**
@@ -241,15 +241,15 @@ public class PutLogsRequest extends Request {
      */
     @Deprecated
     public String GetRouteKey() {
-        return mHashKey;
+        return hashKey;
     }
 
     public String getHashKey() {
-        return mHashKey;
+        return hashKey;
     }
 
-    public void setHashKey(String mHashKey) {
-        this.mHashKey = mHashKey;
+    public void setHashKey(String hashKey) {
+        this.hashKey = hashKey;
     }
 
     public Integer getHashRouteKeySeqId() {

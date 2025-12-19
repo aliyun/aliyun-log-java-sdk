@@ -23,6 +23,7 @@ public class Index {
 	private boolean keysSet = false;
 	private boolean lineSet = false;
 	private boolean logReduceEnable = false;
+	private boolean scanIndexEnable = false;
 
 	private int maxTextLen = 0;
 	private List<String> logReduceWhiteList = new ArrayList<String>();
@@ -49,6 +50,7 @@ public class Index {
 	public Index(Index other) {
 		this.ttl = other.GetTtl();
 		this.logReduceEnable = other.isLogReduceEnable();
+		this.scanIndexEnable = other.isScanIndexEnable();
 		if (other.isKeysSet()) {
 			SetKeys(other.GetKeys());
 		}
@@ -65,6 +67,13 @@ public class Index {
 	}
 	public void setLogReduceEnable(boolean logReduce) {
 		this.logReduceEnable = logReduce;
+	}
+
+	public boolean isScanIndexEnable() {
+		return scanIndexEnable;
+	}
+	public void setScanIndexEnable(boolean scanIndexEnable) {
+		this.scanIndexEnable = scanIndexEnable;
 	}
 	
 	/**
@@ -162,6 +171,7 @@ public class Index {
 		
 		index.put("ttl", ttl);
 		index.put("log_reduce", logReduceEnable);
+		index.put("scan_index", scanIndexEnable);
 		
 		if (lineSet) {
 			JSONObject lineDict = line.ToJsonObject();
@@ -223,6 +233,10 @@ public class Index {
 			
 			if (dict.containsKey("log_reduce")) {
 				logReduceEnable = dict.getBooleanValue("log_reduce");
+			}
+
+			if (dict.containsKey("scan_index")) {
+				scanIndexEnable = dict.getBooleanValue("scan_index");
 			}
 
 			if (dict.containsKey("max_text_len")) {

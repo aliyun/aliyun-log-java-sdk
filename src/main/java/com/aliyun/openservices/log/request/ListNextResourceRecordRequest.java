@@ -16,7 +16,17 @@ public class ListNextResourceRecordRequest extends RecordRequest {
     private String jsonPath;
     private String jsonPathValue;
     private Boolean reverse;
+    private Boolean includeSystemRecords;
+    private Boolean jsonFilterAcc = false;
     private List<String> recordIds = new ArrayList<String>();
+
+    public Boolean getJsonFilterAcc() {
+        return jsonFilterAcc;
+    }
+
+    public void setJsonFilterAcc(Boolean jsonFilterAcc) {
+        this.jsonFilterAcc = jsonFilterAcc;
+    }
 
     public String getNextToken() {
         return nextToken;
@@ -82,6 +92,14 @@ public class ListNextResourceRecordRequest extends RecordRequest {
         this.reverse = reverse;
     }
 
+    public Boolean getIncludeSystemRecords() {
+        return includeSystemRecords;
+    }
+
+    public void setIncludeSystemRecords(Boolean includeSystemRecords) {
+        this.includeSystemRecords = includeSystemRecords;
+    }
+
     public List<String> getRecordIds() {
         return recordIds;
     }
@@ -94,12 +112,26 @@ public class ListNextResourceRecordRequest extends RecordRequest {
         this(resourceName, null, null, 100);
     }
 
+    public ListNextResourceRecordRequest(String resourceName, Boolean includeSystemRecords) {
+        this(resourceName, null, null, 100, includeSystemRecords);
+    }
+
     public ListNextResourceRecordRequest(String resourceName, String tag, String nextToken, int maxResults) {
         super(resourceName);
         this.tag = tag;
         this.nextToken = nextToken;
         this.maxResults = maxResults;
         this.reverse = false;
+        this.includeSystemRecords = false;
+    }
+
+    public ListNextResourceRecordRequest(String resourceName, String tag, String nextToken, int maxResults, Boolean includeSystemRecords) {
+        super(resourceName);
+        this.tag = tag;
+        this.nextToken = nextToken;
+        this.maxResults = maxResults;
+        this.reverse = false;
+        this.includeSystemRecords = includeSystemRecords;
     }
 
     @Override
@@ -134,6 +166,14 @@ public class ListNextResourceRecordRequest extends RecordRequest {
 
         if (reverse) {
             SetParam(Consts.RESOURCE_REVERSE, "true");
+        }
+
+        if (includeSystemRecords) {
+            SetParam(Consts.RESOURCE_SYSTEM_RECORDS, "true");
+        }
+
+        if (jsonFilterAcc) {
+            SetParam(Consts.RESOURCE_JSON_FILTER_ACC, "true");
         }
 
         if (recordIds != null && !recordIds.isEmpty()) {

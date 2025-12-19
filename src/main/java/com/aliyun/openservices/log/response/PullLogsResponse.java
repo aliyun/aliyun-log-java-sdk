@@ -24,6 +24,7 @@ public class PullLogsResponse extends Response {
     private final String compressType;
     private final long cursorTime;
     private final boolean isEndOfCursor;
+    private final String readLastCursor;
 
     /**
      * Construct the response with http headers
@@ -49,6 +50,7 @@ public class PullLogsResponse extends Response {
             cursorTime = cursorTimeHeader != null && !cursorTimeHeader.isEmpty()
                     ? Long.parseLong(cursorTimeHeader.trim()) : 0;
             isEndOfCursor = "1".equals(headers.get(Consts.CONST_X_LOG_END_OF_CURSOR));
+            readLastCursor = headers.get(Consts.CONST_X_READ_LAST_CURSOR);
         } catch (NumberFormatException e) {
             throw new LogException("ParseLogGroupListRawSizeError", e.getMessage(), e, GetRequestId());
         }
@@ -204,4 +206,7 @@ public class PullLogsResponse extends Response {
         return rawData;
     }
 
+    public String getReadLastCursor() {
+        return readLastCursor;
+    }
 }

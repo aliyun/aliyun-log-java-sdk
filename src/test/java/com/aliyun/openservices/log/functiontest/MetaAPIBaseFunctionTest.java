@@ -1,5 +1,6 @@
 package com.aliyun.openservices.log.functiontest;
 
+import com.aliyun.openservices.log.functiontest.logstore.FunctionTest;
 import org.junit.After;
 import org.junit.Before;
 

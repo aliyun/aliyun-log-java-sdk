@@ -10,28 +10,28 @@ public class ListShipperResponse extends Response {
 	 */
 	private static final long serialVersionUID = 7254330345146275069L;
 
-	private int mCount = 0;
-	private int mTotal = 0;
-	private List<String> mShippers = new ArrayList<String>();
+	private int count = 0;
+	private int total = 0;
+	private List<String> shippers = new ArrayList<String>();
 
 	public ListShipperResponse(Map<String, String> headers, int count,
 			int total, List<String> shippers) {
 		super(headers);
-		mCount = count;
-		mTotal = total;
-		mShippers = new ArrayList<String>(shippers);
+		this.count = count;
+		this.total = total;
+		this.shippers = new ArrayList<String>(shippers);
 	}
 
 	public int GetCount() {
-		return mCount;
+		return count;
 	}
 
 	public int GetTotal() {
-		return mTotal;
+		return total;
 	}
 
 	public List<String> GetShippers() {
-		return new ArrayList<String>(mShippers);
+		return new ArrayList<String>(shippers);
 	}
 
 }

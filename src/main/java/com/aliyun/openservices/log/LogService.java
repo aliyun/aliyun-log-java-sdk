@@ -1762,6 +1762,96 @@ public interface LogService {
 	 * create a metric store in a project
 	 *
 	 * @param project
+	 *                    the project name
+	 * @param metricStore
+	 *                    the config
+	 * @return the create metric store response
+	 * @throws LogException
+	 *                                  if any error happen when creating metric store
+	 *
+	 * @throws NullPointerException
+	 *                                  if any parameter is null
+	 * @throws IllegalArgumentException
+	 *                                  if project is empty
+	 */
+	CreateMetricStoreResponse createMetricStore(String project,
+			MetricStore metricStore) throws LogException;
+
+	/**
+	 * create a metric store in a project
+	 *
+	 * @param request
+	 *                metricstore create request
+	 * @return the create metric store response
+	 * @throws LogException
+	 *                                  if any error happen when creating metric store
+	 *
+	 * @throws NullPointerException
+	 *                                  if required parameter is null
+	 * @throws IllegalArgumentException
+	 *                                  if any required string parameter is empty
+	 */
+	CreateMetricStoreResponse createMetricStore(CreateMetricStoreRequest request)
+			throws LogException;
+
+	/**
+	 * Update metric store config
+	 *
+	 * @param request
+	 *                update metric store request
+	 * @return the update metric store response
+	 * @throws LogException
+	 *                                  if any error happen when updating metric
+	 *                                  store
+	 *
+	 * @throws NullPointerException
+	 *                                  if required parameter is null
+	 * @throws IllegalArgumentException
+	 *                                  if any required string parameter is empty
+	 */
+	UpdateMetricStoreResponse updateMetricStore(UpdateMetricStoreRequest request)
+			throws LogException;
+
+	/**
+	 * Get metric store config
+	 *
+	 * @param request
+	 *                get metric store request
+	 * @return the get metric store response
+	 * @throws LogException
+	 *                                  if any error happen when getting metric
+	 *                                  store
+	 *
+	 * @throws NullPointerException
+	 *                                  if required parameter is null
+	 * @throws IllegalArgumentException
+	 *                                  if any required string parameter is empty
+	 */
+	GetMetricStoreResponse getMetricStore(GetMetricStoreRequest request)
+			throws LogException;
+
+	/**
+	 * Delete the metric store
+	 *
+	 * @param request
+	 *                delete metric store request
+	 * @return the delete metric store response
+	 * @throws LogException
+	 *                                  if any error happen when deleting metric
+	 *                                  store
+	 *
+	 * @throws NullPointerException
+	 *                                  if required parameter is null
+	 * @throws IllegalArgumentException
+	 *                                  if any required string parameter is empty
+	 */
+	DeleteMetricStoreResponse deleteMetricStore(DeleteMetricStoreRequest request)
+			throws LogException;
+
+	/**
+	 * create a metric store in a project
+	 *
+	 * @param project
 	 *            the project name
 	 * @param metricStore
 	 *            the config
@@ -3195,6 +3285,27 @@ public interface LogService {
 	 */
 	ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey) throws LogException;
 
+	/**
+	 * Get the etl meta by etl meta name and etl meta key with specific tag.
+	 * 
+	 * @param project
+	 *            project name
+	 * @param etlMetaName
+	 *            etl meta name
+	 * @param etlMetaKey
+	 *            etl meta key
+	 * @param etlMetaTag
+	 *            etl meta tag
+	 * @return {@link ListEtlMetaResponse}
+	 * @throws LogException
+	 *             if any error occurs
+	 * @throws NullPointerException
+	 *             if required parameter is null
+	 * @throws IllegalArgumentException
+	 *             if any required string parameter is empty
+	 */
+	ListEtlMetaResponse getEtlMeta(String project, String etlMetaName, String etlMetaKey, String etlMetaTag) throws LogException;
+
     /**
      * Create logging for project.
      *
@@ -3706,4 +3817,37 @@ public interface LogService {
 	SubmitAsyncSqlResponse submitAsyncSql(SubmitAsyncSqlRequest request) throws LogException;
 	GetAsyncSqlResponse getAsyncSql(GetAsyncSqlRequest request) throws LogException;
 	void deleteAsyncSql(DeleteAsyncSqlRequest request) throws LogException;
+
+	void createMaterializedView(CreateMaterializedViewRequest request) throws LogException;
+	GetMaterializedViewResponse getMaterializedView(String project, String materializedView) throws LogException;
+	void updateMaterializedView(UpdateMaterializedViewRequest request) throws LogException;
+	void deleteMaterializedView(String project, String materializedView) throws LogException;
+	ListMaterializedViewsResponse listMaterializedViews(ListMaterializedViewsRequest request) throws LogException;
+
+	/**
+	 * Delete logs from a log store
+	 *
+	 * @param request An instance of {@link DeleteLogStoreLogsRequest}
+	 * @return An instance of {@link DeleteLogStoreLogsResponse}
+	 * @throws LogException if any error occurs
+	 */
+	DeleteLogStoreLogsResponse deleteLogStoreLogs(DeleteLogStoreLogsRequest request) throws LogException;
+
+	/**
+	 * Get delete log store logs task status
+	 *
+	 * @param request An instance of {@link GetDeleteLogStoreLogsTaskRequest}
+	 * @return An instance of {@link GetDeleteLogStoreLogsTaskResponse}
+	 * @throws LogException if any error occurs
+	 */
+	GetDeleteLogStoreLogsTaskResponse getDeleteLogStoreLogsTask(GetDeleteLogStoreLogsTaskRequest request) throws LogException;
+
+	/**
+	 * List delete log store logs tasks
+	 *
+	 * @param request An instance of {@link ListDeleteLogStoreLogsTasksRequest}
+	 * @return An instance of {@link ListDeleteLogStoreLogsTasksResponse}
+	 * @throws LogException if any error occurs
+	 */
+	ListDeleteLogStoreLogsTasksResponse listDeleteLogStoreLogsTasks(ListDeleteLogStoreLogsTasksRequest request) throws LogException;
 }

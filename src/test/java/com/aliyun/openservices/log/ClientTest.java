@@ -2,16 +2,14 @@ package com.aliyun.openservices.log;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.Histogram;
 import com.aliyun.openservices.log.common.Shard;
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.functiontest.Credentials;
+import com.aliyun.openservices.log.functiontest.others.Credentials;
 import com.aliyun.openservices.log.functiontest.SlsClientTestData;
 import com.aliyun.openservices.log.http.client.ClientConfiguration;
 import com.aliyun.openservices.log.http.signer.SignVersion;
-import com.aliyun.openservices.log.request.ListProjectRequest;
 import com.aliyun.openservices.log.response.GetHistogramsResponse;
 import org.junit.Assert;
 import org.junit.Test;
