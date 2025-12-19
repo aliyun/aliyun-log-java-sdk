@@ -987,19 +987,6 @@ public class Client implements LogService {
 	}
 
 	public GetLogsResponse GetLogs(String project, String logStore, int from,
-								   int to, String topic, String query, long line, long offset,
-								   boolean reverse, int shard) throws LogException {
-		CodingUtils.assertStringNotNullOrEmpty(project, "project");
-		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-		CodingUtils.assertParameterNotNull(topic, "topic");
-		CodingUtils.assertParameterNotNull(query, "query");
-		CodingUtils.validateOffset(offset);
-		GetLogsRequest request = new GetLogsRequest(project, logStore, from,
-				to, topic, query, offset, line, reverse, shard);
-		return GetLogs(request);
-	}
-
-	public GetLogsResponse GetLogs(String project, String logStore, int from,
 									  int to, String topic, String query, long line, long offset,
 									  boolean reverse, boolean forward, String session) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");

@@ -22,7 +22,6 @@ public class GetLogsRequest extends Request {
     private Boolean reverse;
     private Boolean powerSql;
     private Boolean forward;
-    private Integer shard;
     private String session;
     private Boolean accurate;
     private Boolean needHighlight;
@@ -130,29 +129,6 @@ public class GetLogsRequest extends Request {
         SetReverse(reverse);
         SetPowerSql(powerSql);
         SetForward(forward);
-    }
-
-    /**
-     * Construct a the request
-     *
-     * @param project  project name
-     * @param logStore log store name of a project
-     * @param from     begin time
-     * @param to       end time
-     * @param topic    topic name of a log store
-     * @param query    user query
-     * @param offset   the log offset to return
-     * @param line     how many lines to get, the max lines is decided by
-     *                 the sls backend server
-     * @param reverse  if reverse is set to true, the query will return the latest
-     *                 logs first
-     * @param shard    specific shard
-     */
-    public GetLogsRequest(String project, String logStore, int from, int to,
-                          String topic, String query, long offset, long line,
-                          boolean reverse, int shard) {
-        this(project, logStore, from, to, topic, query, offset, line, reverse);
-        SetShard(shard);
     }
 
     /**
@@ -327,10 +303,6 @@ public class GetLogsRequest extends Request {
         this.powerSql = powerSql;
     }
 
-    public void SetShard(int shard) {
-        this.shard = shard;
-    }
-
     public void SetSession(String session) {
         if (session != null)
             this.session = session;
@@ -430,7 +402,6 @@ public class GetLogsRequest extends Request {
         addParameterIfNotNull(body, Consts.CONST_REVERSE, reverse);
         addParameterIfNotNull(body, Consts.CONST_POWER_SQL, powerSql);
         addParameterIfNotNull(body, Consts.CONST_SESSION, session);
-        addParameterIfNotNull(body, Consts.CONST_SHARD, shard);
         addParameterIfNotNull(body, Consts.CONST_ACCURATE, accurate);
         addParameterIfNotNull(body, Consts.CONST_FORWARD, forward);
         addParameterIfNotNull(body, Consts.CONST_HIGHLIGHT, needHighlight);
