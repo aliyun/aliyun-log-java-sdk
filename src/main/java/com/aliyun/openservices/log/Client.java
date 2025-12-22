@@ -23,12 +23,11 @@ import com.aliyun.openservices.log.request.*;
 import com.aliyun.openservices.log.response.*;
 import com.aliyun.openservices.log.util.*;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 

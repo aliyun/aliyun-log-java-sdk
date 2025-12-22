@@ -1,11 +1,12 @@
 package com.aliyun.openservices.log.common.auth;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+
+import java.util.concurrent.TimeUnit;
 
 public abstract class HttpCredentialsFetcher implements CredentialsFetcher {
 
@@ -22,11 +23,11 @@ public abstract class HttpCredentialsFetcher implements CredentialsFetcher {
      * @param response http response.
      * @return credentials
      */
-    public abstract TemporaryCredentials parse(HttpResponse response) throws Exception;
+    public abstract TemporaryCredentials parse(CloseableHttpResponse response) throws Exception;
 
     @Override
     public TemporaryCredentials fetch() {
-        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpGet = buildHttpRequest();
 
         Exception capturedException = null;
@@ -44,7 +45,11 @@ public abstract class HttpCredentialsFetcher implements CredentialsFetcher {
 
     private HttpGet buildHttpRequest() {
         HttpGet httpGet = new HttpGet(buildUrl());
-        RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(3000).setSocketTimeout(3000).build();
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(3000, TimeUnit.MILLISECONDS)
+                .setConnectionRequestTimeout(3000, TimeUnit.MILLISECONDS)
+                .setResponseTimeout(3000, TimeUnit.MILLISECONDS)
+                .build();
         httpGet.setConfig(config);
         return httpGet;
     }

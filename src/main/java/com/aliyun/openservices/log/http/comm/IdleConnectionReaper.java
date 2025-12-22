@@ -1,11 +1,10 @@
 package com.aliyun.openservices.log.http.comm;
 
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.util.TimeValue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.http.conn.HttpClientConnectionManager;
 
 /**
  * A daemon thread used to periodically check connection pools for idle
@@ -13,7 +12,7 @@ import org.apache.http.conn.HttpClientConnectionManager;
  */
 public final class IdleConnectionReaper extends Thread {
     private static final int REAP_INTERVAL_MILLISECONDS = 5 * 1000;
-    private static final ArrayList<HttpClientConnectionManager> connectionManagers = new ArrayList<HttpClientConnectionManager>();
+    private static final ArrayList<PoolingHttpClientConnectionManager> connectionManagers = new ArrayList<PoolingHttpClientConnectionManager>();
 
     private static IdleConnectionReaper instance;
     private static long idleConnectionTime = 60 * 1000;
@@ -24,7 +23,7 @@ public final class IdleConnectionReaper extends Thread {
         setDaemon(true);
     }
 
-    public static synchronized void registerConnectionManager(HttpClientConnectionManager connectionManager) {
+    public static synchronized void registerConnectionManager(PoolingHttpClientConnectionManager connectionManager) {
         if (instance == null) {
             instance = new IdleConnectionReaper();
             instance.start();
@@ -32,7 +31,7 @@ public final class IdleConnectionReaper extends Thread {
         connectionManagers.add(connectionManager);
     }
 
-    public static synchronized void removeConnectionManager(HttpClientConnectionManager connectionManager) {
+    public static synchronized void removeConnectionManager(PoolingHttpClientConnectionManager connectionManager) {
         connectionManagers.remove(connectionManager);
         if (connectionManagers.isEmpty()) {
             shutdown();
@@ -52,15 +51,15 @@ public final class IdleConnectionReaper extends Thread {
                 // ignore
             }
             try {
-                List<HttpClientConnectionManager> connectionManagers = null;
+                List<PoolingHttpClientConnectionManager> connectionManagers = null;
                 synchronized (IdleConnectionReaper.class) {
-                    connectionManagers = (List<HttpClientConnectionManager>) IdleConnectionReaper.connectionManagers
+                    connectionManagers = (List<PoolingHttpClientConnectionManager>) IdleConnectionReaper.connectionManagers
                             .clone();
                 }
-                for (HttpClientConnectionManager connectionManager : connectionManagers) {
+                for (PoolingHttpClientConnectionManager connectionManager : connectionManagers) {
                     try {
-                        connectionManager.closeExpiredConnections();
-                        connectionManager.closeIdleConnections(idleConnectionTime, TimeUnit.MILLISECONDS);
+                        connectionManager.closeExpired();
+                        connectionManager.closeIdle(TimeValue.ofMilliseconds(idleConnectionTime));
                     } catch (Exception ex) {
                         // ignore
                     }

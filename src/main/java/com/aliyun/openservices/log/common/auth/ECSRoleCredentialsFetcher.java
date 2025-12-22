@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.utils.DateUtil;
 import com.aliyun.openservices.log.internal.ErrorCodes;
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 
 import java.text.ParseException;
 
@@ -22,6 +22,8 @@ public class ECSRoleCredentialsFetcher extends HttpCredentialsFetcher {
         return META_DATA_SERVICE_URL + ecsRamRole;
     }
 
+
+
     private TemporaryCredentials credentialsFromJson(JSONObject response) throws ParseException {
         String accessKeyId = response.getString("AccessKeyId");
         String accessKeySecret = response.getString("AccessKeySecret");
@@ -33,7 +35,7 @@ public class ECSRoleCredentialsFetcher extends HttpCredentialsFetcher {
     }
 
     @Override
-    public TemporaryCredentials parse(HttpResponse httpResponse) throws LogException {
+    public TemporaryCredentials parse(CloseableHttpResponse httpResponse) throws LogException {
         // parse http response body
         String rawRespBody;
         try {

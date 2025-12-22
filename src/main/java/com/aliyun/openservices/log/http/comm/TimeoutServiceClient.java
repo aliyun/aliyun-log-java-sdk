@@ -23,9 +23,9 @@ import com.aliyun.openservices.log.http.client.ClientConfiguration;
 import com.aliyun.openservices.log.http.client.ClientException;
 import com.aliyun.openservices.log.http.utils.ExceptionFactory;
 import com.aliyun.openservices.log.internal.ErrorCodes;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
 
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -74,7 +74,7 @@ public class TimeoutServiceClient extends DefaultServiceClient {
 
     @Override
     public ResponseMessage sendRequestCore(ServiceClient.Request request, String charset) throws IOException {
-        HttpRequestBase httpRequest = httpRequestFactory.createHttpRequest(request, charset);
+        HttpUriRequestBase httpRequest = httpRequestFactory.createHttpRequest(request, charset);
         HttpClientContext httpContext = HttpClientContext.create();
         httpContext.setRequestConfig(this.requestConfig);
 
@@ -85,13 +85,13 @@ public class TimeoutServiceClient extends DefaultServiceClient {
         try {
             httpResponse = future.get(this.config.getRequestTimeout(), TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            httpRequest.abort();
+            httpRequest.cancel();
             throw new ClientException(e.getMessage(), e);
         } catch (ExecutionException e) {
-            httpRequest.abort();
+            httpRequest.cancel();
             throw ExceptionFactory.createNetworkException((IOException) e.getCause());
         } catch (TimeoutException e) {
-            httpRequest.abort();
+            httpRequest.cancel();
             throw new ClientException(e.getMessage(), ErrorCodes.REQUEST_TIMEOUT, "Unknown", e);
         }
 
@@ -115,10 +115,10 @@ public class TimeoutServiceClient extends DefaultServiceClient {
     }
 
     class HttpRequestTask implements Callable<CloseableHttpResponse> {
-        private HttpRequestBase httpRequest;
+        private HttpUriRequestBase httpRequest;
         private HttpClientContext httpContext;
 
-        public HttpRequestTask(HttpRequestBase httpRequest, HttpClientContext httpContext) {
+        public HttpRequestTask(HttpUriRequestBase httpRequest, HttpClientContext httpContext) {
             this.httpRequest = httpRequest;
             this.httpContext = httpContext;
         }
