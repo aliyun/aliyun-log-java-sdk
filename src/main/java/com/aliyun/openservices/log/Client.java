@@ -743,6 +743,248 @@ public class Client implements LogService {
 		return null;
 	}
 
+	@Override
+	public PutObjectResponse putObject(String project, String logStore, String objectName, InputStream content) throws LogException {
+		return putObject(project, logStore, objectName, content, null);
+	}
+
+    @Override
+    public PutObjectResponse putObject(String project, String logStore, String objectName, InputStream content,
+            Map<String, String> headers) throws LogException {
+        CodingUtils.assertStringNotNullOrEmpty(project, "project");
+        CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+        CodingUtils.assertParameterNotNull(objectName, "objectName");
+        CodingUtils.validateLogstore(logStore);
+
+        String resourceUri = "/logstores/" + logStore + "/objects/" + encodeObjectName(objectName);
+        Map<String, String> urlParameter = new HashMap<String, String>();
+        Map<String, String> headParameter = GetCommonHeadPara(project);
+
+        // Add custom headers if provided
+        if (headers != null) {
+            headParameter.putAll(headers);
+        }
+
+        // Sign with empty bytes (not with input content)
+        if (resourceOwnerAccount != null && !resourceOwnerAccount.isEmpty()) {
+            headParameter.put(Consts.CONST_X_LOG_RESOURCEOWNERACCOUNT, resourceOwnerAccount);
+        }
+        try {
+            signer.sign(HttpMethod.PUT, headParameter, resourceUri, urlParameter, new byte[0]);
+        } catch (Exception e) {
+            throw new LogException("ClientSignatureError",
+                    "Fail to calculate signature for request, error:" + e.getMessage(), "");
+        }
+
+        // Build request with InputStream directly (do not read it)
+        URI uri = getHostURI(project, null);
+        RequestMessage requestMessage = BuildRequest(uri, HttpMethod.PUT,
+                resourceUri, urlParameter, headParameter,
+                content != null ? content : new java.io.ByteArrayInputStream(new byte[0]),
+                -1);
+
+        ResponseMessage response = null;
+        try {
+            response = this.serviceClient.sendRequest(requestMessage, Consts.UTF_8_ENCODING);
+            throwServerErrorIfPresent(response);
+            ExtractResponseBody(response);
+            Map<String, String> resHeaders = response.getHeaders();
+            return new PutObjectResponse(resHeaders);
+        } catch (ServiceException e) {
+            throw new LogException("RequestError", "Web request failed: " + e.getMessage(), e, "");
+        } catch (ClientException e) {
+            throw new LogException("RequestError", "Web request failed: " + e.getMessage(), e, "");
+        } catch (LogException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE,
+                    "Fail to send request, error:" + e.getMessage(), e, getRequestId(response));
+        } finally {
+            safeClose(response);
+        }
+    }
+
+
+    // when statusCode is not 200, throw LogException, else do nothing
+    // must be called before ExtractResponseBody
+    // we dont close response here, the caller is responsible for closing it
+    private void throwServerErrorIfPresent(ResponseMessage response) throws LogException {
+        int statusCode = response.getStatusCode();
+        if (statusCode == Consts.CONST_HTTP_OK) {
+            return;
+        }
+        ExtractResponseBody(response);
+        String requestId = GetRequestId(response.getHeaders());
+        try {
+            String responseBody = encodeResponseBodyToUtf8String(response, requestId);
+            JSONObject object = null;
+            try {
+                object = JSONObject.parseObject(responseBody, Feature.DisableSpecialKeyDetect);
+            } catch (JSONException ex) {
+                throw new LogException(ErrorCodes.BAD_RESPONSE,
+                        "The response is not valid json string : " + responseBody + ", statusCode: "
+                                + statusCode + ", requestId: " + requestId,
+                        ex, requestId);
+            }
+            if (null == object) {
+                throw new LogException(ErrorCodes.BAD_RESPONSE,
+                        "The response is not valid json string : " + responseBody + ", statusCode: "
+                                + statusCode + ", requestId: " + requestId,
+                        requestId);
+            }
+            ErrorCheck(object, requestId, statusCode, responseBody);
+        } catch (LogException e) {
+            e.setHttpCode(statusCode);
+            throw e;
+        } catch (Exception e) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE,
+                    "The response is not valid, statusCode: " + statusCode + ", requestId: " + requestId,
+                    e, requestId);
+        }
+    }
+
+    @Override
+    public PutObjectResponse putObject(PutObjectRequest request) throws LogException {
+        CodingUtils.assertParameterNotNull(request, "request");
+        return putObject(request.GetProject(), request.getLogStore(), request.getObjectName(),
+                request.getContent(), request.getHeaders());
+    }
+
+    @Override
+    public GetObjectResponse getObject(String project, String logStore, String objectName) throws LogException {
+        CodingUtils.assertStringNotNullOrEmpty(project, "project");
+        CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+        CodingUtils.assertParameterNotNull(objectName, "objectName");
+        CodingUtils.validateLogstore(logStore);
+
+        String resourceUri = "/logstores/" + logStore + "/objects/" + encodeObjectName(objectName);
+        Map<String, String> urlParameter = new HashMap<String, String>();
+        Map<String, String> headParameter = GetCommonHeadPara(project);
+
+        ResponseMessage response = null;
+        try {
+            response = SendDataWithResolveResponse(project, HttpMethod.GET, resourceUri, urlParameter, headParameter,
+                    new byte[0]);
+            throwServerErrorIfPresent(response);
+            // we don't close response in finally block, the caller is responsible for closing it in case of normal flow
+            return new GetObjectResponse(response.getHeaders(), response);
+        } catch (LogException e) {
+            safeClose(response);
+            throw e;
+        } catch (Exception e) {
+            safeClose(response);
+            throw new LogException(ErrorCodes.BAD_RESPONSE,
+                    "Fail to send request, error:" + e.getMessage(), e, getRequestId(response));
+        }
+    }
+
+    private void safeClose(ResponseMessage response) {
+        try {
+            if (response != null) {
+                response.close();
+            }
+        } catch (java.io.IOException ignore) {
+        }
+    }
+
+    @Override
+    public GetObjectResponse getObject(GetObjectRequest request) throws LogException {
+        CodingUtils.assertParameterNotNull(request, "request");
+        return getObject(request.GetProject(), request.getLogStore(), request.getObjectName());
+    }
+
+    @Override
+    public ListObjectsResponse listObjects(ListObjectsRequest request) throws LogException {
+        CodingUtils.assertParameterNotNull(request, "request");
+        CodingUtils.assertStringNotNullOrEmpty(request.GetProject(), "project");
+        CodingUtils.assertStringNotNullOrEmpty(request.getLogStore(), "logStore");
+        CodingUtils.validateLogstore(request.getLogStore());
+
+        String resourceUri = "/logstores/" + request.getLogStore() + "/objects";
+        Map<String, String> urlParameter = request.GetAllParams();
+        Map<String, String> headParameter = GetCommonHeadPara(request.GetProject());
+
+        ResponseMessage response = SendData(request.GetProject(), HttpMethod.GET,
+                resourceUri, urlParameter, headParameter);
+        Map<String, String> resHeaders = response.getHeaders();
+        String requestId = GetRequestId(resHeaders);
+        JSONObject object = parseResponseBody(response, requestId);
+
+        ListObjectsResponse listObjectsResponse = new ListObjectsResponse(resHeaders);
+        listObjectsResponse.setObjects(extractObjectSummaries(object, requestId));
+        listObjectsResponse.setNextToken(object.getString("nextToken"));
+        if (object.containsKey("maxResults")) {
+            listObjectsResponse.setMaxResults(object.getIntValue("maxResults"));
+        }
+        listObjectsResponse.setPrefix(object.getString("prefix"));
+        if (object.containsKey("isTruncated")) {
+            listObjectsResponse.setIsTruncated(object.getBooleanValue("isTruncated"));
+        }
+        return listObjectsResponse;
+    }
+
+    private List<com.aliyun.openservices.log.common.ObjectSummary> extractObjectSummaries(JSONObject object, String requestId) throws LogException {
+        List<com.aliyun.openservices.log.common.ObjectSummary> summaries = new ArrayList<com.aliyun.openservices.log.common.ObjectSummary>();
+        if (object == null) {
+            return summaries;
+        }
+        JSONArray array = null;
+        try {
+            array = object.getJSONArray("objects");
+            if (array == null) {
+                return summaries;
+            }
+            for (int index = 0; index < array.size(); index++) {
+                JSONObject jsonObject = array.getJSONObject(index);
+                if (jsonObject == null) {
+                    continue;
+                }
+                com.aliyun.openservices.log.common.ObjectSummary summary = new com.aliyun.openservices.log.common.ObjectSummary();
+                summary.setKey(jsonObject.getString("key"));
+                summary.setSize(jsonObject.getLongValue("size"));
+                summary.setLastModified(jsonObject.getString("lastModified"));
+                summary.setETag(jsonObject.getString("ETag"));
+                summaries.add(summary);
+            }
+        } catch (JSONException e) {
+            throw new LogException(ErrorCodes.BAD_RESPONSE,
+                    "The response is not valid json array string : " + (array != null ? array.toString() : "null"), e, requestId);
+        }
+        return summaries;
+    }
+
+    @Override
+    public VoidResponse putLogStoreMultimodalConfiguration(PutLogStoreMultimodalConfigurationRequest request) throws LogException {
+        CodingUtils.assertParameterNotNull(request, "request");
+        Map<String, String> urlParameter = request.GetAllParams();
+        String project = request.GetProject();
+        String logstore = request.getLogStore();
+        Map<String, String> headParameter = GetCommonHeadPara(project);
+        CodingUtils.validateLogstore(logstore);
+        String resourceUri = "/logstores/" + logstore + "/multimodalconfiguration";
+        byte[] body = encodeToUtf8(request.getRequestBody());
+        headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+        ResponseMessage message = SendData(project, HttpMethod.PUT,
+                resourceUri, urlParameter, headParameter, body);
+        return new VoidResponse(message.getHeaders());
+    }
+
+    @Override
+    public GetLogStoreMultimodalConfigurationResponse getLogStoreMultimodalConfiguration(GetLogStoreMultimodalConfigurationRequest request) throws LogException {
+        CodingUtils.assertParameterNotNull(request, "request");
+        Map<String, String> urlParameter = request.GetAllParams();
+        String project = request.GetProject();
+        String logstore = request.getLogStore();
+        Map<String, String> headParameter = GetCommonHeadPara(project);
+        CodingUtils.validateLogstore(logstore);
+        String resourceUri = "/logstores/" + logstore + "/multimodalconfiguration";
+        ResponseMessage message = SendData(project, HttpMethod.GET,
+                resourceUri, urlParameter, headParameter, new byte[0]);
+        GetLogStoreMultimodalConfigurationResponse response = new GetLogStoreMultimodalConfigurationResponse(message.getHeaders());
+        response.deserializeFrom(parseResponseBody(message, message.getRequestId()));
+        return response;
+    }
+
 	public PutLogsResponse PutLogs(PutLogsRequest request) throws LogException {
 		if (isUseMetricStoreUrl()) {
 			request.setHashKey(Consts.METRICS_STORE_AUTO_HASH);
@@ -1358,6 +1600,12 @@ public class Client implements LogService {
 	protected String GetRequestId(Map<String, String> headers) {
 	    return Utils.getOrEmpty(headers, Consts.CONST_X_SLS_REQUESTID);
 	}
+    private String getRequestId(ResponseMessage response) {
+        if (response == null) {
+            return "";
+        }
+        return GetRequestId(response.getHeaders());
+    }
 
 	@Deprecated
 	@Override
@@ -2117,12 +2365,7 @@ public class Client implements LogService {
 					"Fail to calculate signature for request, error:" + e.getMessage(), "");
 		}
 
-		URI uri;
-		if (serverIp == null) {
-			uri = GetHostURI(project);
-		} else {
-			uri = GetHostURIByIp(serverIp);
-		}
+		URI uri = getHostURI(project, serverIp);
 		RequestMessage request = BuildRequest(uri, method,
 				resourceUri, parameters, headers,
 				new ByteArrayInputStream(body), body.length);
@@ -2168,12 +2411,7 @@ public class Client implements LogService {
 			throw new LogException("ClientSignatureError",
 					"Fail to calculate signature for request, error:" + e.getMessage(), "");
 		}
-		URI uri;
-		if (serverIp == null) {
-			uri = GetHostURI(project);
-		} else {
-			uri = GetHostURIByIp(serverIp);
-		}
+		URI uri = getHostURI(project, serverIp);
 		RequestMessage request = BuildRequest(uri, method,
 				resourceUri, parameters, headers,
 				new ByteArrayInputStream(body), body.length);
@@ -2215,14 +2453,18 @@ public class Client implements LogService {
 		} catch (ClientException e) {
 			throw new LogException("RequestError", "Web request failed: " + e.getMessage(), e, "");
 		} finally {
-			try {
-				if (response != null) {
-					response.close();
-				}
-			} catch (IOException ignore) {}
+            safeClose(response);
 		}
 		return response;
 	}
+
+    private URI getHostURI(String project, String serverIp) throws LogException {
+        if (serverIp == null) {
+            return GetHostURI(project);
+        } else {
+            return GetHostURIByIp(serverIp);
+        }
+    }
 
 	private static RequestMessage BuildRequest(URI endpoint,
 			HttpMethod httpMethod, String resourceUri,
@@ -6732,5 +6974,24 @@ public class Client implements LogService {
 		}
 		
 		return new ListDeleteLogStoreLogsTasksResponse(response.getHeaders(), total, tasks);
+	}
+
+	/**
+	 * URL encode the object name for use in resource URI.
+	 *
+	 * @param objectName the object name to encode
+	 * @return URL encoded object name
+	 * @throws LogException if encoding fails
+	 */
+	private String encodeObjectName(String objectName) throws LogException {
+		try {
+			return java.net.URLEncoder.encode(objectName, "UTF-8")
+					.replace("+", "%20")
+					.replace("*", "%2A")
+					.replace("%7E", "~")
+					.replace("/", "%2F");
+		} catch (java.io.UnsupportedEncodingException e) {
+			throw new LogException(ErrorCodes.INVALID_PARAMETER, "Failed to encode object name: " + e.getMessage(), "");
+		}
 	}
 }

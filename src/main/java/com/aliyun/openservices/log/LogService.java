@@ -484,6 +484,95 @@ public interface LogService {
     BatchPutLogsResponse batchPutLogs(BatchPutLogsRequest request) throws LogException;
 
 	/**
+	 * Put an object to the specified logstore.
+	 * Unsuccessful operation will cause a LogException.
+	 *
+	 * @param project    the project name
+	 * @param logStore   the logstore name
+	 * @param objectName the object name (only allow a-z A-Z 0-9 _ -)
+	 * @param content    the object content as InputStream (can be null for empty content)
+	 * @return PutObjectResponse
+	 * @throws LogException if any error happen when put the object
+	 */
+	PutObjectResponse putObject(String project, String logStore, String objectName, java.io.InputStream content) throws LogException;
+
+	/**
+	 * Put an object to the specified logstore with headers.
+	 * Unsuccessful operation will cause a LogException.
+	 *
+	 * @param project    the project name
+	 * @param logStore   the logstore name
+	 * @param objectName the object name (only allow a-z A-Z 0-9 _ -)
+	 * @param content    the object content as InputStream (can be null for empty content)
+	 * @param headers    optional headers to send with the request
+	 *                   - x-log-meta-* headers will be attached to the object as metadata
+	 *                   - Content-Type will be attached to the object as metadata
+	 *                   - Content-MD5 will be attached to the object as metadata
+	 * @return PutObjectResponse
+	 * @throws LogException if any error happen when put the object
+	 */
+	PutObjectResponse putObject(String project, String logStore, String objectName, java.io.InputStream content, java.util.Map<String, String> headers) throws LogException;
+
+	/**
+	 * Put an object to the specified logstore.
+	 * Unsuccessful operation will cause a LogException.
+	 *
+	 * @param request the put object request
+	 * @return PutObjectResponse
+	 * @throws LogException if any error happen when put the object
+	 */
+	PutObjectResponse putObject(PutObjectRequest request) throws LogException;
+
+	/**
+	 * Get an object from the specified logstore.
+	 * Unsuccessful operation will cause a LogException.
+	 *
+	 * @param project    the project name
+	 * @param logStore   the logstore name
+	 * @param objectName the object name
+	 * @return GetObjectResponse Note: The caller is responsible for closing the response
+	 * @throws LogException if any error happen when get the object
+	 */
+	GetObjectResponse getObject(String project, String logStore, String objectName) throws LogException;
+
+	/**
+	 * Get an object from the specified logstore.
+	 * Unsuccessful operation will cause a LogException.
+	 *
+	 * @param request the get object request
+	 * @return GetObjectResponse Note: The caller is responsible for closing the response
+	 * @throws LogException if any error happen when get the object
+	 */
+	GetObjectResponse getObject(GetObjectRequest request) throws LogException;
+
+	/**
+	 * List objects in the specified logstore.
+	 *
+	 * @param request the list objects request
+	 * @return ListObjectsResponse containing the list of objects
+	 * @throws LogException if any error happens when listing objects
+	 */
+	ListObjectsResponse listObjects(ListObjectsRequest request) throws LogException;
+
+	/**
+	 * Put logstore multimodal configuration.
+	 *
+	 * @param request the put logstore multimodal configuration request
+	 * @return VoidResponse
+	 * @throws LogException if any error happens when putting the configuration
+	 */
+	VoidResponse putLogStoreMultimodalConfiguration(PutLogStoreMultimodalConfigurationRequest request) throws LogException;
+
+	/**
+	 * Get logstore multimodal configuration.
+	 *
+	 * @param request the get logstore multimodal configuration request
+	 * @return GetLogStoreMultimodalConfigurationResponse containing the configuration
+	 * @throws LogException if any error happens when getting the configuration
+	 */
+	GetLogStoreMultimodalConfigurationResponse getLogStoreMultimodalConfiguration(GetLogStoreMultimodalConfigurationRequest request) throws LogException;
+
+	/**
 	 * Get cursor from log service server
 	 *
 	 * @param project
