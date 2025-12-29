@@ -11,7 +11,7 @@
 
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.145</version>
+    <version>0.6.146</version>
     <packaging>jar</packaging>
 
     <name>Aliyun LOG Java SDK</name>
@@ -212,7 +212,7 @@
                 <configuration>
                     <artifactSet>
                         <excludes>
-                            <exclude>net.jpountz.lz4:lz4:jar:</exclude>
+                            <exclude>org.lz4:lz4-java:jar:</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>
