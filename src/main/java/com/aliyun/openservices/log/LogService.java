@@ -3892,6 +3892,8 @@ public interface LogService {
 	ListLogStoresResponse listEventStores(ListLogStoresRequest request) throws LogException;
 	VoidResponse updateLogStoreMeteringMode(UpdateLogStoreMeteringModeRequest request) throws LogException;
 	GetLogStoreMeteringModeResponse getLogStoreMeteringMode(GetLogStoreMeteringModeRequest request) throws LogException;
+	VoidResponse updateMetricStoreMeteringMode(UpdateMetricStoreMeteringModeRequest request) throws LogException;
+	GetMetricStoreMeteringModeResponse getMetricStoreMeteringMode(GetMetricStoreMeteringModeRequest request) throws LogException;
 
 	CreateMetricsConfigResponse createMetricsConfig(CreateMetricsConfigRequest request) throws LogException;
 	UpdateMetricsConfigResponse updateMetricsConfig(UpdateMetricsConfigRequest request) throws LogException;
