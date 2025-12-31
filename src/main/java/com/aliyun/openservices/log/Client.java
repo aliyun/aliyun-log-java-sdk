@@ -6611,6 +6611,38 @@ public class Client implements LogService {
         response.deserializeFrom(parseResponseBody(message, message.getRequestId()));
         return response;
     }
+    
+    @Override
+    public VoidResponse updateMetricStoreMeteringMode(UpdateMetricStoreMeteringModeRequest request)
+            throws LogException {
+        CodingUtils.assertParameterNotNull(request, "request");
+        Map<String, String> urlParameter = request.GetAllParams();
+        String project = request.GetProject();
+        String metricStore = request.getMetricStore();
+        Map<String, String> headParameter = GetCommonHeadPara(project);
+        CodingUtils.validateLogstore(metricStore);
+        String resourceUri = "/metricstores/" + metricStore + "/meteringmode";
+        ResponseMessage message = SendData(project, HttpMethod.PUT,
+                resourceUri, urlParameter, headParameter, request.getRequestBody());
+        return new VoidResponse(message.getHeaders());
+    }
+
+    @Override
+    public GetMetricStoreMeteringModeResponse getMetricStoreMeteringMode(GetMetricStoreMeteringModeRequest request)
+            throws LogException {
+        CodingUtils.assertParameterNotNull(request, "request");
+        Map<String, String> urlParameter = request.GetAllParams();
+        String project = request.GetProject();
+        String metricStore = request.getMetricStore();
+        Map<String, String> headParameter = GetCommonHeadPara(project);
+        CodingUtils.validateLogstore(metricStore);
+        String resourceUri = "/metricstores/" + metricStore + "/meteringmode";
+        ResponseMessage message = SendData(project, HttpMethod.GET,
+                resourceUri, urlParameter, headParameter, new byte[0]);
+        GetMetricStoreMeteringModeResponse response = new GetMetricStoreMeteringModeResponse(message.getHeaders());
+        response.deserializeFrom(parseResponseBody(message, message.getRequestId()));
+        return response;
+    }
 
 	@Override
 	public CreateMetricsConfigResponse createMetricsConfig(CreateMetricsConfigRequest request) throws LogException {
