@@ -269,6 +269,7 @@ public class Consts {
 
     public static final String CONST_ERROR_CODE = "errorCode";
     public static final String CONST_ERROR_MESSAGE = "errorMessage";
+    public static final String ACCESS_DENIED_DETAIL = "accessDeniedDetail";
 
     public static final String CONST_MD5 = "MD5";
     public static final String UTF_8_ENCODING = "UTF-8";
