@@ -3,6 +3,10 @@
  */
 package com.aliyun.openservices.log.exception;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
+import com.aliyun.openservices.log.common.Consts;
+
 /**
  * The exception is thrown if error happen.
  *
@@ -19,6 +23,8 @@ public class LogException extends Exception {
     private String requestId;
 
     private String rawResponseError;
+
+    private JSONObject accessDeniedDetail;
 
     /**
      * Construct LogException
@@ -81,6 +87,11 @@ public class LogException extends Exception {
         this.errorCode = code;
         this.requestId = requestId;
         this.rawResponseError = rawResponseError;
+        if (rawResponseError == null || rawResponseError.trim().isEmpty()) {
+            return;
+        }
+        JSONObject object = JSONObject.parseObject(rawResponseError, Feature.DisableSpecialKeyDetect);
+        this.accessDeniedDetail = object.getJSONObject(Consts.ACCESS_DENIED_DETAIL);
     }
 
     /**
@@ -165,10 +176,15 @@ public class LogException extends Exception {
 
     @Override
     public String toString() {
+        String accessDeniedDetailStr = "";
+        if (accessDeniedDetail != null) {
+            accessDeniedDetailStr = ", accessDeniedDetail='" + accessDeniedDetail + '\'';
+        }
         return "LogException{" +
                 "httpCode=" + httpCode +
                 ", errorCode='" + errorCode + '\'' +
                 ", message='" + GetErrorMessage() + '\'' +
+                accessDeniedDetailStr +
                 ", requestId='" + requestId + '\'' +
                 '}';
     }

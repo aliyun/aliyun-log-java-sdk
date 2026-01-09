@@ -25,7 +25,7 @@ public class IndexKey implements Serializable {
 	private String type = "text";
 	private String embedding ="";
 	private String vector_index = "";
-	
+
 	public IndexKey() {
 	}
 
@@ -41,7 +41,7 @@ public class IndexKey implements Serializable {
 		this.docValue = true;
 		this.chn = false;
 	}
-	
+
 	public IndexKey(List<String> token, boolean caseSensitive, String type) {
 		SetToken(token);
 		this.caseSensitive = caseSensitive;
@@ -68,7 +68,7 @@ public class IndexKey implements Serializable {
 		this.embedding = embedding;
 		this.vector_index = vector_index;
 	}
-	
+
 	/**
 	 * create index config from another index key
 	 * @param other another index key
@@ -96,35 +96,35 @@ public class IndexKey implements Serializable {
 	public boolean IsChn() {
 		return chn;
 	}
-	
+
 	/*
 	 * @param chn to be set
 	 */
 	public void SetChn(boolean chn) {
 		this.chn = chn;
 	}
-	
+
 	/**
 	 * @return type
 	 */
 	public boolean IsDocValue() {
 		return docValue;
 	}
-	
+
 	/**
 	 * @param docValue to be set
 	 */
 	public void SetDocValue(boolean docValue) {
 		this.docValue = docValue;
 	}
-	
+
 	/**
 	 * @return type
 	 */
 	public String GetType() {
 		return type;
 	}
-	
+
 	/**
 	 * @param type to be set
 	 */
@@ -188,7 +188,7 @@ public class IndexKey implements Serializable {
 		JSONObject allKeys = new JSONObject();
 		JSONArray tokenDict = new JSONArray();
 		tokenDict.addAll(token);
-		
+
 		allKeys.put("type", GetType());
 		// only text type require token & caseSensitive
 		if (GetType().equals("text")) {
@@ -196,7 +196,7 @@ public class IndexKey implements Serializable {
 			allKeys.put("caseSensitive", GetCaseSensitive());
 			allKeys.put("chn", IsChn());
 		}
-		
+
 		allKeys.put("doc_value", IsDocValue());
 		allKeys.put("alias", getAlias());
 
@@ -208,28 +208,28 @@ public class IndexKey implements Serializable {
 		}
 		return allKeys;
 	}
-	
-	public String ToRequestString() throws LogException {	
+
+	public String ToRequestString() throws LogException {
 		return ToRequestJson().toString();
 	}
-	
+
 	public JSONObject ToJsonObject() throws LogException {
 		return ToRequestJson();
 	}
-	 
-	public String ToJsonString() throws LogException {	
+
+	public String ToJsonString() throws LogException {
 		return ToJsonObject().toString();
 	}
-	
+
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {
-			
+
 			if (dict.containsKey("chn")) {
 				SetChn(dict.getBooleanValue("chn"));
 			} else {
 				SetChn(false);
 			}
-			
+
 			if (dict.containsKey("alias"))
 				setAlias(dict.getString("alias"));
 			if (!dict.containsKey("doc_value"))
@@ -244,13 +244,15 @@ public class IndexKey implements Serializable {
 			else
 				SetType("text");
 			SetCaseSensitive(caseSensitive);
-			JSONArray tokenDict = new JSONArray();
-			if (dict.containsKey("token"))
-				tokenDict = dict.getJSONArray("token");
 			token = new ArrayList<String>();
-			for (int i = 0;i < tokenDict.size();i++) {
-				token.add(tokenDict.getString(i));
-			}
+            if (dict.containsKey("token")) {
+                JSONArray tokenDict = dict.getJSONArray("token");
+                if (tokenDict != null) {
+                    for (int i = 0; i < tokenDict.size(); i++) {
+                        token.add(tokenDict.getString(i));
+                    }
+                }
+            }
 			if (dict.containsKey("embedding")) {
 				setEmbedding(dict.getString("embedding"));
 			}
@@ -261,7 +263,7 @@ public class IndexKey implements Serializable {
 			throw new LogException("FailToGenerateIndexKey", e.getMessage(), e, "");
 		}
 	}
-	
+
 	public void FromJsonString(String indexKeyString) throws LogException {
 		try {
 			JSONObject dict = JSONObject.parseObject(indexKeyString);
@@ -270,6 +272,6 @@ public class IndexKey implements Serializable {
 			throw new LogException("FailToGenerateIndexKey", e.getMessage(), e, "");
 		}
 	}
-	
-	
+
+
 }
