@@ -62,6 +62,9 @@ public class Client implements LogService {
 	private boolean useMetricStoreUrl;
 	private ClientConfiguration clientConfiguration;
 	private boolean isCname = false;
+    private String region = null;
+    private static final SignVersion DEFAULT_SIGNATURE_VERSION = SignVersion.V1;
+    private SignVersion signatureVersion = DEFAULT_SIGNATURE_VERSION;
 
 	public boolean isUseMetricStoreUrl() {
 		return useMetricStoreUrl;
@@ -280,7 +283,7 @@ public class Client implements LogService {
 		if (NetworkUtils.isIPAddr(this.hostName)) {
 			throw new IllegalArgumentException("The ip address is not supported");
 		}
-		if (getClientConfiguration().getRegion() == null) {
+		if (region == null || region.isEmpty()) {
 			setSignV4IfInAcdr(endpoint);
 		}
 	}
@@ -289,7 +292,10 @@ public class Client implements LogService {
 		configure(endpoint, new StaticCredentialsProvider(credentials), sourceIp);
 	}
 
-	private void configure(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
+	@SuppressWarnings("deprecation")
+    private void configure(String endpoint, CredentialsProvider credentialsProvider, String sourceIp) {
+        this.signatureVersion = this.clientConfiguration.getSignatureVersion();
+        this.region = this.clientConfiguration.getRegion();
 		setEndpoint(endpoint);
 		this.sourceIp = sourceIp;
 		if (sourceIp == null || sourceIp.isEmpty()) {
@@ -338,8 +344,7 @@ public class Client implements LogService {
 	}
 
 	private void updateSigner(CredentialsProvider credentialsProvider) {
-		ClientConfiguration clientConfiguration = serviceClient.getClientConfiguration();
-		this.signer = SlsSignerBase.createRequestSigner(clientConfiguration, credentialsProvider);
+		this.signer = SlsSignerBase.createRequestSigner(signatureVersion, region, credentialsProvider);
 	}
 
 	private void ensureStaticCredentialProvider() {
@@ -398,6 +403,19 @@ public class Client implements LogService {
 		StaticCredentialsProvider scp = (StaticCredentialsProvider) this.credentialsProvider;
 		scp.setSecurityToken(securityToken);
 	}
+
+    public void setSignatureVersion(SignVersion signatureVersion) {
+        this.signatureVersion = signatureVersion;
+    }
+    public void setRegion(String region) {
+        this.region = region;
+    }
+    public SignVersion getSignatureVersion() {
+        return signatureVersion;
+    }
+    public String getRegion() {
+        return region;
+    }
 
 	public void shutdown() {
 		serviceClient.shutdown();
@@ -6775,8 +6793,8 @@ public class Client implements LogService {
 	private void setSignV4IfInAcdr(String endpoint) {
 		String region = Utils.parseRegion(endpoint);
 		if (region != null && region.contains("-acdr-ut-")) {
-			getClientConfiguration().setSignatureVersion(SignVersion.V4);
-			getClientConfiguration().setRegion(region);
+            setSignatureVersion(SignVersion.V4);
+            setRegion(region);
 		}
 	}
 
