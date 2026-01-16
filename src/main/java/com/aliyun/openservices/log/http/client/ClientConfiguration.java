@@ -42,8 +42,8 @@ public class ClientConfiguration {
     private boolean connManagerShared = false;
     private RetryStrategy retryStrategy;
     private int maxErrorRetry = 3;
-    protected SignVersion signatureVersion = DEFAULT_SIGNATURE_VERSION;
-    private String region;
+    protected SignVersion signatureVersion = DEFAULT_SIGNATURE_VERSION; // deprecated, use client.signatureVersion instead
+    private String region; // deprecated, use client.region instead
     private boolean retryDisabled = false;
 
     private Map<String, String> defaultHeaders = new HashMap<String, String>();
@@ -272,23 +272,32 @@ public class ClientConfiguration {
      *
      * @return signature version
      */
+    @Deprecated
     public SignVersion getSignatureVersion() {
         return signatureVersion;
     }
 
     /**
-     * Sets signature version for all request.
+     * @deprecated use Client.setSignatureVersion instead
      *
      * @param signatureVersion
      */
+    @Deprecated
     public void setSignatureVersion(SignVersion signatureVersion) {
         this.signatureVersion = signatureVersion;
     }
 
+    @Deprecated
     public String getRegion() {
         return region;
     }
 
+    /**
+     * @deprecated use Client.setRegion instead
+     *
+     * @param region
+     */
+    @Deprecated
     public void setRegion(String region) {
         this.region = region;
     }

@@ -20,7 +20,6 @@ package com.aliyun.openservices.log.http.signer;
 
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.auth.CredentialsProvider;
-import com.aliyun.openservices.log.http.client.ClientConfiguration;
 
 import java.util.Map;
 
@@ -33,9 +32,9 @@ public abstract class SlsSignerBase {
     }
 
 
-    public static SlsSigner createRequestSigner(ClientConfiguration clientConfiguration, CredentialsProvider credentialsProvider) {
-        if (clientConfiguration.getSignatureVersion() == SignVersion.V4) {
-            return new SlsV4Signer(credentialsProvider, clientConfiguration.getRegion());
+    public static SlsSigner createRequestSigner(SignVersion signatureVersion, String region, CredentialsProvider credentialsProvider) {
+        if (signatureVersion == SignVersion.V4) {
+            return new SlsV4Signer(credentialsProvider, region);
         } else {
             return new SlsV1Signer(credentialsProvider);
         }
