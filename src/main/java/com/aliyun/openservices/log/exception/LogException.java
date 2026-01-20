@@ -174,6 +174,14 @@ public class LogException extends Exception {
         this.rawResponseError = rawResponseError;
     }
 
+    public JSONObject getAccessDeniedDetail() {
+        return accessDeniedDetail;
+    }
+
+    public void setAccessDeniedDetail(JSONObject accessDeniedDetail) {
+        this.accessDeniedDetail = accessDeniedDetail;
+    }
+
     @Override
     public String toString() {
         String accessDeniedDetailStr = "";
