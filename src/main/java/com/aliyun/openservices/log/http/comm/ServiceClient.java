@@ -6,7 +6,7 @@ import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.http.client.ServiceException;
 import com.aliyun.openservices.log.http.utils.HttpUtil;
 import com.aliyun.openservices.log.util.Args;
-import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

@@ -1,13 +1,13 @@
 package com.aliyun.openservices.log.http.comm;
 
+import com.aliyun.openservices.log.http.utils.HttpHeaders;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
+import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.entity.BasicHttpEntity;
-
-import com.aliyun.openservices.log.http.utils.HttpHeaders;
 
 class RepeatableInputStreamEntity extends BasicHttpEntity{
 
@@ -18,28 +18,10 @@ class RepeatableInputStreamEntity extends BasicHttpEntity{
     private InputStream content;
 
     public RepeatableInputStreamEntity(ServiceClient.Request request){
-        setChunked(false);
-
-        String contentType = request.getHeaders().get(HttpHeaders.CONTENT_TYPE);
+        super(request.getContent(), request.getContentLength(), ContentType.parse(request.getHeaders().get(HttpHeaders.CONTENT_TYPE)));
         content = request.getContent();
-        long contentLength = request.getContentLength();
-
-        innerEntity = new NoAutoClosedInputStreamEntity(content, contentLength);
-        innerEntity.setContentType(contentType);
-
-        setContent(content);
-        setContentType(contentType);
-        setContentLength(request.getContentLength());
-    }
-
-    @Override
-    public boolean isChunked(){
-        return false;
-    }
-
-    @Override
-    public boolean isRepeatable(){
-        return content.markSupported() || innerEntity.isRepeatable();
+        String contentType = request.getHeaders().get(HttpHeaders.CONTENT_TYPE);
+        innerEntity = new NoAutoClosedInputStreamEntity(content, contentType, request.getContentLength());
     }
 
     @Override
@@ -63,8 +45,8 @@ class RepeatableInputStreamEntity extends BasicHttpEntity{
         private final InputStream content;
         private final long length;
         
-        public NoAutoClosedInputStreamEntity(final InputStream instream, long length) {
-            super();
+        public NoAutoClosedInputStreamEntity(final InputStream instream, String contentType, long length) {
+            super(contentType, null,false);
             if (instream == null) {
                 throw new IllegalArgumentException("Source input stream may not be null");
             }
@@ -114,6 +96,11 @@ class RepeatableInputStreamEntity extends BasicHttpEntity{
 
         public boolean isStreaming() {
             return true;
+        }
+
+        @Override
+        public void close() throws IOException {
+
         }
     }
 }

@@ -2,16 +2,24 @@ package com.aliyun.openservices.log.functiontest.logstore;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.aliyun.openservices.log.common.*;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
+import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.common.FastLog;
+import com.aliyun.openservices.log.common.FastLogContent;
+import com.aliyun.openservices.log.common.FastLogGroup;
+import com.aliyun.openservices.log.common.FastLogTag;
+import com.aliyun.openservices.log.common.LogStore;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -21,7 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.Deflater;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class WebTrackingTest extends LogTest {
 
@@ -34,7 +45,7 @@ public class WebTrackingTest extends LogTest {
         HttpGet httpGet = new HttpGet("http://" + TEST_PROJECT + "." + TEST_ENDPOINT + "/logstores/" + logStoreName + "/track?" + params);
         try {
             HttpResponse res = httpClient.execute(httpGet);
-            if (res.getStatusLine().getStatusCode() / 200 != 1) {
+            if (res.getCode() / 200 != 1) {
                 return false;
             }
         } catch (Exception e) {
@@ -237,21 +248,19 @@ public class WebTrackingTest extends LogTest {
             if (compress) {
                 byte[] toBytes = body.getBytes("UTF-8");
                 byte[] bytes = compressData(toBytes);
-                ByteArrayEntity entity = new ByteArrayEntity(bytes);
+                ByteArrayEntity entity = new ByteArrayEntity(bytes, ContentType.APPLICATION_JSON, "UTF-8");
                 httpPost.setEntity(entity);
-                entity.setContentEncoding("UTF-8");
                 httpPost.addHeader(Consts.CONST_X_SLS_COMPRESSTYPE, Consts.CompressType.GZIP.toString());
                 httpPost.addHeader(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(toBytes.length));
             } else {
-                StringEntity stringEntity = new StringEntity(log.toString(), "UTF-8");
-                stringEntity.setContentEncoding("UTF-8");
+                StringEntity stringEntity = new StringEntity(log.toString(), ContentType.APPLICATION_JSON, "UTF-8", false);
                 httpPost.setEntity(stringEntity);
                 httpPost.addHeader(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(body.length()));
             }
-            ResponseHandler<Response> responseHandler = new ResponseHandler<Response>() {
+            HttpClientResponseHandler<Response> responseHandler = new HttpClientResponseHandler<Response>() {
                 @Override
-                public Response handleResponse(final HttpResponse response) throws IOException {
-                    int status = response.getStatusLine().getStatusCode();
+                public Response handleResponse(final ClassicHttpResponse response) throws HttpException, IOException {
+                    int status = response.getCode();
                     return new Response(status);
                 }
             };

@@ -28,33 +28,31 @@ import com.aliyun.openservices.log.http.utils.HttpHeaders;
 import com.aliyun.openservices.log.http.utils.HttpUtil;
 import com.aliyun.openservices.log.http.utils.IOUtils;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.Header;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AUTH;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.NTCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.config.SocketConfig;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.NTCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.auth.BasicScheme;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.core5.ssl.TrustStrategy;
+import org.apache.hc.core5.util.Timeout;
 
 import javax.net.ssl.SSLContext;
 import java.io.ByteArrayInputStream;
@@ -71,20 +69,20 @@ public class DefaultServiceClient extends ServiceClient {
     protected static HttpRequestFactory httpRequestFactory = new HttpRequestFactory();
 
     protected CloseableHttpClient httpClient;
-    protected HttpClientConnectionManager connectionManager;
+    protected PoolingHttpClientConnectionManager connectionManager;
     protected RequestConfig requestConfig;
-    protected CredentialsProvider credentialsProvider;
+    protected BasicCredentialsProvider credentialsProvider;
     protected HttpHost proxyHttpHost;
-    protected AuthCache authCache;
+    protected BasicAuthCache authCache;
 
     public DefaultServiceClient(ClientConfiguration config) {
         super(config);
         this.connectionManager = createHttpClientConnectionManager();
         this.httpClient = createHttpClient(this.connectionManager, config);
         RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
-        requestConfigBuilder.setConnectTimeout(config.getConnectionTimeout());
-        requestConfigBuilder.setSocketTimeout(config.getSocketTimeout());
-        requestConfigBuilder.setConnectionRequestTimeout(config.getConnectionRequestTimeout());
+        requestConfigBuilder.setConnectTimeout(Timeout.ofMilliseconds(config.getConnectionTimeout()));
+        requestConfigBuilder.setResponseTimeout(Timeout.ofMilliseconds(config.getSocketTimeout()));
+        requestConfigBuilder.setConnectionRequestTimeout(Timeout.ofMilliseconds(config.getConnectionRequestTimeout()));
 
         String proxyHost = config.getProxyHost();
         int proxyPort = config.getProxyPort();
@@ -99,7 +97,7 @@ public class DefaultServiceClient extends ServiceClient {
             if (proxyUsername != null && proxyPassword != null) {
                 this.credentialsProvider = new BasicCredentialsProvider();
                 this.credentialsProvider.setCredentials(new AuthScope(proxyHost, proxyPort),
-                        new NTCredentials(proxyUsername, proxyPassword, proxyWorkstation, proxyDomain));
+                        new NTCredentials(proxyUsername, proxyPassword.toCharArray(), proxyWorkstation, proxyDomain));
 
                 this.authCache = new BasicAuthCache();
                 authCache.put(this.proxyHttpHost, new BasicScheme());
@@ -111,7 +109,7 @@ public class DefaultServiceClient extends ServiceClient {
 
     @Override
     public ResponseMessage sendRequestCore(ServiceClient.Request request, String charset) throws IOException, LogException {
-        HttpRequestBase httpRequest = httpRequestFactory.createHttpRequest(request, charset);
+        HttpUriRequestBase httpRequest = httpRequestFactory.createHttpRequest(request, charset);
         setProxyAuthorizationIfNeed(httpRequest);
         HttpClientContext httpContext = createHttpContext();
         httpContext.setRequestConfig(this.requestConfig);
@@ -120,7 +118,7 @@ public class DefaultServiceClient extends ServiceClient {
         try {
             httpResponse = httpClient.execute(httpRequest, httpContext);
         } catch (IOException ex) {
-            httpRequest.abort();
+            httpRequest.cancel();
             throw ExceptionFactory.createNetworkException(ex);
         }
 
@@ -135,8 +133,8 @@ public class DefaultServiceClient extends ServiceClient {
         ResponseMessage response = new ResponseMessage();
         response.setUrl(request.getUri());
 
-        if (httpResponse.getStatusLine() != null) {
-            response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
+        if (httpResponse.getCode() != 0) {
+            response.setStatusCode(httpResponse.getCode());
         }
 
         if (httpResponse.getEntity() != null) {
@@ -147,7 +145,7 @@ public class DefaultServiceClient extends ServiceClient {
             }
         }
 
-        for (Header header : httpResponse.getAllHeaders()) {
+        for (Header header : httpResponse.getHeaders()) {
             if (HttpHeaders.CONTENT_LENGTH.equals(header.getName())) {
                 response.setContentLength(Long.parseLong(header.getValue()));
             }
@@ -204,7 +202,7 @@ public class DefaultServiceClient extends ServiceClient {
         }
     }
 
-    protected CloseableHttpClient createHttpClient(HttpClientConnectionManager connectionManager,
+    protected CloseableHttpClient createHttpClient(PoolingHttpClientConnectionManager connectionManager,
                                                    ClientConfiguration config) {
         return HttpClients.custom()
                 .setConnectionManager(connectionManager)
@@ -214,7 +212,7 @@ public class DefaultServiceClient extends ServiceClient {
                 .build();
     }
 
-    protected HttpClientConnectionManager createHttpClientConnectionManager() {
+    protected PoolingHttpClientConnectionManager createHttpClientConnectionManager() {
         SSLContext sslContext = null;
         try {
             sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
@@ -240,9 +238,9 @@ public class DefaultServiceClient extends ServiceClient {
                 socketFactoryRegistry);
         connectionManager.setDefaultMaxPerRoute(config.getMaxConnections());
         connectionManager.setMaxTotal(config.getMaxConnections());
-        connectionManager.setValidateAfterInactivity(config.getValidateAfterInactivity());
+        connectionManager.setValidateAfterInactivity(Timeout.ofMilliseconds(config.getValidateAfterInactivity()));
         connectionManager.setDefaultSocketConfig(
-                SocketConfig.custom().setSoTimeout(config.getSocketTimeout()).setTcpNoDelay(true).build());
+                SocketConfig.custom().setSoTimeout(Timeout.ofMilliseconds(config.getSocketTimeout())).setTcpNoDelay(true).build());
         if (config.isUseReaper()) {
             IdleConnectionReaper.setIdleConnectionTime(config.getIdleConnectionTime());
             IdleConnectionReaper.registerConnectionManager(connectionManager);
@@ -260,23 +258,23 @@ public class DefaultServiceClient extends ServiceClient {
         return httpContext;
     }
 
-    private void setProxyAuthorizationIfNeed(HttpRequestBase httpRequest) {
+    private void setProxyAuthorizationIfNeed(HttpUriRequest httpRequest) {
         if (this.credentialsProvider != null) {
             String auth = this.config.getProxyUsername() + ":" + this.config.getProxyPassword();
             byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
             String authHeader = "Basic " + new String(encodedAuth);
-            httpRequest.addHeader(AUTH.PROXY_AUTH_RESP, authHeader);
+            httpRequest.addHeader("Proxy-Authorization", authHeader);
         }
     }
 
     @Override
     public void shutdown() {
         IdleConnectionReaper.removeConnectionManager(this.connectionManager);
-        this.connectionManager.shutdown();
+        this.connectionManager.close();
     }
 
     @Override
-    public HttpClientConnectionManager getConnectionManager() {
+    public PoolingHttpClientConnectionManager getConnectionManager() {
         return this.connectionManager;
     }
 }
