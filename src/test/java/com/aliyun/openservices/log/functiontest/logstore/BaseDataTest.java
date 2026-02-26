@@ -13,15 +13,14 @@ import com.aliyun.openservices.log.response.GetLogsResponse;
 import com.aliyun.openservices.log.response.PullLogsResponse;
 import com.aliyun.openservices.log.util.LZ4Encoder;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.junit.After;
 import org.junit.Before;
 
@@ -269,38 +268,33 @@ public abstract class BaseDataTest extends FunctionTest {
 
             HttpPost httpPost = new HttpPost(URL);
             String body = log.toString();
-            httpPost.addHeader("Content-Type", "application/json;charset=UTF-8");
-            httpPost.addHeader(Consts.CONST_X_SLS_APIVERSION, Consts.DEFAULT_API_VESION);
+            httpPost.setHeader("Content-Type", "application/json;charset=UTF-8");
+            httpPost.setHeader(Consts.CONST_X_SLS_APIVERSION, Consts.DEFAULT_API_VESION);
             if (compress) {
                 byte[] toBytes = body.getBytes("UTF-8");
                 byte[] bytes;
                 if (type.equals(Consts.CompressType.GZIP)) {
                     bytes = compressData(toBytes, type);
-                    httpPost.addHeader(Consts.CONST_X_SLS_COMPRESSTYPE, Consts.CompressType.GZIP.toString());
+                    httpPost.setHeader(Consts.CONST_X_SLS_COMPRESSTYPE, Consts.CompressType.GZIP.toString());
                 } else {
                     bytes = compressData(toBytes, type);
-                    httpPost.addHeader(Consts.CONST_X_SLS_COMPRESSTYPE, Consts.CompressType.LZ4.toString());
+                    httpPost.setHeader(Consts.CONST_X_SLS_COMPRESSTYPE, Consts.CompressType.LZ4.toString());
                 }
-                ByteArrayEntity entity = new ByteArrayEntity(bytes);
+                HttpEntity entity = new ByteArrayEntity(bytes, ContentType.APPLICATION_JSON, "UTF-8");
                 httpPost.setEntity(entity);
-                entity.setContentEncoding("UTF-8");
-                httpPost.addHeader(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(toBytes.length));
+                httpPost.setHeader(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(toBytes.length));
             } else {
-                StringEntity stringEntity = new StringEntity(log.toString(), "UTF-8");
-                stringEntity.setContentEncoding("UTF-8");
+                StringEntity stringEntity = new StringEntity(log.toString(), ContentType.APPLICATION_JSON, "UTF-8", false);
                 httpPost.setEntity(stringEntity);
-                httpPost.addHeader(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(body.length()));
+                httpPost.setHeader(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(body.length()));
             }
-            ResponseHandler<Response> responseHandler = new ResponseHandler<Response>() {
-                @Override
-                public Response handleResponse(final HttpResponse response) throws IOException {
-                    int status = response.getStatusLine().getStatusCode();
-                    HttpEntity entity = response.getEntity();
-                    String body = entity != null ? EntityUtils.toString(entity) : null;
-                    return new Response(status, body);
-                }
-            };
-            return httpclient.execute(httpPost, responseHandler);
+            
+            return httpclient.execute(httpPost, classicHttpResponse -> {
+                int status = classicHttpResponse.getCode();
+                HttpEntity entity = classicHttpResponse.getEntity();
+                String responseBody = entity != null ? EntityUtils.toString(entity) : null;
+                return new Response(status, responseBody);
+            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

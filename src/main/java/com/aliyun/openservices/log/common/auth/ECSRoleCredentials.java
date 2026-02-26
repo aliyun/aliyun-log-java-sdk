@@ -2,14 +2,15 @@ package com.aliyun.openservices.log.common.auth;
 
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.http.utils.DateUtil;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class ECSRoleCredentials implements Credentials {
     private static final String META_DATA_SERVICE_URL = "http://100.100.100.200/latest/meta-data/ram/security-credentials/";
@@ -68,11 +69,15 @@ public class ECSRoleCredentials implements Credentials {
 
     private void fetchCredentials() {
         String requestUrl = META_DATA_SERVICE_URL + ecsRamRole;
-        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(requestUrl);
         CloseableHttpResponse httpResponse = null;
         try {
-            RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(3000).setSocketTimeout(3000).build();
+            RequestConfig config = RequestConfig.custom()
+                    .setConnectTimeout(3000, TimeUnit.MILLISECONDS)
+                    .setConnectionRequestTimeout(3000, TimeUnit.MILLISECONDS)
+                    .setResponseTimeout(3000, TimeUnit.MILLISECONDS)
+                    .build();
             httpGet.setConfig(config);
             httpResponse = httpClient.execute(httpGet);
             JSONObject response = JSONObject.parseObject(EntityUtils.toString(httpResponse.getEntity()));

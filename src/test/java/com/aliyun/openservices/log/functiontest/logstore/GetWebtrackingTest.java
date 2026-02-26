@@ -1,17 +1,16 @@
 package com.aliyun.openservices.log.functiontest.logstore;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import com.aliyun.openservices.log.exception.LogException;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.HttpResponse;
+import org.junit.Test;
 
 import java.io.IOException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.Test;
-
-import com.aliyun.openservices.log.exception.LogException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class GetWebtrackingTest extends BaseDataTest {
     @Test
@@ -38,7 +37,7 @@ public class GetWebtrackingTest extends BaseDataTest {
         try {
             for (int i = 0; i < count; i++) {
                 HttpResponse res = httpClient.execute(httpGet);
-                if (res.getStatusLine().getStatusCode() / 200 != 1) {
+                if (res.getCode() / 200 != 1) {
                     fail();
                 }
             }

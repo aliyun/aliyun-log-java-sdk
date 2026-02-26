@@ -42,4 +42,10 @@ public interface ClientErrorCode {
      * Ssl exception
      */
     String SSL_EXCEPTION = "SslException";
+
+    /**
+     * Client Protocol Exception
+     */
+    String CLIENT_PROTOCOL_EXCEPTION = "ClientProtocolException";
+
 }

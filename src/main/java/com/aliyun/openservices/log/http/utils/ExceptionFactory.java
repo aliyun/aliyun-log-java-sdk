@@ -2,11 +2,10 @@ package com.aliyun.openservices.log.http.utils;
 
 import com.aliyun.openservices.log.http.client.ClientErrorCode;
 import com.aliyun.openservices.log.http.client.ClientException;
-import org.apache.http.NoHttpResponseException;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.NonRepeatableRequestException;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.HttpHostConnectException;
+import org.apache.hc.core5.http.NoHttpResponseException;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.client5.http.ConnectTimeoutException;
+import org.apache.hc.client5.http.HttpHostConnectException;
 
 import javax.net.ssl.SSLException;
 import java.io.IOException;
@@ -34,11 +33,7 @@ public class ExceptionFactory {
         } else if (ex instanceof SSLException) {
             errorCode = ClientErrorCode.SSL_EXCEPTION;
         } else if (ex instanceof ClientProtocolException) {
-            Throwable cause = ex.getCause();
-            if (cause instanceof NonRepeatableRequestException) {
-                errorCode = ClientErrorCode.NONREPEATABLE_REQUEST;
-                return new ClientException(cause.getMessage(), errorCode, requestId, cause);
-            }
+            errorCode = ClientErrorCode.CLIENT_PROTOCOL_EXCEPTION;
         }
 
         return new ClientException(ex.getMessage(), errorCode, requestId, ex);

@@ -25,7 +25,7 @@ import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.http.utils.BinaryUtil;
 import com.aliyun.openservices.log.http.utils.HttpUtil;
 import com.aliyun.openservices.log.util.Args;
-import org.apache.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpHeaders;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;

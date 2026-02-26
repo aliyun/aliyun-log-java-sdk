@@ -3,21 +3,21 @@ package com.aliyun.openservices.log.http.comm;
 import com.aliyun.openservices.log.http.client.ClientException;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.http.utils.HttpHeaders;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpHead;
+import org.apache.hc.client5.http.classic.methods.HttpOptions;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 
 import java.util.Map.Entry;
 
 class HttpRequestFactory {
 
-    public HttpRequestBase createHttpRequest(ServiceClient.Request request, String charset) {
+    public HttpUriRequestBase createHttpRequest(ServiceClient.Request request, String charset) {
         String uri = request.getUri();
-        HttpRequestBase httpRequest;
+        HttpUriRequestBase httpRequest;
         HttpMethod method = request.getMethod();
         if (method == HttpMethod.POST) {
             HttpPost postMethod = new HttpPost(uri);
@@ -52,7 +52,7 @@ class HttpRequestFactory {
 
     private void configureRequestHeaders(ServiceClient.Request request,
                                          String charset,
-                                         HttpRequestBase httpRequest){
+                                         HttpUriRequestBase httpRequest){
         // Copy headers in the request message to the HTTP request
         for(Entry<String, String> entry : request.getHeaders().entrySet()){
             // HttpClient fills in the Content-Length,
