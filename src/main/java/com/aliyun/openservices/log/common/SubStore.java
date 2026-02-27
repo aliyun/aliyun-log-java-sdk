@@ -14,6 +14,7 @@ public class SubStore {
     private int sortedKeyCount;
     private int timeIndex;
     private List<SubStoreKey> keys;
+    private boolean tsMode = false;
 
     public SubStore() {
         super();
@@ -25,6 +26,18 @@ public class SubStore {
         this.sortedKeyCount = sortedKeyCount;
         this.timeIndex = timeIndex;
         this.keys = keys;
+        if (!isValid()) {
+            throw new IllegalArgumentException("SubStore is invalid");
+        }
+    }
+
+    public SubStore(String name, int ttl, int sortedKeyCount, int timeIndex, List<SubStoreKey> keys, boolean tsMode) {
+        this.name = name;
+        this.ttl = ttl;
+        this.sortedKeyCount = sortedKeyCount;
+        this.timeIndex = timeIndex;
+        this.keys = keys;
+        this.tsMode = tsMode;
         if (!isValid()) {
             throw new IllegalArgumentException("SubStore is invalid");
         }
@@ -94,6 +107,14 @@ public class SubStore {
         this.keys = keys;
     }
 
+    public boolean getTsMode() {
+        return tsMode;
+    }
+
+    public void setTsMode(boolean tsMode) {
+        this.tsMode = tsMode;
+    }
+
     public void fromJsonString(String subStoreString) throws LogException {
         try {
             JSONObject dict = JSONObject.parseObject(subStoreString);
@@ -108,6 +129,9 @@ public class SubStore {
         this.setTtl(dict.getIntValue("ttl"));
         this.setSortedKeyCount(dict.getIntValue("sortedKeyCount"));
         this.setTimeIndex(dict.getIntValue("timeIndex"));
+        if (dict.containsKey("tsMode")) {
+            this.setTsMode(dict.getBooleanValue("tsMode"));
+        }
 
         if (dict.containsKey("keys")) {
             JSONArray keysDict = dict.getJSONArray("keys");
@@ -133,6 +157,7 @@ public class SubStore {
         subStoreDict.put("ttl", getTtl());
         subStoreDict.put("sortedKeyCount", getSortedKeyCount());
         subStoreDict.put("timeIndex", getTimeIndex());
+        subStoreDict.put("tsMode", getTsMode());
 
         JSONArray keysDict = new JSONArray();
         for (SubStoreKey key : getKeys()) {
