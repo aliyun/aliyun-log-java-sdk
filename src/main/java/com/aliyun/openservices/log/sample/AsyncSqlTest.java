@@ -32,7 +32,7 @@ public class AsyncSqlTest {
         SubmitAsyncSqlResponse response = client.submitAsyncSql(request);
         System.out.println(response.getQueryId() + ", " + response.isRunning() + ", " + response.getErrorCode());
 
-        GetAsyncSqlRequest getReq = new GetAsyncSqlRequest(project, response.getQueryId(), 0, 0);
+        GetAsyncSqlRequest getReq = new GetAsyncSqlRequest(project, logstore, response.getQueryId(), 0, 0);
         GetAsyncSqlResponse getRsp = null;
         while(true) {
             // 这里可能抛出异常, 比如网络不可用或者服务端busy之类的, 需要考虑重试getAsyncSql
@@ -55,7 +55,7 @@ public class AsyncSqlTest {
 
         final int batchSize = 10;
         for (int offset = 0; offset < getRsp.getMeta().getResultRows(); offset += getRsp.getRows().size()) {
-            getReq = new GetAsyncSqlRequest(project, response.getQueryId(), offset, batchSize);
+            getReq = new GetAsyncSqlRequest(project, logstore, response.getQueryId(), offset, batchSize);
             getRsp = client.getAsyncSql(getReq);
 
             System.out.println("offset: " + offset + ", " + getRsp.getRows().size());
@@ -66,7 +66,7 @@ public class AsyncSqlTest {
             }
         }
 
-        DeleteAsyncSqlRequest deleteReq = new DeleteAsyncSqlRequest(project, response.getQueryId());
+        DeleteAsyncSqlRequest deleteReq = new DeleteAsyncSqlRequest(project, logstore, response.getQueryId());
         client.deleteAsyncSql(deleteReq);
     }
 
