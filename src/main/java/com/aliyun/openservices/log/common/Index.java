@@ -12,241 +12,238 @@ import java.util.List;
 
 /**
  * Index config for a logstore,  it contains the index data life cycle(ttl),  index for keys and for log line
- * @author log-service-dev
  *
+ * @author log-service-dev
  */
 public class Index {
-	private int ttl = -1;
-	private IndexKeys keys = new IndexKeys();
-	private IndexLine line = new IndexLine();
-	
-	private boolean keysSet = false;
-	private boolean lineSet = false;
-	private boolean logReduceEnable = false;
-	private boolean scanIndexEnable = false;
+    private int ttl = -1;
+    private IndexKeys keys = new IndexKeys();
+    private IndexLine line = new IndexLine();
+    private boolean logReduceEnable = false;
+    private boolean scanIndexEnable = false;
 
-	private int maxTextLen = 0;
-	private List<String> logReduceWhiteList = new ArrayList<String>();
-	private List<String> logReduceBlackList = new ArrayList<String>();
+    private int maxTextLen = 0;
+    private List<String> logReduceWhiteList = new ArrayList<String>();
+    private List<String> logReduceBlackList = new ArrayList<String>();
 
-	public Index() {
-	}
-	/**
-	 * create Index 
-	 * @param ttl the index data file cycle in day, currently only support 7, 30, 90
-	 * @param keys the keys index config
-	 * @param line the log line index config
-	 */
-	public Index(int ttl, IndexKeys keys, IndexLine line) {
-		this.ttl = ttl;
-		SetKeys(keys);
-		SetLine(line);
-	}
-	
-	/**
-	 * Create index from another index 
-	 * @param other another index config
-	 */
-	public Index(Index other) {
-		this.ttl = other.GetTtl();
-		this.logReduceEnable = other.isLogReduceEnable();
-		this.scanIndexEnable = other.isScanIndexEnable();
-		if (other.isKeysSet()) {
-			SetKeys(other.GetKeys());
-		}
-		if (other.isLineSet()) {
-			SetLine(other.GetLine());
-		}
-		this.maxTextLen = other.getMaxTextLen();
-		setLogReduceWhiteList(other.getLogReduceWhiteList());
-		setLogReduceBlackList(other.getLogReduceBlackList());
-	}
-	
-	public boolean isLogReduceEnable() {
-		return logReduceEnable;
-	}
-	public void setLogReduceEnable(boolean logReduce) {
-		this.logReduceEnable = logReduce;
-	}
+    public Index() {
+    }
 
-	public boolean isScanIndexEnable() {
-		return scanIndexEnable;
-	}
-	public void setScanIndexEnable(boolean scanIndexEnable) {
-		this.scanIndexEnable = scanIndexEnable;
-	}
-	
-	/**
-	 * @return the keysSet
-	 */
-	public boolean isKeysSet() {
-		return keysSet;
-	}
+    /**
+     * create Index
+     *
+     * @param ttl  the index data file cycle in day, currently only support 7, 30, 90
+     * @param keys the keys index config
+     * @param line the log line index config
+     */
+    public Index(int ttl, IndexKeys keys, IndexLine line) {
+        this.ttl = ttl;
+        SetKeys(keys);
+        SetLine(line);
+    }
 
-	/**
-	 * @return the lineSet
-	 */
-	public boolean isLineSet() {
-		return lineSet;
-	}
+    /**
+     * Create index from another index
+     *
+     * @param other another index config
+     */
+    public Index(Index other) {
+        this.ttl = other.GetTtl();
+        this.logReduceEnable = other.isLogReduceEnable();
+        this.scanIndexEnable = other.isScanIndexEnable();
+        if (other.isKeysSet()) {
+            SetKeys(other.GetKeys());
+        }
+        if (other.isLineSet()) {
+            SetLine(other.GetLine());
+        }
+        this.maxTextLen = other.getMaxTextLen();
+        setLogReduceWhiteList(other.getLogReduceWhiteList());
+        setLogReduceBlackList(other.getLogReduceBlackList());
+    }
 
-	
-	
-	/**
-	 * @return the ttl
-	 */
-	public int GetTtl() {
-		return ttl;
-	}
+    public boolean isLogReduceEnable() {
+        return logReduceEnable;
+    }
 
-	/**
-	 * @param ttl the ttl to set
-	 */
-	public void SetTtl(int ttl) {
-		this.ttl = ttl;
-	}
+    public void setLogReduceEnable(boolean logReduce) {
+        this.logReduceEnable = logReduce;
+    }
 
-	/**
-	 * @return the keys
-	 */
-	public IndexKeys GetKeys() {
-		return keys;
-	}
+    public boolean isScanIndexEnable() {
+        return scanIndexEnable;
+    }
 
-	/**
-	 * @return the line
-	 */
-	public IndexLine GetLine() {
-		return line;
-	}
+    public void setScanIndexEnable(boolean scanIndexEnable) {
+        this.scanIndexEnable = scanIndexEnable;
+    }
+
+    /**
+     * @return the keysSet
+     */
+    public boolean isKeysSet() {
+        return !keys.isEmpty();
+    }
+
+    /**
+     * @return the lineSet
+     */
+    public boolean isLineSet() {
+        return line != null;
+    }
+
+    /**
+     * @return the ttl
+     */
+    public int GetTtl() {
+        return ttl;
+    }
+
+    /**
+     * @param ttl the ttl to set
+     */
+    public void SetTtl(int ttl) {
+        this.ttl = ttl;
+    }
+
+    /**
+     * @return the keys
+     */
+    public IndexKeys GetKeys() {
+        return keys;
+    }
+
+    /**
+     * @return the line
+     */
+    public IndexLine GetLine() {
+        return line;
+    }
 
 
-	/**
-	 * @param keys the keys to set
-	 */
-	public void SetKeys(IndexKeys keys) {
-		keysSet = true;
-		this.keys = new IndexKeys(keys);
-	}
+    /**
+     * @param keys the keys to set
+     */
+    public void SetKeys(IndexKeys keys) {
+        this.keys = new IndexKeys(keys);
+    }
 
-	/**
-	 * @param line the line to set
-	 */
-	public void SetLine(IndexLine line) {
-		lineSet = true;
-		this.line = new IndexLine(line);
-	}
+    /**
+     * @param line the line to set
+     */
+    public void SetLine(IndexLine line) {
+        this.line = new IndexLine(line);
+    }
 
-	public int getMaxTextLen() {
-		return maxTextLen;
-	}
+    public int getMaxTextLen() {
+        return maxTextLen;
+    }
 
-	public void setMaxTextLen(int maxTextLen) {
-		this.maxTextLen = maxTextLen;
-	}
+    public void setMaxTextLen(int maxTextLen) {
+        this.maxTextLen = maxTextLen;
+    }
 
-	public List<String> getLogReduceWhiteList() {
-		return logReduceWhiteList;
-	}
+    public List<String> getLogReduceWhiteList() {
+        return logReduceWhiteList;
+    }
 
-	public void setLogReduceWhiteList(List<String> logReduceWhiteList) {
-		this.logReduceWhiteList = logReduceWhiteList;
-	}
+    public void setLogReduceWhiteList(List<String> logReduceWhiteList) {
+        this.logReduceWhiteList = logReduceWhiteList;
+    }
 
-	public List<String> getLogReduceBlackList() {
-		return logReduceBlackList;
-	}
+    public List<String> getLogReduceBlackList() {
+        return logReduceBlackList;
+    }
 
-	public void setLogReduceBlackList(List<String> logReduceBlackList) {
-		this.logReduceBlackList = logReduceBlackList;
-	}
+    public void setLogReduceBlackList(List<String> logReduceBlackList) {
+        this.logReduceBlackList = logReduceBlackList;
+    }
 
-	/**
-	 * Return index in json object
-	 * @return index in json object
-	 * @throws LogException if any error happened
-	 */
-	public JSONObject ToRequestJson() throws LogException  {
-		JSONObject index = new JSONObject();
-		
-		index.put("ttl", ttl);
-		index.put("log_reduce", logReduceEnable);
-		index.put("scan_index", scanIndexEnable);
-		
-		if (lineSet) {
-			JSONObject lineDict = line.ToJsonObject();
-			index.put("line", lineDict);
-		}
-		
-		if (keysSet) {
-			JSONObject keysDict = keys.ToJsonObject();
-			index.put("keys", keysDict);
-		}
+    /**
+     * Return index in json object
+     *
+     * @return index in json object
+     * @throws LogException if any error happened
+     */
+    public JSONObject ToRequestJson() throws LogException {
+        JSONObject index = new JSONObject();
 
-		if(maxTextLen>0){
-			index.put("max_text_len", maxTextLen);
-		}
+        index.put("ttl", ttl);
+        index.put("log_reduce", logReduceEnable);
+        index.put("scan_index", scanIndexEnable);
 
-		if (logReduceWhiteList.size() > 0) {
-			JSONArray logReduceWhiteListDict = new JSONArray();
-			logReduceWhiteListDict.addAll(logReduceWhiteList);
-			index.put("log_reduce_white_list", logReduceWhiteListDict);
-		}
+        if (isLineSet()) {
+            JSONObject lineDict = line.ToJsonObject();
+            index.put("line", lineDict);
+        }
 
-		if (logReduceBlackList.size() > 0) {
-			JSONArray logReduceBlackListDict = new JSONArray();
-			logReduceBlackListDict.addAll(logReduceBlackList);
-			index.put("log_reduce_black_list", logReduceBlackListDict);
-		}
+        if (isKeysSet()) {
+            JSONObject keysDict = keys.ToJsonObject();
+            index.put("keys", keysDict);
+        }
 
-		return index;
-	}
-	
-	public String ToRequestString() throws LogException {	
-		return ToRequestJson().toString();
-	}
-	
-	public JSONObject ToJsonObject() throws LogException {
-		JSONObject index = ToRequestJson();
-		return index;
-	}
-	 
-	public String ToJsonString() throws LogException {	
-		return ToJsonObject().toString();
-	}
-	
-	public void FromJsonObject(JSONObject dict) throws LogException {
-		try {
-			ttl = dict.getIntValue("ttl");
-			
-			if (dict.containsKey("line")) {
-				JSONObject lineDict = dict.getJSONObject("line");
-				line.FromJsonObject(lineDict);
-				lineSet = true;
-			}
-			
-			if (dict.containsKey("keys")) {
-				JSONObject keysDict = dict.getJSONObject("keys");
-				keys.FromJsonObject(keysDict);
-				keysSet = true;
-			}
-			
-			if (dict.containsKey("log_reduce")) {
-				logReduceEnable = dict.getBooleanValue("log_reduce");
-			}
+        if (maxTextLen > 0) {
+            index.put("max_text_len", maxTextLen);
+        }
 
-			if (dict.containsKey("scan_index")) {
-				scanIndexEnable = dict.getBooleanValue("scan_index");
-			}
+        if (logReduceWhiteList.size() > 0) {
+            JSONArray logReduceWhiteListDict = new JSONArray();
+            logReduceWhiteListDict.addAll(logReduceWhiteList);
+            index.put("log_reduce_white_list", logReduceWhiteListDict);
+        }
 
-			if (dict.containsKey("max_text_len")) {
-				maxTextLen = dict.getIntValue("max_text_len");
-			}
+        if (logReduceBlackList.size() > 0) {
+            JSONArray logReduceBlackListDict = new JSONArray();
+            logReduceBlackListDict.addAll(logReduceBlackList);
+            index.put("log_reduce_black_list", logReduceBlackListDict);
+        }
+
+        return index;
+    }
+
+    public String ToRequestString() throws LogException {
+        return ToRequestJson().toString();
+    }
+
+    public JSONObject ToJsonObject() throws LogException {
+        JSONObject index = ToRequestJson();
+        return index;
+    }
+
+    public String ToJsonString() throws LogException {
+        return ToJsonObject().toString();
+    }
+
+    public void FromJsonObject(JSONObject dict) throws LogException {
+        try {
+            ttl = dict.getIntValue("ttl");
+
+            if (dict.containsKey("line")) {
+                JSONObject lineDict = dict.getJSONObject("line");
+                line.FromJsonObject(lineDict);
+            }
+
+            if (dict.containsKey("keys")) {
+                JSONObject keysDict = dict.getJSONObject("keys");
+                keys.FromJsonObject(keysDict);
+            }
+
+            if (dict.containsKey("log_reduce")) {
+                logReduceEnable = dict.getBooleanValue("log_reduce");
+            }
+
+            if (dict.containsKey("scan_index")) {
+                scanIndexEnable = dict.getBooleanValue("scan_index");
+            }
+
+            if (dict.containsKey("max_text_len")) {
+                maxTextLen = dict.getIntValue("max_text_len");
+            }
 
             if (dict.containsKey("log_reduce_white_list")) {
                 JSONArray logReduceWhiteListDict = dict.getJSONArray("log_reduce_white_list");
                 logReduceWhiteList = new ArrayList<String>();
-                for (int i = 0;i < logReduceWhiteListDict.size();i++) {
+                for (int i = 0; i < logReduceWhiteListDict.size(); i++) {
                     logReduceWhiteList.add(logReduceWhiteListDict.getString(i));
                 }
             }
@@ -254,22 +251,22 @@ public class Index {
             if (dict.containsKey("log_reduce_black_list")) {
                 JSONArray logReduceBlackListDict = dict.getJSONArray("log_reduce_black_list");
                 logReduceBlackList = new ArrayList<String>();
-                for (int i = 0;i < logReduceBlackListDict.size();i++) {
+                for (int i = 0; i < logReduceBlackListDict.size(); i++) {
                     logReduceBlackList.add(logReduceBlackListDict.getString(i));
                 }
             }
 
-		} catch (JSONException e) {
-			throw new LogException("FailToGenerateIndex", e.getMessage(), e, "");
-		}
-	}
-	
-	public void FromJsonString(String indexString) throws LogException {
-		try {
-			JSONObject dict = JSONObject.parseObject(indexString, Feature.DisableSpecialKeyDetect);
-			FromJsonObject(dict);
-		} catch (JSONException e) {
-			throw new LogException("FailToGenerateIndex", e.getMessage(), e, "");
-		}
-	}
+        } catch (JSONException e) {
+            throw new LogException("FailToGenerateIndex", e.getMessage(), e, "");
+        }
+    }
+
+    public void FromJsonString(String indexString) throws LogException {
+        try {
+            JSONObject dict = JSONObject.parseObject(indexString, Feature.DisableSpecialKeyDetect);
+            FromJsonObject(dict);
+        } catch (JSONException e) {
+            throw new LogException("FailToGenerateIndex", e.getMessage(), e, "");
+        }
+    }
 }
