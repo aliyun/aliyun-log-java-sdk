@@ -1498,12 +1498,12 @@ public class Client implements LogService {
 		return getCursorTimeResponse;
 	}
 
-    public GetCursorTimeResponse GetPrevCursorTime(String project, String logStore,int shardId, String cursor) throws LogException {
-		if(cursor.isEmpty())
-			throw new LogException(ErrorCodes.INVALID_CURSOR, "empty cursor string", "");
-		long prv = Long.parseLong(new String(Base64.decodeBase64(cursor))) - 1;
-		if(prv >= 0){
-			cursor = new String(Base64.encodeBase64(Long.toString(prv).getBytes()));
+	    public GetCursorTimeResponse GetPrevCursorTime(String project, String logStore,int shardId, String cursor) throws LogException {
+			if (cursor == null || cursor.isEmpty())
+				throw new LogException(ErrorCodes.INVALID_CURSOR, "empty cursor string", "");
+			long prv = Long.parseLong(new String(Base64.decodeBase64(cursor))) - 1;
+			if(prv >= 0){
+				cursor = new String(Base64.encodeBase64(Long.toString(prv).getBytes()));
 		}
 		else{
 			throw new LogException(ErrorCodes.INVALID_CURSOR, "this cursor has no prev value", "");
@@ -1524,7 +1524,7 @@ public class Client implements LogService {
 			int shardId, String midHash) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-		CodingUtils.assertStringNotNullOrEmpty(logStore, "shardId");
+		Args.check(shardId >= 0, "shardId must be >= 0");
 		return SplitShard(new SplitShardRequest(project, logStore, shardId, midHash));
 	}
 
@@ -1552,7 +1552,7 @@ public class Client implements LogService {
 			int shardId) throws LogException {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
-		CodingUtils.assertStringNotNullOrEmpty(logStore, "shardId");
+		Args.check(shardId >= 0, "shardId must be >= 0");
 		return MergeShards(new MergeShardsRequest(project, logStore, shardId));
 	}
 
