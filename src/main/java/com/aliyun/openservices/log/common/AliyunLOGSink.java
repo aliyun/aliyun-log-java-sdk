@@ -1,10 +1,9 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSON;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.io.Serializable;
@@ -14,28 +13,20 @@ import java.util.List;
 
 public class AliyunLOGSink extends DataSink {
 
-    @JSONField
     private String name;
 
-    @JSONField
     private String endpoint;
 
-    @JSONField
     private String project;
 
-    @JSONField
     private String logstore;
 
-    @JSONField
     private String accessKeyId;
 
-    @JSONField
     private String accessKeySecret;
 
-    @JSONField
     private String roleArn;
 
-    @JSONField
     private List<String> datasets;
 
     public AliyunLOGSink() {

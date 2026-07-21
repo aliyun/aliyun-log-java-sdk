@@ -11,7 +11,7 @@
 
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.158</version>
+    <version>0.7.0</version>
     <packaging>jar</packaging>
 
     <name>Aliyun LOG Java SDK</name>
@@ -56,9 +56,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.83_noneautotype</version>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.13.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
@@ -232,8 +232,8 @@
                             </shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.alibaba.fastjson</pattern>
-                            <shadedPattern>com.aliyun.log.thirdparty.com.alibaba.fastjson</shadedPattern>
+                            <pattern>com.google.gson</pattern>
+                            <shadedPattern>com.aliyun.log.thirdparty.com.google.gson</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.apache.http</pattern>

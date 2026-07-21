@@ -1,13 +1,11 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONType;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
-@JSONType(serializer = ToGeneralSerializer.class)
 public class IngestionGeneralSource extends DataSource {
 
     private Map<String, Object> fields = new HashMap<String, Object>();

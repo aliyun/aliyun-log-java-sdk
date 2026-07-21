@@ -1,18 +1,15 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 /**
  * The base class of notifications.
  */
 public abstract class Notification {
 
-    @JSONField
     private NotificationType type;
 
-    @JSONField
     private String content;
 
     public Notification(NotificationType type) {

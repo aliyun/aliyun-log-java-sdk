@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.shipper;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.functiontest.MetaAPIBaseFunctionTest;

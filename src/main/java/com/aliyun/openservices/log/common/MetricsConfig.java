@@ -3,29 +3,29 @@ package com.aliyun.openservices.log.common;
 import java.io.Serializable;
 import java.util.List;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author xizongzheng.xzz
  */
 public class MetricsConfig implements Serializable {
 
-    @JSONField(name = "query_cache_config")
+    @SerializedName("query_cache_config")
     private MetricQueryCacheConfig queryCacheConfig;
 
-    @JSONField(name = "parallel_config")
+    @SerializedName("parallel_config")
     private MetricParallelConfig parallelConfig;
 
-    @JSONField(name = "downsampling_config")
+    @SerializedName("downsampling_config")
     private MetricDownSamplingConfig downSamplingConfig;
 
-    @JSONField(name = "pushdown_config")
+    @SerializedName("pushdown_config")
     private MetricPushdownConfig pushdownConfig;
 
-    @JSONField(name = "remote_write_config")
+    @SerializedName("remote_write_config")
     private MetricRemoteWriteConfig remoteWriteConfig;
 
-    @JSONField(name = "store_view_routing_config")
+    @SerializedName("store_view_routing_config")
     private List<MetricStoreViewRoutingConfig> storeViewRoutingConfigs;
 
 

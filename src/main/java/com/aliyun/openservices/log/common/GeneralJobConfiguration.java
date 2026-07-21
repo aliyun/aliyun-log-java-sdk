@@ -1,9 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONType;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
-@JSONType(serializer = ToGeneralSerializer.class)
 public class GeneralJobConfiguration extends JobConfiguration {
 
     private String detail;

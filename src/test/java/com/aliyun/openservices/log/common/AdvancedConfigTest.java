@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,11 +27,11 @@ public class AdvancedConfigTest {
 
         Advanced newAdv = Advanced.fromJsonObject(advObj);
         Assert.assertNotSame(adv, newAdv);
-        others = newAdv.getOthers();
-        Assert.assertEquals(others.size(), 2);
-        Assert.assertTrue(others.containsKey("tail_size_kb"));
-        Assert.assertEquals(others.getIntValue("tail_size_kb"), 100);
-        Assert.assertTrue(others.containsKey("filter_expression"));
-        Assert.assertEquals(others.getJSONObject("filter_expression").size(), 0);
+        JSONObject newOthers = new JSONObject(newAdv.getOthers());
+        Assert.assertEquals(newOthers.size(), 2);
+        Assert.assertTrue(newOthers.containsKey("tail_size_kb"));
+        Assert.assertEquals(newOthers.getIntValue("tail_size_kb"), 100);
+        Assert.assertTrue(newOthers.containsKey("filter_expression"));
+        Assert.assertEquals(newOthers.getJSONObject("filter_expression").size(), 0);
     }
 }

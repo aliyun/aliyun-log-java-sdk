@@ -1,8 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 
@@ -14,7 +13,6 @@ public class RebuildIndex extends AbstractJob implements Serializable {
 
     private String executionDetails;
 
-    @JSONField
     private RebuildIndexConfiguration configuration;
 
     public RebuildIndex() {

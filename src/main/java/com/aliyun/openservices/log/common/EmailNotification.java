@@ -1,21 +1,17 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.List;
 
 public class EmailNotification extends Notification {
 
-    @JSONField
     private String subject;
 
-    @JSONField
     private String countryCode;
 
-    @JSONField
     private List<String> emailList;
 
     public EmailNotification() {

@@ -1,10 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Utils;
@@ -24,72 +21,47 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
      * Which depends on the order of queries in {@code queryList}.
      */
     @Deprecated
-    @JSONField
     private String condition;
 
-    @JSONField
     private List<Query> queryList;
 
-    @JSONField
     private Date muteUntil;
 
     /**
      * Optional notify threshold, defaults to 1.
      */
     @Deprecated
-    @JSONField
     private Integer notifyThreshold = 1;
 
     /**
      * Duration with format '1h', '2s'
      */
-    @JSONField
     private String throttling;
 
     @Deprecated
-    @JSONField
     private boolean sendRecoveryMessage;
 
-    @JSONField
     private boolean autoAnnotation;
-    @JSONField
     private String version;
-    @JSONField
     private String type;
     /**
      * Optional eval threshold, defaults to 1.
      */
-    @JSONField
     private int threshold = 1;
-    @JSONField
     private boolean noDataFire;
-    @JSONField
     private int noDataSeverity = Severity.Medium.value();
-    @JSONField
     private boolean sendResolved;
-    @JSONField
     private TemplateConfiguration templateConfiguration;
-    @JSONField
     private ConditionConfiguration conditionConfiguration;
-    @JSONField
     private List<Tag> annotations;
-    @JSONField
     private List<Tag> labels;
-    @JSONField
     private List<SeverityConfiguration> severityConfigurations;
-    @JSONField
     private List<JoinConfiguration> joinConfigurations;
-    @JSONField
     private GroupConfiguration groupConfiguration;
-    @JSONField
     private PolicyConfiguration policyConfiguration;
-    @JSONField
     private List<String> tags;
-    @JSONField
     private SinkEventStoreConfiguration sinkEventStore;
-    @JSONField
     private SinkCmsConfiguration sinkCms;
-    @JSONField
     private SinkAlerthubConfiguration sinkAlerthub;
 
     public String getCondition() {
@@ -513,7 +485,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
     }
 
-    public enum JoinType implements JSONSerializable {
+    public enum JoinType {
         CROSS_JOIN("cross_join"),
         INNER_JOIN("inner_join"),
         LEFT_JOIN("left_join"),
@@ -544,13 +516,9 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             return value;
         }
 
-        @Override
-        public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-            serializer.write(toString());
-        }
     }
 
-    public enum GroupType implements JSONSerializable {
+    public enum GroupType {
         NO_GROUP("no_group"),
         LABELS_AUTO("labels_auto"),
         CUSTOM("custom");
@@ -575,13 +543,9 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             return value;
         }
 
-        @Override
-        public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-            serializer.write(toString());
-        }
     }
 
-    public enum StoreType implements JSONSerializable {
+    public enum StoreType {
         LOG("log"),
         METRIC("metric"),
         META("meta");
@@ -606,24 +570,14 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             return value;
         }
 
-        @Override
-        public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-            serializer.write(toString());
-        }
     }
 
     public static class TemplateConfiguration {
-        @JSONField
         private String id;
-        @JSONField
         private String type;
-        @JSONField
         private String version;
-        @JSONField
         private String lang;
-        @JSONField
         private Map<String, String> tokens;
-        @JSONField
         private Map<String, String> annotations;
 
         public String getId() {
@@ -685,9 +639,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     }
 
     public static class ConditionConfiguration {
-        @JSONField
         private String condition;
-        @JSONField
         private String countCondition;
 
         public String getCondition() {
@@ -715,11 +667,8 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     }
 
     public static class JoinConfiguration {
-        @JSONField
         private String type;
-        @JSONField
         private String condition;
-        @JSONField
         private String ui;
 
         public String getType() {
@@ -754,9 +703,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     }
 
     public static class Tag {
-        @JSONField
         private String key;
-        @JSONField
         private String value;
 
         public String getKey() {
@@ -785,9 +732,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     }
 
     public static class SeverityConfiguration {
-        @JSONField
         private int severity;
-        @JSONField
         private ConditionConfiguration evalCondition;
 
         public int getSeverity() {
@@ -819,9 +764,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     }
 
     public static class GroupConfiguration {
-        @JSONField
         private String type;
-        @JSONField
         private List<String> fields;
 
         public String getType() {
@@ -847,13 +790,9 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     }
 
     public static class PolicyConfiguration {
-        @JSONField
         private String actionPolicyId;
-        @JSONField
         private String alertPolicyId;
-        @JSONField
         private boolean useDefault;
-        @JSONField
         private String repeatInterval;
 
         public String getActionPolicyId() {
@@ -897,15 +836,10 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     }
 
     public static class SinkEventStoreConfiguration {
-        @JSONField
         private boolean enabled;
-        @JSONField
         private String endpoint;
-        @JSONField
         private String project;
-        @JSONField
         private String eventStore;
-        @JSONField
         private String roleArn;
 
         public boolean isEnabled() {
@@ -958,7 +892,6 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     }
 
     public static class SinkCmsConfiguration {
-        @JSONField
         private boolean enabled;
 
         public boolean isEnabled() {
@@ -975,7 +908,6 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     }
 
     public static class SinkAlerthubConfiguration {
-        @JSONField
         private boolean enabled;
 
         public boolean isEnabled() {

@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 public class CertificateConfiguration {
     /**

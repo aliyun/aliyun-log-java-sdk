@@ -1,6 +1,5 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.annotation.JSONField;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,22 +40,18 @@ public class BaseAsyncSqlResponse extends Response {
         return state;
     }
 
-    @JSONField(serialize = false)
     public boolean isRunning() {
         return "RUNNING".equalsIgnoreCase(state);
     }
 
-    @JSONField(serialize = false)
     public boolean isSuccessful() {
         return "FINISHED".equalsIgnoreCase(state);
     }
 
-    @JSONField(serialize = false)
     public boolean isFailed() {
         return "FAILED".equalsIgnoreCase(state);
     }
 
-    @JSONField(serialize = false)
     public boolean isCancelled() {
         return "CANCELLED".equalsIgnoreCase(state);
     }

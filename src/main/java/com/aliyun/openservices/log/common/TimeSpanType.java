@@ -1,11 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
 
 import java.lang.reflect.Type;
 
-public enum TimeSpanType implements JSONSerializable {
+public enum TimeSpanType {
     /**
      * Relative time span, e,g -1m-now. now is trigger time.
      */
@@ -47,8 +45,4 @@ public enum TimeSpanType implements JSONSerializable {
         return null;
     }
 
-    @Override
-    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-        serializer.write(toString());
-    }
 }

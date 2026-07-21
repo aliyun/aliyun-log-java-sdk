@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.common.ETLV2;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 

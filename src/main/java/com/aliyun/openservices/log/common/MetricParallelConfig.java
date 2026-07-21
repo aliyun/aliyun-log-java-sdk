@@ -1,27 +1,27 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author xizongzheng.xzz
  */
 public class MetricParallelConfig {
-    @JSONField(name = "enable")
+    @SerializedName("enable")
     private boolean enable;
 
-    @JSONField(name = "mode")
+    @SerializedName("mode")
     private String mode;
 
-    @JSONField(name = "time_piece_interval")
+    @SerializedName("time_piece_interval")
     private int timePieceInterval;
 
-    @JSONField(name = "time_piece_count")
+    @SerializedName("time_piece_count")
     private int timePieceCount;
 
-    @JSONField(name = "parallel_count_per_host")
+    @SerializedName("parallel_count_per_host")
     private int parallelCountPerHost;
 
-    @JSONField(name = "total_parallel_count")
+    @SerializedName("total_parallel_count")
     private int totalParallelCount;
 
     public boolean isEnable() {

@@ -1,9 +1,8 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.ArrayList;
@@ -192,7 +191,7 @@ public class QueryResult {
     }
 
     public void deserializeFrom(String rawResult, String requestId) throws LogException {
-        JSONObject asJsonObj = JSONObject.parseObject(rawResult, Feature.DisableSpecialKeyDetect);
+        JSONObject asJsonObj = JSONObject.parseObject(rawResult);
         parseMetadata(asJsonObj.getJSONObject(METADATA_KEY));
         logs = parseData(asJsonObj.getJSONArray(DATA_KEY), requestId);
     }

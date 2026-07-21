@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 public class StructuredDataFormat extends DataFormat {
     private String timeField;

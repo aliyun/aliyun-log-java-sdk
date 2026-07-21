@@ -3,10 +3,9 @@
  */
 package com.aliyun.openservices.log;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.Consts.CompressType;
 import com.aliyun.openservices.log.common.Consts.CursorMode;
@@ -472,7 +471,7 @@ public class Client implements LogService {
 		}
 	}
 
-	public GetLogtailProfileResponse ExtractLogtailProfile(Map<String, String> resHeaders, JSONObject object) throws LogException {
+	protected GetLogtailProfileResponse ExtractLogtailProfile(Map<String, String> resHeaders, JSONObject object) throws LogException {
 		try {
 			int count = object.getIntValue("count");
 			int total = object.getIntValue("total");
@@ -836,7 +835,7 @@ public class Client implements LogService {
             String responseBody = encodeResponseBodyToUtf8String(response, requestId);
             JSONObject object = null;
             try {
-                object = JSONObject.parseObject(responseBody, Feature.DisableSpecialKeyDetect);
+                object = JSONObject.parseObject(responseBody);
             } catch (JSONException ex) {
                 throw new LogException(ErrorCodes.BAD_RESPONSE,
                         "The response is not valid json string : " + responseBody + ", statusCode: "
@@ -1325,8 +1324,8 @@ public class Client implements LogService {
 			String requestId) throws LogException {
 		String returnStr = encodeResponseBodyToUtf8String(response, requestId);
 		try {
-			return (JSONArray) JSONObject.parse(returnStr, Feature.DisableSpecialKeyDetect);
-		} catch (com.alibaba.fastjson.JSONException e) {
+			return (JSONArray) JSONObject.parse(returnStr);
+		} catch (JSONException e) {
 			throw new LogException(ErrorCodes.BAD_RESPONSE,
 					"The response is not valid json string : " + returnStr, e, requestId);
 		}
@@ -1462,7 +1461,9 @@ public class Client implements LogService {
 			Map<String, String> resHeaders = response.getHeaders();
 			String requestId = GetRequestId(resHeaders);
 			JSONObject object = parseResponseBody(response, requestId);
-            return new GetCursorResponse(resHeaders, object.getString("cursor"));
+            GetCursorResponse slsResponse = new GetCursorResponse(resHeaders, object.getString("cursor"));
+            slsResponse.setRawResponseBody(object.getRawText());
+            return slsResponse;
 		} catch (JSONException e) {
 			throw new LogException("FailToCreateCursor", e.getMessage(), e,
 					GetRequestId(response.getHeaders()));
@@ -2314,7 +2315,11 @@ public class Client implements LogService {
     private JSONObject parseResponseBody(ResponseMessage response, String requestId) throws LogException {
         String body = encodeResponseBodyToUtf8String(response, requestId);
         try {
-            return JSONObject.parseObject(body, Feature.DisableSpecialKeyDetect);
+            JSONObject object = JSONObject.parseObject(body);
+            if (object != null) {
+                object.setRawText(body);
+            }
+            return object;
         } catch (JSONException ex) {
             throw new LogException(ErrorCodes.BAD_RESPONSE,
                     "The response is not valid json string : " + body, ex, requestId);
@@ -2446,7 +2451,7 @@ public class Client implements LogService {
 					String responseBody = encodeResponseBodyToUtf8String(response, requestId);
 					JSONObject object = null;
 					try {
-						object = JSONObject.parseObject(responseBody, Feature.DisableSpecialKeyDetect);
+						object = JSONObject.parseObject(responseBody);
 					} catch (JSONException ex) {
 						throw new LogException(ErrorCodes.BAD_RESPONSE,
 								"The response is not valid json string : " + responseBody + ", statusCode: "
@@ -2763,7 +2768,9 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = parseResponseBody(response, requestId);
-		return new ProjectConsumerGroupCheckPointResponse(resHeaders, object);
+		ProjectConsumerGroupCheckPointResponse slsResponse = new ProjectConsumerGroupCheckPointResponse(resHeaders, object);
+		slsResponse.setRawResponseBody(object.getRawText());
+		return slsResponse;
 	}
 
 	@Override
@@ -2798,7 +2805,9 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = parseResponseBody(response, requestId);
-		return new ProjectConsumerGroupHeartBeatResponse(resHeaders, object);
+		ProjectConsumerGroupHeartBeatResponse slsResponse = new ProjectConsumerGroupHeartBeatResponse(resHeaders, object);
+		slsResponse.setRawResponseBody(object.getRawText());
+		return slsResponse;
 	}
 
 	@Override

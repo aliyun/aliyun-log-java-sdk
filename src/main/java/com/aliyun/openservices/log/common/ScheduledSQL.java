@@ -1,17 +1,14 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 import java.io.Serializable;
 public class ScheduledSQL extends ScheduledJob implements Serializable {
     private static final long serialVersionUID = 9045820359511405750L;
-    @JSONField
     private String scheduleId;
     public ScheduledSQL() {
         setType(JobType.SCHEDULED_SQL);
     }
-    @JSONField
     private ScheduledSQLConfiguration configuration;
     public String getScheduleId() {
         return scheduleId;

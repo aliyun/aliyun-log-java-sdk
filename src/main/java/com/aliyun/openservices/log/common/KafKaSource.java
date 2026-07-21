@@ -1,8 +1,6 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.lang.reflect.Type;
@@ -22,7 +20,7 @@ public class KafKaSource extends DataSource {
     private String timeZone;
     private Map<String, String> additionalProps;
 
-    public enum KafkaPosition implements JSONSerializable {
+    public enum KafkaPosition {
         GROUP_OFFSETS,
         EARLIEST,
         LATEST,
@@ -37,13 +35,9 @@ public class KafKaSource extends DataSource {
             return null;
         }
 
-        @Override
-        public void write(JSONSerializer jsonSerializer, Object o, Type type, int i) {
-            jsonSerializer.write(name());
-        }
     }
 
-    public enum ValueType implements JSONSerializable {
+    public enum ValueType {
         JSON,
         TEXT;
 
@@ -56,10 +50,6 @@ public class KafKaSource extends DataSource {
             return null;
         }
 
-        @Override
-        public void write(JSONSerializer jsonSerializer, Object o, Type type, int i) {
-            jsonSerializer.write(name());
-        }
     }
 
     public KafKaSource() {

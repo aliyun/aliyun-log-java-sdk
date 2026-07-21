@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.schedulesql;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.common.JobScheduleType;

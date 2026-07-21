@@ -1,9 +1,6 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.annotation.JSONPOJOBuilder;
-import com.alibaba.fastjson.annotation.JSONType;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 public class ScheduledSQLConfiguration extends JobConfiguration {
     private String sourceLogstore;

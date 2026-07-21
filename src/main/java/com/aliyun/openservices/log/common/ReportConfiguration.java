@@ -1,8 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 
 public class ReportConfiguration extends DashboardBasedJobConfiguration {
@@ -10,37 +9,30 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
     /**
      * Whether add watermark on image, default to false.
      */
-    @JSONField
     private boolean enableWatermark;
 
     /**
      * Whether create a public access url for dashboard, default to false.
      */
-    @JSONField
     private boolean allowAnonymousAccess;
 
     /**
      * Optional language for internationalization. Defaults as zh.
      */
-    @JSONField
     private String language;
 
     /**
      * Extra parameters passed to dashboard-render-service, which is encoded into base64
      */
-    @JSONField
     private String extraParams;
 
-    @JSONField
     private boolean customizePeriod;
 
-    @JSONField
     private boolean attachCsv;
 
     /**
      * Must be specified if customizePeriod is true.
      */
-    @JSONField
     private TimeSpan period;
 
     public boolean getEnableWatermark() {

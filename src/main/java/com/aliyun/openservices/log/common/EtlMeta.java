@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class EtlMeta implements Serializable {
 
@@ -12,7 +13,7 @@ public class EtlMeta implements Serializable {
     private String metaName = null;
     private String metaKey = null;
     private String metaTag = null;
-    private JSONObject metaValue = null;
+    private Map<String, Object> metaValue = null;
     private long createTime; //for ListEtlMetaReponse, the field is not used when create/update etlMeta
     private long lastModifyTime; //for ListEtlMetaReponse, the field is not used when create/update etlMeta
     private boolean enable;
@@ -28,7 +29,7 @@ public class EtlMeta implements Serializable {
         this.enable = true;
     }
 
-    public EtlMeta(String metaName, String metaKey, String metaTag, JSONObject metaValue, boolean enable) {
+    public EtlMeta(String metaName, String metaKey, String metaTag, Map<String, Object> metaValue, boolean enable) {
         this.metaName = metaName;
         this.metaKey = metaKey;
         this.metaTag = metaTag;
@@ -54,7 +55,7 @@ public class EtlMeta implements Serializable {
         this.metaTag = metaTag;
     }
 
-    public void setMetaValue(JSONObject metaValue) {
+    public void setMetaValue(Map<String, Object> metaValue) {
         this.metaValue = metaValue;
     }
 
@@ -74,7 +75,7 @@ public class EtlMeta implements Serializable {
         return metaTag;
     }
 
-    public JSONObject getMetaValue() {
+    public Map<String, Object> getMetaValue() {
         return metaValue;
     }
 

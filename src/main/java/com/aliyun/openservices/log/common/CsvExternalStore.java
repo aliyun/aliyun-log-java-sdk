@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.util.GzipUtils;
 

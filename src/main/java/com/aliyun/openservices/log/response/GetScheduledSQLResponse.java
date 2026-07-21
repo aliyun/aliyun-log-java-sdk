@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.Export;
 import com.aliyun.openservices.log.common.ScheduledSQL;
 import com.aliyun.openservices.log.exception.LogException;

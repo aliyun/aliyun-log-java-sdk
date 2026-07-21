@@ -1,7 +1,6 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.io.Serializable;
@@ -10,16 +9,12 @@ public class ETLV2 extends AbstractJob implements Serializable {
 
     private static final long serialVersionUID = 949447748635414993L;
 
-    @JSONField
     private ETLConfiguration configuration;
 
-    @JSONField
     private JobSchedule schedule;
 
-    @JSONField
     private String status;
 
-    @JSONField
     private String scheduleId;
 
     public ETLV2() {

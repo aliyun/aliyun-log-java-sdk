@@ -1,8 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.Args;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,7 +11,6 @@ public class Alert extends ScheduledJob implements Serializable {
 
     private static final long serialVersionUID = 9211926785430833230L;
 
-    @JSONField
     private AlertConfiguration configuration;
 
     public Alert() {

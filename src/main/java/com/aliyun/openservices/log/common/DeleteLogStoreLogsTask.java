@@ -1,7 +1,6 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 
@@ -13,25 +12,18 @@ import java.io.Serializable;
 public class DeleteLogStoreLogsTask implements Serializable {
     private static final long serialVersionUID = 6842917394758326187L;
 
-    @JSONField
     private int progress;
 
-    @JSONField
     private String taskId;
 
-    @JSONField
     private String query;
 
-    @JSONField
     private int errorCode;
 
-    @JSONField
     private int from;
 
-    @JSONField
     private int to;
 
-    @JSONField
     private String errorMessage;
 
     public DeleteLogStoreLogsTask() {

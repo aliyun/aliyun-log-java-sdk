@@ -1,26 +1,26 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.List;
 
 public class ResourceUser implements Serializable {
-    @JSONField(name = "user_id")
+    @SerializedName("user_id")
     private String userId;
-    @JSONField(name = "user_name")
+    @SerializedName("user_name")
     private String userName;
-    @JSONField(name = "enabled")
+    @SerializedName("enabled")
     private boolean enabled;
-    @JSONField(name = "country_code")
+    @SerializedName("country_code")
     private String countryCode;
-    @JSONField(name = "phone")
+    @SerializedName("phone")
     private String phone;
-    @JSONField(name = "email")
+    @SerializedName("email")
     private List<String> email;
-    @JSONField(name = "sms_enabled")
+    @SerializedName("sms_enabled")
     private boolean smsEnabled;
-    @JSONField(name = "voice_enabled")
+    @SerializedName("voice_enabled")
     private boolean voiceEnabled;
 
     public String getUserId() {

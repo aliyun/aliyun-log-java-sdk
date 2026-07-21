@@ -1,11 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
 
 import java.lang.reflect.Type;
 
-public enum JobScheduleType implements JSONSerializable {
+public enum JobScheduleType {
     /**
      * Trigger in a fixed rate.
      */
@@ -62,8 +60,4 @@ public enum JobScheduleType implements JSONSerializable {
         return null;
     }
 
-    @Override
-    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-        serializer.write(toString());
-    }
 }

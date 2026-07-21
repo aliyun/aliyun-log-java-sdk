@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.functiontest.metricstore;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSON;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonAsserts;
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.MetricsConfig;
 import com.aliyun.openservices.log.exception.LogException;
@@ -45,7 +46,7 @@ public class MetricsConfigTest {
         String conf = "{\"store_view_routing_config\":[{\"metric_names\":[\".*api.*\"],\"project_stores\":[{\"metricstore\":\"prometheus\",\"project\":\"haoqi-sls-metric-test\"}]},{\"metric_names\":[\".*batch.*\"],\"project_stores\":[{\"metricstore\":\"prometheus-1\",\"project\":\"haoqi-sls-metric-test\"}]}]}";
         MetricsConfig metricsConfig = JSONObject.parseObject(conf, MetricsConfig.class);
         final String jsonString = JSONObject.toJSONString(metricsConfig);
-        Assert.assertEquals(conf, jsonString);
+        JsonAsserts.assertJsonEquals(conf, jsonString);
         System.out.println(jsonString);
     }
 
@@ -63,7 +64,7 @@ public class MetricsConfigTest {
             client.createMetricsConfig(new CreateMetricsConfigRequest("haoqi-sls-metric-test", "view_test", metricsConfig));
 //            client.updateMetricsConfig(new UpdateMetricsConfigRequest("haoqi-sls-metric-test", "view_test", metricsConfig));
             GetMetricsConfigResponse test = client.getMetricsConfig(new GetMetricsConfigRequest("haoqi-sls-metric-test", "view_test"));
-            System.out.println(JSONObject.toJSON(test.getMetricsConfig()));
+            System.out.println(JSONObject.toJSONString(test.getMetricsConfig()));
         } catch (LogException e) {
             System.out.println(e);
         }
@@ -86,7 +87,7 @@ public class MetricsConfigTest {
             client.updateMetricsConfig(new UpdateMetricsConfigRequest(project, metricStore, metricsConfig));
 //            client.deleteMetricsConfig(new DeleteMetricsConfigRequest(project, metricStore));
             GetMetricsConfigResponse test = client.getMetricsConfig(new GetMetricsConfigRequest(project, metricStore));
-            System.out.println(JSONObject.toJSON(test.getMetricsConfig()));
+            System.out.println(JSONObject.toJSONString(test.getMetricsConfig()));
         } catch (LogException e) {
             System.out.println(e);
         }

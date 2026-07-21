@@ -1,15 +1,13 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.List;
 
 public class SmsNotification extends Notification {
 
-    @JSONField
     private List<String> mobileList;
 
     SmsNotification(NotificationType type) {

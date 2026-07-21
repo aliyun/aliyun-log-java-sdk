@@ -1,8 +1,7 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.MetricsConfig;
 
 import java.util.ArrayList;
@@ -49,9 +48,7 @@ public class ListMetricsConfigResponse extends Response {
     }
 
     public static class MetricsConfigWrap {
-        @JSONField
         private String metricStore;
-        @JSONField
         private MetricsConfig metricsConfigDetail;
 
         public MetricsConfigWrap(String metricStore, MetricsConfig metricsConfig) {

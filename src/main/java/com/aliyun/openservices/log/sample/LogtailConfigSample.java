@@ -3,8 +3,8 @@ package com.aliyun.openservices.log.sample;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.Config;
 import com.aliyun.openservices.log.common.ConfigInputDetail;

@@ -1,8 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.Args;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;

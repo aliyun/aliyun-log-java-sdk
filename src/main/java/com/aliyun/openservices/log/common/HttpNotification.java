@@ -1,12 +1,10 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 abstract class HttpNotification extends Notification {
 
-    @JSONField
     private String serviceUri;
 
     HttpNotification(NotificationType type) {

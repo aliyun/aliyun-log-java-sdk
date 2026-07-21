@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.QueriedLog;
 import com.aliyun.openservices.log.common.Consts;
@@ -91,7 +91,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
             this.setCpuCores(Long.parseLong(headers.get(Consts.CONST_X_LOG_CPU_CORES)));
 
         if (headers.containsKey(Consts.CONST_X_LOG_QUERY_INFO)) {
-            com.alibaba.fastjson.JSONObject object = com.alibaba.fastjson.JSONObject.parseObject(headers.get(Consts.CONST_X_LOG_QUERY_INFO));
+            com.aliyun.openservices.log.internal.json.JSONObject object = com.aliyun.openservices.log.internal.json.JSONObject.parseObject(headers.get(Consts.CONST_X_LOG_QUERY_INFO));
             JSONArray keys = object.getJSONArray("keys");
             this.keys = new ArrayList<String>();
             if (keys != null) {
