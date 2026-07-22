@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import static com.aliyun.openservices.log.util.Args.checkDuration;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class JobSchedule implements Serializable {
 
@@ -224,6 +225,7 @@ public class JobSchedule implements Serializable {
     }
 
 
+    @InternalApi
     public void deserialize(JSONObject value) {
         id = JsonUtils.readOptionalString(value, "id");
         displayName = JsonUtils.readOptionalString(value, "displayName");

@@ -8,6 +8,7 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Dashboard implements Serializable {
 
@@ -78,6 +79,7 @@ public class Dashboard implements Serializable {
 		this.attribute = attribute;
 	}
 	
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject dashboardJson = new JSONObject();
 		dashboardJson.put("dashboardName", getDashboardName());
@@ -100,6 +102,7 @@ public class Dashboard implements Serializable {
 	public String ToJsonString() {
 		return ToJsonObject().toString();
 	}
+	@InternalApi
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {
 			setDashboardName(dict.getString("dashboardName"));

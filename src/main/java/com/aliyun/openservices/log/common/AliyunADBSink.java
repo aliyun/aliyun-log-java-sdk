@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.util.HashMap;
 import java.util.Set;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 public class AliyunADBSink extends DataSink {
 
@@ -204,6 +205,7 @@ public class AliyunADBSink extends DataSink {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         url = value.getString("url");
         user = value.getString("user");

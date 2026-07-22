@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class EtlMeta implements Serializable {
 
@@ -91,6 +92,7 @@ public class EtlMeta implements Serializable {
         return lastModifyTime;
     }
 
+    @InternalApi
     public JSONObject toJsonObject() {
         JSONObject etlMetaJson = new JSONObject();
         etlMetaJson.put(Consts.ETL_META_NAME, this.metaName);
@@ -105,6 +107,7 @@ public class EtlMeta implements Serializable {
         return etlMetaJson;
     }
 
+    @InternalApi
     public void fromJsonObject(JSONObject etlMetaJson) throws LogException {
         try {
             this.metaName = etlMetaJson.getString(Consts.ETL_META_NAME);

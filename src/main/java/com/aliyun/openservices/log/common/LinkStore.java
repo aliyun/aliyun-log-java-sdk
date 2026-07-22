@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class LinkStore implements Serializable {
     private static final long serialVersionUID = -4480238526625142008L;
@@ -47,6 +48,7 @@ public class LinkStore implements Serializable {
         this.sourceLogStoreName = sourceLogStoreName;
     }
 
+    @InternalApi
     public JSONObject ToRequestJson()
     {
         JSONObject dict = new JSONObject();

@@ -4,6 +4,7 @@ import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.ArrayList;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ExportContentColumnStorageDetail extends ExportContentDetail {
 
@@ -24,6 +25,7 @@ public class ExportContentColumnStorageDetail extends ExportContentDetail {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject value) {
         JSONArray columnsArray = value.getJSONArray("columns");
         columns = new ArrayList<ExportContentStorageColumn>();

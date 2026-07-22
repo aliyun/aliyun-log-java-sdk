@@ -4,6 +4,7 @@ import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.util.List;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 public class AliyunCloudMonitorSource extends DataSource {
     private String accessKeyID;
@@ -66,6 +67,7 @@ public class AliyunCloudMonitorSource extends DataSource {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         accessKeyID = jsonObject.getString("accessKeyID");

@@ -37,6 +37,7 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Internal use only. Holds the singleton {@link Gson} instance configured to
@@ -48,6 +49,7 @@ import com.google.gson.stream.JsonWriter;
  * <li>SDK enums are written using their {@code toString()} value</li>
  * </ul>
  */
+@InternalApi
 public final class GsonHolder {
 
     private static final JsonSerializer<Object> TO_STRING_SERIALIZER = new JsonSerializer<Object>() {

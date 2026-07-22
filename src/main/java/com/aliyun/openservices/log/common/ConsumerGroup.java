@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 import java.io.Serializable;
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ConsumerGroup implements Serializable {
     private String consumerGroupName;
@@ -45,6 +46,7 @@ public class ConsumerGroup implements Serializable {
         this.inOrder = inOrder;
     }
 
+    @InternalApi
     public JSONObject ToRequestJson() {
         JSONObject logStoreDict = new JSONObject();
         logStoreDict.put("consumerGroup", getConsumerGroupName());

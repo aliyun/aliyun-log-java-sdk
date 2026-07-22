@@ -7,6 +7,7 @@ import java.util.Map;
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Index config for keys
@@ -43,6 +44,7 @@ public class IndexKeys {
         return keys == null || keys.isEmpty();
     }
 
+    @InternalApi
     public JSONObject ToRequestJson() throws LogException {
         JSONObject keysDict = new JSONObject();
         for (Map.Entry<String, IndexKey> entry : keys.entrySet()) {
@@ -55,6 +57,7 @@ public class IndexKeys {
         return ToRequestJson().toString();
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() throws LogException {
         JSONObject keysDict = ToRequestJson();
         return keysDict;
@@ -64,6 +67,7 @@ public class IndexKeys {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
             keys = new HashMap<String, IndexKey>();

@@ -5,6 +5,7 @@ import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.List;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 public class SmsNotification extends Notification {
 
@@ -27,6 +28,7 @@ public class SmsNotification extends Notification {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(final JSONObject value) {
         super.deserialize(value);
         mobileList = JsonUtils.readStringList(value, Consts.MOBILE_LIST);

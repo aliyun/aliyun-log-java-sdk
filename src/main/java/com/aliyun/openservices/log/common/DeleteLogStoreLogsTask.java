@@ -5,6 +5,7 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * DeleteLogStoreLogsTask represents a soft delete task for log store logs
@@ -95,6 +96,7 @@ public class DeleteLogStoreLogsTask implements Serializable {
         this.errorMessage = errorMessage;
     }
 
+    @InternalApi
     public JSONObject toJsonObject() {
         JSONObject json = new JSONObject();
         json.put("progress", progress);
@@ -107,6 +109,7 @@ public class DeleteLogStoreLogsTask implements Serializable {
         return json;
     }
 
+    @InternalApi
     public void fromJsonObject(JSONObject jsonObject) throws LogException {
         try {
             this.progress = jsonObject.getIntValue("progress");

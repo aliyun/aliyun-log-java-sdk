@@ -7,6 +7,7 @@ import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class MetricStore implements Serializable {
 
@@ -170,6 +171,7 @@ public class MetricStore implements Serializable {
         this.mode = mode;
     }
 
+    @InternalApi
     public JSONObject ToRequestJson() {
         JSONObject metricStoreDict = new JSONObject();
         metricStoreDict.put("name", getName());
@@ -197,6 +199,7 @@ public class MetricStore implements Serializable {
         return ToRequestJson().toString();
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() {
         JSONObject dict = ToRequestJson();
         dict.put("createTime", getCreateTime());
@@ -208,6 +211,7 @@ public class MetricStore implements Serializable {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
             setName(dict.getString("name"));

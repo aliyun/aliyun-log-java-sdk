@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class ApsaraLogConfigInputDetail extends LocalFileConfigInputDetail implements Serializable {
@@ -36,6 +37,7 @@ public class ApsaraLogConfigInputDetail extends LocalFileConfigInputDetail imple
 	}
 	
 	@Override
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject jsonObj = new JSONObject();
 		LocalFileConfigToJsonObject(jsonObj);
@@ -44,6 +46,7 @@ public class ApsaraLogConfigInputDetail extends LocalFileConfigInputDetail imple
 	}
 
 	@Override
+	@InternalApi
 	public void FromJsonObject(JSONObject inputDetail) throws LogException {
 		LocalFileConfigFromJsonObject(inputDetail);
 		this.logBeginRegex = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX);

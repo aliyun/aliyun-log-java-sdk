@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 public class JobInstance implements Serializable {
     private static final long serialVersionUID = 949227748635414993L;
     private String instanceId;
@@ -106,6 +107,7 @@ public class JobInstance implements Serializable {
         this.beginTimeInMillis = beginTimeInMillis;
     }
 
+    @InternalApi
     public void deserialize(JSONObject value) {
         instanceId = value.getString("instanceId");
         jobScheduleId = JsonUtils.readOptionalString(value, "jobScheduleId", "");

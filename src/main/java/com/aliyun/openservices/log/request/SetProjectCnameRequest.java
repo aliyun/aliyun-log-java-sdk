@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.request;
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.CertificateConfiguration;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class SetProjectCnameRequest extends Request {
     private String domain;
@@ -28,6 +29,7 @@ public class SetProjectCnameRequest extends Request {
         this.certificateConfiguration = certificateConfiguration;
     }
 
+    @InternalApi
     public JSONObject marshal() {
         JSONObject object = new JSONObject();
         object.put("domain", domain);

@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class EncryptConf {
     private boolean enable = false;
@@ -51,6 +52,7 @@ public class EncryptConf {
         this.user_cmk_info = user_cmk_info;
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() {
         JSONObject dict = new JSONObject();
         dict.put("enable", this.enable);
@@ -66,6 +68,7 @@ public class EncryptConf {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
             setEnable(dict.getBooleanValue("enable"));

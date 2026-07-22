@@ -7,6 +7,7 @@ import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The input config of a logtail config
@@ -102,6 +103,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		this.customizedFields = customizedFields;
 	}
 		
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject jsonObj = new JSONObject();
 		LocalFileConfigToJsonObject(jsonObj);
@@ -126,6 +128,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		return ToJsonObject().toString();
 	}
 
+	@InternalApi
 	public void FromJsonObject(JSONObject inputDetail) throws LogException {
 		try {
 			LocalFileConfigFromJsonObject(inputDetail);
@@ -177,6 +180,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		this.key = new ArrayList<String>(key);
 	}
 
+	@InternalApi
 	public void SetKey(JSONArray key) throws LogException {
 		try {
 			this.key = new ArrayList<String>();

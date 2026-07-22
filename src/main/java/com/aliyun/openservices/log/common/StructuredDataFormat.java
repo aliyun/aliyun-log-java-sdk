@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class StructuredDataFormat extends DataFormat {
     private String timeField;
@@ -20,6 +21,7 @@ public class StructuredDataFormat extends DataFormat {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         timeField = JsonUtils.readOptionalString(jsonObject, "timeField");

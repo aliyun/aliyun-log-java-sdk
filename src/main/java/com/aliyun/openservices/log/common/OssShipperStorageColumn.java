@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.exception.LogException;
 
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class OssShipperStorageColumn implements Serializable {
 	
@@ -34,6 +35,7 @@ public class OssShipperStorageColumn implements Serializable {
 		this.type = type;
 	}
 	
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject configDict = new JSONObject();
 		configDict.put("name", getName());
@@ -45,6 +47,7 @@ public class OssShipperStorageColumn implements Serializable {
 		return ToJsonObject().toString();
 	}
 	
+	@InternalApi
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {			
 			setName(dict.getString("name"));

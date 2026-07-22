@@ -5,6 +5,7 @@ import com.aliyun.openservices.log.util.Utils;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Date;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 
 abstract class AbstractJob {
@@ -88,6 +89,7 @@ abstract class AbstractJob {
 
     public abstract JobConfiguration getConfiguration();
 
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         name = value.getString("name");
         type = JobType.fromString(value.getString("type"));

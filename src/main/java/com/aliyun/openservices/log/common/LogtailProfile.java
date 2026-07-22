@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.exception.LogException;
 
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class LogtailProfile implements Serializable {
 
@@ -84,6 +85,7 @@ public class LogtailProfile implements Serializable {
 		this.machineOS = machineOS;
 	}
 	
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put(LOGTAILPROFILE_TIME, time);
@@ -101,6 +103,7 @@ public class LogtailProfile implements Serializable {
 		return ToJsonObject().toString();
 	}
 	
+	@InternalApi
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {
 			this.time = dict.getLong(LOGTAILPROFILE_TIME);

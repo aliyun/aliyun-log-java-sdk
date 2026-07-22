@@ -5,6 +5,7 @@ import com.aliyun.openservices.log.common.JobInstance;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * ScheduledSQL jobInstances Response
@@ -21,6 +22,7 @@ public class GetJobInstanceResponse extends Response {
     public void setJobInstance(JobInstance jobInstance) {
         this.jobInstance = jobInstance;
     }
+    @InternalApi
     public void deserialize(JSONObject value, String requestId) throws LogException {
         jobInstance = new JobInstance();
         try {

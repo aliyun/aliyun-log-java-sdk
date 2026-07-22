@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 abstract class HttpNotification extends Notification {
 
@@ -20,6 +21,7 @@ abstract class HttpNotification extends Notification {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         serviceUri = value.getString(Consts.SERVICE_URI);

@@ -5,6 +5,7 @@ import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 
 public class Alert extends ScheduledJob implements Serializable {
@@ -26,6 +27,7 @@ public class Alert extends ScheduledJob implements Serializable {
         this.configuration = configuration;
     }
 
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         configuration = new AlertConfiguration();

@@ -12,6 +12,7 @@ import com.aliyun.openservices.log.common.Histogram;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The response of the GetHistogram API from sls server
@@ -111,6 +112,7 @@ public class GetHistogramsResponse extends Response {
         return histogram;
     }
 
+    @InternalApi
     public void fromJSON(JSONArray items) {
         histogram.clear();
         count = 0;

@@ -8,6 +8,7 @@ import com.aliyun.openservices.log.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 public class AliyunTSDBSink extends DataSink {
 
@@ -216,6 +217,7 @@ public class AliyunTSDBSink extends DataSink {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         endpoint = value.getString("endpoint");
         vpcId = value.getString("vpcId");

@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 public class Metric2MetricParameters extends ScheduledSQLBaseParameters {
     private String metricName;
@@ -8,6 +9,7 @@ public class Metric2MetricParameters extends ScheduledSQLBaseParameters {
     private String hashLabels;
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         metricName = value.getString("metricName");

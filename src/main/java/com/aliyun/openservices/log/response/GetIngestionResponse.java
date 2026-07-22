@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.internal.ErrorCodes;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetIngestionResponse extends Response {
 
@@ -21,6 +22,7 @@ public class GetIngestionResponse extends Response {
         return ingestion;
     }
 
+    @InternalApi
     public void deserialize(JSONObject value, String requestId) throws LogException {
         ingestion = new Ingestion();
         try {

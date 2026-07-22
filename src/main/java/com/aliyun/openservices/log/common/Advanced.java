@@ -9,6 +9,7 @@ import com.aliyun.openservices.log.exception.LogException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Advanced {
     private boolean forceMulticonfig = false;
@@ -59,6 +60,7 @@ public class Advanced {
 
     public Map<String, Object> getOthers() { return others; }
 
+    @InternalApi
     public JSONObject toJsonObject() {
         JSONObject jsonObj = new JSONObject();
         jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_FORCEMULTICONFIG, this.forceMulticonfig);
@@ -81,6 +83,7 @@ public class Advanced {
         return jsonObj;
     }
 
+    @InternalApi
     public static Advanced fromJsonObject(JSONObject advanced) throws LogException {
         try {
             Advanced advObj = new Advanced();

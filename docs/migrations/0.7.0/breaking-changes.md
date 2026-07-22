@@ -41,6 +41,13 @@ signature changed from fastjson to `com.aliyun.openservices.log.internal.json.*`
 User code that passes `com.alibaba.fastjson.JSONObject` into these methods, or assigns their
 return value to a fastjson type, **no longer compiles**.
 
+> **Stability marking / 稳定性标注**: all members listed in this section are annotated with
+> `@InternalApi` (SDK-internal, no compatibility guarantee) or `@ProtectedApi` (extension
+> points for SDK implementors) from `com.aliyun.openservices.log.annotation`. Coverage is
+> enforced by the `ApiExposureGuardTest` guard test. See migration guide §8.
+> 本节所有成员均已标注 `@InternalApi`（SDK 内部，无兼容承诺）或 `@ProtectedApi`（扩展点），
+> 由守卫测试 `ApiExposureGuardTest` 强制覆盖，详见迁移指南 §8。
+
 ### 2.1 `com.aliyun.openservices.log.common`
 
 | Class | Affected methods |

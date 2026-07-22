@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.exception.LogException;
 
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The config of a machine
@@ -75,6 +76,7 @@ public class Machine implements Serializable {
 	 *
 	 * @return the Jonsobject of the machine
 	 */
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("ip", ip);
@@ -104,6 +106,7 @@ public class Machine implements Serializable {
 	 * @throws LogException
 	 *             if any error happen
 	 */
+	@InternalApi
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {
 			this.ip = dict.getString("ip");

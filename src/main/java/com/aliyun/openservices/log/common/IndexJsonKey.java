@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.exception.LogException;
 
 import java.io.Serializable;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Index config of a json key
@@ -72,6 +73,7 @@ public class IndexJsonKey extends IndexKey implements Serializable {
     }
 
     @Override
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         super.FromJsonObject(dict);
         if (dict.containsKey("index_all")) {
@@ -87,6 +89,7 @@ public class IndexJsonKey extends IndexKey implements Serializable {
     }
 
     @Override
+    @InternalApi
     public JSONObject ToRequestJson() throws LogException {
         JSONObject allKeys = super.ToRequestJson();
         JSONArray tokenDict = new JSONArray();

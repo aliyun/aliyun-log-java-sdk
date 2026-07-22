@@ -8,6 +8,7 @@ import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail implements Serializable {
 	
@@ -185,6 +186,7 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 
 	public void SetPluginDetail(String pluginDetail) { this.pluginDetail = pluginDetail; }
 	
+	@InternalApi
 	protected void LocalFileConfigToJsonObject(JSONObject jsonObj) {
 		CommonConfigToJsonObject(jsonObj);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOGPATH, logPath);
@@ -235,6 +237,7 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 		}
 	}
 	
+	@InternalApi
 	protected void LocalFileConfigFromJsonObject(JSONObject inputDetail) throws LogException {
 		try {
 			CommonConfigFromJsonObject(inputDetail);

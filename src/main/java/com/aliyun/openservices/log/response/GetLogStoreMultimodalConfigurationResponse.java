@@ -8,6 +8,7 @@ import com.aliyun.openservices.log.common.MultimodalStatus;
 import com.aliyun.openservices.log.common.AnonymousWriteStatus;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The response of the get logstore multimodal configuration API from log service.
@@ -68,6 +69,7 @@ public class GetLogStoreMultimodalConfigurationResponse extends Response {
      *
      * @param asJson JSON object
      */
+    @InternalApi
     public void deserializeFrom(JSONObject asJson) {
         String statusStr = asJson.getString("status");
         status = statusStr != null ? MultimodalStatus.fromValue(statusStr) : null;

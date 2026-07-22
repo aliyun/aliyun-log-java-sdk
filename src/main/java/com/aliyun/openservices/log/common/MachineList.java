@@ -7,6 +7,7 @@ import com.aliyun.openservices.log.exception.LogException;
 
 import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class MachineList implements Serializable {
 
@@ -40,6 +41,7 @@ public class MachineList implements Serializable {
 		this.machineList.addAll(machineList);
 	}
 	
+	@InternalApi
 	public void SetMachineList(JSONArray machineListJSONArray) {
 		machineList = new ArrayList<String>();
 		for(int i = 0;i < machineListJSONArray.size();i++) {
@@ -58,6 +60,7 @@ public class MachineList implements Serializable {
 		return ToRequestJson().toString();
 	}
 
+	@InternalApi
 	public void FromJsonArray(JSONArray array) throws LogException {
 		try {
 			SetMachineList(array);

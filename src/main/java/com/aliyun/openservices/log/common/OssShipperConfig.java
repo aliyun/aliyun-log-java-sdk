@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 public class OssShipperConfig implements ShipperConfig {
 
@@ -199,6 +200,7 @@ public class OssShipperConfig implements ShipperConfig {
 		return storageDetail;
 	}
 
+	@ProtectedApi
 	public void FromJsonObj(JSONObject obj) throws LogException {
 		try {
 			this.ossBucket = obj.getString("ossBucket");
@@ -238,6 +240,7 @@ public class OssShipperConfig implements ShipperConfig {
 		return "oss";
 	}
 
+	@ProtectedApi
 	public JSONObject GetJsonObj() {
 		JSONObject obj = storageDetail.ToJsonObject();
 		obj.put("ossBucket", this.ossBucket);

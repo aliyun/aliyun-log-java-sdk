@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 
 public class ReportConfiguration extends DashboardBasedJobConfiguration {
@@ -106,6 +107,7 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         enableWatermark = JsonUtils.readBool(value, "enableWatermark", false);

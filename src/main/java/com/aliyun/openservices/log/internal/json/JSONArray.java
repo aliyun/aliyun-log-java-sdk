@@ -2,6 +2,7 @@ package com.aliyun.openservices.log.internal.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Internal use only. Do not use this class in application code.
@@ -9,6 +10,7 @@ import java.util.Collection;
  * A plain-Java JSON array backed by gson for parsing/serialization. See
  * {@link JSONObject} for the accessor semantics.
  */
+@InternalApi
 public class JSONArray extends ArrayList<Object> {
 
     private static final long serialVersionUID = 1L;

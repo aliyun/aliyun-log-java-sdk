@@ -7,6 +7,7 @@ import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class IndexLine {
 	private List<String> token = new ArrayList<String>();
@@ -137,6 +138,7 @@ public class IndexLine {
 		this.autoKeyCountLimit = autoKeyCountLimit;
 	}
 
+	@InternalApi
 	public JSONObject ToRequestJson() {
 		JSONObject line = new JSONObject();
 		JSONArray tokenDict = new JSONArray();
@@ -174,6 +176,7 @@ public class IndexLine {
 		return ToRequestJson().toString();
 	}
 
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		return ToRequestJson();
 	}
@@ -182,6 +185,7 @@ public class IndexLine {
 		return ToJsonObject().toString();
 	}
 
+	@InternalApi
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {
 			if (dict.containsKey("caseSensitive")) {

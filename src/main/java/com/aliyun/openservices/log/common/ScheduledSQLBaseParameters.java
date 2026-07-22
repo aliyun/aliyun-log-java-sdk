@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.*;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 
 public class ScheduledSQLBaseParameters implements ScheduledSQLParameters {
@@ -38,6 +39,7 @@ public class ScheduledSQLBaseParameters implements ScheduledSQLParameters {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         for (String key : value.keySet()) {
             if (!fields.contains(key)) {

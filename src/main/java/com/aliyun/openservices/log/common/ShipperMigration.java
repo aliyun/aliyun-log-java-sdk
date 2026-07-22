@@ -10,6 +10,7 @@ import com.aliyun.openservices.log.internal.ErrorCodes;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ShipperMigration implements Serializable {
     private String name = "";
@@ -146,6 +147,7 @@ public class ShipperMigration implements Serializable {
         }
     }
 
+    @InternalApi
     public static ShipperMigration extractGetMigration(JSONObject body, String requestId) throws LogException {
         ShipperMigration migration = new ShipperMigration("", "", "");
         migration.setName(body.getString("name"));
@@ -162,6 +164,7 @@ public class ShipperMigration implements Serializable {
         return migration;
     }
 
+    @InternalApi
     public static ShipperMigration extractListMigration(JSONObject body, String requestId) throws LogException {
         ShipperMigration migration = new ShipperMigration("", "", "");
         migration.setName(body.getString("name"));
@@ -174,6 +177,7 @@ public class ShipperMigration implements Serializable {
         return migration;
     }
 
+    @InternalApi
     public static List<ShipperMigration> extractMigrations(JSONObject body, String requestId) throws LogException {
         List<ShipperMigration> migrations = new ArrayList<ShipperMigration>();
         JSONArray array = new JSONArray();

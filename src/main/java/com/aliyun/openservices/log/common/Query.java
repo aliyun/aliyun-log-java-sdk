@@ -4,6 +4,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class Query implements Serializable {
@@ -144,6 +145,7 @@ public class Query implements Serializable {
         this.powerSqlMode = powerSqlMode;
     }
 
+    @InternalApi
     public void deserialize(JSONObject value) {
         setChartTitle(value.getString("chartTitle"));
         setLogStore(value.getString("logStore"));

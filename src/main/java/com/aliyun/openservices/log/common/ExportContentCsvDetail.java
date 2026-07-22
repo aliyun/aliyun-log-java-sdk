@@ -5,6 +5,7 @@ import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ExportContentCsvDetail extends ExportContentDetail {
     private String delimiter = ",";
@@ -77,6 +78,7 @@ public class ExportContentCsvDetail extends ExportContentDetail {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject value) {
         delimiter = value.getString("delimiter");
         quote = value.getString("quote");

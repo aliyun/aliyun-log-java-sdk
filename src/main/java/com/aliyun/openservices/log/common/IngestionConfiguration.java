@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 public class IngestionConfiguration extends JobConfiguration {
     private String version;
@@ -67,6 +68,7 @@ public class IngestionConfiguration extends JobConfiguration {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         version = value.getString("version");
         logstore = value.getString("logstore");

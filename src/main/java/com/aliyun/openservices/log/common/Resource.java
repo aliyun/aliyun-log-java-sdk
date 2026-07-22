@@ -6,6 +6,7 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Resource implements Serializable {
     private static final long serialVersionUID = 8648928694568240078L;
@@ -86,6 +87,7 @@ public class Resource implements Serializable {
         this.extInfo = extInfo;
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() throws LogException {
         JSONObject result = new JSONObject();
         result.put(Consts.RESOURCE_NAME, getName());
@@ -112,6 +114,7 @@ public class Resource implements Serializable {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         setName(dict.getString(Consts.RESOURCE_NAME));
         setType(dict.getString(Consts.RESOURCE_TYPE));

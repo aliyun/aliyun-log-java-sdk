@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 public class Log2MetricParameters extends ScheduledSQLBaseParameters {
     private String timeKey;
@@ -13,6 +14,7 @@ public class Log2MetricParameters extends ScheduledSQLBaseParameters {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         timeKey = value.getString("timeKey");

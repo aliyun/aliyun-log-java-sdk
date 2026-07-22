@@ -9,6 +9,7 @@ import com.aliyun.openservices.log.exception.LogException;
 
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetProjectResponse extends Response {
 
@@ -33,6 +34,7 @@ public class GetProjectResponse extends Response {
         super(headers);
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject obj) throws LogException {
         try {
             description = obj.getString("description");

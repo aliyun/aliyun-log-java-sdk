@@ -8,6 +8,7 @@ import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Index config of a key
@@ -184,6 +185,7 @@ public class IndexKey implements Serializable {
 		this.vector_index = vector_index;
 	}
 
+	@InternalApi
 	public JSONObject ToRequestJson() throws LogException {
 		JSONObject allKeys = new JSONObject();
 		JSONArray tokenDict = new JSONArray();
@@ -213,6 +215,7 @@ public class IndexKey implements Serializable {
 		return ToRequestJson().toString();
 	}
 
+	@InternalApi
 	public JSONObject ToJsonObject() throws LogException {
 		return ToRequestJson();
 	}
@@ -221,6 +224,7 @@ public class IndexKey implements Serializable {
 		return ToJsonObject().toString();
 	}
 
+	@InternalApi
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {
 

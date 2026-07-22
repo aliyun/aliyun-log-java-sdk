@@ -9,6 +9,7 @@ import com.aliyun.openservices.log.internal.json.JSONObject;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 
 public class WebhookNotification extends HttpNotification {
@@ -44,6 +45,7 @@ public class WebhookNotification extends HttpNotification {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         String method = JsonUtils.readOptionalString(value, Consts.METHOD);

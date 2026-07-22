@@ -7,6 +7,7 @@ import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class LogStore implements Serializable {
 
@@ -238,6 +239,7 @@ public class LogStore implements Serializable {
         this.shardingPolicy = shardingPolicy;
     }
 
+    @InternalApi
     public JSONObject ToRequestJson() {
         JSONObject logStoreDict = new JSONObject();
         logStoreDict.put("logstoreName", GetLogStoreName());
@@ -276,6 +278,7 @@ public class LogStore implements Serializable {
         return ToRequestJson().toString();
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() {
         JSONObject logStoreDict = ToRequestJson();
         logStoreDict.put("createTime", GetCreateTime());
@@ -287,6 +290,7 @@ public class LogStore implements Serializable {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
             SetLogStoreName(dict.getString("logstoreName"));

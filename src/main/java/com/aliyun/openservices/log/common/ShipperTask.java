@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ShipperTask {
 
@@ -63,6 +64,7 @@ public class ShipperTask {
 		return mTaskFinishTime;
 	}
 
+	@InternalApi
 	public void FromJsonObject(JSONObject obj) {
 		mTaskId = obj.getString("id");
 		mTaskStatus = obj.getString("taskStatus");

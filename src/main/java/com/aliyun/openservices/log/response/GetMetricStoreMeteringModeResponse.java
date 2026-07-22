@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.response;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetMetricStoreMeteringModeResponse extends Response {
 
@@ -20,6 +21,7 @@ public class GetMetricStoreMeteringModeResponse extends Response {
         this.meteringMode = meteringMode;
     }
 
+    @InternalApi
     public void deserializeFrom(JSONObject asJson) {
         meteringMode = asJson.getString("meteringMode");
     }

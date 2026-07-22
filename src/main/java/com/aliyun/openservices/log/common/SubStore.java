@@ -7,6 +7,7 @@ import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class SubStore {
     private String name;
@@ -127,6 +128,7 @@ public class SubStore {
     }
 
 
+    @InternalApi
     public JSONObject toRequestJson() {
         JSONObject subStoreDict = new JSONObject();
         subStoreDict.put("name", getName());

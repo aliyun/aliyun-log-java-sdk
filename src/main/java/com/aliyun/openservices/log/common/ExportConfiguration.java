@@ -4,6 +4,7 @@ import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 public class ExportConfiguration extends JobConfiguration {
     private String version;
@@ -107,6 +108,7 @@ public class ExportConfiguration extends JobConfiguration {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         logstore = value.getString("logstore");
         roleArn = value.getString("roleArn");

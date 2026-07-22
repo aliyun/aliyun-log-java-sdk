@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 import java.io.Serializable;
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ConsumerGroupShardCheckPoint implements Serializable {
 
@@ -66,6 +67,7 @@ public class ConsumerGroupShardCheckPoint implements Serializable {
         this.consumer = consumer;
     }
 
+    @InternalApi
     public void Deserialize(JSONObject obj) {
         shard = obj.getIntValue("shard");
         checkPoint = obj.getString("checkpoint");

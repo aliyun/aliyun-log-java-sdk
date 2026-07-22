@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.internal.json;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Internal use only. Do not use this class in application code.
@@ -13,6 +14,7 @@ import java.util.Map;
  * default for {@code getXxxValue}), and scalar values are coerced across
  * String/Number/Boolean.
  */
+@InternalApi
 public class JSONObject extends LinkedHashMap<String, Object> {
 
     private static final long serialVersionUID = 1L;

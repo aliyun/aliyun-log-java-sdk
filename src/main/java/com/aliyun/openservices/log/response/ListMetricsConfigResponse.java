@@ -7,6 +7,7 @@ import com.aliyun.openservices.log.common.MetricsConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ListMetricsConfigResponse extends Response {
 
@@ -21,6 +22,7 @@ public class ListMetricsConfigResponse extends Response {
         this.metricsConfigList = metricsConfigList;
     }
 
+    @InternalApi
     public void fromJSON(JSONObject object) {
         metricsConfigList = new ArrayList<MetricsConfigWrap>();
         if (object == null) {

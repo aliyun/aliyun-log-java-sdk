@@ -8,6 +8,7 @@ import com.aliyun.openservices.log.internal.ErrorCodes;
 
 import java.io.Serializable;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ResourceRecord implements Serializable {
     private static final long serialVersionUID = -1184418783117426648L;
@@ -66,6 +67,7 @@ public class ResourceRecord implements Serializable {
         return lastModifyTime;
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() throws LogException {
         JSONObject result = new JSONObject();
         if (tag != null) {
@@ -92,6 +94,7 @@ public class ResourceRecord implements Serializable {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         setValue(dict.getString(Consts.RESOURCE_RECORD_VALUE));
 

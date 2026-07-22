@@ -8,6 +8,7 @@ import com.aliyun.openservices.log.internal.ErrorCodes;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Topostore implements Serializable {
     private String name = "";
@@ -106,6 +107,7 @@ public class Topostore implements Serializable {
         this.extInfo = extInfo;
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() throws LogException {
         JSONObject result = new JSONObject();
         result.put(Consts.TOPOSTORE_NAME, getName());
@@ -132,6 +134,7 @@ public class Topostore implements Serializable {
         return ToJsonObject().toJSONString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         setName(dict.getString(Consts.TOPOSTORE_NAME));
         setTag(dict.getString(Consts.TOPOSTORE_TAG));

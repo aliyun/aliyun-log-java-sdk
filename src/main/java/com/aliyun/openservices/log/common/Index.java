@@ -8,6 +8,7 @@ import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Index config for a logstore,  it contains the index data life cycle(ttl),  index for keys and for log line
@@ -164,6 +165,7 @@ public class Index {
      * @return index in json object
      * @throws LogException if any error happened
      */
+    @InternalApi
     public JSONObject ToRequestJson() throws LogException {
         JSONObject index = new JSONObject();
 
@@ -204,6 +206,7 @@ public class Index {
         return ToRequestJson().toString();
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() throws LogException {
         JSONObject index = ToRequestJson();
         return index;
@@ -213,6 +216,7 @@ public class Index {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
             ttl = dict.getIntValue("ttl");

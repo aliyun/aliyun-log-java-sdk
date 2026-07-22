@@ -238,7 +238,24 @@ String raw = resp.getRawResponseBody(); // 服务端原始 JSON；未透传的�
 落盘、GitOps、跨系统传递配置请统一使用这些 String 入口——这是唯一承诺长期稳定的 JSON
 交互方式。
 
-## 8. 0.6.x 维护说明
+## 8. API 稳定性标注：`@InternalApi` / `@ProtectedApi`
+
+0.7.0 引入两个注解（`com.aliyun.openservices.log.annotation` 包），把签名中仍出现
+`internal.json.JSONObject/JSONArray` 的 public/protected 成员的稳定性显式标出：
+
+| 注解 | 语义 | 典型位置 |
+|---|---|---|
+| `@InternalApi` | 仅 SDK 内部使用，**不承诺任何跨版本兼容**，业务代码不应调用 | model 的 `ToJsonObject()/FromJsonObject(...)`、`Client` 的 `Extract*`、response 的 `deserialize`/构造器、`util.JsonUtils`、`internal.json.*` |
+| `@ProtectedApi` | 面向继承/扩展 SDK 的实现者（模板方法、SPI 接口），兼容性弱于公开 API | `JobConfiguration`/`Notification`/`DataSource`/`DataSink` 的 `deserialize(JSONObject)` 及子类 override、`ShipperConfig` 接口 |
+
+使用建议：
+
+- 业务代码看到 `@InternalApi` 成员，请改用 String 入口（§7）或 getter/setter。
+- 若你继承 SDK 类并 override 了 `@ProtectedApi` 方法，升级时请关注 release notes。
+- 仓库内有守卫测试（`ApiExposureGuardTest`）强制：任何暴露 internal JSON 类型的
+  public/protected 成员必须带上述注解之一，防止未来新增裸暴露。
+
+## 9. 0.6.x 维护说明
 
 - 0.6.x 最后一个收尾版本仅包含 deprecation 标注与本次变更预告，不再新增功能。
 - 后续安全类修复视情况评估；建议尽快升级至 0.7.0。

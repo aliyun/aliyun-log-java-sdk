@@ -7,6 +7,7 @@ import com.aliyun.openservices.log.common.CnameConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ListProjectCnameResponse extends Response {
 
@@ -24,6 +25,7 @@ public class ListProjectCnameResponse extends Response {
         this.cnameConfigurations = cnameConfigurations;
     }
 
+    @InternalApi
     public void unmarshal(JSONArray marshalled) {
         int n = marshalled.size();
         cnameConfigurations = new ArrayList<CnameConfiguration>(n);

@@ -1,6 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 public class AuditJobConfiguration extends JobConfiguration {
 
@@ -22,6 +24,7 @@ public class AuditJobConfiguration extends JobConfiguration {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject value) {
         detail = value.toString();
     }
@@ -49,6 +52,7 @@ public class AuditJobConfiguration extends JobConfiguration {
         return this.detail;
     }
 
+    @InternalApi
     public JSONObject toJsonObject() {
         return JSONObject.parseObject(this.detail);
     }

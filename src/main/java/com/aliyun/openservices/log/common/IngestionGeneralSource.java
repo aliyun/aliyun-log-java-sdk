@@ -4,6 +4,7 @@ import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.ProtectedApi;
 
 
 public class IngestionGeneralSource extends DataSource {
@@ -31,6 +32,7 @@ public class IngestionGeneralSource extends DataSource {
     }
 
     @Override
+    @ProtectedApi
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         for (String field : jsonObject.keySet()) {

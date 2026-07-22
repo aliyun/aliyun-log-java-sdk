@@ -9,6 +9,7 @@ import com.aliyun.openservices.log.exception.LogException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ListProjectResponse extends Response {
 
@@ -77,6 +78,7 @@ public class ListProjectResponse extends Response {
         return projects;
     }
 
+    @InternalApi
     public void fromJSON(JSONObject jsonObject) throws LogException {
         total = jsonObject.getIntValue(Consts.CONST_TOTAL);
         count = jsonObject.getIntValue(Consts.CONST_COUNT);

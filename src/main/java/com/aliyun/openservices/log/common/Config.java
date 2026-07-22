@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The logtail config
@@ -95,6 +96,7 @@ public class Config implements Serializable {
 		inputDetail = CommonConfigInputDetail.FromJsonStringS(inputType, inputDetailString);
 	}
 
+	@InternalApi
 	public void SetInputDetail(JSONObject inputDetail) throws LogException {
 		this.inputDetail = CommonConfigInputDetail.FromJsonObjectS(inputType, inputDetail);
 	}
@@ -112,6 +114,7 @@ public class Config implements Serializable {
 		this.outputDetail.FromJsonString(outputDetailString);
 	}
 
+	@InternalApi
 	public void SetOutputDetail(JSONObject outputDetail) throws LogException {
 		this.outputDetail = new ConfigOutputDetail();
 		this.outputDetail.FromJsonObject(outputDetail);
@@ -150,6 +153,7 @@ public class Config implements Serializable {
 		return ToRequestJson().toString();
 	}
 
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject configDict = ToRequestJson();
 		configDict.put("createTime", GetCreateTime());
@@ -161,6 +165,7 @@ public class Config implements Serializable {
 		return ToJsonObject().toString();
 	}
 
+	@InternalApi
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {
 			String configName = dict.getString("configName");

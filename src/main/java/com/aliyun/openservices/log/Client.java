@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.aliyun.openservices.log.common.Consts.CONST_LOGSTORE_REPLICATION;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Client class is the main class in the sdk, it implements the interfaces
@@ -471,6 +472,7 @@ public class Client implements LogService {
 		}
 	}
 
+	@InternalApi
 	protected GetLogtailProfileResponse ExtractLogtailProfile(Map<String, String> resHeaders, JSONObject object) throws LogException {
 		try {
 			int count = object.getIntValue("count");
@@ -581,6 +583,7 @@ public class Client implements LogService {
 		return new ListTagResourcesResponse(resHeaders, nextToken, tagResources);
 	}
 
+	@InternalApi
 	protected List<TagResource> ExtractTagResources(JSONObject object, String requestId)
 			throws LogException {
 		List<TagResource> tagResources = new ArrayList<TagResource>();
@@ -1786,6 +1789,7 @@ public class Client implements LogService {
         return new UpdateConfigResponse(resHeaders);
 	}
 
+	@InternalApi
 	protected Config ExtractConfigFromResponse(JSONObject dict, String requestId) throws LogException {
 		Config config = new Config();
 		try {
@@ -1842,6 +1846,7 @@ public class Client implements LogService {
 		return new DeleteConfigResponse(resHeaders);
 	}
 
+	@InternalApi
 	protected List<String> ExtractConfigs(JSONObject object, String requestId)
 			throws LogException {
 		List<String> configs = new ArrayList<String>();
@@ -1970,6 +1975,7 @@ public class Client implements LogService {
 		return new UpdateMachineGroupResponse(resHeaders);
 	}
 
+	@InternalApi
 	protected MachineGroup ExtractMachineGroupFromResponse(JSONObject dict, String requestId) throws LogException {
 		MachineGroup group = new MachineGroup();
 		try {
@@ -2149,6 +2155,7 @@ public class Client implements LogService {
 		return new DeleteMachineGroupResponse(resHeaders);
 	}
 
+	@InternalApi
 	protected List<String> ExtractMachineGroups(JSONObject object,
 			String requestId) throws LogException {
 		try {
@@ -3978,6 +3985,7 @@ public class Client implements LogService {
 		return new ConsumerGroupHeartBeatResponse(resHeaders, responseShards);
 	}
 
+	@InternalApi
 	protected void ExtractShards(JSONArray array, String requestId, List<Integer> shards) throws LogException {
 		if (array == null) {
 			return;
@@ -4254,6 +4262,7 @@ public class Client implements LogService {
 		return new DeleteChartResponse(response.getHeaders());
 	}
 
+	@InternalApi
 	protected Chart ExtractChartFromResponse(JSONObject dict,
 			String requestId) throws LogException {
 		Chart chart = new Chart();
@@ -4319,6 +4328,7 @@ public class Client implements LogService {
 		return new DeleteDashboardResponse(response.getHeaders());
 	}
 
+	@InternalApi
 	protected Dashboard ExtractDashboardFromResponse(JSONObject dict,
 			String requestId) throws LogException {
 		Dashboard dashboard = new Dashboard();
@@ -4346,6 +4356,7 @@ public class Client implements LogService {
         return new GetDashboardResponse(response.getHeaders(), dashboard);
 	}
 
+	@InternalApi
 	protected List<Dashboard> ExtractDashboards(JSONObject object, String requestId)
 			throws LogException {
 		List<Dashboard> dashboards = new ArrayList<Dashboard>();
@@ -4430,6 +4441,7 @@ public class Client implements LogService {
 		return new DeleteSavedSearchResponse(response.getHeaders());
 	}
 
+	@InternalApi
 	protected SavedSearch ExtractSavedSearchFromResponse(JSONObject dict,
 			String requestId) throws LogException {
 		SavedSearch savedSearch = new SavedSearch();
@@ -4458,6 +4470,7 @@ public class Client implements LogService {
         return new GetSavedSearchResponse(response.getHeaders(), savedSearch);
 	}
 
+	@InternalApi
 	protected List<SavedSearch> ExtractSavedSearches(JSONObject object, String requestId)
 			throws LogException {
 		List<SavedSearch> savedSearches = new ArrayList<SavedSearch>();
@@ -4546,6 +4559,7 @@ public class Client implements LogService {
 		return listDomains(request);
 	}
 
+	@InternalApi
 	protected List<Domain> ExtractDomains(JSONObject object, String requestId)
 			throws LogException {
 		List<Domain> domains = new ArrayList<Domain>();
@@ -4750,6 +4764,7 @@ public class Client implements LogService {
 		return new UpdateTopostoreResponse(response.getHeaders());
 	}
 
+	@InternalApi
 	protected Topostore extractTopostoreFromResponse(JSONObject dict, String requestId) throws LogException {
 		Topostore topostore = new Topostore();
 		try {
@@ -4760,6 +4775,7 @@ public class Client implements LogService {
 		return topostore;
 	}
 
+	@InternalApi
 	protected List<Topostore> extractTopostores(JSONObject object, String requestId) throws LogException {
 		List<Topostore> topostores = new ArrayList<Topostore>();
 		if (object == null) {
@@ -4886,6 +4902,7 @@ public class Client implements LogService {
 	}
 
 
+	@InternalApi
 	protected TopostoreNode extractTopostoreNodeFromResponse(JSONObject dict, String requestId) throws LogException {
 		TopostoreNode node = new TopostoreNode();
 		try {
@@ -4913,6 +4930,7 @@ public class Client implements LogService {
 		return new GetTopostoreNodeResponse(response.getHeaders(), node);
 	}
 
+	@InternalApi
 	protected List<TopostoreNode> extractTopostoreNodesFromResponse(JSONObject object, String requestId) throws LogException {
 		List<TopostoreNode> topostoreNodes = new ArrayList<TopostoreNode>();
 		if (object == null) {
@@ -5026,6 +5044,7 @@ public class Client implements LogService {
 	}
 
 
+	@InternalApi
 	protected TopostoreRelation extractTopostoreRelationFromResponse(JSONObject dict, String requestId) throws LogException {
 		TopostoreRelation relation = new TopostoreRelation();
 		try {
@@ -5053,6 +5072,7 @@ public class Client implements LogService {
 		return new GetTopostoreRelationResponse(response.getHeaders(), relation);
 	}
 
+	@InternalApi
 	protected List<TopostoreRelation> extractTopostoreRelationsFromResponse(JSONObject object, String requestId) throws LogException {
 		List<TopostoreRelation> topostoreRelations = new ArrayList<TopostoreRelation>();
 		if (object == null) {
@@ -5406,6 +5426,7 @@ public class Client implements LogService {
 		return new GetResourceResponse(response.getHeaders(), resource);
 	}
 
+	@InternalApi
 	protected Resource extractResourceFromResponse(JSONObject dict, String requestId) throws LogException {
 		Resource resource = new Resource();
 		try {
@@ -5433,6 +5454,7 @@ public class Client implements LogService {
 		return new ListResourceResponse(response.getHeaders(), count, total, resources);
 	}
 
+	@InternalApi
 	protected List<Resource> extractResources(JSONObject object, String requestId) throws LogException {
 		List<Resource> resources = new ArrayList<Resource>();
 		if (object == null) {
@@ -5550,6 +5572,7 @@ public class Client implements LogService {
 		return new GetResourceRecordResponse(response.getHeaders(), record);
 	}
 
+	@InternalApi
 	protected ResourceRecord extractResourceRecordFromResponse(JSONObject dict, String requestId) throws LogException {
 		ResourceRecord record = new ResourceRecord();
 		try {
@@ -5597,6 +5620,7 @@ public class Client implements LogService {
 		return new ListNextResourceRecordResponse(response.getHeaders(), maxResults, total, nextToken, records);
 	}
 
+	@InternalApi
 	protected List<ResourceRecord> extractResourceRecords(JSONObject object, String requestId) throws LogException {
 		List<ResourceRecord> records = new ArrayList<ResourceRecord>();
 		if (object == null) {

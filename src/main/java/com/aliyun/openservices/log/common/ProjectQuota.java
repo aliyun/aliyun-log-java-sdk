@@ -3,6 +3,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ProjectQuota implements Serializable {
 
@@ -164,6 +165,7 @@ public class ProjectQuota implements Serializable {
         this.writeSizePerMin = writeSizePerMin;
     }
 
+    @InternalApi
     public static ProjectQuota parseFromJSON(JSONObject jsonObject) {
         if (jsonObject == null) {
             return null;
@@ -173,6 +175,7 @@ public class ProjectQuota implements Serializable {
         return quota;
     }
 
+    @InternalApi
     public void fromJSON(JSONObject jsonObject) {
         if (jsonObject == null)
             return;

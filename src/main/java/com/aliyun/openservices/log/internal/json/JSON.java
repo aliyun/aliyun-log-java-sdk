@@ -1,8 +1,11 @@
 package com.aliyun.openservices.log.internal.json;
 
+import com.aliyun.openservices.log.annotation.InternalApi;
+
 /**
  * Internal use only. Do not use this class in application code.
  */
+@InternalApi
 public final class JSON {
 
     private JSON() {
