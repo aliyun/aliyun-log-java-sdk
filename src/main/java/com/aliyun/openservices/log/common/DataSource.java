@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public abstract class DataSource {
 
@@ -19,7 +19,7 @@ public abstract class DataSource {
         this.type = type;
     }
 
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         // No-op
     }

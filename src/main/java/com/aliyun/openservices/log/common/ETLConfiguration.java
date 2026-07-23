@@ -8,7 +8,7 @@ import com.aliyun.openservices.log.internal.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class ETLConfiguration extends JobConfiguration {
@@ -145,7 +145,7 @@ public class ETLConfiguration extends JobConfiguration {
         this.lang = lang;
     }
     @Override
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject value) {
         script = value.getString("script");
         logstore = value.getString("logstore");

@@ -8,7 +8,7 @@ import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class OdpsShipperConfig implements ShipperConfig {
 
@@ -112,7 +112,7 @@ public class OdpsShipperConfig implements ShipperConfig {
 		this.bufferInterval = bufferInterval;
 	}
 
-	@ProtectedApi
+	@InternalApi
 	public JSONObject GetJsonObj() {
 		JSONObject obj = new JSONObject();
 		obj.put("odpsEndpoint", this.odpsEndPoint);
@@ -133,7 +133,7 @@ public class OdpsShipperConfig implements ShipperConfig {
 		return list;
 	}
 
-	@ProtectedApi
+	@InternalApi
 	public void FromJsonObj(JSONObject obj) throws LogException {
 		try {
 			this.odpsEndPoint = obj.getString("odpsEndpoint");

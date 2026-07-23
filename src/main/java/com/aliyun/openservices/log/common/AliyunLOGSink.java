@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class AliyunLOGSink extends DataSink {
 
@@ -127,7 +127,7 @@ public class AliyunLOGSink extends DataSink {
     }
 
 
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject value) {
         name = value.getString("name");
         if (value.containsKey("endpoint")) {

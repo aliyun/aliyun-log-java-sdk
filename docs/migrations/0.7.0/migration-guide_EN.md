@@ -249,25 +249,27 @@ ETL, Shipper, Job/Alert, …). For persistence, GitOps, and cross-system config 
 these String entry points — they are the only JSON interaction surface with a long-term
 stability promise.
 
-## 8. API stability annotations: `@InternalApi` / `@ProtectedApi`
+## 8. API stability annotation: `@InternalApi`
 
-0.7.0 introduces two annotations (package `com.aliyun.openservices.log.annotation`) that make
-the stability of every public/protected member whose signature still contains
-`internal.json.JSONObject/JSONArray` explicit:
+0.7.0 introduces the annotation `com.aliyun.openservices.log.annotation.InternalApi`, which
+marks every public/protected member whose signature still contains
+`internal.json.JSONObject/JSONArray` as SDK-internal:
 
-| Annotation | Semantics | Typical locations |
-|---|---|---|
-| `@InternalApi` | SDK-internal only, **no cross-version compatibility guarantee**; application code must not call it | model `ToJsonObject()/FromJsonObject(...)`, `Client`'s `Extract*`, response `deserialize`/constructors, `util.JsonUtils`, `internal.json.*` |
-| `@ProtectedApi` | For implementors extending the SDK (template methods, SPI interfaces); weaker compatibility than the public API | `deserialize(JSONObject)` in `JobConfiguration`/`Notification`/`DataSource`/`DataSink` and their subclasses, the `ShipperConfig` interface |
+- **Semantics**: SDK-internal only, **no cross-version compatibility guarantee**; application
+  code must not call it.
+- **Typical locations**: model `ToJsonObject()/FromJsonObject(...)`, `Client`'s `Extract*`,
+  response `deserialize`/constructors, the `deserialize(JSONObject)` template methods of
+  `JobConfiguration`/`Notification`/`DataSource`/`DataSink` and their subclass overrides, the
+  `ShipperConfig` interface, `util.JsonUtils`, `internal.json.*`.
 
 Recommendations:
 
 - If application code touches an `@InternalApi` member, switch to the String entry points (§7)
   or getters/setters.
-- If you subclass SDK types and override `@ProtectedApi` methods, review release notes when
+- If you subclass SDK types and override `@InternalApi` methods, review release notes when
   upgrading.
 - A guard test (`ApiExposureGuardTest`) enforces that every public/protected member exposing
-  internal JSON types carries one of these annotations, so no new unannotated exposure can be
+  internal JSON types carries this annotation, so no new unannotated exposure can be
   introduced.
 
 ## 9. 0.6.x maintenance

@@ -4,7 +4,7 @@ import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class RebuildIndex extends AbstractJob implements Serializable {
 
@@ -42,7 +42,7 @@ public class RebuildIndex extends AbstractJob implements Serializable {
     }
 
     @Override
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         status = JsonUtils.readOptionalString(value, "status");

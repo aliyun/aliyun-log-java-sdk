@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Configuration for alert job.
@@ -128,7 +128,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     }
 
     @Override
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         setVersion(JsonUtils.readOptionalString(value, "version"));
@@ -630,7 +630,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.annotations = annotations;
         }
 
-        @ProtectedApi
+        @InternalApi
         public void deserialize(JSONObject value) {
             setId(JsonUtils.readOptionalString(value, "id"));
             setType(JsonUtils.readOptionalString(value, "type"));
@@ -661,7 +661,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.countCondition = countCondition;
         }
 
-        @ProtectedApi
+        @InternalApi
         public void deserialize(JSONObject value) {
             if (value != null) {
                 setCondition(JsonUtils.readOptionalString(value, "condition"));
@@ -699,7 +699,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.ui = ui;
         }
 
-        @ProtectedApi
+        @InternalApi
         public void deserialize(JSONObject value) {
             setType(value.getString("type"));
             setCondition(value.getString("condition"));
@@ -728,7 +728,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
 
 
-        @ProtectedApi
+        @InternalApi
         public void deserialize(JSONObject value) {
             if (value != null) {
                 setKey(value.getString("key"));
@@ -758,7 +758,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
 
 
-        @ProtectedApi
+        @InternalApi
         public void deserialize(JSONObject value) {
             if (value.containsKey("severity")) {
                 setSeverity(Severity.valueOf(value.getInteger("severity")));
@@ -790,7 +790,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.fields = fields;
         }
 
-        @ProtectedApi
+        @InternalApi
         public void deserialize(JSONObject value) {
             setType(value.getString("type"));
             setFields(JsonUtils.readStringList(value, "fields"));
@@ -835,7 +835,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.repeatInterval = repeatInterval;
         }
 
-        @ProtectedApi
+        @InternalApi
         public void deserialize(JSONObject value) {
             setUseDefault(JsonUtils.readBool(value, "useDefault", false));
             setRepeatInterval(JsonUtils.readOptionalString(value, "repeatInterval"));
@@ -891,7 +891,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.roleArn = roleArn;
         }
 
-        @ProtectedApi
+        @InternalApi
         public void deserialize(JSONObject value) {
             setEnabled(JsonUtils.readBool(value, "enabled", false));
             setEndpoint(JsonUtils.readOptionalString(value, "endpoint"));
@@ -912,7 +912,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.enabled = enabled;
         }
 
-        @ProtectedApi
+        @InternalApi
         public void deserialize(JSONObject value) {
             setEnabled(JsonUtils.readBool(value, "enabled", false));
         }
@@ -929,7 +929,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.enabled = enabled;
         }
 
-        @ProtectedApi
+        @InternalApi
         public void deserialize(JSONObject value) {
             setEnabled(JsonUtils.readBool(value, "enabled", false));
         }

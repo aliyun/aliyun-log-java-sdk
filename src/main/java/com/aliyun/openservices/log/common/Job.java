@@ -7,7 +7,7 @@ import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 /**
@@ -181,7 +181,7 @@ public class Job implements Serializable {
         }
     }
 
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject value) {
         name = value.getString("name");
         displayName = JsonUtils.readOptionalString(value, "displayName");

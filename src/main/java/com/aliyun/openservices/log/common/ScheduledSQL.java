@@ -3,7 +3,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 import java.io.Serializable;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 public class ScheduledSQL extends ScheduledJob implements Serializable {
     private static final long serialVersionUID = 9045820359511405750L;
     private String scheduleId;
@@ -24,7 +24,7 @@ public class ScheduledSQL extends ScheduledJob implements Serializable {
     public void setConfiguration(ScheduledSQLConfiguration configuration) {
         this.configuration = configuration;
     }
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         scheduleId = JsonUtils.readOptionalString(jsonObject,"scheduleId","");

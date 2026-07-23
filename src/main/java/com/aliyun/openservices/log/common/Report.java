@@ -3,7 +3,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class Report extends ScheduledJob implements Serializable {
@@ -25,7 +25,7 @@ public class Report extends ScheduledJob implements Serializable {
         this.configuration = configuration;
     }
 
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         configuration = new ReportConfiguration();

@@ -3,7 +3,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Ingestion extends ScheduledJob implements Serializable {
 
@@ -24,7 +24,7 @@ public class Ingestion extends ScheduledJob implements Serializable {
         return configuration;
     }
 
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         configuration = new IngestionConfiguration();

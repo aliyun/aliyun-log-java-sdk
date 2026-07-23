@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.internal.json.JSONObject;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class RebuildIndexConfiguration extends JobConfiguration {
 
@@ -13,7 +13,7 @@ public class RebuildIndexConfiguration extends JobConfiguration {
     private Integer toTime;
 
     @Override
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject value) {
         logstore = value.getString("logstore");
         fromTime = JsonUtils.readOptionalInt(value, "fromTime");

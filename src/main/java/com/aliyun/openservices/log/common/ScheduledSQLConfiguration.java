@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ScheduledSQLConfiguration extends JobConfiguration {
     private String sourceLogstore;
@@ -166,7 +166,7 @@ public class ScheduledSQLConfiguration extends JobConfiguration {
     public Boolean getForceComplete() { return forceComplete; }
 
     @Override
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject value) {
         sourceLogstore = value.getString("sourceLogstore");
         roleArn = value.getString("roleArn");

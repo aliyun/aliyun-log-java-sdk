@@ -1,7 +1,6 @@
 package com.aliyun.openservices.log.internal.json;
 
 import com.aliyun.openservices.log.annotation.InternalApi;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -25,9 +24,8 @@ import static org.junit.Assert.fail;
 
 /**
  * Architecture guard: every public/protected member whose signature references
- * the internal JSON shim types must be annotated with either
- * {@link InternalApi} or {@link ProtectedApi}, so that the exposure is always
- * explicit and new accidental exposure fails CI.
+ * the internal JSON shim types must be annotated with {@link InternalApi}, so
+ * that the exposure is always explicit and new accidental exposure fails CI.
  */
 public class ApiExposureGuardTest {
 
@@ -56,7 +54,7 @@ public class ApiExposureGuardTest {
             if (cls.isSynthetic() || cls.isAnonymousClass() || cls.isLocalClass()) {
                 continue;
             }
-            if (isAnnotated(cls)) {
+            if (cls.getAnnotation(InternalApi.class) != null) {
                 continue;
             }
             checkMembers(cls, violations);
@@ -67,7 +65,7 @@ public class ApiExposureGuardTest {
             message.append(violations.size())
                     .append(" public/protected member(s) expose ")
                     .append(SHIM_PACKAGE)
-                    .append("* types without @InternalApi/@ProtectedApi:\n");
+                    .append("* types without @InternalApi:\n");
             for (String violation : violations) {
                 message.append("  ").append(violation).append('\n');
             }
@@ -76,10 +74,8 @@ public class ApiExposureGuardTest {
     }
 
     @Test
-    public void annotationsAreRuntimeVisible() {
+    public void annotationIsRuntimeVisible() {
         assertFalse(InternalApi.class.getAnnotation(java.lang.annotation.Retention.class)
-                .value() != java.lang.annotation.RetentionPolicy.RUNTIME);
-        assertFalse(ProtectedApi.class.getAnnotation(java.lang.annotation.Retention.class)
                 .value() != java.lang.annotation.RetentionPolicy.RUNTIME);
     }
 
@@ -91,8 +87,7 @@ public class ApiExposureGuardTest {
             }
             if (referencesShim(method.getGenericReturnType())
                     || referencesShim(method.getGenericParameterTypes())) {
-                if (!isAnnotated(method.getAnnotation(InternalApi.class),
-                        method.getAnnotation(ProtectedApi.class))) {
+                if (method.getAnnotation(InternalApi.class) == null) {
                     violations.add(cls.getName() + "#" + method.getName()
                             + describeParams(method.getGenericParameterTypes()));
                 }
@@ -103,8 +98,7 @@ public class ApiExposureGuardTest {
                 continue;
             }
             if (referencesShim(constructor.getGenericParameterTypes())) {
-                if (!isAnnotated(constructor.getAnnotation(InternalApi.class),
-                        constructor.getAnnotation(ProtectedApi.class))) {
+                if (constructor.getAnnotation(InternalApi.class) == null) {
                     violations.add(cls.getName() + "#<init>"
                             + describeParams(constructor.getGenericParameterTypes()));
                 }
@@ -115,8 +109,7 @@ public class ApiExposureGuardTest {
                 continue;
             }
             if (referencesShim(field.getGenericType())) {
-                if (!isAnnotated(field.getAnnotation(InternalApi.class),
-                        field.getAnnotation(ProtectedApi.class))) {
+                if (field.getAnnotation(InternalApi.class) == null) {
                     violations.add(cls.getName() + "." + field.getName());
                 }
             }
@@ -125,15 +118,6 @@ public class ApiExposureGuardTest {
 
     private static boolean isPublicOrProtected(int modifiers) {
         return Modifier.isPublic(modifiers) || Modifier.isProtected(modifiers);
-    }
-
-    private static boolean isAnnotated(Class<?> cls) {
-        return cls.getAnnotation(InternalApi.class) != null
-                || cls.getAnnotation(ProtectedApi.class) != null;
-    }
-
-    private static boolean isAnnotated(InternalApi internal, ProtectedApi extension) {
-        return internal != null || extension != null;
     }
 
     private static boolean referencesShim(Type... types) {

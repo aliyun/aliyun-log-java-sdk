@@ -6,7 +6,7 @@ import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.List;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 abstract class DashboardBasedJobConfiguration extends JobConfiguration {
@@ -34,7 +34,7 @@ abstract class DashboardBasedJobConfiguration extends JobConfiguration {
     abstract Notification makeQualifiedNotification(NotificationType type);
 
     @Override
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject value) {
         dashboard = value.getString("dashboard");
         notificationList = JsonUtils.readList(value, "notificationList", new Unmarshaller<Notification>() {

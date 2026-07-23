@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.common;
 
 
 import com.aliyun.openservices.log.internal.json.JSONObject;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The base class of notifications.
@@ -38,7 +38,7 @@ public abstract class Notification {
         this.content = content;
     }
 
-    @ProtectedApi
+    @InternalApi
     public void deserialize(final JSONObject value) {
         content = value.getString("content");
     }

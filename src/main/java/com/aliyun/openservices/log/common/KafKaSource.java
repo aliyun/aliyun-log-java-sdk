@@ -5,7 +5,7 @@ import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.lang.reflect.Type;
 import java.util.Map;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class KafKaSource extends DataSource {
     private String topics;
@@ -146,7 +146,7 @@ public class KafKaSource extends DataSource {
     }
 
     @Override
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         topics = JsonUtils.readOptionalString(jsonObject, "topics");

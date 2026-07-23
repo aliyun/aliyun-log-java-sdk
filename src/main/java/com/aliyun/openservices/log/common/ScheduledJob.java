@@ -2,7 +2,7 @@ package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.internal.json.JSONObject;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public abstract class ScheduledJob extends AbstractJob {
@@ -45,7 +45,7 @@ public abstract class ScheduledJob extends AbstractJob {
     }
 
     @Override
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         state = JobState.fromString(value.getString("state"));

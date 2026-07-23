@@ -4,7 +4,7 @@ package com.aliyun.openservices.log.common;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
-import com.aliyun.openservices.log.annotation.ProtectedApi;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class DataSink implements Serializable {
 
@@ -22,7 +22,7 @@ public class DataSink implements Serializable {
         this.type = type;
     }
 
-    @ProtectedApi
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         // No-op
     }
