@@ -1,13 +1,13 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Utils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 /**
@@ -21,28 +21,23 @@ public class Job implements Serializable {
     /**
      * The name of job.
      */
-    @JSONField
     private String name;
 
-    @JSONField
     private String displayName;
 
     /**
      * The type of job. See {@link JobType}
      */
-    @JSONField
     private JobType type;
 
     /**
      * The description of job
      */
-    @JSONField
     private String description;
 
     /**
      * The scheduleId of job
      */
-    @JSONField
     private String scheduleId;
 
     /**
@@ -58,22 +53,18 @@ public class Job implements Serializable {
     /**
      * When and how often to repeat the job.
      */
-    @JSONField
     private JobSchedule schedule;
 
     /**
      * The state of job. See {@link JobState}
      */
-    @JSONField
     private JobState state;
 
-    @JSONField
     private String status;
 
     /**
      * The configuration of job.
      */
-    @JSONField
     private JobConfiguration configuration;
 
     public String getName() {
@@ -190,6 +181,7 @@ public class Job implements Serializable {
         }
     }
 
+    @InternalApi
     public void deserialize(JSONObject value) {
         name = value.getString("name");
         displayName = JsonUtils.readOptionalString(value, "displayName");

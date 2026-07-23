@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.request;
 
-import com.alibaba.fastjson.JSON;
+import com.aliyun.openservices.log.internal.json.JSON;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;

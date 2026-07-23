@@ -1,12 +1,13 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class TopostoreNode implements Serializable {
     private String nodeId = "";
@@ -101,6 +102,7 @@ public class TopostoreNode implements Serializable {
         this.displayName = displayName;
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() throws LogException {
         JSONObject result = new JSONObject();
         result.put(Consts.TOPOSTORE_NODE_ID, getNodeId());
@@ -124,6 +126,7 @@ public class TopostoreNode implements Serializable {
         return ToJsonObject().toJSONString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         setNodeId(dict.getString(Consts.TOPOSTORE_NODE_ID));
         setNodeType(dict.getString(Consts.TOPOSTORE_NODE_TYPE));

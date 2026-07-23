@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ExternalStore implements Serializable {
     private static final long serialVersionUID = 6493904490967634292L;
@@ -21,10 +22,12 @@ public class ExternalStore implements Serializable {
         this.parameter = parameter;
     }
 
+    @InternalApi
     public ExternalStore(JSONObject object) throws LogException {
         fromJson(object);
     }
 
+    @InternalApi
     public void fromJson(JSONObject object) throws LogException {
         try {
             setExternalStoreName(object.getString(Consts.CONST_EXTERNAL_NAME));
@@ -35,6 +38,7 @@ public class ExternalStore implements Serializable {
         }
     }
 
+    @InternalApi
     public JSONObject toJson() {
         JSONObject object = new JSONObject();
         object.put("externalStoreName", externalStoreName);

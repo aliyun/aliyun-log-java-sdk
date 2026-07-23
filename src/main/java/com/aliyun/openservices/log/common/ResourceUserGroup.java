@@ -1,18 +1,18 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.List;
 
 public class ResourceUserGroup implements Serializable {
-    @JSONField(name = "user_group_id")
+    @SerializedName("user_group_id")
     private String groupId;
-    @JSONField(name = "user_group_name")
+    @SerializedName("user_group_name")
     private String groupName;
-    @JSONField(name = "enabled")
+    @SerializedName("enabled")
     private boolean enabled;
-    @JSONField(name = "members")
+    @SerializedName("members")
     private List<String> members;
 
     public String getGroupId() {

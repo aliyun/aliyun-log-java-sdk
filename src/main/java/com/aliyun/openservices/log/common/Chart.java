@@ -5,9 +5,10 @@ import java.util.ArrayList;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Chart implements Serializable {
 
@@ -161,6 +162,7 @@ public class Chart implements Serializable {
 		this.displayName = displayName;
 	}
 	
+	@InternalApi
 	public JSONObject RawDisplayToJsonObject() {
 		JSONObject displayJson = new JSONObject();
 		
@@ -192,6 +194,7 @@ public class Chart implements Serializable {
 		return displayJson;
 	}
 	
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject chartJson = new JSONObject();
 		chartJson.put("title", getTitle());
@@ -221,6 +224,7 @@ public class Chart implements Serializable {
 	public String ToJsonString() {
 		return ToJsonObject().toString();
 	}
+	@InternalApi
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {		
 			setTitle(dict.getString("title"));

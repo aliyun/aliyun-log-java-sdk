@@ -4,9 +4,10 @@ package com.aliyun.openservices.log.response;
 import com.aliyun.openservices.log.common.Report;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetReportResponse extends Response {
 
@@ -22,6 +23,7 @@ public class GetReportResponse extends Response {
         return report;
     }
 
+    @InternalApi
     public void deserialize(JSONObject value, final String requestId) throws LogException {
         report = new Report();
         try {

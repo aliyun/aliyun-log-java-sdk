@@ -1,24 +1,24 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
 
 public class ResourceAlertPolicy implements Serializable {
-    @JSONField(name = "policy_id")
+    @SerializedName("policy_id")
     private String policyId;
-    @JSONField(name = "policy_name")
+    @SerializedName("policy_name")
     private String policyName;
-    @JSONField(name = "is_default")
+    @SerializedName("is_default")
     private Boolean isDefault;
-    @JSONField(name = "parent_id")
+    @SerializedName("parent_id")
     private String parentId;
-    @JSONField(name = "group_script")
+    @SerializedName("group_script")
     private String groupScript;
-    @JSONField(name = "inhibit_script")
+    @SerializedName("inhibit_script")
     private String inhibitScript;
-    @JSONField(name = "silence_script")
+    @SerializedName("silence_script")
     private String SilenceScript;
 
     public String getPolicyId() {

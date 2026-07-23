@@ -3,10 +3,11 @@ package com.aliyun.openservices.log.common;
 import java.io.Serializable;
 
 import com.aliyun.openservices.log.util.Args;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class MetricStore implements Serializable {
 
@@ -170,6 +171,7 @@ public class MetricStore implements Serializable {
         this.mode = mode;
     }
 
+    @InternalApi
     public JSONObject ToRequestJson() {
         JSONObject metricStoreDict = new JSONObject();
         metricStoreDict.put("name", getName());
@@ -197,6 +199,7 @@ public class MetricStore implements Serializable {
         return ToRequestJson().toString();
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() {
         JSONObject dict = ToRequestJson();
         dict.put("createTime", getCreateTime());
@@ -208,6 +211,7 @@ public class MetricStore implements Serializable {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
             setName(dict.getString("name"));

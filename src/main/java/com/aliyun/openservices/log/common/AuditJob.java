@@ -1,9 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class AuditJob extends ScheduledJob implements Serializable {
 
@@ -28,6 +28,7 @@ public class AuditJob extends ScheduledJob implements Serializable {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         configuration = new AuditJobConfiguration();

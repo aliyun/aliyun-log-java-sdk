@@ -2,7 +2,8 @@ package com.aliyun.openservices.log.common;
 
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public abstract class DataFormat {
 
@@ -38,6 +39,7 @@ public abstract class DataFormat {
         this.timeZone = timeZone;
     }
 
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         this.type = jsonObject.getString("type");
         this.timeFormat = JsonUtils.readOptionalString(jsonObject, "timeFormat");

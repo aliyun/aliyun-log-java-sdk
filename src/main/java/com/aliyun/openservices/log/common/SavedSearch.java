@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class SavedSearch implements Serializable {
 
@@ -54,6 +55,7 @@ public class SavedSearch implements Serializable {
 		this.displayName = savedSearch.displayName;
 		this.rawSavedSearchAttr = savedSearch.rawSavedSearchAttr;
 	}
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject savedSearchJson = new JSONObject();
 
@@ -72,6 +74,7 @@ public class SavedSearch implements Serializable {
 	public String ToJsonString() {
 		return ToJsonObject().toString();
 	}
+	@InternalApi
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		try {		
 			setSavedSearchName(dict.getString(Consts.CONST_SAVEDSEARCH_NAME));

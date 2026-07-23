@@ -1,9 +1,11 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 import org.junit.Test;
+
+import static com.aliyun.openservices.log.internal.json.JsonAsserts.assertJsonEquals;
 
 import java.util.*;
 
@@ -100,7 +102,7 @@ public class AlertTest {
         alertConfiguration.setPolicyConfiguration(policyConfiguration);
 
         String body = JsonUtils.serialize(alertConfiguration);
-        assertEquals(body, "{\"annotations\":[{\"key\":\"ak1\",\"value\":\"av1\"}],\"autoAnnotation\":false,\"conditionConfiguration\":{\"condition\":\"name == 'k8s'\",\"countCondition\":\"__count__ > 20\"},\"groupConfiguration\":{\"type\":\"no_group\"},\"joinConfigurations\":[{\"condition\":\"$0.name == $1.name\",\"type\":\"left_join\"}],\"labels\":[{\"key\":\"l1\",\"value\":\"v1\"},{\"key\":\"l2\",\"value\":\"v2\"}],\"noDataFire\":true,\"noDataSeverity\":8,\"notifyThreshold\":1,\"policyConfiguration\":{\"actionPolicyId\":\"yyyyyyyy\",\"alertPolicyId\":\"xxxxxx\",\"repeatInterval\":\"4m\",\"useDefault\":true},\"queryList\":[{\"chartTitle\":\"chart1\",\"end\":\"now\",\"logStore\":\"logstore-test\",\"project\":\"test-project\",\"query\":\"* | select name, count(uid) as uv group by name\",\"region\":\"cn-heyuan\",\"roleArn\":\"acs:*:xxxxx\",\"start\":\"-60s\",\"timeSpanType\":\"Custom\"},{\"end\":\"now\",\"query\":\"* | select name, min(latency) group by name\",\"start\":\"-86400s\",\"store\":\"test-alert-latency\",\"timeSpanType\":\"Relative\"}],\"sendRecoveryMessage\":false,\"sendResolved\":true,\"severityConfigurations\":[{\"evalCondition\":{\"condition\":\"latency > 90\",\"countCondition\":\"__count__ > 3\"},\"severity\":8},{\"severity\":6}],\"threshold\":1,\"type\":\"default\",\"version\":\"2.0\"}");
+        assertJsonEquals(body, "{\"annotations\":[{\"key\":\"ak1\",\"value\":\"av1\"}],\"autoAnnotation\":false,\"conditionConfiguration\":{\"condition\":\"name == 'k8s'\",\"countCondition\":\"__count__ > 20\"},\"groupConfiguration\":{\"type\":\"no_group\"},\"joinConfigurations\":[{\"condition\":\"$0.name == $1.name\",\"type\":\"left_join\"}],\"labels\":[{\"key\":\"l1\",\"value\":\"v1\"},{\"key\":\"l2\",\"value\":\"v2\"}],\"noDataFire\":true,\"noDataSeverity\":8,\"notifyThreshold\":1,\"policyConfiguration\":{\"actionPolicyId\":\"yyyyyyyy\",\"alertPolicyId\":\"xxxxxx\",\"repeatInterval\":\"4m\",\"useDefault\":true},\"queryList\":[{\"chartTitle\":\"chart1\",\"end\":\"now\",\"logStore\":\"logstore-test\",\"project\":\"test-project\",\"query\":\"* | select name, count(uid) as uv group by name\",\"region\":\"cn-heyuan\",\"roleArn\":\"acs:*:xxxxx\",\"start\":\"-60s\",\"timeSpanType\":\"Custom\"},{\"end\":\"now\",\"query\":\"* | select name, min(latency) group by name\",\"start\":\"-86400s\",\"store\":\"test-alert-latency\",\"timeSpanType\":\"Relative\"}],\"sendRecoveryMessage\":false,\"sendResolved\":true,\"severityConfigurations\":[{\"evalCondition\":{\"condition\":\"latency > 90\",\"countCondition\":\"__count__ > 3\"},\"severity\":8},{\"severity\":6}],\"threshold\":1,\"type\":\"default\",\"version\":\"2.0\"}");
     }
 
     @Test
@@ -170,7 +172,7 @@ public class AlertTest {
         alertConfiguration.setTemplateConfiguration(templateConfiguration);
 
         String body = JsonUtils.serialize(alertConfiguration);
-        assertEquals(body, "{\"autoAnnotation\":false,\"noDataFire\":false,\"noDataSeverity\":6,\"notifyThreshold\":1,\"sendRecoveryMessage\":false,\"sendResolved\":false,\"templateConfiguration\":{\"lang\":\"cn\",\"tokens\":{\"default.logstore\":\"test_logstore\",\"default.app\":\"sls.audit.alert_policy_default\"},\"type\":\"sys\",\"version\":\"1\"},\"threshold\":1,\"type\":\"tpl\",\"version\":\"2.0\"}");
+        assertJsonEquals(body, "{\"autoAnnotation\":false,\"noDataFire\":false,\"noDataSeverity\":6,\"notifyThreshold\":1,\"sendRecoveryMessage\":false,\"sendResolved\":false,\"templateConfiguration\":{\"lang\":\"cn\",\"tokens\":{\"default.logstore\":\"test_logstore\",\"default.app\":\"sls.audit.alert_policy_default\"},\"type\":\"sys\",\"version\":\"1\"},\"threshold\":1,\"type\":\"tpl\",\"version\":\"2.0\"}");
     }
 
     @Test
@@ -229,7 +231,7 @@ public class AlertTest {
         alert.setSchedule(schedule);
 
         String body = JsonUtils.serialize(alert);
-        assertEquals(body, "{\"configuration\":{\"autoAnnotation\":false,\"noDataFire\":false,\"noDataSeverity\":6,\"notifyThreshold\":1,\"sendRecoveryMessage\":false,\"sendResolved\":false,\"templateConfiguration\":{\"annotations\":{\"__k2\":\"dwdd\"},\"lang\":\"cn\",\"tokens\":{\"default.logstore\":\"test_logstore\",\"default.app\":\"sls.audit.alert_policy_default\"},\"type\":\"sys\",\"version\":\"1\"},\"threshold\":1,\"type\":\"tpl\",\"version\":\"2.0\"},\"recyclable\":false,\"schedule\":{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"status\":\"Enabled\",\"type\":\"Alert\"}");
+        assertJsonEquals(body, "{\"configuration\":{\"autoAnnotation\":false,\"noDataFire\":false,\"noDataSeverity\":6,\"notifyThreshold\":1,\"sendRecoveryMessage\":false,\"sendResolved\":false,\"templateConfiguration\":{\"annotations\":{\"__k2\":\"dwdd\"},\"lang\":\"cn\",\"tokens\":{\"default.logstore\":\"test_logstore\",\"default.app\":\"sls.audit.alert_policy_default\"},\"type\":\"sys\",\"version\":\"1\"},\"threshold\":1,\"type\":\"tpl\",\"version\":\"2.0\"},\"recyclable\":false,\"schedule\":{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"status\":\"Enabled\",\"type\":\"Alert\"}");
     }
 
     @Test

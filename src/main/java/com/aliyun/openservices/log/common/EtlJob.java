@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class EtlJob implements Serializable {
 
@@ -87,6 +88,7 @@ public class EtlJob implements Serializable {
         this.enable = enable;
     }
 
+    @InternalApi
     public JSONObject toJsonObject(boolean withJobName, boolean withSourceConfig) throws LogException {
         JSONObject etlJobJson = new JSONObject();
 
@@ -149,6 +151,7 @@ public class EtlJob implements Serializable {
         return toJsonObject(withJobName, withSourceConfig).toString();
     }
 
+    @InternalApi
     public void fromJsonObject(JSONObject etljobJson) throws LogException {
         try {
             JSONObject sourceConfigJson = etljobJson.getJSONObject(Consts.ETL_JOB_SOURCE_CONFIG);

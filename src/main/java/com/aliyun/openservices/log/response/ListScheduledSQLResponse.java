@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.common.ScheduledSQL;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 import java.io.Serializable;

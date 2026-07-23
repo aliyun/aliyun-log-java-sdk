@@ -1,12 +1,13 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.Args;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Logging implements Serializable {
 
@@ -36,6 +37,7 @@ public class Logging implements Serializable {
         this.loggingDetails = new ArrayList<LoggingDetail>(loggingDetails);
     }
 
+    @InternalApi
     public JSONObject marshal() {
         JSONObject object = new JSONObject();
         object.put("loggingProject", loggingProject);
@@ -47,6 +49,7 @@ public class Logging implements Serializable {
         return object;
     }
 
+    @InternalApi
     public static Logging unmarshal(final JSONObject object) {
         Args.notNull(object, "object");
         final String project = object.getString("loggingProject");

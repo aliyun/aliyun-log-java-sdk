@@ -1,10 +1,10 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class RebuildIndex extends AbstractJob implements Serializable {
 
@@ -14,7 +14,6 @@ public class RebuildIndex extends AbstractJob implements Serializable {
 
     private String executionDetails;
 
-    @JSONField
     private RebuildIndexConfiguration configuration;
 
     public RebuildIndex() {
@@ -43,6 +42,7 @@ public class RebuildIndex extends AbstractJob implements Serializable {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         status = JsonUtils.readOptionalString(value, "status");

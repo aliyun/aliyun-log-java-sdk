@@ -1,24 +1,24 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
 public class MetricStoreViewRoutingConfig {
 
-    @JSONField(name = "metric_names")
+    @SerializedName("metric_names")
     private List<String> metricNames;
 
-    @JSONField(name = "project_stores")
+    @SerializedName("project_stores")
     private List<ProjectStore> projectStores;
 
 
     public static class ProjectStore {
 
-        @JSONField(name = "project")
+        @SerializedName("project")
         private String projectName;
 
-        @JSONField(name = "metricstore")
+        @SerializedName("metricstore")
         private String metricStore;
 
         public ProjectStore(String projectName, String metricStore) {

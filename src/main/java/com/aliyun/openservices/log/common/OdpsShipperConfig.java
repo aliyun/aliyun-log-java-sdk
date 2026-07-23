@@ -3,11 +3,12 @@ package com.aliyun.openservices.log.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class OdpsShipperConfig implements ShipperConfig {
 
@@ -111,6 +112,7 @@ public class OdpsShipperConfig implements ShipperConfig {
 		this.bufferInterval = bufferInterval;
 	}
 
+	@InternalApi
 	public JSONObject GetJsonObj() {
 		JSONObject obj = new JSONObject();
 		obj.put("odpsEndpoint", this.odpsEndPoint);
@@ -131,6 +133,7 @@ public class OdpsShipperConfig implements ShipperConfig {
 		return list;
 	}
 
+	@InternalApi
 	public void FromJsonObj(JSONObject obj) throws LogException {
 		try {
 			this.odpsEndPoint = obj.getString("odpsEndpoint");

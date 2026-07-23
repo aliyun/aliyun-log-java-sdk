@@ -1,14 +1,14 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class QueryResult {
 
@@ -192,11 +192,12 @@ public class QueryResult {
     }
 
     public void deserializeFrom(String rawResult, String requestId) throws LogException {
-        JSONObject asJsonObj = JSONObject.parseObject(rawResult, Feature.DisableSpecialKeyDetect);
+        JSONObject asJsonObj = JSONObject.parseObject(rawResult);
         parseMetadata(asJsonObj.getJSONObject(METADATA_KEY));
         logs = parseData(asJsonObj.getJSONArray(DATA_KEY), requestId);
     }
 
+    @InternalApi
     public static QueriedLog extractLogFromJSON(JSONObject log, String requestId) throws JSONException, LogException {
         String source = "";
         LogItem logItem = new LogItem();
@@ -226,6 +227,7 @@ public class QueryResult {
         return new QueriedLog(source, logItem);
     }
 
+    @InternalApi
     public static List<QueriedLog> parseData(JSONArray array, String requestId) throws LogException {
         if (array == null) {
             return new ArrayList<QueriedLog>();
@@ -385,6 +387,7 @@ public class QueryResult {
             return endTime;
         }
 
+        @InternalApi
         public static PhraseQueryInfo deserializeFrom(JSONObject asJson) {
             PhraseQueryInfo queryInfo = new PhraseQueryInfo();
             if (asJson == null) {

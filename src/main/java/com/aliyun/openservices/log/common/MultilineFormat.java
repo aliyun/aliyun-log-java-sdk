@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class MultilineFormat extends LineFormat {
 
@@ -56,6 +57,7 @@ public class MultilineFormat extends LineFormat {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         if (jsonObject.containsKey("maxLines")) {

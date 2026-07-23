@@ -9,9 +9,10 @@ import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.util.GzipUtils;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class CsvExternalStore extends ExternalStore {
     private static final long serialVersionUID = 6493204290917634292L;
@@ -53,6 +54,7 @@ public class CsvExternalStore extends ExternalStore {
         return getParameter().getObjects().get(0);
     }
 
+    @InternalApi
     public CsvExternalStore(JSONObject object) throws LogException {
         super(object);
     }

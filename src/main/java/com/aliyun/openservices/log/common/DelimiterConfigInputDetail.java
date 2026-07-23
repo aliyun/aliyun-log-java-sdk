@@ -3,10 +3,11 @@ package com.aliyun.openservices.log.common;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class DelimiterConfigInputDetail extends LocalFileConfigInputDetail implements Serializable {
 
@@ -68,6 +69,7 @@ public class DelimiterConfigInputDetail extends LocalFileConfigInputDetail imple
 		this.key = key;
 	}
 
+	@InternalApi
 	public void SetKey(JSONArray key) throws LogException {
 		try {
 			this.key = new ArrayList<String>();
@@ -104,6 +106,7 @@ public class DelimiterConfigInputDetail extends LocalFileConfigInputDetail imple
 	}
 
 	@Override
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject jsonObj = new JSONObject();
 		LocalFileConfigToJsonObject(jsonObj);
@@ -124,6 +127,7 @@ public class DelimiterConfigInputDetail extends LocalFileConfigInputDetail imple
 	}
 
 	@Override
+	@InternalApi
 	public void FromJsonObject(JSONObject inputDetail) throws LogException {
 		LocalFileConfigFromJsonObject(inputDetail);
 		this.separator = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_SEPARATOR);

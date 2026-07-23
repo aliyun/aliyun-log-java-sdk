@@ -1,14 +1,14 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import static com.aliyun.openservices.log.util.Args.checkDuration;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class JobSchedule implements Serializable {
 
@@ -16,16 +16,12 @@ public class JobSchedule implements Serializable {
 
     private String id;
 
-    @JSONField
     private String displayName;
 
-    @JSONField
     private String description;
 
-    @JSONField
     private String jobName;
 
-    @JSONField
     private JobScheduleType type;
 
     // TODO Move schedule info to a separate class
@@ -33,37 +29,30 @@ public class JobSchedule implements Serializable {
     /**
      * Interval in duration format e,g "60s", "1h". Required for {@code JobScheduleType.FIXED_RATE} only.
      */
-    @JSONField
     private String interval;
 
     /**
      * Cron expression for CRON type.
      */
-    @JSONField
     private String cronExpression;
 
     /**
      * An optional delay to avoid missing data.
      */
-    @JSONField
     private Integer delay;
 
     /**
      * sunday, monday, tuesday, wednesday, thursday, friday and saturday
      */
-    @JSONField
     private Integer dayOfWeek;
 
     /**
      * hour at a day
      */
-    @JSONField
     private Integer hour;
 
-    @JSONField
     private Integer fromTime;
 
-    @JSONField
     private Integer toTime;
 
     private String status;
@@ -81,7 +70,6 @@ public class JobSchedule implements Serializable {
     /**
      * timeZone eg. +0800
      */
-    @JSONField
     private String timeZone;
 
     public String getId() {
@@ -237,6 +225,7 @@ public class JobSchedule implements Serializable {
     }
 
 
+    @InternalApi
     public void deserialize(JSONObject value) {
         id = JsonUtils.readOptionalString(value, "id");
         displayName = JsonUtils.readOptionalString(value, "displayName");

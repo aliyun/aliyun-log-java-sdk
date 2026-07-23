@@ -2,9 +2,10 @@ package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The output config of a logtail
@@ -21,6 +22,7 @@ public class ConfigOutputDetail implements Serializable {
 	private String logstoreName = "";
 	private String compressType = "";
 	
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject jsonObj = new JSONObject();
 		
@@ -35,6 +37,7 @@ public class ConfigOutputDetail implements Serializable {
 		return ToJsonObject().toString();
 	}
 	
+	@InternalApi
 	public void FromJsonObject(JSONObject outputDetail) throws LogException {
 		try {
 			if (outputDetail.containsKey("endpoint")) {

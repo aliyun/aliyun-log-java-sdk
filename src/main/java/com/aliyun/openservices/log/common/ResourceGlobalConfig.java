@@ -1,21 +1,21 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
 
 public class ResourceGlobalConfig implements Serializable {
-    @JSONField(name = "config_id")
+    @SerializedName("config_id")
     private String configId;
-    @JSONField(name = "config_name")
+    @SerializedName("config_name")
     private String configName;
-    @JSONField(name = "config_detail")
+    @SerializedName("config_detail")
     private ConfigDetail configDetail;
 
     public static class CenterLog {
 
-        @JSONField(name = "region")
+        @SerializedName("region")
         private String region;
 
         public String getRegion() {
@@ -28,7 +28,7 @@ public class ResourceGlobalConfig implements Serializable {
     }
 
     public static class ConfigDetail {
-        @JSONField(name = "alert_center_log")
+        @SerializedName("alert_center_log")
         private CenterLog alertCenterLog;
 
         public CenterLog getAlertCenterLog() {

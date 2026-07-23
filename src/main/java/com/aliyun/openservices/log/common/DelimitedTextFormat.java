@@ -2,11 +2,12 @@ package com.aliyun.openservices.log.common;
 
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class DelimitedTextFormat extends StructuredDataFormat {
 
@@ -79,6 +80,7 @@ public class DelimitedTextFormat extends StructuredDataFormat {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         fieldDelimiter = JsonUtils.readOptionalString(jsonObject, "fieldDelimiter");

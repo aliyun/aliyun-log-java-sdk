@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.etl;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.EtlMeta;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.ListEtlMetaResponse;
@@ -49,7 +49,7 @@ public class EtlMetaTest extends JobIntgTest {
             assertEquals(etlMeta.getMetaName(), etlMetaName_1);
             assertTrue(etlMeta.isEnable());
             assertEquals(etlMeta.getMetaTag(), etlMetaKeyPrefxi_1);
-            JSONObject mv = etlMeta.getMetaValue();
+            JSONObject mv = new JSONObject(etlMeta.getMetaValue());
             assertEquals(userAliuid, mv.getString("aliuid"));
             assertEquals(userRegion, mv.getString("region"));
             assertEquals(userProject, mv.getString("project"));
@@ -70,7 +70,7 @@ public class EtlMetaTest extends JobIntgTest {
             assertEquals(etlMeta.getMetaName(), etlMetaName_1);
             assertTrue(etlMeta.isEnable());
             assertEquals(etlMeta.getMetaTag(), etlMetaKeyPrefxi_1);
-            JSONObject mv = etlMeta.getMetaValue();
+            JSONObject mv = new JSONObject(etlMeta.getMetaValue());
             assertEquals(userAliuid, mv.getString("aliuid"));
             assertEquals(userRegion, mv.getString("region"));
             assertEquals(userProject, mv.getString("project"));

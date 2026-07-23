@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Project implements Serializable {
 
@@ -148,6 +149,7 @@ public class Project implements Serializable {
         return ToRequestJson().toString();
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() {
         JSONObject projectDict = ToRequestJson();
         projectDict.put(Consts.CONST_CREATTIME, getCreateTime());
@@ -159,6 +161,7 @@ public class Project implements Serializable {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
             setProjectName(dict.getString(Consts.CONST_PROJECTNAME));

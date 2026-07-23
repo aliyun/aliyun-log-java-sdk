@@ -3,10 +3,11 @@ package com.aliyun.openservices.log.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public abstract class CommonConfigInputDetail {
@@ -128,6 +129,7 @@ public abstract class CommonConfigInputDetail {
 		this.shardHashKey = new ArrayList<String>(shardHashKey);
 	}
 	
+	@InternalApi
 	public void SetShardHashKey(JSONArray shardHashKey) throws LogException {
 		try {
 			this.shardHashKey = new ArrayList<String>();
@@ -142,6 +144,7 @@ public abstract class CommonConfigInputDetail {
 		return filterRegex;
 	}
 	
+	@InternalApi
 	public void SetFilterRegex(JSONArray filterRegex) throws LogException {
 		try {
 			this.filterRegex = new ArrayList<String>();
@@ -157,6 +160,7 @@ public abstract class CommonConfigInputDetail {
 		return filterKey;
 	}
 	
+	@InternalApi
 	public void SetFilterKey(JSONArray filterKey) throws LogException {
 		try {
 			this.filterKey = new ArrayList<String>();
@@ -168,9 +172,12 @@ public abstract class CommonConfigInputDetail {
 		}
 	}
 	
+	@InternalApi
 	public abstract JSONObject ToJsonObject();
+	@InternalApi
 	public abstract void FromJsonObject(JSONObject inputDetail) throws LogException;
 	
+	@InternalApi
 	protected void CommonConfigToJsonObject(JSONObject jsonObj) {
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOCALSTORAGE, localStorage);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ENABLETAG, enableTag);
@@ -206,6 +213,7 @@ public abstract class CommonConfigInputDetail {
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY, shardHashKeyArray);
 	}
 	
+	@InternalApi
 	protected void CommonConfigFromJsonObject(JSONObject inputDetail) throws LogException {
 		try {
 			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADJUSTTIMEZONE)) {
@@ -280,6 +288,7 @@ public abstract class CommonConfigInputDetail {
 		}
 	}
 
+	@InternalApi
 	public static CommonConfigInputDetail FromJsonObjectS(final String inputType, JSONObject inputDetail)
 			throws LogException {
 		try {

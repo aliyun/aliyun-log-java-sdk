@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class EncryptUserCmkConf {
     private String cmk_key_id;
@@ -43,6 +44,7 @@ public class EncryptUserCmkConf {
         this.region_id = region_id;
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() {
         JSONObject dict = new JSONObject();
         dict.put("cmk_key_id", this.cmk_key_id);
@@ -55,6 +57,7 @@ public class EncryptUserCmkConf {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
             setCmkKeyId(dict.getString("cmk_key_id"));

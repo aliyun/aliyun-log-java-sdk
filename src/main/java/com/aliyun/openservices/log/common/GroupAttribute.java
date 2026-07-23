@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GroupAttribute implements Serializable {
 
@@ -42,6 +43,7 @@ public class GroupAttribute implements Serializable {
 		this.groupTopic = groupTopic;
 	}
 	
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject groupAttributeDict = new JSONObject();
 		groupAttributeDict.put("groupTopic", GetGroupTopic());
@@ -53,6 +55,7 @@ public class GroupAttribute implements Serializable {
 		return ToJsonObject().toString();
 	}
 	
+	@InternalApi
 	public void FromJsonObject(JSONObject groupAttribute) throws LogException {
 		try {
 			this.externalName = groupAttribute.getString("externalName");

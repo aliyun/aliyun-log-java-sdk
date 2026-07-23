@@ -1,31 +1,25 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Utils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Date;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 abstract class AbstractJob {
 
-    @JSONField
     private String name;
 
-    @JSONField
     private String displayName;
 
-    @JSONField
     private String description;
 
-    @JSONField
     private JobType type;
 
-    @JSONField
     private boolean recyclable;
 
-    @JSONField
     private String adminAttribute;
 
     private Date createTime;
@@ -95,6 +89,7 @@ abstract class AbstractJob {
 
     public abstract JobConfiguration getConfiguration();
 
+    @InternalApi
     public void deserialize(JSONObject value) {
         name = value.getString("name");
         type = JobType.fromString(value.getString("type"));

@@ -1,11 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
 
 import java.lang.reflect.Type;
 
-public enum DataSinkType implements JSONSerializable {
+public enum DataSinkType {
     ALIYUN_LOG("AliyunLOG"),
     ALIYUN_ADB("AliyunADB"),
     ALIYUN_TSDB("AliyunTSDB"),
@@ -37,8 +35,4 @@ public enum DataSinkType implements JSONSerializable {
         return name;
     }
 
-    @Override
-    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-        serializer.write(name);
-    }
 }

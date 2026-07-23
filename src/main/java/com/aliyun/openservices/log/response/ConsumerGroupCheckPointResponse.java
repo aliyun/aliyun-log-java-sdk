@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONArray;
 
 import com.aliyun.openservices.log.common.ConsumerGroupShardCheckPoint;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ConsumerGroupCheckPointResponse extends Response {
     /**
@@ -15,6 +16,7 @@ public class ConsumerGroupCheckPointResponse extends Response {
     private static final long serialVersionUID = 8040754126341011292L;
     private List<ConsumerGroupShardCheckPoint> checkPoints;
 
+    @InternalApi
     public ConsumerGroupCheckPointResponse(Map<String, String> headers, JSONArray checkPointsArray) {
         super(headers);
         checkPoints = new ArrayList<ConsumerGroupShardCheckPoint>();

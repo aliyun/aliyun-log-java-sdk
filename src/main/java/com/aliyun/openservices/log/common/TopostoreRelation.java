@@ -1,12 +1,13 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class TopostoreRelation implements Serializable {
     private String relationId = "";
@@ -117,6 +118,7 @@ public class TopostoreRelation implements Serializable {
         this.displayName = displayName;
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() throws LogException {
         JSONObject result = new JSONObject();
         result.put(Consts.TOPOSTORE_RELATION_ID, getRelationId());
@@ -143,6 +145,7 @@ public class TopostoreRelation implements Serializable {
         return ToJsonObject().toJSONString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         setRelationId(dict.getString(Consts.TOPOSTORE_RELATION_ID));
         setRelationType(dict.getString(Consts.TOPOSTORE_RELATION_TYPE));

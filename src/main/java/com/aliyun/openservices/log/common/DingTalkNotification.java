@@ -1,34 +1,30 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Send DingTalk notification.
  */
 public class DingTalkNotification extends HttpNotification {
 
-    @JSONField
     private String title;
 
-    @JSONField
     private List<String> atMobiles;
 
     /**
      * Ding talk API support POST only.
      */
     @Deprecated
-    @JSONField
     private String method;
 
     /**
      * At all group members or not.
      */
-    @JSONField
     private boolean atAll = false;
 
     public DingTalkNotification() {
@@ -70,6 +66,7 @@ public class DingTalkNotification extends HttpNotification {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         atMobiles = JsonUtils.readOptionalStrings(value, Consts.AT_MOBILES);

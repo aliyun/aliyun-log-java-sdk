@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Domain implements Serializable {
 
@@ -25,6 +26,7 @@ public class Domain implements Serializable {
 		this.domainName = domainName;
 	}
 
+	@InternalApi
 	public JSONObject toJsonObject() {
 		JSONObject domainObject = new JSONObject();
 		domainObject.put("domainName", getDomainName());
@@ -35,6 +37,7 @@ public class Domain implements Serializable {
 		return toJsonObject().toString();
 	}
 	
+	@InternalApi
 	public void fromJsonObject(JSONObject dict) throws LogException {
 		try {
 			setDomainName(dict.getString("domainName"));

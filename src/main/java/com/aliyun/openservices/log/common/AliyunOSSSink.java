@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class AliyunOSSSink extends DataSink {
 
@@ -150,6 +151,7 @@ public class AliyunOSSSink extends DataSink {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject value) {
         roleArn = value.getString("roleArn");
         bucket = value.getString("bucket");

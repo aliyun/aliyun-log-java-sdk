@@ -1,16 +1,15 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class Report extends ScheduledJob implements Serializable {
 
     private static final long serialVersionUID = 9211926785430833230L;
 
-    @JSONField
     private ReportConfiguration configuration;
 
     public Report() {
@@ -26,6 +25,7 @@ public class Report extends ScheduledJob implements Serializable {
         this.configuration = configuration;
     }
 
+    @InternalApi
     public void deserialize(JSONObject value) {
         super.deserialize(value);
         configuration = new ReportConfiguration();

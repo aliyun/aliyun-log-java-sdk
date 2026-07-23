@@ -1,19 +1,20 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ExportContentCsvDetail extends ExportContentDetail {
     private String delimiter = ",";
     private String quote = "";
     private String lineFeed = "\n";
-    @JSONField(name = "null")
+    @SerializedName("null")
     private String nullIdentifier = "";
     private boolean header = false;
-    @JSONField(name = "columns")
+    @SerializedName("columns")
     private ArrayList<String> storageColumns = new ArrayList<String>();
 
     public ExportContentCsvDetail() {}
@@ -77,6 +78,7 @@ public class ExportContentCsvDetail extends ExportContentDetail {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject value) {
         delimiter = value.getString("delimiter");
         quote = value.getString("quote");

@@ -3,9 +3,10 @@ package com.aliyun.openservices.log.response;
 import com.aliyun.openservices.log.common.RebuildIndex;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetRebuildIndexResponse extends Response {
 
@@ -21,6 +22,7 @@ public class GetRebuildIndexResponse extends Response {
         return rebuildIndex;
     }
 
+    @InternalApi
     public void deserialize(JSONObject value, String requestId) throws LogException {
         rebuildIndex = new RebuildIndex();
         try {

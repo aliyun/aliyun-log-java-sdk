@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public abstract class DataSource {
 
@@ -18,6 +19,7 @@ public abstract class DataSource {
         this.type = type;
     }
 
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         // No-op
     }

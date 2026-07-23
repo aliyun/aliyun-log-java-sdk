@@ -1,13 +1,13 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.MetricsConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ListMetricsConfigResponse extends Response {
 
@@ -22,6 +22,7 @@ public class ListMetricsConfigResponse extends Response {
         this.metricsConfigList = metricsConfigList;
     }
 
+    @InternalApi
     public void fromJSON(JSONObject object) {
         metricsConfigList = new ArrayList<MetricsConfigWrap>();
         if (object == null) {
@@ -49,9 +50,7 @@ public class ListMetricsConfigResponse extends Response {
     }
 
     public static class MetricsConfigWrap {
-        @JSONField
         private String metricStore;
-        @JSONField
         private MetricsConfig metricsConfigDetail;
 
         public MetricsConfigWrap(String metricStore, MetricsConfig metricsConfig) {

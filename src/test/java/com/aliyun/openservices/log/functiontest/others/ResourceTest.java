@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.others;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.ResourceName;
 import com.aliyun.openservices.log.common.ResourceRecord;
 import com.aliyun.openservices.log.common.ResourceUser;

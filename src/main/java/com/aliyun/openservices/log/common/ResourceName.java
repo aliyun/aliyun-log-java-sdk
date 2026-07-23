@@ -1,11 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
 
 import java.lang.reflect.Type;
 
-public enum ResourceName implements JSONSerializable {
+public enum ResourceName {
     ALERT_POLICY("sls.alert.alert_policy"),
     ACTION_POLICY("sls.alert.action_policy"),
     USER("sls.common.user"),
@@ -34,8 +32,4 @@ public enum ResourceName implements JSONSerializable {
         return value;
     }
 
-    @Override
-    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-        serializer.write(toString());
-    }
 }

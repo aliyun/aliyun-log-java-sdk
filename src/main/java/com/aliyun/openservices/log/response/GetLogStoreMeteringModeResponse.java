@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetLogStoreMeteringModeResponse extends Response {
 
@@ -20,6 +21,7 @@ public class GetLogStoreMeteringModeResponse extends Response {
         this.meteringMode = meteringMode;
     }
 
+    @InternalApi
     public void deserializeFrom(JSONObject asJson) {
         meteringMode = asJson.getString("meteringMode");
     }

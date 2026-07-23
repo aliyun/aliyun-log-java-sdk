@@ -1,12 +1,13 @@
 package com.aliyun.openservices.log.response;
 
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.ETLV2;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetETLV2Response extends Response {
 
@@ -26,6 +27,7 @@ public class GetETLV2Response extends Response {
         this.etlv2 = etlv2;
     }
 
+    @InternalApi
     public void deserialize(JSONObject value, String requestId) throws LogException {
         etlv2 = new ETLV2();
         try {

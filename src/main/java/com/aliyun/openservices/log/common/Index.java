@@ -1,14 +1,14 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Index config for a logstore,  it contains the index data life cycle(ttl),  index for keys and for log line
@@ -165,6 +165,7 @@ public class Index {
      * @return index in json object
      * @throws LogException if any error happened
      */
+    @InternalApi
     public JSONObject ToRequestJson() throws LogException {
         JSONObject index = new JSONObject();
 
@@ -205,6 +206,7 @@ public class Index {
         return ToRequestJson().toString();
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() throws LogException {
         JSONObject index = ToRequestJson();
         return index;
@@ -214,6 +216,7 @@ public class Index {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
             ttl = dict.getIntValue("ttl");
@@ -263,7 +266,7 @@ public class Index {
 
     public void FromJsonString(String indexString) throws LogException {
         try {
-            JSONObject dict = JSONObject.parseObject(indexString, Feature.DisableSpecialKeyDetect);
+            JSONObject dict = JSONObject.parseObject(indexString);
             FromJsonObject(dict);
         } catch (JSONException e) {
             throw new LogException("FailToGenerateIndex", e.getMessage(), e, "");

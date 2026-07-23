@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class SensitiveKey implements Serializable {
 	private static final long serialVersionUID = 5303674958351023026L;
@@ -63,6 +64,7 @@ public class SensitiveKey implements Serializable {
 		this.all = all;
 	}
 	
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject sensitiveKeyJson = new JSONObject();
 		sensitiveKeyJson.put(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_KEY, key);
@@ -75,6 +77,7 @@ public class SensitiveKey implements Serializable {
 		return sensitiveKeyJson;
 	}
 	
+	@InternalApi
 	public void FromJsonObject(JSONObject dict) throws LogException {
 		setKey(dict.getString(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_KEY));
 		setType(dict.getString(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_TYPE));

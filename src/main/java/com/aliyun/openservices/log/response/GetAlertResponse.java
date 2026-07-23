@@ -4,9 +4,10 @@ package com.aliyun.openservices.log.response;
 import com.aliyun.openservices.log.common.Alert;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetAlertResponse extends Response {
 
@@ -26,6 +27,7 @@ public class GetAlertResponse extends Response {
         this.alert = alert;
     }
 
+    @InternalApi
     public void deserialize(JSONObject value, String requestId) throws LogException {
         alert = new Alert();
         try {

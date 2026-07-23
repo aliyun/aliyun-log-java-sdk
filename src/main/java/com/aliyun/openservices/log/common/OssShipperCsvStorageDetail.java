@@ -5,9 +5,10 @@ import java.util.ArrayList;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implements Serializable{
 	private static final long serialVersionUID = -9072422584563361211L;
@@ -71,6 +72,7 @@ public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implemen
 	}
 
 	@Override
+	@InternalApi
 	public JSONObject ToJsonObject() {
 		JSONObject obj = new JSONObject();
 		JSONArray columns = new JSONArray();
@@ -90,6 +92,7 @@ public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implemen
 	}
 
 	@Override
+	@InternalApi
 	public void FromJsonObject(JSONObject storageDetail) throws LogException {
 		try {
 			JSONObject storage = storageDetail.getJSONObject("storage");

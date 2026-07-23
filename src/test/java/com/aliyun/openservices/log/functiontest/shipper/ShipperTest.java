@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.functiontest.shipper;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.EncryptConfig;
 import com.aliyun.openservices.log.common.OdpsShipperConfig;

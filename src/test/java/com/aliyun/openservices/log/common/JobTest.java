@@ -2,8 +2,10 @@ package com.aliyun.openservices.log.common;
 
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import org.junit.Test;
+
+import static com.aliyun.openservices.log.internal.json.JsonAsserts.assertJsonEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +50,7 @@ public class JobTest {
         job.setConfiguration(configuration);
 
         String body = JsonUtils.serialize(job);
-        assertEquals(body, "{\"configuration\":{\"autoAnnotation\":false,\"condition\":\"ID > 100\",\"dashboard\":\"dashboardtest\",\"noDataFire\":false,\"noDataSeverity\":6,\"notificationList\":[{\"content\":\"messagetest\",\"mobileList\":[\"86-13738162867\"],\"type\":\"SMS\"}],\"notifyThreshold\":1,\"queryList\":[{\"chartTitle\":\"chart1\",\"end\":\"now\",\"logStore\":\"logstore-test\",\"query\":\"*\",\"start\":\"-60s\",\"timeSpanType\":\"Custom\"}],\"sendRecoveryMessage\":false,\"sendResolved\":false,\"threshold\":1},\"name\":\"alertTest\",\"schedule\":{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Alert\"}");
+        assertJsonEquals(body, "{\"configuration\":{\"autoAnnotation\":false,\"condition\":\"ID > 100\",\"dashboard\":\"dashboardtest\",\"noDataFire\":false,\"noDataSeverity\":6,\"notificationList\":[{\"content\":\"messagetest\",\"mobileList\":[\"86-13738162867\"],\"type\":\"SMS\"}],\"notifyThreshold\":1,\"queryList\":[{\"chartTitle\":\"chart1\",\"end\":\"now\",\"logStore\":\"logstore-test\",\"query\":\"*\",\"start\":\"-60s\",\"timeSpanType\":\"Custom\"}],\"sendRecoveryMessage\":false,\"sendResolved\":false,\"threshold\":1},\"name\":\"alertTest\",\"schedule\":{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Alert\"}");
     }
 
     @Test
@@ -100,7 +102,7 @@ public class JobTest {
         JobSchedule schedule = new JobSchedule();
         schedule.setType(JobScheduleType.FIXED_RATE);
         schedule.setInterval("60s");
-        assertEquals("{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"}", JsonUtils.serialize(schedule));
+        assertJsonEquals("{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"}", JsonUtils.serialize(schedule));
         JobSchedule schedule1 = new JobSchedule();
         schedule1.deserialize(JSONObject.parseObject("{\"interval\":\"60s\",\"type\":\"FixedRate\"}"));
         assertEquals("60s", schedule1.getInterval());
@@ -218,7 +220,7 @@ public class JobTest {
         ingestionConfiguration.setSource(ingestionGeneralSource);
         job.setConfiguration(ingestionConfiguration);
         String jobStr = "{\"configuration\":{\"source\":{\"batchMaxSize\":\"0\",\"timeZone\":\"Asia/Shanghai\",\"type\":\"RDS\"}},\"displayName\":\"test ingestion\",\"name\":\"test-ingestion-general\",\"schedule\":{\"interval\":\"2m\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Ingestion\"}";
-        assertEquals(jobStr, JSONObject.toJSONString(job));
+        assertJsonEquals(jobStr, JSONObject.toJSONString(job));
         System.out.println(JSONObject.toJSONString(job.getConfiguration()));
     }
 
@@ -312,7 +314,7 @@ public class JobTest {
         exportConfiguration.setSink(exportGeneralSink);
         job.setConfiguration(exportConfiguration);
         String jobStr = "{\"configuration\":{\"fromTime\":0,\"sink\":{\"batchMaxSize\":\"0\",\"timeZone\":\"Asia/Shanghai\",\"type\":\"RDS\",\"someInt\":33},\"toTime\":0},\"displayName\":\"test export\",\"name\":\"test-export-general\",\"schedule\":{\"interval\":\"2m\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Export\"}";
-        assertEquals(jobStr, JSONObject.toJSONString(job));
+        assertJsonEquals(jobStr, JSONObject.toJSONString(job));
         System.out.println(JSONObject.toJSONString(job.getConfiguration()));
     }
 }

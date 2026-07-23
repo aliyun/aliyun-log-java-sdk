@@ -1,19 +1,22 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Advanced {
     private boolean forceMulticonfig = false;
     private ArrayList<String> dirBlacklist = new ArrayList<String>();
     private ArrayList<String> fileNameBlacklist = new ArrayList<String>();
     private ArrayList<String> filePathBlacklist = new ArrayList<String>();
-    private JSONObject others = new JSONObject();
+    private Map<String, Object> others = new LinkedHashMap<String, Object>();
 
     public Advanced() {}
 
@@ -53,10 +56,11 @@ public class Advanced {
         this.filePathBlacklist = filePathBlacklist;
     }
 
-    public void setOthers(JSONObject others) { this.others = others; }
+    public void setOthers(Map<String, Object> others) { this.others = others; }
 
-    public JSONObject getOthers() { return others; }
+    public Map<String, Object> getOthers() { return others; }
 
+    @InternalApi
     public JSONObject toJsonObject() {
         JSONObject jsonObj = new JSONObject();
         jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_FORCEMULTICONFIG, this.forceMulticonfig);
@@ -79,6 +83,7 @@ public class Advanced {
         return jsonObj;
     }
 
+    @InternalApi
     public static Advanced fromJsonObject(JSONObject advanced) throws LogException {
         try {
             Advanced advObj = new Advanced();

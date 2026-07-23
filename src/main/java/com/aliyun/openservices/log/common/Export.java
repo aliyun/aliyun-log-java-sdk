@@ -1,9 +1,10 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Export extends ScheduledJob implements Serializable {
 
@@ -33,6 +34,7 @@ public class Export extends ScheduledJob implements Serializable {
         return scheduleId;
     }
 
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         scheduleId = JsonUtils.readOptionalString(jsonObject,"scheduleId","");

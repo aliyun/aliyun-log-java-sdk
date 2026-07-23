@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class EncryptConfig implements Serializable {
 
@@ -13,6 +14,7 @@ public class EncryptConfig implements Serializable {
     private String KMSMasterKeyID;
 
 
+    @InternalApi
     public static EncryptConfig FromJsonObject(JSONObject object) {
         String sseAlgorithm = object.getString("SSEAlgorithm");
         String kmsDataEncryption = object.getString("KMSDataEncryption");
@@ -25,6 +27,7 @@ public class EncryptConfig implements Serializable {
     }
 
 
+    @InternalApi
     public JSONObject ToJsonObject() {
         JSONObject encryptConf = new JSONObject();
         encryptConf.put("SSEAlgorithm", getSSEAlgorithm());

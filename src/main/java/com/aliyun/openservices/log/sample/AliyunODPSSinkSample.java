@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.sample;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.AliyunODPSSink;
 import com.aliyun.openservices.log.common.ExportConfiguration;
 import com.aliyun.openservices.log.common.ExportGeneralSink;

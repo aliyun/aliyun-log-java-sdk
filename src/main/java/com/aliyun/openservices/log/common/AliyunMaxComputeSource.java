@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class AliyunMaxComputeSource extends DataSource {
     private String accessKeyID;
@@ -100,6 +101,7 @@ public class AliyunMaxComputeSource extends DataSource {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         accessKeyID = JsonUtils.readOptionalString(jsonObject, "accessKeyID");

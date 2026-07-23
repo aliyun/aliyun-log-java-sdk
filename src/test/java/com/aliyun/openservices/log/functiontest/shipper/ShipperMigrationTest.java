@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.shipper;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.ShipperMigration;
 import com.aliyun.openservices.log.exception.LogException;

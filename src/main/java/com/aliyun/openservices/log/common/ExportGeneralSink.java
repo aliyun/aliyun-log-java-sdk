@@ -1,13 +1,12 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONType;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-@JSONType(serializer = ToGeneralSerializer.class)
 public class ExportGeneralSink extends DataSink {
 
     private Map<String, Object> fields = new HashMap<String, Object>();
@@ -33,6 +32,7 @@ public class ExportGeneralSink extends DataSink {
     }
 
     @Override
+    @InternalApi
     public void deserialize(JSONObject jsonObject) {
         super.deserialize(jsonObject);
         for (String field : jsonObject.keySet()) {

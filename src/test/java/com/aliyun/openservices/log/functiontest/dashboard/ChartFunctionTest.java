@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.dashboard;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.Chart;
 import com.aliyun.openservices.log.common.Dashboard;
 import com.aliyun.openservices.log.exception.LogException;

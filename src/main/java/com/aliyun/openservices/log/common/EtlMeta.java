@@ -1,10 +1,12 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class EtlMeta implements Serializable {
 
@@ -12,7 +14,7 @@ public class EtlMeta implements Serializable {
     private String metaName = null;
     private String metaKey = null;
     private String metaTag = null;
-    private JSONObject metaValue = null;
+    private Map<String, Object> metaValue = null;
     private long createTime; //for ListEtlMetaReponse, the field is not used when create/update etlMeta
     private long lastModifyTime; //for ListEtlMetaReponse, the field is not used when create/update etlMeta
     private boolean enable;
@@ -28,7 +30,7 @@ public class EtlMeta implements Serializable {
         this.enable = true;
     }
 
-    public EtlMeta(String metaName, String metaKey, String metaTag, JSONObject metaValue, boolean enable) {
+    public EtlMeta(String metaName, String metaKey, String metaTag, Map<String, Object> metaValue, boolean enable) {
         this.metaName = metaName;
         this.metaKey = metaKey;
         this.metaTag = metaTag;
@@ -54,7 +56,7 @@ public class EtlMeta implements Serializable {
         this.metaTag = metaTag;
     }
 
-    public void setMetaValue(JSONObject metaValue) {
+    public void setMetaValue(Map<String, Object> metaValue) {
         this.metaValue = metaValue;
     }
 
@@ -74,7 +76,7 @@ public class EtlMeta implements Serializable {
         return metaTag;
     }
 
-    public JSONObject getMetaValue() {
+    public Map<String, Object> getMetaValue() {
         return metaValue;
     }
 
@@ -90,6 +92,7 @@ public class EtlMeta implements Serializable {
         return lastModifyTime;
     }
 
+    @InternalApi
     public JSONObject toJsonObject() {
         JSONObject etlMetaJson = new JSONObject();
         etlMetaJson.put(Consts.ETL_META_NAME, this.metaName);
@@ -104,6 +107,7 @@ public class EtlMeta implements Serializable {
         return etlMetaJson;
     }
 
+    @InternalApi
     public void fromJsonObject(JSONObject etlMetaJson) throws LogException {
         try {
             this.metaName = etlMetaJson.getString(Consts.ETL_META_NAME);

@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
@@ -9,31 +9,31 @@ import java.util.List;
  */
 public class MetricRemoteWriteConfig {
 
-    @JSONField(name = "enable")
+    @SerializedName("enable")
     private boolean enable;
 
-    @JSONField(name = "history_interval")
+    @SerializedName("history_interval")
     private int historyInterval;
 
-    @JSONField(name = "future_interval")
+    @SerializedName("future_interval")
     private int futureInterval;
 
-    @JSONField(name = "replica_field")
+    @SerializedName("replica_field")
     private String replicaField;
 
-    @JSONField(name = "replica_timeout_seconds")
+    @SerializedName("replica_timeout_seconds")
     private int replicaTimeoutSeconds;
 
-    @JSONField(name = "shard_group_strategy_list")
+    @SerializedName("shard_group_strategy_list")
     private ShardGroupStrategyList shardGroupStrategyList;
 
-    @JSONField(name = "trim_same_labels")
+    @SerializedName("trim_same_labels")
     private boolean trimSameLabels;
 
-    @JSONField(name = "trim_empty_labels")
+    @SerializedName("trim_empty_labels")
     private boolean trimEmptyLabels;
 
-    @JSONField(name = "utf8_write_enable")
+    @SerializedName("utf8_write_enable")
     private boolean utf8WriteEnable;
 
     public int getHistoryInterval() {
@@ -110,13 +110,13 @@ public class MetricRemoteWriteConfig {
 
 
     public static class ShardGroupStrategyList {
-        @JSONField(name = "strategies")
+        @SerializedName("strategies")
         private List<ShardGroupStrategy> strategies;
 
-        @JSONField(name = "try_other_shard")
+        @SerializedName("try_other_shard")
         private boolean tryOtherShard;
 
-        @JSONField(name = "last_update_time")
+        @SerializedName("last_update_time")
         private int lastUpdateTime;
 
 
@@ -146,14 +146,14 @@ public class MetricRemoteWriteConfig {
     }
 
     public static class ShardGroupStrategy {
-        @JSONField(name = "metric_names")
+        @SerializedName("metric_names")
         private List<String> metricNames;
-        @JSONField(name = "hash_labels")
+        @SerializedName("hash_labels")
         private List<String> hashLabels;
-        @JSONField(name = "shard_group_count")
+        @SerializedName("shard_group_count")
         private int shardGroupCount;
 
-        @JSONField(name = "priority")
+        @SerializedName("priority")
         private int priority;
 
         public List<String> getMetricNames() {

@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class PluginLogConfigInputDetail extends CommonConfigInputDetail {
@@ -26,6 +27,7 @@ public class PluginLogConfigInputDetail extends CommonConfigInputDetail {
     }
 
     @Override
+    @InternalApi
     public JSONObject ToJsonObject() {
         JSONObject jsonObj = new JSONObject();
         CommonConfigToJsonObject(jsonObj);
@@ -38,6 +40,7 @@ public class PluginLogConfigInputDetail extends CommonConfigInputDetail {
     }
 
     @Override
+    @InternalApi
     public void FromJsonObject(JSONObject inputDetail) throws LogException {
         if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED)) {
             this.advanced = Advanced.fromJsonObject(inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED));

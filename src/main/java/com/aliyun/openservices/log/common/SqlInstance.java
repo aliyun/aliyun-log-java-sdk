@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class SqlInstance {
     String name;
@@ -37,6 +38,7 @@ public class SqlInstance {
     public SqlInstance(){
 
     }
+    @InternalApi
     public void fromJson(JSONObject object) throws LogException{
         try{
             name = object.getString("name");

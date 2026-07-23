@@ -1,11 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
 
 import java.lang.reflect.Type;
 
-public enum DataSourceType implements JSONSerializable {
+public enum DataSourceType {
     ALIYUN_OSS("AliyunOSS"),
     ALIYUN_BSS("AliyunBSS"),
     ALIYUN_MAX_COMPUTE("AliyunMaxCompute"),
@@ -37,8 +35,4 @@ public enum DataSourceType implements JSONSerializable {
         return name;
     }
 
-    @Override
-    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-        serializer.write(name);
-    }
 }

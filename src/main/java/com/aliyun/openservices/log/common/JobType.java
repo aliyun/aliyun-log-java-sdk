@@ -1,11 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
 
 import java.lang.reflect.Type;
 
-public enum JobType implements JSONSerializable {
+public enum JobType {
     ALERT("Alert"),
     REPORT("Report"),
     ETL("ETL"),
@@ -37,8 +35,4 @@ public enum JobType implements JSONSerializable {
         return null;
     }
 
-    @Override
-    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-        serializer.write(toString());
-    }
 }

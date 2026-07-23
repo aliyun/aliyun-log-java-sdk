@@ -1,12 +1,12 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author xizongzheng.xzz
  */
 public class MetricQueryCacheConfig {
-    @JSONField(name = "enable")
+    @SerializedName("enable")
     private boolean enable;
 
     public boolean isEnable() {

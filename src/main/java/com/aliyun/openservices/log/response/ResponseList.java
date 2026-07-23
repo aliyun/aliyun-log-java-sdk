@@ -5,10 +5,11 @@ import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.List;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public abstract class ResponseList<T> extends Response {
@@ -47,6 +48,7 @@ public abstract class ResponseList<T> extends Response {
 
     public abstract Unmarshaller<T> unmarshaller();
 
+    @InternalApi
     public void deserialize(JSONObject value, String requestId) throws LogException {
         try {
             count = value.getIntValue(Consts.CONST_COUNT);

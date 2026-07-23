@@ -6,9 +6,10 @@ import java.util.List;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The config of a machine group
@@ -122,6 +123,7 @@ public class MachineGroup implements Serializable {
         this.machineList = new ArrayList<String>(machineList);
     }
 
+    @InternalApi
     public void SetMachineList(JSONArray machineListJSONArray) {
         machineList = new ArrayList<String>();
         if (machineListJSONArray != null) {
@@ -182,6 +184,7 @@ public class MachineGroup implements Serializable {
         return ToRequestJson().toString();
     }
 
+    @InternalApi
     public JSONObject ToJsonObject() {
         JSONObject groupDict = ToRequestJson();
         JSONArray machineList = new JSONArray();
@@ -196,6 +199,7 @@ public class MachineGroup implements Serializable {
         return ToJsonObject().toString();
     }
 
+    @InternalApi
     public void FromJsonObject(JSONObject dict) throws LogException {
         try {
             String groupName = dict.getString("groupName");
