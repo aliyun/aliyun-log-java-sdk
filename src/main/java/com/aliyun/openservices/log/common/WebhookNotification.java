@@ -3,7 +3,6 @@ package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Collections;

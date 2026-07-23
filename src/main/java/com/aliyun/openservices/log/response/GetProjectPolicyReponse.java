@@ -1,7 +1,5 @@
 package com.aliyun.openservices.log.response;
 
-import com.aliyun.openservices.log.internal.json.JSONException;
-import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.Map;

@@ -1,6 +1,5 @@
 package com.aliyun.openservices.log.common;
 
-import com.aliyun.openservices.log.internal.json.JSON;
 import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
