@@ -1754,6 +1754,34 @@ public interface LogService {
 			throws LogException;
 
 	/**
+	 * Enable Store Modify for an existing logstore.
+	 * A successful response means that the enable request was accepted; it does
+	 * not mean that the asynchronous conversion has completed.
+	 *
+	 * @param project
+	 *            the project name
+	 * @param logStore
+	 *            the logstore name
+	 * @return an empty response containing the response headers
+	 * @throws LogException
+	 *             if any error happens when enabling Store Modify
+	 */
+	VoidResponse enableLogStoreModify(String project, String logStore) throws LogException;
+
+	/**
+	 * Enable Store Modify for an existing logstore.
+	 * A successful response means that the enable request was accepted; it does
+	 * not mean that the asynchronous conversion has completed.
+	 *
+	 * @param request
+	 *            the enable logstore modification request
+	 * @return an empty response containing the response headers
+	 * @throws LogException
+	 *             if any error happens when enabling Store Modify
+	 */
+	VoidResponse enableLogStoreModify(EnableLogStoreModifyRequest request) throws LogException;
+
+	/**
 	 * Delete the logstore
 	 *
 	 * @param project

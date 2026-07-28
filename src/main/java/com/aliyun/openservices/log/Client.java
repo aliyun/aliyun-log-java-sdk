@@ -970,6 +970,29 @@ public class Client implements LogService {
         return summaries;
     }
 
+	@Override
+	public VoidResponse enableLogStoreModify(String project, String logStore) throws LogException {
+		return enableLogStoreModify(new EnableLogStoreModifyRequest(project, logStore));
+	}
+
+	@Override
+	public VoidResponse enableLogStoreModify(EnableLogStoreModifyRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		String logStore = request.getLogStore();
+		CodingUtils.validateProject(project);
+		CodingUtils.validateLogstore(logStore);
+
+		byte[] body = encodeToUtf8(request.getRequestBody());
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+		headParameter.put(Consts.CONST_X_SLS_BODYRAWSIZE, String.valueOf(body.length));
+		String resourceUri = "/logstores/" + logStore + "/modification";
+		ResponseMessage message = SendData(project, HttpMethod.PUT,
+				resourceUri, request.GetAllParams(), headParameter, body);
+		return new VoidResponse(message.getHeaders());
+	}
+
     @Override
     public VoidResponse putLogStoreMultimodalConfiguration(PutLogStoreMultimodalConfigurationRequest request) throws LogException {
         CodingUtils.assertParameterNotNull(request, "request");
