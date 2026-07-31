@@ -3258,8 +3258,6 @@ public class Client implements LogService {
 		ResponseMessage response = SendData(project, HttpMethod.PUT,
 				resourceUri, urlParameter, headParameter);
 		Map<String, String> resHeaders = response.getHeaders();
-		String requestId = GetRequestId(resHeaders);
-		JSONObject object = parseResponseBody(response, requestId);
 		UpdateSubStoreTTLResponse updateSubStoreTTLResponse = new UpdateSubStoreTTLResponse(resHeaders);
 		return updateSubStoreTTLResponse;
 	}
