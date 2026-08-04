@@ -10,6 +10,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import com.aliyun.openservices.log.common.Parameter;
+
 /**
  * Behavior tests for the internal gson-backed shim. The expected values below
  * were cross-checked against fastjson 1.2.83 (the legacy implementation)
@@ -210,6 +212,16 @@ public class ShimBehaviorTest {
             throw new AssertionError("should have thrown");
         } catch (JSONException expected) {
             // ok
+        }
+    }
+
+    @Test
+    public void testTypedParseFailureUsesShimException() {
+        try {
+            JSONObject.parseObject("{\"externalStoreCsvSize\":\"not-a-number\"}", Parameter.class);
+            throw new AssertionError("should have thrown");
+        } catch (JSONException expected) {
+            assertTrue(expected.getCause() instanceof com.google.gson.JsonParseException);
         }
     }
 

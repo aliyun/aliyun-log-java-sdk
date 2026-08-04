@@ -63,10 +63,40 @@ public final class GsonHolder {
      * Legacy ToGeneralSerializer behavior: toString() returns a JSON document
      * which must be embedded as raw JSON, not as a quoted string.
      */
-    private static final JsonSerializer<Object> RAW_JSON_SERIALIZER = new JsonSerializer<Object>() {
+    private static final TypeAdapterFactory RAW_JSON_FACTORY = new TypeAdapterFactory() {
         @Override
-        public JsonElement serialize(Object src, Type typeOfSrc, JsonSerializationContext context) {
-            return src == null ? JsonNull.INSTANCE : JsonTree.parse(src.toString());
+        public <T> TypeAdapter<T> create(final Gson gson, final TypeToken<T> type) {
+            Class<?> rawType = type.getRawType();
+            if (rawType != GeneralJobConfiguration.class
+                    && rawType != IngestionGeneralSource.class
+                    && rawType != ExportGeneralSink.class) {
+                return null;
+            }
+            final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
+            final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+            return new TypeAdapter<T>() {
+                @Override
+                public void write(JsonWriter out, T value) throws IOException {
+                    if (value == null) {
+                        out.nullValue();
+                        return;
+                    }
+                    String rawJson = value.toString();
+                    JsonElement tree = rawJson == null ? JsonNull.INSTANCE : JsonTree.parse(rawJson);
+                    if (tree.isJsonNull()) {
+                        // The value object itself is non-null, so preserve the legacy
+                        // serializer's explicit null even when Gson omits null fields.
+                        out.jsonValue("null");
+                    } else {
+                        elementAdapter.write(out, tree);
+                    }
+                }
+
+                @Override
+                public T read(JsonReader in) throws IOException {
+                    return delegate.read(in);
+                }
+            };
         }
     };
 
@@ -136,6 +166,7 @@ public final class GsonHolder {
             .disableHtmlEscaping()
             .registerTypeAdapterFactory(ANONYMOUS_CLASS_FACTORY)
             .registerTypeAdapterFactory(SCHEDULED_SQL_PARAMS_FACTORY)
+            .registerTypeAdapterFactory(RAW_JSON_FACTORY)
             .setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
             .registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
                 @Override
@@ -163,9 +194,6 @@ public final class GsonHolder {
             .registerTypeAdapter(AlertConfiguration.JoinType.class, TO_STRING_SERIALIZER)
             .registerTypeAdapter(AlertConfiguration.GroupType.class, TO_STRING_SERIALIZER)
             .registerTypeAdapter(AlertConfiguration.StoreType.class, TO_STRING_SERIALIZER)
-            .registerTypeAdapter(GeneralJobConfiguration.class, RAW_JSON_SERIALIZER)
-            .registerTypeAdapter(IngestionGeneralSource.class, RAW_JSON_SERIALIZER)
-            .registerTypeAdapter(ExportGeneralSink.class, RAW_JSON_SERIALIZER)
             .create();
 
     private GsonHolder() {

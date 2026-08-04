@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.aliyun.openservices.log.common.AlertConfiguration;
+import com.aliyun.openservices.log.common.GeneralJobConfiguration;
 import com.aliyun.openservices.log.common.Job;
 import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.common.JobScheduleType;
@@ -28,6 +29,18 @@ import static com.aliyun.openservices.log.internal.json.JsonAsserts.assertJsonEq
  * strings below were captured while fastjson was still the serializer.
  */
 public class SerializationGoldenTest {
+
+    @Test
+    public void testNullGeneralJobConfigurationGolden() {
+        assertJsonEquals("null", JsonUtils.serialize(new GeneralJobConfiguration()));
+
+        Job job = new Job();
+        job.setName("general-job");
+        job.setType(JobType.DOWN_SAMPLING);
+        job.setConfiguration(new GeneralJobConfiguration());
+        assertJsonEquals("{\"name\":\"general-job\",\"type\":\"DownSampling\",\"configuration\":null}",
+                JsonUtils.serialize(job));
+    }
 
     @Test
     public void testAlertJobGolden() {

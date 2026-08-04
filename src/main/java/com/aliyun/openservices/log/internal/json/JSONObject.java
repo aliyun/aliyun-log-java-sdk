@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import com.aliyun.openservices.log.annotation.InternalApi;
+import com.google.gson.JsonParseException;
 
 /**
  * Internal use only. Do not use this class in application code.
@@ -48,7 +49,11 @@ public class JSONObject extends LinkedHashMap<String, Object> {
     }
 
     public static <T> T parseObject(String text, Class<T> clazz) {
-        return GsonHolder.gson().fromJson(text, clazz);
+        try {
+            return GsonHolder.gson().fromJson(text, clazz);
+        } catch (JsonParseException e) {
+            throw new JSONException("Failed to parse JSON: " + e.getMessage(), e);
+        }
     }
 
     public static Object parse(String text) {

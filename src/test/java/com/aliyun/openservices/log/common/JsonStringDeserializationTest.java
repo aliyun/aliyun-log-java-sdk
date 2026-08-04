@@ -185,4 +185,13 @@ public class JsonStringDeserializationTest {
     public void malformedJsonIsReportedAsLogException() throws Exception {
         new ExternalStore().FromJsonString("not-json");
     }
+
+    @Test(expected = LogException.class)
+    public void illTypedExternalStoreIsReportedAsLogException() throws Exception {
+        new ExternalStore().FromJsonString("{"
+                + "\"externalStoreName\":\"csv-store\","
+                + "\"storeType\":\"csv\","
+                + "\"parameter\":{\"externalStoreCsvSize\":\"not-a-number\"}"
+                + "}");
+    }
 }
