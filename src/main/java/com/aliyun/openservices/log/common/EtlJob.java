@@ -151,6 +151,14 @@ public class EtlJob implements Serializable {
         return toJsonObject(withJobName, withSourceConfig).toString();
     }
 
+    public void FromJsonString(String etlJobString) throws LogException {
+        try {
+            fromJsonObject(JSONObject.parseObject(etlJobString));
+        } catch (JSONException e) {
+            throw new LogException("ParseEtlJobFail", e.getMessage(), e, "");
+        }
+    }
+
     @InternalApi
     public void fromJsonObject(JSONObject etljobJson) throws LogException {
         try {

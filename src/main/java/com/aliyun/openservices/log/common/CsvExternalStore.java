@@ -20,6 +20,10 @@ public class CsvExternalStore extends ExternalStore {
     private static final long MAX_FILE_SIZE_COMPRESSED = 10L * 1024 * 1024 - 10 * 1024;
     private static final String STORE_TYPE_CSV = "csv";
 
+    public CsvExternalStore() {
+        super();
+    }
+
     /**
      * @param externalStoreName external store name
      * @param csvFileContent    csv file content, eg: "Name,Age,City\nJohn

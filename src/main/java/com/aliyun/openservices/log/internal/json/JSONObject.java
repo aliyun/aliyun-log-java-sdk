@@ -9,10 +9,9 @@ import com.aliyun.openservices.log.annotation.InternalApi;
  * Internal use only. Do not use this class in application code.
  * <p>
  * A plain-Java JSON object (insertion-ordered map) backed by gson for
- * parsing/serialization, providing the lenient accessor semantics the SDK
- * historically relied on: absent keys yield {@code null} (or the primitive
- * default for {@code getXxxValue}), and scalar values are coerced across
- * String/Number/Boolean.
+ * parsing/serialization. Accessor names and missing-value defaults follow the
+ * legacy SDK behavior, while a few non-standard JSON forms and scalar
+ * coercions are intentionally rejected.
  */
 @InternalApi
 public class JSONObject extends LinkedHashMap<String, Object> {

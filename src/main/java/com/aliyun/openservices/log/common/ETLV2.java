@@ -1,5 +1,7 @@
 package com.aliyun.openservices.log.common;
 
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
@@ -45,6 +47,14 @@ public class ETLV2 extends AbstractJob implements Serializable {
 
     public String getScheduleId() {
         return scheduleId;
+    }
+
+    public void FromJsonString(String etlString) throws LogException {
+        try {
+            deserialize(JSONObject.parseObject(etlString));
+        } catch (JSONException e) {
+            throw new LogException("FailToGenerateETLV2", e.getMessage(), e, "");
+        }
     }
 
     @Override

@@ -216,8 +216,9 @@ Values inside the maps are pure JDK types only: `String`, `Integer`, `Long`, `Bi
 | `JSONException` | `extends RuntimeException` |
 | `GsonHolder` | `static Gson gson()` (internal) |
 
-Accessor semantics mirror fastjson: missing key → `getString` returns `null`, `getIntValue`
-returns `0`; scalars convert loosely between String/Number/Boolean.
+Accessor names and missing-value defaults mirror fastjson: a missing key makes `getString`
+return `null` and `getIntValue` return `0`. Common String/Number/Boolean conversions are
+retained, but the shim intentionally rejects several legacy fastjson coercions; see §9.
 
 ---
 
@@ -298,9 +299,10 @@ in later versions).
 |---|---|---|
 | JSON key order in serialized output | alphabetical (getter order) | field declaration order — semantically equivalent; byte-for-byte comparisons will break |
 | `GetLogs` → `LogItem.GetLogContents()` order | HashMap hash order (accidental) | server response order — positional access like `get(0)` for `__topic__` will break |
-| Number parsing | Integer/Long/BigInteger/BigDecimal by magnitude | identical (aligned deliberately) |
+| JSON numeric literal parsing | Integer/Long/BigInteger/BigDecimal by magnitude | identical (aligned deliberately) |
 | HTML characters `< > & =` | not escaped | not escaped (gson HTML escaping disabled) |
-| Invalid JSON | rejected | rejected (strictness aligned); unescaped control chars inside quoted strings still accepted |
+| JSON syntax strictness | Accepted legacy extensions such as single-quoted strings/keys, unquoted object keys, and trailing commas; empty/whitespace-only input returned `null` | Rejects those extensions and empty/whitespace-only input. Use standard JSON with double-quoted strings and keys and no trailing commas. Unescaped control characters inside quoted strings remain accepted for compatibility |
+| Scalar accessor coercion | Boolean accessors accepted string values `Y`/`N`/`T`/`F` in addition to `true`/`false`/`1`/`0`; integer accessors accepted decimal-form strings such as `"1.0"` | Boolean accessors accept `true`/`false`/`1`/`0` but reject `Y`/`N`/`T`/`F`; integer accessors reject decimal-form strings such as `"1.0"` (a numeric JSON value `1.0` can still be converted through `Number`) |
 | Parse error messages | fastjson wording | gson wording — do not match on message text |
 | `Date` serialization | Unix seconds | Unix seconds |
 | `null` fields | omitted | omitted |

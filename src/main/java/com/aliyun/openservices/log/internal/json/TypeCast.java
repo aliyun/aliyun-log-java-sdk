@@ -4,9 +4,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * Internal use only. Lenient scalar coercions matching the legacy fastjson
- * accessor behavior ("" and "null" strings coerce to null, booleans map to
- * 1/0, numeric strings are parsed).
+ * Internal use only. Implements the common scalar coercions used by the SDK
+ * ("" and "null" strings coerce to null, booleans map to 1/0, and
+ * integer-form numeric strings are parsed). Legacy shorthand such as
+ * Y/N/T/F booleans and decimal-form integer strings is intentionally rejected.
  */
 final class TypeCast {
 

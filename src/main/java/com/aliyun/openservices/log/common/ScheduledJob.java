@@ -1,6 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.JsonUtils;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.annotation.InternalApi;
 
@@ -42,6 +44,14 @@ public abstract class ScheduledJob extends AbstractJob {
 
     public void setSchedule(JobSchedule schedule) {
         this.schedule = schedule;
+    }
+
+    public void FromJsonString(String jobString) throws LogException {
+        try {
+            deserialize(JSONObject.parseObject(jobString));
+        } catch (JSONException e) {
+            throw new LogException("FailToGenerateJob", e.getMessage(), e, "");
+        }
     }
 
     @Override

@@ -74,12 +74,13 @@ String json = index.ToJsonString();          // 各 model 的 String 入口均�
 // 用你自己选择的 JSON 库解析 json
 ```
 
-**最小改法**（仅改 import）：shim 类型的取值方法与 fastjson 同名同语义。
+**最小改法**（仅改 import）：shim 类型保留 fastjson 的取值方法名和常用缺省行为；
+少数宽松语法及标量转换已收紧，详见 §5。
 
 ```java
 // 0.7.0 最小修改
 com.aliyun.openservices.log.internal.json.JSONObject obj = index.ToJsonObject();
-String ttl = obj.getString("ttl");           // 语义与 fastjson 一致
+String ttl = obj.getString("ttl");           // 此类常规取值语义不变
 ```
 
 注意：`internal` 包仅供 SDK 内部使用，不承诺跨版本兼容；shim 类型
@@ -169,7 +170,7 @@ try {
 | 你做了什么 | 需要的修改 |
 |---|---|
 | 自定义 `ShipperConfig` 实现（`GetJsonObj()` / `FromJsonObj(...)`） | 方法名不变，把 import 从 `com.alibaba.fastjson.JSONObject` 改为 `com.aliyun.openservices.log.internal.json.JSONObject`，构造逻辑基本不变（shim 是 `Map` 子类，`put` 可用） |
-| 自定义 `JobConfiguration` 子类（`deserialize(JSONObject)`） | 同上，改 import；取值方法（`getString` 等）语义一致 |
+| 自定义 `JobConfiguration` 子类（`deserialize(JSONObject)`） | 同上，改 import；取值方法名和常用缺省行为不变，但需检查 §5 所列的严格化差异 |
 | 实现 `Unmarshaller<T>` | `unmarshal(JSONArray, int)` 参数改为 shim `JSONArray` |
 | 继承 `Client` 并重写/调用 `Extract*` | 参数类型改为 shim 类型；`ExtractLogtailProfile` 已由 public 降为 protected，外部调用请改走 `GetLogtailProfile(...)` 公开 API |
 | 把 13 个 enum 当作 fastjson `JSONSerializable` 使用 | 该接口已移除。序列化输出不变（仍是 `toString()` 值）；自行序列化时直接用 `enumValue.toString()` |
@@ -213,9 +214,10 @@ for (LogContent c : item.GetLogContents()) {
 |---|---|
 | **JSON key 顺序** | fastjson 按 getter 字母序输出，gson 按字段声明序输出。JSON 语义等价，但**逐字符对比 JSON 字符串的代码/测试需要改为语义对比**（见 §4.7）。 |
 | **GetLogs 结果字段顺序** | `LogItem.GetLogContents()` 的顺序从 fastjson 的 HashMap 哈希序变为服务端返回的原始顺序。**依赖固定下标取字段的代码需改为按 key 查找**（见 §4.8）。 |
-| 数字类型 | 与 fastjson 对齐：整数按大小解析为 `Integer` / `Long` / `BigInteger`，小数为 `BigDecimal`，序列化保持字面量不变（`30` 不会变 `30.0`）。 |
+| JSON 数字字面量 | 与 fastjson 对齐：整数按大小解析为 `Integer` / `Long` / `BigInteger`，小数为 `BigDecimal`，序列化保持字面量不变（`30` 不会变 `30.0`）。 |
 | 字符转义 | 已关闭 gson 的 HTML 转义，`< > & =` 与中文均原样输出，与 fastjson 一致。 |
-| 解析严格性 | 与 fastjson 对齐拒绝非法 JSON；字符串内的未转义控制字符仍然接受（fastjson 遗留行为）。 |
+| **JSON 语法严格化** | fastjson 曾接受单引号字符串/键、未加引号的对象键、尾随逗号，并把空白或空输入解析为 `null`；0.7.0 均会拒绝。输入必须使用标准 JSON：字符串和键使用双引号，且不得有尾随逗号。为兼容历史行为，字符串内未转义的控制字符仍然接受。 |
+| **标量取值转换严格化** | fastjson 的布尔取值方法除 `true`/`false`/`1`/`0` 外还接受字符串 `Y`/`N`/`T`/`F`，整数取值方法也接受 `"1.0"` 这类小数字符串；0.7.0 不再接受这些形式。JSON 数值 `1.0` 本身仍可按 `Number` 转为整数，变化只针对字符串值。 |
 | 错误消息 | 解析失败的异常消息文案来自 gson，与 0.6.x 不同；请勿依赖异常消息内容做逻辑判断。 |
 | `Date` | 仍序列化为 Unix 时间戳（秒）。 |
 | null 字段 | 仍不输出（与 fastjson 默认一致）。 |

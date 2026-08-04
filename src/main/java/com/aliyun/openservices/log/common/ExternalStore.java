@@ -22,6 +22,14 @@ public class ExternalStore implements Serializable {
         this.parameter = parameter;
     }
 
+    public void FromJsonString(String externalStoreString) throws LogException {
+        try {
+            fromJson(JSONObject.parseObject(externalStoreString));
+        } catch (JSONException e) {
+            throw new LogException("FailToGenerateExternalStore", e.getMessage(), e, "");
+        }
+    }
+
     @InternalApi
     public ExternalStore(JSONObject object) throws LogException {
         fromJson(object);

@@ -1,5 +1,7 @@
 package com.aliyun.openservices.log.common;
 
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
@@ -39,6 +41,14 @@ public class RebuildIndex extends AbstractJob implements Serializable {
 
     public String getExecutionDetails() {
         return executionDetails;
+    }
+
+    public void FromJsonString(String rebuildIndexString) throws LogException {
+        try {
+            deserialize(JSONObject.parseObject(rebuildIndexString));
+        } catch (JSONException e) {
+            throw new LogException("FailToGenerateRebuildIndex", e.getMessage(), e, "");
+        }
     }
 
     @Override

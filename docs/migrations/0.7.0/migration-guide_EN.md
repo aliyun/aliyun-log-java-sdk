@@ -79,12 +79,14 @@ String json = index.ToJsonString();          // String entry points are all pres
 // parse `json` with whatever JSON library you prefer
 ```
 
-**Minimal change** (imports only): the shim type mirrors fastjson accessor names and semantics.
+**Minimal change** (imports only): the shim preserves fastjson accessor names and common
+missing-value behavior. A few lenient syntax and scalar-coercion cases are intentionally
+stricter; see §5.
 
 ```java
 // 0.7.0 minimal
 com.aliyun.openservices.log.internal.json.JSONObject obj = index.ToJsonObject();
-String ttl = obj.getString("ttl");           // same semantics as fastjson
+String ttl = obj.getString("ttl");           // unchanged for ordinary values like this
 ```
 
 Note: the `internal` package is for SDK-internal use and carries no cross-version compatibility
@@ -175,7 +177,7 @@ try {
 | What you did | Required change |
 |---|---|
 | Custom `ShipperConfig` implementation (`GetJsonObj()` / `FromJsonObj(...)`) | Method names unchanged; switch imports from `com.alibaba.fastjson.JSONObject` to `com.aliyun.openservices.log.internal.json.JSONObject`. Construction logic mostly carries over (the shim is a `Map` subclass; `put` works). |
-| Custom `JobConfiguration` subclass (`deserialize(JSONObject)`) | Same as above — switch imports; accessors (`getString`, …) keep fastjson semantics. |
+| Custom `JobConfiguration` subclass (`deserialize(JSONObject)`) | Same as above — switch imports; accessor names and common missing-value behavior are unchanged, but review the stricter cases in §5. |
 | `Unmarshaller<T>` implementation | `unmarshal(JSONArray, int)` parameter is now the shim `JSONArray`. |
 | Subclassing `Client` and overriding/calling `Extract*` | Parameter types are now shim types. `ExtractLogtailProfile` changed from public to protected — external callers should use the public `GetLogtailProfile(...)` API instead. |
 | Using the 13 enums as fastjson `JSONSerializable` | The interface is gone. Serialized output is unchanged (still the `toString()` value); when serializing yourself, use `enumValue.toString()`. |
@@ -222,9 +224,10 @@ following differences are known and intentional (full table in
 |---|---|
 | **JSON key order** | fastjson: alphabetical getter order; gson: field declaration order. Semantically equivalent — **byte-for-byte JSON comparisons must switch to semantic comparison** (§4.7). |
 | **GetLogs field order** | `LogItem.GetLogContents()` now preserves server response order instead of HashMap hash order. **Positional access must switch to key lookup** (§4.8). |
-| Number types | Aligned with fastjson: integers parse to `Integer` / `Long` / `BigInteger` by magnitude, decimals to `BigDecimal`; literals round-trip unchanged (`30` never becomes `30.0`). |
+| JSON numeric literals | Aligned with fastjson: integers parse to `Integer` / `Long` / `BigInteger` by magnitude, decimals to `BigDecimal`; literals round-trip unchanged (`30` never becomes `30.0`). |
 | Character escaping | gson HTML escaping is disabled; `< > & =` and CJK characters are emitted verbatim, same as fastjson. |
-| Parse strictness | Invalid JSON is rejected, aligned with fastjson; unescaped control characters inside quoted strings are still accepted (fastjson legacy behavior). |
+| **Stricter JSON syntax** | fastjson accepted single-quoted strings/keys, unquoted object keys, trailing commas, and returned `null` for empty or whitespace-only input. 0.7.0 rejects all of these. Input must use standard JSON with double-quoted strings and keys and no trailing commas. Unescaped control characters inside quoted strings remain accepted for compatibility. |
+| **Stricter scalar accessors** | fastjson boolean accessors accepted string values `Y`/`N`/`T`/`F` in addition to `true`/`false`/`1`/`0`, and integer accessors accepted decimal-form strings such as `"1.0"`. 0.7.0 rejects those extra forms. A numeric JSON value `1.0` can still be converted through `Number`; only the string form changed. |
 | Error messages | Parse-failure messages now come from gson and differ from 0.6.x. Never branch on exception message text. |
 | `Date` | Still serialized as Unix timestamp (seconds). |
 | `null` fields | Still omitted from output (fastjson-compatible default). |

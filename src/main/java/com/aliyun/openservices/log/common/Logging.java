@@ -1,7 +1,9 @@
 package com.aliyun.openservices.log.common;
 
+import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.util.Args;
 import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
@@ -35,6 +37,14 @@ public class Logging implements Serializable {
     public void setLoggingDetails(List<LoggingDetail> loggingDetails) {
         Args.notNullOrEmpty(loggingDetails, "loggingDetails");
         this.loggingDetails = new ArrayList<LoggingDetail>(loggingDetails);
+    }
+
+    public static Logging FromJsonString(String loggingString) throws LogException {
+        try {
+            return unmarshal(JSONObject.parseObject(loggingString));
+        } catch (JSONException | IllegalArgumentException e) {
+            throw new LogException("FailToGenerateLogging", e.getMessage(), e, "");
+        }
     }
 
     @InternalApi

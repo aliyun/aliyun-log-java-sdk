@@ -1,6 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Utils;
 import com.aliyun.openservices.log.internal.json.JSONObject;
@@ -178,6 +180,14 @@ public class Job implements Serializable {
                 return new JobDownSamplingConfiguration();
             default:
                 return new GeneralJobConfiguration();
+        }
+    }
+
+    public void FromJsonString(String jobString) throws LogException {
+        try {
+            deserialize(JSONObject.parseObject(jobString));
+        } catch (JSONException e) {
+            throw new LogException("FailToGenerateJob", e.getMessage(), e, "");
         }
     }
 

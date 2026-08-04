@@ -29,7 +29,7 @@ final class JsonTree {
             JsonReader reader = new JsonReader(new StringReader(text));
             reader.setStrictness(Strictness.LEGACY_STRICT);
             if (reader.peek() == JsonToken.END_DOCUMENT) {
-                // fastjson returned null for empty input
+                // Defensive handling for a reader that reports document end before a value.
                 return JsonNull.INSTANCE;
             }
             // Not JsonParser.parseReader: it forces LENIENT and would accept garbage
