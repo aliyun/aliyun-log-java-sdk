@@ -1,9 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class AuditJob extends ScheduledJob implements Serializable {
 
@@ -28,13 +28,16 @@ public class AuditJob extends ScheduledJob implements Serializable {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
-        super.deserialize(value);
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
+        super.fromJsonObject(value);
         configuration = new AuditJobConfiguration();
-        configuration.deserialize(value.getJSONObject("configuration"));
+        configuration.fromJsonObject(value.getJSONObject("configuration"));
     }
 
-    public String toString(){
+    @Override
+    @InternalApi
+    public JSONObject toJsonObject() {
         JSONObject value = new JSONObject();
         value.put("name", getName());
         value.put("type", getType().toString());
@@ -44,6 +47,6 @@ public class AuditJob extends ScheduledJob implements Serializable {
         scheduleJson.put("type", getSchedule().getType().toString());
         value.put("schedule", scheduleJson);
         value.put("configuration", this.configuration.toJsonObject());
-        return value.toString();
+        return value;
     }
 }

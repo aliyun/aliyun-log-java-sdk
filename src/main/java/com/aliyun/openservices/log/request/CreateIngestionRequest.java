@@ -25,6 +25,10 @@ public class CreateIngestionRequest extends JobRequest {
         return Consts.JOB_URI;
     }
 
+    public Ingestion getIngestion() {
+        return ingestion;
+    }
+
     @Override
     public Object getBody() {
         return ingestion;

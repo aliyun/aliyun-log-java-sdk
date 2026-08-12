@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Log2MetricParameters extends ScheduledSQLBaseParameters {
     private String timeKey;
@@ -13,8 +14,21 @@ public class Log2MetricParameters extends ScheduledSQLBaseParameters {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
-        super.deserialize(value);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        value.put("timeKey", timeKey);
+        value.put("metricKeys", metricKeys);
+        value.put("labelKeys", labelKeys);
+        value.put("hashLabels", hashLabels);
+        value.put("addLabels", addLabels);
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
+        super.fromJsonObject(value);
         timeKey = value.getString("timeKey");
         metricKeys = value.getString("metricKeys");
         labelKeys = value.getString("labelKeys");

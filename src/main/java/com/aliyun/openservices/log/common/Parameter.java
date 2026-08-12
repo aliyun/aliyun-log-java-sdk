@@ -1,15 +1,15 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.List;
 
 public class Parameter implements Serializable {
     //rds-vpc
-    @JSONField(name = "vpc-id")
+    @SerializedName("vpc-id")
     private String vpcId;
-    @JSONField(name = "instance-id")
+    @SerializedName("instance-id")
     private String instanceId;
     private String host;
     private String port;
@@ -17,7 +17,7 @@ public class Parameter implements Serializable {
     private String username;
 
     private String password;
-    @JSONField(name = "db")
+    @SerializedName("db")
     private String database;
 
     private String region;

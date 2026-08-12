@@ -1,9 +1,11 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 import org.junit.Test;
+
+import static com.aliyun.openservices.log.internal.json.JsonAsserts.assertJsonEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +17,7 @@ import static org.junit.Assert.assertNull;
 public class JobTest {
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws Exception {
         Job job = new Job();
         job.setName("alertTest");
         job.setState(JobState.ENABLED);
@@ -47,8 +49,8 @@ public class JobTest {
         configuration.setDashboard("dashboardtest");
         job.setConfiguration(configuration);
 
-        String body = JsonUtils.serialize(job);
-        assertEquals(body, "{\"configuration\":{\"autoAnnotation\":false,\"condition\":\"ID > 100\",\"dashboard\":\"dashboardtest\",\"noDataFire\":false,\"noDataSeverity\":6,\"notificationList\":[{\"content\":\"messagetest\",\"mobileList\":[\"86-13738162867\"],\"type\":\"SMS\"}],\"notifyThreshold\":1,\"queryList\":[{\"chartTitle\":\"chart1\",\"end\":\"now\",\"logStore\":\"logstore-test\",\"query\":\"*\",\"start\":\"-60s\",\"timeSpanType\":\"Custom\"}],\"sendRecoveryMessage\":false,\"sendResolved\":false,\"threshold\":1},\"name\":\"alertTest\",\"schedule\":{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Alert\"}");
+        String body = job.toJsonString();
+        assertJsonEquals(body, "{\"configuration\":{\"autoAnnotation\":false,\"condition\":\"ID > 100\",\"dashboard\":\"dashboardtest\",\"noDataFire\":false,\"noDataSeverity\":6,\"notificationList\":[{\"content\":\"messagetest\",\"mobileList\":[\"86-13738162867\"],\"type\":\"SMS\"}],\"notifyThreshold\":1,\"queryList\":[{\"chartTitle\":\"chart1\",\"end\":\"now\",\"logStore\":\"logstore-test\",\"query\":\"*\",\"start\":\"-60s\",\"timeSpanType\":\"Custom\"}],\"sendRecoveryMessage\":false,\"sendResolved\":false,\"threshold\":1},\"name\":\"alertTest\",\"schedule\":{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Alert\"}");
     }
 
     @Test
@@ -60,7 +62,7 @@ public class JobTest {
                 "\"Custom\"}]},\"name\":\"alertTest\",\"schedule\":{\"interval\":\"60s\"," +
                 "\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Alert\",\"createTime\":1542763714,\"lastModifiedTime\":1542763714}";
         Job job = new Job();
-        job.deserialize(JSONObject.parseObject(body));
+        job.fromJsonObject(JSONObject.parseObject(body));
 
         assertEquals("alertTest", job.getName());
         assertNull(job.getDescription());
@@ -96,13 +98,14 @@ public class JobTest {
     }
 
     @Test
-    public void testScheduleSerializeAndDeserialize() {
+    public void testScheduleSerializeAndDeserialize() throws Exception {
         JobSchedule schedule = new JobSchedule();
         schedule.setType(JobScheduleType.FIXED_RATE);
         schedule.setInterval("60s");
-        assertEquals("{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"}", JsonUtils.serialize(schedule));
+        assertJsonEquals("{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"}",
+                schedule.toJsonString());
         JobSchedule schedule1 = new JobSchedule();
-        schedule1.deserialize(JSONObject.parseObject("{\"interval\":\"60s\",\"type\":\"FixedRate\"}"));
+        schedule1.fromJsonObject(JSONObject.parseObject("{\"interval\":\"60s\",\"type\":\"FixedRate\"}"));
         assertEquals("60s", schedule1.getInterval());
         assertEquals(JobScheduleType.FIXED_RATE, schedule1.getType());
     }
@@ -129,12 +132,12 @@ public class JobTest {
                 "\"type\": \"Ingestion\"\n" +
                 "}";
         Job job = new Job();
-        job.deserialize(JSONObject.parseObject(body));
+        job.fromJsonObject(JSONObject.parseObject(body));
         assertEquals(JobType.INGESTION, job.getType());
     }
 
     @Test
-    public void testDeserializeIngestionWithGeneralSource() {
+    public void testDeserializeIngestionWithGeneralSource() throws Exception {
         String body = "{\n" +
                 "  \"configuration\": {\n" +
                 "    \"logstore\": \"rds-data\",\n" +
@@ -175,37 +178,37 @@ public class JobTest {
                 "  \"version\": \"v2.0\"\n" +
                 "}";
         Job job = new Job();
-        job.deserialize(JSONObject.parseObject(body));
+        job.fromJsonObject(JSONObject.parseObject(body));
         assertEquals(JobType.INGESTION, job.getType());
         IngestionConfiguration ingestionConfiguration = (IngestionConfiguration) job.getConfiguration();
         DataSource dataSource = ingestionConfiguration.getSource();
         assertEquals(dataSource.type, DataSourceType.GENERAL);
         IngestionGeneralSource ingestionGeneralSource = (IngestionGeneralSource) dataSource;
-        System.out.println(JSONObject.toJSONString(ingestionConfiguration));
-        System.out.println(ingestionGeneralSource.toString());
-        System.out.println(dataSource.toString());
+        System.out.println(ingestionConfiguration.toJsonObject());
+        System.out.println(ingestionGeneralSource.toJsonString());
+        System.out.println(dataSource.toJsonString());
         System.out.println(ingestionGeneralSource.get("port"));
         System.out.println(ingestionGeneralSource.get("sql"));
 
         Ingestion ingestion = new Ingestion();
-        ingestion.deserialize(JSONObject.parseObject(body));
-        System.out.println(JSONObject.toJSONString(ingestion.getConfiguration()));
+        ingestion.fromJsonObject(JSONObject.parseObject(body));
+        System.out.println(ingestion.getConfiguration().toJsonObject());
         DataSource source = ingestion.getConfiguration().getSource();
         System.out.println(source.getType());
-        System.out.println(source.toString());
-        System.out.println(JSONObject.toJSONString(source));
+        System.out.println(source.toJsonString());
+        System.out.println(source.toJsonObject());
     }
 
     @Test
-    public void testSerializeIngestionWithGeneralSource() {
+    public void testSerializeIngestionWithGeneralSource() throws Exception {
         Job job = new Job();
         job.setType(JobType.INGESTION);
         job.setName("test-ingestion-general");
         job.setDisplayName("test ingestion");
-        job.setSchedule(new JobSchedule() {{
-            setType(JobScheduleType.FIXED_RATE);
-            setInterval("2m");
-        }});
+        JobSchedule schedule = new JobSchedule();
+        schedule.setType(JobScheduleType.FIXED_RATE);
+        schedule.setInterval("2m");
+        job.setSchedule(schedule);
         job.setState(JobState.ENABLED);
         IngestionConfiguration ingestionConfiguration = new IngestionConfiguration();
         IngestionGeneralSource ingestionGeneralSource = new IngestionGeneralSource();
@@ -213,17 +216,16 @@ public class JobTest {
         ingestionGeneralSource.put("batchMaxSize", "0");
         ingestionGeneralSource.put("type", "RDS");
         ingestionGeneralSource.put("timeZone", "Asia/Shanghai");
-        System.out.println(JsonUtils.serialize(ingestionGeneralSource));
-        System.out.println(JSONObject.toJSONString(ingestionGeneralSource));
+        System.out.println(ingestionGeneralSource.toJsonObject());
         ingestionConfiguration.setSource(ingestionGeneralSource);
         job.setConfiguration(ingestionConfiguration);
         String jobStr = "{\"configuration\":{\"source\":{\"batchMaxSize\":\"0\",\"timeZone\":\"Asia/Shanghai\",\"type\":\"RDS\"}},\"displayName\":\"test ingestion\",\"name\":\"test-ingestion-general\",\"schedule\":{\"interval\":\"2m\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Ingestion\"}";
-        assertEquals(jobStr, JSONObject.toJSONString(job));
-        System.out.println(JSONObject.toJSONString(job.getConfiguration()));
+        assertJsonEquals(jobStr, job.toJsonString());
+        System.out.println(job.getConfiguration().toJsonObject());
     }
 
     @Test
-    public void testDeserializeExportWithGeneralSink() {
+    public void testDeserializeExportWithGeneralSink() throws Exception {
         String body = "{\n" +
                 "  \"configuration\": {\n" +
                 "    \"logstore\": \"rds-data\",\n" +
@@ -267,40 +269,40 @@ public class JobTest {
                 "  \"version\": \"v2.0\"\n" +
                 "}";
         Job job = new Job();
-        job.deserialize(JSONObject.parseObject(body));
+        job.fromJsonObject(JSONObject.parseObject(body));
         assertEquals(JobType.EXPORT, job.getType());
         ExportConfiguration exportConfiguration = (ExportConfiguration) job.getConfiguration();
         DataSink dataSink = exportConfiguration.getSink();
-        System.out.println(JSONObject.toJSONString(exportConfiguration));
+        System.out.println(exportConfiguration.toJsonObject());
         assertEquals(DataSinkType.GENERAL, dataSink.getType());
 
         ExportGeneralSink exportGeneralSink = (ExportGeneralSink) dataSink;
-        System.out.println(JSONObject.toJSONString(exportConfiguration));
-        System.out.println(exportGeneralSink.toString());
-        System.out.println(dataSink.toString());
+        System.out.println(exportConfiguration.toJsonObject());
+        System.out.println(exportGeneralSink.toJsonString());
+        System.out.println(dataSink.toJsonString());
         System.out.println(exportGeneralSink.get("instances"));
         assertEquals("库存管理数据库", exportGeneralSink.get("name"));
         assertEquals("test-type", exportGeneralSink.get("type"));
 
         Export export = new Export();
-        export.deserialize(JSONObject.parseObject(body));
-        System.out.println(JSONObject.toJSONString(export.getConfiguration()));
+        export.fromJsonObject(JSONObject.parseObject(body));
+        System.out.println(export.getConfiguration().toJsonObject());
         DataSink sink = export.getConfiguration().getSink();
         System.out.println(sink.getType());
-        System.out.println(sink.toString());
-        System.out.println(JSONObject.toJSONString(sink));
+        System.out.println(sink.toJsonString());
+        System.out.println(sink.toJsonObject());
     }
 
     @Test
-    public void testSerializeExportWithGeneralSource() {
+    public void testSerializeExportWithGeneralSource() throws Exception {
         Job job = new Job();
         job.setType(JobType.EXPORT);
         job.setName("test-export-general");
         job.setDisplayName("test export");
-        job.setSchedule(new JobSchedule() {{
-            setType(JobScheduleType.FIXED_RATE);
-            setInterval("2m");
-        }});
+        JobSchedule schedule = new JobSchedule();
+        schedule.setType(JobScheduleType.FIXED_RATE);
+        schedule.setInterval("2m");
+        job.setSchedule(schedule);
         job.setState(JobState.ENABLED);
         ExportConfiguration exportConfiguration = new ExportConfiguration();
         ExportGeneralSink exportGeneralSink = new ExportGeneralSink();
@@ -312,7 +314,7 @@ public class JobTest {
         exportConfiguration.setSink(exportGeneralSink);
         job.setConfiguration(exportConfiguration);
         String jobStr = "{\"configuration\":{\"fromTime\":0,\"sink\":{\"batchMaxSize\":\"0\",\"timeZone\":\"Asia/Shanghai\",\"type\":\"RDS\",\"someInt\":33},\"toTime\":0},\"displayName\":\"test export\",\"name\":\"test-export-general\",\"schedule\":{\"interval\":\"2m\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Export\"}";
-        assertEquals(jobStr, JSONObject.toJSONString(job));
-        System.out.println(JSONObject.toJSONString(job.getConfiguration()));
+        assertJsonEquals(jobStr, job.toJsonString());
+        System.out.println(job.getConfiguration().toJsonObject());
     }
 }

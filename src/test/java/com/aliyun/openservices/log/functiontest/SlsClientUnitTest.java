@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.functiontest;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.common.Consts.CompressType;
@@ -585,7 +585,7 @@ public class SlsClientUnitTest {
     }
 
     @Test
-    public void TestGetConfig() {
+    public void TestGetConfig() throws LogException {
         String testConfigName = "test_config";
         Config config = new Config(testConfigName);
         ConfigInputDetail inputDetail = new ConfigInputDetail();
@@ -620,8 +620,8 @@ public class SlsClientUnitTest {
 
         JSONObject configDict = new JSONObject();
         configDict.put("configName", config.GetConfigName());
-        configDict.put("inputDetail", ((ConfigInputDetail) (config.GetInputDetail())).ToJsonString());
-        configDict.put("outputDetail", config.GetOutputDetail().ToJsonString());
+        configDict.put("inputDetail", ((ConfigInputDetail) (config.GetInputDetail())).toJsonString());
+        configDict.put("outputDetail", config.GetOutputDetail().toJsonString());
 
         String jsonStr = configDict.toString();
         byte[] body = null;
@@ -2017,7 +2017,7 @@ public class SlsClientUnitTest {
 
             assertEquals(logstoreArray.size(), res.GetCount());
             for (int i = 0; i < res.GetCount(); i++) {
-                assertEquals(logstoreArray.get(i), res.GetLogStores().get(i));
+                assertEquals(logstoreArray.getString(i), res.GetLogStores().get(i));
             }
 
 
@@ -2380,11 +2380,11 @@ public class SlsClientUnitTest {
     }
 
     @Test
-    public void TestLogItemString() {
+    public void TestLogItemString() throws LogException {
         LogItem log = new LogItem(1);
         log.PushBack("key1", "value1");
         log.PushBack("key2", "value2");
-        String res = log.ToJsonString();
+        String res = log.toJsonString();
         assertEquals("{\"key1\":\"value1\",\"key2\":\"value2\",\"logtime\":1}", res);
     }
 
@@ -2603,13 +2603,13 @@ public class SlsClientUnitTest {
         assertEquals(2, logStore.GetTtl());
 
         try {
-            logStore.FromJsonString("abs");
+            logStore.fromJsonString("abs");
         } catch (LogException e) {
             assertEquals("FailToGenerateLogStore", e.GetErrorCode());
         }
 
         try {
-            logStore.FromJsonString(SlsClientTestData.TEST_INVALID_JSON);
+            logStore.fromJsonString(SlsClientTestData.TEST_INVALID_JSON);
         } catch (LogException e) {
             assertEquals("FailToGenerateLogStore", e.GetErrorCode());
         }
@@ -2617,7 +2617,7 @@ public class SlsClientUnitTest {
         String logStoreString = "{\"logstoreName\":\"2\",\"shardCount\":2,\"ttl\":4,\"createTime\":1988"
                 + ",\"lastModifyTime\":20132}";
         try {
-            logStore.FromJsonString(logStoreString);
+            logStore.fromJsonString(logStoreString);
             assertEquals("2", logStore.GetLogStoreName());
             assertEquals(2, logStore.GetShardCount());
             assertEquals(4, logStore.GetTtl());
@@ -2628,11 +2628,11 @@ public class SlsClientUnitTest {
         }
 		
 	
-		/*String logStoreJsonString = logStore.ToJsonString();
+		/*String logStoreJsonString = logStore.toJsonString();
 		JSONObject logStoreJson = JSONObject.parseObject(logStoreJsonString);
 		LogStore another = new LogStore();
 		try {
-			another.FromJsonObject(logStoreJson);
+			another.fromJsonObject(logStoreJson);
 			assertEquals(another.GetLogStoreName(), logStore.GetLogStoreName());
 			assertEquals(another.GetShardCount(), logStore.GetShardCount());
 			assertEquals(another.GetTtl(), logStore.GetTtl());
@@ -2669,14 +2669,14 @@ public class SlsClientUnitTest {
 
         try {
             ConfigOutputDetail errorOutput = new ConfigOutputDetail();
-            errorOutput.FromJsonString("");
+            errorOutput.fromJsonString("");
         } catch (LogException e) {
             assertEquals("FailToGenerateOutputDetail", e.GetErrorCode());
         }
 
         try {
             ConfigOutputDetail errorOutput = new ConfigOutputDetail();
-            errorOutput.FromJsonObject(new JSONObject());
+            errorOutput.fromJsonObject(new JSONObject());
         } catch (LogException e) {
             assertEquals("FailToGenerateOutputDetail", e.GetErrorCode());
         }
@@ -2700,14 +2700,14 @@ public class SlsClientUnitTest {
 
         try {
             ConfigInputDetail errorInput = new ConfigInputDetail();
-            errorInput.FromJsonString("");
+            errorInput.fromJsonString("");
         } catch (LogException e) {
             assertEquals("FailToGenerateInputDetail", e.GetErrorCode());
         }
 
         try {
             ConfigInputDetail errorInput = new ConfigInputDetail();
-            errorInput.FromJsonObject(new JSONObject());
+            errorInput.fromJsonObject(new JSONObject());
         } catch (LogException e) {
             assertEquals("FailToGenerateInputDetail", e.GetErrorCode());
         }
@@ -2722,7 +2722,7 @@ public class SlsClientUnitTest {
 
         String fromAttributeStr = "{\"externalName\":\"externalName2\",\"groupTopic\":\"groupTopic2\"}";
         try {
-            attribute.FromJsonString(fromAttributeStr);
+            attribute.fromJsonString(fromAttributeStr);
             assertEquals("externalName2", attribute.GetExternalName());
             assertEquals("groupTopic2", attribute.GetGroupTopic());
         } catch (LogException e) {
@@ -2731,13 +2731,13 @@ public class SlsClientUnitTest {
 		
 		/*try {
 			JSONObject errorInfoObj = new JSONObject();
-			attribute.FromJsonObject(errorInfoObj);
+			attribute.fromJsonObject(errorInfoObj);
 		} catch (LogException e) {
 			assertEquals("FailToGenerateGroupAttribute", e.GetErrorCode());
 		}*/
 
         try {
-            attribute.FromJsonString("af");
+            attribute.fromJsonString("af");
         } catch (LogException e) {
             assertEquals("FailToGenerateGroupAttribute", e.GetErrorCode());
         }
@@ -2750,7 +2750,7 @@ public class SlsClientUnitTest {
 		group1.SetCreateTime(543211);
 		group1.SetLastModifyTime(543212);
 		
-		String groupJsonStr = group1.ToJsonString();
+		String groupJsonStr = group1.toJsonString();
 		JSONObject groupJsonObj = JSONObject.parseObject(groupJsonStr);
 		
 		assertEquals("groupName", groupJsonObj.getString("groupName"));
@@ -2766,7 +2766,7 @@ public class SlsClientUnitTest {
 		assertEquals("uuid1", machine1);
 		
 		try {
-			group1.FromJsonString("af");
+			group1.fromJsonString("af");
 		} catch (LogException e) {
 			assertEquals("FailToGenerateMachineGroup", e.GetErrorCode());
 		}
@@ -2774,13 +2774,13 @@ public class SlsClientUnitTest {
 		Config config1 = new Config("configName");
 		config1.SetCreateTime(32321);
 		config1.SetLastModifyTime(32322);
-		JSONObject configObj = JSONObject.parseObject(config1.ToJsonString());
+		JSONObject configObj = JSONObject.parseObject(config1.toJsonString());
 		assertEquals("configName", configObj.getString("configName"));
 		assertEquals(32321, configObj.getIntValue("createTime"));
 		assertEquals(32322, configObj.getIntValue("lastModifyTime"));
 		
 		try {
-			config1.FromJsonString("af");
+			config1.fromJsonString("af");
 		} catch (LogException e) {
 			assertEquals("FailToGenerateConfig", e.GetErrorCode());
 		}*/

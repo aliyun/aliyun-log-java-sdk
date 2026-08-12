@@ -1,12 +1,13 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class SavedSearch implements Serializable {
+public class SavedSearch implements Serializable, JsonSerializable, JsonDeserializable {
 
 	private static final long serialVersionUID = 8415874596775859485L;
 	protected String savedSearchName = "";
@@ -54,7 +55,8 @@ public class SavedSearch implements Serializable {
 		this.displayName = savedSearch.displayName;
 		this.rawSavedSearchAttr = savedSearch.rawSavedSearchAttr;
 	}
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject savedSearchJson = new JSONObject();
 
 		if (rawSavedSearchAttr.length() > 0) {
@@ -69,10 +71,8 @@ public class SavedSearch implements Serializable {
 
 		return savedSearchJson;
 	}
-	public String ToJsonString() {
-		return ToJsonObject().toString();
-	}
-	public void FromJsonObject(JSONObject dict) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject dict) throws LogException {
 		try {		
 			setSavedSearchName(dict.getString(Consts.CONST_SAVEDSEARCH_NAME));
 			setSearchQuery(dict.getString(Consts.CONST_SAVEDSEARCH_QUERY));
@@ -87,10 +87,10 @@ public class SavedSearch implements Serializable {
 			throw new LogException("FailToGenerateSavedSearch",  e.getMessage(), e, "");
 		}
 	}
-	public void FromJsonString(String savedSearchString) throws LogException {
+	public void fromJsonString(String savedSearchString) throws LogException {
 		try {
 			JSONObject dict = JSONObject.parseObject(savedSearchString);
-			FromJsonObject(dict);
+			fromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateSavedSearch", e.getMessage(), e, "");
 		}

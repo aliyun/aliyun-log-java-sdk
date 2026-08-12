@@ -1,9 +1,10 @@
 package com.aliyun.openservices.log.response;
 
 
+import com.aliyun.openservices.log.annotation.InternalApi;
 import com.aliyun.openservices.log.common.Job;
 import com.aliyun.openservices.log.internal.Unmarshaller;
-import com.alibaba.fastjson.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONArray;
 
 import java.util.Map;
 
@@ -16,12 +17,13 @@ public class ListJobsResponse extends ResponseList<Job> {
     }
 
     @Override
+    @InternalApi
     public Unmarshaller<Job> unmarshaller() {
         return new Unmarshaller<Job>() {
             @Override
             public Job unmarshal(JSONArray value, int index) {
                 Job job = new Job();
-                job.deserialize(value.getJSONObject(index));
+                job.fromJsonObject(value.getJSONObject(index));
                 return job;
             }
         };

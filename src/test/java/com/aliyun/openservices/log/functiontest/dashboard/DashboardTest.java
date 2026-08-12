@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.functiontest.dashboard;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.Chart;
 import com.aliyun.openservices.log.common.Dashboard;
 import com.aliyun.openservices.log.exception.LogException;
@@ -243,7 +243,7 @@ public class DashboardTest extends MetaAPIBaseFunctionTest {
         Assert.assertEquals("key", first.getString("key"));
         JSONArray listDefault = first.getJSONArray("listDefault");
         Assert.assertEquals(1, listDefault.size());
-        Assert.assertTrue(listDefault.getBoolean(0));
+        Assert.assertEquals("[true]", listDefault.toString());
         JSONArray listAlias = first.getJSONArray("listAlias");
         Assert.assertEquals("\uD83D\uDE13❤", listAlias.getString(0));
     }

@@ -1,57 +1,44 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class ETLConfiguration extends JobConfiguration {
 
-    @JSONField
     private String script;
 
-    @JSONField
     private String logstore;
 
-    @JSONField
     @Deprecated
     private String instanceType;
 
-    @JSONField
     @Deprecated
     private String containerImage;
 
-    @JSONField
     private int version;
 
-    @JSONField
     private List<AliyunLOGSink> sinks;
 
-    @JSONField
     private Map<String, String> parameters;
 
-    @JSONField
     private String accessKeyId;
 
-    @JSONField
     private String accessKeySecret;
 
-    @JSONField
     private String roleArn;
 
-    @JSONField
     private Integer fromTime;
 
-    @JSONField
     private Integer toTime;
 
-    @JSONField
     private String lang;
 
     public void setRoleArn(String roleArn) {
@@ -158,7 +145,8 @@ public class ETLConfiguration extends JobConfiguration {
         this.lang = lang;
     }
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         script = value.getString("script");
         logstore = value.getString("logstore");
         version = value.getIntValue("version");
@@ -169,7 +157,7 @@ public class ETLConfiguration extends JobConfiguration {
         this.sinks = new ArrayList<AliyunLOGSink>(sinks.size());
         for (int i = 0; i < sinks.size(); i++) {
             AliyunLOGSink sink = new AliyunLOGSink();
-            sink.deserialize(sinks.getJSONObject(i));
+            sink.fromJsonObject(sinks.getJSONObject(i));
             this.sinks.add(sink);
         }
         accessKeyId = value.getString("accessKeyId");

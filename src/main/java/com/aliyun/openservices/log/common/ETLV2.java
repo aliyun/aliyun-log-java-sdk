@@ -1,25 +1,23 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ETLV2 extends AbstractJob implements Serializable {
 
     private static final long serialVersionUID = 949447748635414993L;
 
-    @JSONField
     private ETLConfiguration configuration;
 
-    @JSONField
     private JobSchedule schedule;
 
-    @JSONField
     private String status;
 
-    @JSONField
     private String scheduleId;
 
     public ETLV2() {
@@ -52,13 +50,34 @@ public class ETLV2 extends AbstractJob implements Serializable {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
-        super.deserialize(value);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        put(value, "status", status);
+        put(value, "scheduleId", scheduleId);
+        if (schedule != null) {
+            value.put("schedule", schedule.toJsonObject());
+        }
+        return value;
+    }
+
+    public void fromJsonString(String etlString) throws LogException {
+        try {
+            fromJsonObject(JSONObject.parseObject(etlString));
+        } catch (JSONException e) {
+            throw new LogException("FailToGenerateETLV2", e.getMessage(), e, "");
+        }
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
+        super.fromJsonObject(value);
         status = value.getString("status");
         scheduleId = JsonUtils.readOptionalString(value,"scheduleId","");
         schedule = new JobSchedule();
-        schedule.deserialize(value.getJSONObject("schedule"));
+        schedule.fromJsonObject(value.getJSONObject("schedule"));
         configuration = new ETLConfiguration();
-        configuration.deserialize(value.getJSONObject("configuration"));
+        configuration.fromJsonObject(value.getJSONObject("configuration"));
     }
 }

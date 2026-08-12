@@ -2,16 +2,17 @@ package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The output config of a logtail
  * @author log-service-dev
  *
  */
-public class ConfigOutputDetail implements Serializable {
+public class ConfigOutputDetail implements Serializable, JsonSerializable, JsonDeserializable {
 	
 	/**
 	 * 
@@ -21,7 +22,8 @@ public class ConfigOutputDetail implements Serializable {
 	private String logstoreName = "";
 	private String compressType = "";
 	
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject jsonObj = new JSONObject();
 		
 		jsonObj.put("endpoint", endpoint);
@@ -31,11 +33,9 @@ public class ConfigOutputDetail implements Serializable {
 		return jsonObj;
 	}
 	
-	public String ToJsonString() {
-		return ToJsonObject().toString();
-	}
 	
-	public void FromJsonObject(JSONObject outputDetail) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject outputDetail) throws LogException {
 		try {
 			if (outputDetail.containsKey("endpoint")) {
 				this.endpoint = outputDetail.getString("endpoint");
@@ -50,10 +50,10 @@ public class ConfigOutputDetail implements Serializable {
 		}
 	}
 	
-	public void FromJsonString(String outputDetailString) throws LogException {
+	public void fromJsonString(String outputDetailString) throws LogException {
 		try {
 			JSONObject outputDetail = JSONObject.parseObject(outputDetailString);
-			FromJsonObject(outputDetail);
+			fromJsonObject(outputDetail);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateOutputDetail", e.getMessage(), e, "");
 		}

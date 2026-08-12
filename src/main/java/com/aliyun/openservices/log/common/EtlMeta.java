@@ -1,18 +1,21 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class EtlMeta implements Serializable {
+public class EtlMeta implements Serializable, JsonSerializable, JsonDeserializable {
 
     private static final long serialVersionUID = -4940373026567060213L;
     private String metaName = null;
     private String metaKey = null;
     private String metaTag = null;
-    private JSONObject metaValue = null;
+    private Map<String, Object> metaValue = null;
     private long createTime; //for ListEtlMetaReponse, the field is not used when create/update etlMeta
     private long lastModifyTime; //for ListEtlMetaReponse, the field is not used when create/update etlMeta
     private boolean enable;
@@ -28,7 +31,7 @@ public class EtlMeta implements Serializable {
         this.enable = true;
     }
 
-    public EtlMeta(String metaName, String metaKey, String metaTag, JSONObject metaValue, boolean enable) {
+    public EtlMeta(String metaName, String metaKey, String metaTag, Map<String, Object> metaValue, boolean enable) {
         this.metaName = metaName;
         this.metaKey = metaKey;
         this.metaTag = metaTag;
@@ -54,7 +57,7 @@ public class EtlMeta implements Serializable {
         this.metaTag = metaTag;
     }
 
-    public void setMetaValue(JSONObject metaValue) {
+    public void setMetaValue(Map<String, Object> metaValue) {
         this.metaValue = metaValue;
     }
 
@@ -74,7 +77,7 @@ public class EtlMeta implements Serializable {
         return metaTag;
     }
 
-    public JSONObject getMetaValue() {
+    public Map<String, Object> getMetaValue() {
         return metaValue;
     }
 
@@ -90,6 +93,7 @@ public class EtlMeta implements Serializable {
         return lastModifyTime;
     }
 
+    @InternalApi
     public JSONObject toJsonObject() {
         JSONObject etlMetaJson = new JSONObject();
         etlMetaJson.put(Consts.ETL_META_NAME, this.metaName);
@@ -98,20 +102,25 @@ public class EtlMeta implements Serializable {
             etlMetaJson.put(Consts.ETL_META_TAG, this.metaTag);
         }
         if (this.metaValue != null) {
-            etlMetaJson.put(Consts.ETL_META_VALUE, this.metaValue);
+            etlMetaJson.put(Consts.ETL_META_VALUE, JsonCodec.toJsonObject(this.metaValue));
         }
         etlMetaJson.put(Consts.ETL_META_ENABLE, this.enable);
         return etlMetaJson;
     }
 
+    @InternalApi
     public void fromJsonObject(JSONObject etlMetaJson) throws LogException {
         try {
             this.metaName = etlMetaJson.getString(Consts.ETL_META_NAME);
             this.metaKey = etlMetaJson.getString(Consts.ETL_META_KEY);
             this.metaTag = etlMetaJson.getString(Consts.ETL_META_TAG);
             // For etl metas created by logging, EtlMetaValue may ends with new line.
-            final String value = etlMetaJson.getString(Consts.ETL_META_VALUE);
-            this.metaValue = JSONObject.parseObject(value.trim());
+            if (etlMetaJson.isString(Consts.ETL_META_VALUE)) {
+                final String value = etlMetaJson.getString(Consts.ETL_META_VALUE);
+                this.metaValue = JsonCodec.toMap(JSONObject.parseObject(value.trim()));
+            } else {
+                this.metaValue = JsonCodec.toMap(etlMetaJson.getJSONObject(Consts.ETL_META_VALUE));
+            }
             if (etlMetaJson.containsKey(Consts.ETL_META_CREATE_TIME)) {
                 this.createTime = etlMetaJson.getLong(Consts.ETL_META_CREATE_TIME);
             } else {

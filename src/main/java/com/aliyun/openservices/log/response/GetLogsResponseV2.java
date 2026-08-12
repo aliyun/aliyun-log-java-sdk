@@ -29,7 +29,7 @@ public class GetLogsResponseV2 extends Response {
     public QueryResult getResult() throws LogException {
         if (result == null) {
             result = new QueryResult();
-            result.deserializeFrom(rawQueryResult, GetRequestId());
+            result.fromJsonString(rawQueryResult, GetRequestId());
         }
         return result;
     }
@@ -39,7 +39,7 @@ public class GetLogsResponseV2 extends Response {
         return rawQueryResult;
     }
 
-    public static GetLogsResponseV2 deserializeFrom(ResponseMessage response) throws LogException {
+    public static GetLogsResponseV2 fromResponse(ResponseMessage response) throws LogException {
         byte[] rawData = response.GetRawBody();
         Map<String, String> headers = response.getHeaders();
         String compressType = headers.get(Consts.CONST_X_SLS_COMPRESSTYPE);

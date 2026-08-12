@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class ProjectQuota implements Serializable {
+public class ProjectQuota implements Serializable, JsonDeserializable {
 
     private static final long serialVersionUID = -6475258821072410948L;
 
@@ -164,16 +165,18 @@ public class ProjectQuota implements Serializable {
         this.writeSizePerMin = writeSizePerMin;
     }
 
-    public static ProjectQuota parseFromJSON(JSONObject jsonObject) {
+    @InternalApi
+    public static ProjectQuota parseFromJsonObject(JSONObject jsonObject) {
         if (jsonObject == null) {
             return null;
         }
         ProjectQuota quota = new ProjectQuota();
-        quota.fromJSON(jsonObject);
+        quota.fromJsonObject(jsonObject);
         return quota;
     }
 
-    public void fromJSON(JSONObject jsonObject) {
+    @InternalApi
+    public void fromJsonObject(JSONObject jsonObject) {
         if (jsonObject == null)
             return;
         logstore = jsonObject.getIntValue("logstore");
@@ -217,4 +220,3 @@ public class ProjectQuota implements Serializable {
                 '}';
     }
 }
-

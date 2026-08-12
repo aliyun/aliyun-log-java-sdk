@@ -5,11 +5,12 @@ import java.util.ArrayList;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class Dashboard implements Serializable {
+public class Dashboard implements Serializable, JsonSerializable, JsonDeserializable {
 
 	private static final long serialVersionUID = 3152635375534266524L;
 	private String dashboardName = "";
@@ -78,7 +79,8 @@ public class Dashboard implements Serializable {
 		this.attribute = attribute;
 	}
 	
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject dashboardJson = new JSONObject();
 		dashboardJson.put("dashboardName", getDashboardName());
 		dashboardJson.put("description", getDescription());
@@ -92,15 +94,13 @@ public class Dashboard implements Serializable {
 		
 		JSONArray chartArray = new JSONArray();
 		for (Chart chart : getChartList()) {
-			chartArray.add(chart.ToJsonObject());
+			chartArray.add(chart.toJsonObject());
 		}
 		dashboardJson.put("charts", chartArray);
 		return dashboardJson;
 	}
-	public String ToJsonString() {
-		return ToJsonObject().toString();
-	}
-	public void FromJsonObject(JSONObject dict) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject dict) throws LogException {
 		try {
 			setDashboardName(dict.getString("dashboardName"));
 			setDescription(dict.getString("description"));
@@ -123,7 +123,7 @@ public class Dashboard implements Serializable {
 							continue;
 						}
 						Chart chart = new Chart();
-						chart.FromJsonObject(jsonObject);
+						chart.fromJsonObject(jsonObject);
 						chartList.add(chart);
 					}
 				}
@@ -135,10 +135,10 @@ public class Dashboard implements Serializable {
 			throw new LogException("FailToGenerateDashboard",  e.getMessage(), e, "");
 		}
 	}
-	public void FromJsonString(String dashboardString) throws LogException {
+	public void fromJsonString(String dashboardString) throws LogException {
 		try {
 			JSONObject dict = JSONObject.parseObject(dashboardString);
-			FromJsonObject(dict);
+			fromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateDashboard", e.getMessage(), e, "");
 		}

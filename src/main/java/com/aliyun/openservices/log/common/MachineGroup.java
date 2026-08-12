@@ -6,14 +6,15 @@ import java.util.List;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The config of a machine group
  */
-public class MachineGroup implements Serializable {
+public class MachineGroup implements Serializable, JsonSerializable, JsonDeserializable {
     private static final long serialVersionUID = -4402651900796187066L;
     protected String groupName = "";
     private String groupType = "";
@@ -122,6 +123,7 @@ public class MachineGroup implements Serializable {
         this.machineList = new ArrayList<String>(machineList);
     }
 
+    @InternalApi
     public void SetMachineList(JSONArray machineListJSONArray) {
         machineList = new ArrayList<String>();
         if (machineListJSONArray != null) {
@@ -164,39 +166,42 @@ public class MachineGroup implements Serializable {
         groupAttribute.SetGroupTopic(groupTopic);
     }
 
-    private JSONObject ToRequestJson() {
+    private JSONObject toRequestJson() {
         JSONObject groupDict = new JSONObject();
         groupDict.put("groupName", GetGroupName());
         groupDict.put("groupType", GetGroupType());
         groupDict.put("machineIdentifyType", GetMachineIdentifyType());
         if (groupAttribute != null) {
-            groupDict.put("groupAttribute", groupAttribute.ToJsonObject());
+            groupDict.put("groupAttribute", groupAttribute.toJsonObject());
         }
         JSONArray machineList = new JSONArray();
-        machineList.addAll(GetMachineList());
+        for (String machine : GetMachineList()) {
+            machineList.add(machine);
+        }
         groupDict.put("machineList", machineList);
         return groupDict;
     }
 
-    public String ToRequestString() {
-        return ToRequestJson().toString();
+    public String toRequestString() {
+        return toRequestJson().toString();
     }
 
-    public JSONObject ToJsonObject() {
-        JSONObject groupDict = ToRequestJson();
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject groupDict = toRequestJson();
         JSONArray machineList = new JSONArray();
-        machineList.addAll(GetMachineList());
+        for (String machine : GetMachineList()) {
+            machineList.add(machine);
+        }
         groupDict.put("machineList", machineList);
         groupDict.put("createTime", GetCreateTime());
         groupDict.put("lastModifyTime", GetLastModifyTime());
         return groupDict;
     }
 
-    public String ToJsonString() {
-        return ToJsonObject().toString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         try {
             String groupName = dict.getString("groupName");
             String machineIdentifyType = dict.getString("machineIdentifyType");
@@ -210,7 +215,7 @@ public class MachineGroup implements Serializable {
             if (dict.containsKey("groupAttribute")) {
                 JSONObject groupAttributeString = dict.getJSONObject("groupAttribute");
                 GroupAttribute groupAttribute = new GroupAttribute();
-                groupAttribute.FromJsonObject(groupAttributeString);
+                groupAttribute.fromJsonObject(groupAttributeString);
                 SetGroupAttribute(groupAttribute);
             }
             if (dict.containsKey("createTime")) {
@@ -224,10 +229,10 @@ public class MachineGroup implements Serializable {
         }
     }
 
-    public void FromJsonString(String machineGroupString) throws LogException {
+    public void fromJsonString(String machineGroupString) throws LogException {
         try {
             JSONObject dict = JSONObject.parseObject(machineGroupString);
-            FromJsonObject(dict);
+            fromJsonObject(dict);
         } catch (JSONException e) {
             throw new LogException("FailToGenerateMachineGroup", e.getMessage(), e, "");
         }

@@ -1,19 +1,23 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Advanced {
     private boolean forceMulticonfig = false;
     private ArrayList<String> dirBlacklist = new ArrayList<String>();
     private ArrayList<String> fileNameBlacklist = new ArrayList<String>();
     private ArrayList<String> filePathBlacklist = new ArrayList<String>();
-    private JSONObject others = new JSONObject();
+    private Map<String, Object> others = new HashMap<String, Object>();
 
     public Advanced() {}
 
@@ -53,10 +57,11 @@ public class Advanced {
         this.filePathBlacklist = filePathBlacklist;
     }
 
-    public void setOthers(JSONObject others) { this.others = others; }
+    public void setOthers(Map<String, Object> others) { this.others = others; }
 
-    public JSONObject getOthers() { return others; }
+    public Map<String, Object> getOthers() { return others; }
 
+    @InternalApi
     public JSONObject toJsonObject() {
         JSONObject jsonObj = new JSONObject();
         jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_FORCEMULTICONFIG, this.forceMulticonfig);
@@ -75,35 +80,37 @@ public class Advanced {
             jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST, blacklistObj);
         }
 
-        jsonObj.putAll(others);
+        jsonObj.putAll(JsonCodec.toJsonObject(others));
         return jsonObj;
     }
 
+    @InternalApi
     public static Advanced fromJsonObject(JSONObject advanced) throws LogException {
         try {
             Advanced advObj = new Advanced();
+            Map<String, Object> otherFields = JsonCodec.toMap(advanced);
 
             if (advanced.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_FORCEMULTICONFIG)) {
                 advObj.setForceMulticonfig(advanced.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_FORCEMULTICONFIG));
-                advanced.remove(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_FORCEMULTICONFIG);
+                otherFields.remove(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_FORCEMULTICONFIG);
             }
 
             if (advanced.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST)) {
                 JSONObject obj = advanced.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST);
                 if (obj.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST_DIR)) {
-                    advObj.setDirBlacklist(fromJSONArray(obj.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST_DIR)));
+                    advObj.setDirBlacklist(fromJsonArray(obj.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST_DIR)));
                 }
                 if (obj.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST_FILENAME)) {
-                    advObj.setFileNameBlacklist(fromJSONArray(obj.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST_FILENAME)));
+                    advObj.setFileNameBlacklist(fromJsonArray(obj.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST_FILENAME)));
                 }
                 if (obj.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST_FILEPATH)) {
-                    advObj.setFilePathBlacklist(fromJSONArray(obj.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST_FILEPATH)));
+                    advObj.setFilePathBlacklist(fromJsonArray(obj.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST_FILEPATH)));
                 }
-                advanced.remove(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST);
+                otherFields.remove(Consts.CONST_CONFIG_INPUTDETAIL_ADVANCED_BLACKLIST);
             }
 
             // Keep other key/values.
-            advObj.others = advanced;
+            advObj.others = otherFields;
 
             return advObj;
         } catch (JSONException e) {
@@ -113,11 +120,13 @@ public class Advanced {
 
     private static JSONArray fromArrayList(ArrayList<String> l) {
         JSONArray arr = new JSONArray();
-        arr.addAll(l);
+        for (String item : l) {
+            arr.add(item);
+        }
         return arr;
     }
 
-    private static ArrayList<String> fromJSONArray(JSONArray a) {
+    private static ArrayList<String> fromJsonArray(JSONArray a) {
         ArrayList<String> l = new ArrayList<String>();
         for (int i = 0; i < a.size(); i++) {
             l.add(a.getString(i));

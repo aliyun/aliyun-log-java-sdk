@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class ShipperTask {
+public class ShipperTask implements JsonDeserializable {
 
 	private String mTaskId;
 	private String mTaskStatus;
@@ -63,7 +64,8 @@ public class ShipperTask {
 		return mTaskFinishTime;
 	}
 
-	public void FromJsonObject(JSONObject obj) {
+	@InternalApi
+	public void fromJsonObject(JSONObject obj) {
 		mTaskId = obj.getString("id");
 		mTaskStatus = obj.getString("taskStatus");
 		mTaskMessage = obj.getString("taskMessage");

@@ -1,7 +1,10 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public abstract class ScheduledJob extends AbstractJob {
@@ -43,12 +46,35 @@ public abstract class ScheduledJob extends AbstractJob {
         this.schedule = schedule;
     }
 
+    public void fromJsonString(String jobString) throws LogException {
+        try {
+            fromJsonObject(JSONObject.parseObject(jobString));
+        } catch (JSONException e) {
+            throw new LogException("FailToGenerateJob", e.getMessage(), e, "");
+        }
+    }
+
     @Override
-    public void deserialize(JSONObject value) {
-        super.deserialize(value);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (state != null) {
+            value.put("state", state.toString());
+        }
+        put(value, "status", status);
+        if (schedule != null) {
+            value.put("schedule", schedule.toJsonObject());
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
+        super.fromJsonObject(value);
         state = JobState.fromString(value.getString("state"));
         status = JsonUtils.readOptionalString(value, "status");
         schedule = new JobSchedule();
-        schedule.deserialize(value.getJSONObject("schedule"));
+        schedule.fromJsonObject(value.getJSONObject("schedule"));
     }
 }

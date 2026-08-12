@@ -99,12 +99,12 @@ public class SlsIndexJsonFunctionTest extends BaseDataTest {
         index.SetKeys(keys);
         
         // Test JSON serialization
-        String jsonStr = index.ToJsonString();
+        String jsonStr = index.toJsonString();
         assertTrue(jsonStr.contains("\"scan_index\":true"));
         
         // Test JSON deserialization
         Index indexFromJson = new Index();
-        indexFromJson.FromJsonString(jsonStr);
+        indexFromJson.fromJsonString(jsonStr);
         assertEquals(true, indexFromJson.isScanIndexEnable());
         
         // Test copy constructor

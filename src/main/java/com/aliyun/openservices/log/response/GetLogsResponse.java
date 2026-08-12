@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.QueriedLog;
 import com.aliyun.openservices.log.common.Consts;
@@ -91,7 +91,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
             this.setCpuCores(Long.parseLong(headers.get(Consts.CONST_X_LOG_CPU_CORES)));
 
         if (headers.containsKey(Consts.CONST_X_LOG_QUERY_INFO)) {
-            com.alibaba.fastjson.JSONObject object = com.alibaba.fastjson.JSONObject.parseObject(headers.get(Consts.CONST_X_LOG_QUERY_INFO));
+            com.aliyun.openservices.log.internal.json.JSONObject object = com.aliyun.openservices.log.internal.json.JSONObject.parseObject(headers.get(Consts.CONST_X_LOG_QUERY_INFO));
             JSONArray keys = object.getJSONArray("keys");
             this.keys = new ArrayList<String>();
             if (keys != null) {
@@ -115,7 +115,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
             }
 
             if (object.containsKey("limited")) {
-                this.limited = Long.parseLong(object.getString("limited"));
+                this.limited = readLong(object, "limited");
             }
 
             if (object.containsKey("marker")) {
@@ -131,16 +131,16 @@ public class GetLogsResponse extends BasicGetLogsResponse {
             if (object.containsKey("phraseQueryInfo")) {
                 JSONObject phraseQueryInfo = object.getJSONObject("phraseQueryInfo");
                 if (phraseQueryInfo.containsKey("scanAll")) {
-                    this.scanAll = Boolean.parseBoolean(phraseQueryInfo.getString("scanAll"));
+                    this.scanAll = readBoolean(phraseQueryInfo, "scanAll");
                 }
                 if (phraseQueryInfo.containsKey("beginOffset")) {
-                    this.beginOffset = Long.parseLong(phraseQueryInfo.getString("beginOffset"));
+                    this.beginOffset = readLong(phraseQueryInfo, "beginOffset");
                 }
                 if (phraseQueryInfo.containsKey("endOffset")) {
-                    this.endOffset = Long.parseLong(phraseQueryInfo.getString("endOffset"));
+                    this.endOffset = readLong(phraseQueryInfo, "endOffset");
                 }
                 if (phraseQueryInfo.containsKey("endTime")) {
-                    this.endTime = Long.parseLong(phraseQueryInfo.getString("endTime"));
+                    this.endTime = readLong(phraseQueryInfo, "endTime");
                 }
             }
 
@@ -175,6 +175,18 @@ public class GetLogsResponse extends BasicGetLogsResponse {
                 }
             }
         }
+    }
+
+    private static long readLong(JSONObject value, String key) {
+        return value.isString(key)
+                ? Long.parseLong(value.getString(key))
+                : value.getLongValue(key);
+    }
+
+    private static boolean readBoolean(JSONObject value, String key) {
+        return value.isString(key)
+                ? Boolean.parseBoolean(value.getString(key))
+                : value.getBooleanValue(key);
     }
 
     public GetLogsResponse(Map<String, String> headers, QueryResult result) {
@@ -408,7 +420,7 @@ public class GetLogsResponse extends BasicGetLogsResponse {
         return rawQueryResult;
     }
 
-    public static GetLogsResponse deserializeFrom(ResponseMessage response, boolean deserialize) throws LogException {
+    public static GetLogsResponse fromResponse(ResponseMessage response, boolean parseResult) throws LogException {
         byte[] rawData = response.GetRawBody();
         Map<String, String> headers = response.getHeaders();
         String compressType = headers.get(Consts.CONST_X_SLS_COMPRESSTYPE);
@@ -434,9 +446,9 @@ public class GetLogsResponse extends BasicGetLogsResponse {
         }
         try {
             String data = new String(rawData, Consts.UTF_8_ENCODING);
-            if (deserialize) {
+            if (parseResult) {
                 QueryResult result = new QueryResult();
-                result.deserializeFrom(data, requestId);
+                result.fromJsonString(data, requestId);
                 return new GetLogsResponse(response.getHeaders(), result);
             }
             return new GetLogsResponse(response.getHeaders(), data);

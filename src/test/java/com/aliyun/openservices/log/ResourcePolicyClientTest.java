@@ -1,11 +1,12 @@
 package com.aliyun.openservices.log;
 
-import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.ResourcePolicyResourceType;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.http.comm.ResponseMessage;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 import com.aliyun.openservices.log.request.DeleteResourcePolicyRequest;
 import com.aliyun.openservices.log.request.GetResourcePolicyRequest;
 import com.aliyun.openservices.log.request.PutResourcePolicyRequest;
@@ -24,7 +25,8 @@ import static org.junit.Assert.fail;
 public class ResourcePolicyClientTest {
     private static final String PROJECT = "resource-policy-project";
     private static final String LOGSTORE = "resource-policy-logstore";
-    private static final String POLICY = "{\"Version\":\"1\",\"Statement\":[]}";
+    private static final String POLICY = "{\"Version\":\"1\","
+            + "\"$ref\":\"literal-not-reference\",\"a.b\":\"中文<>&=\",\"Statement\":[]}";
 
     @Test
     public void testPutResourcePolicy() throws Exception {
@@ -59,7 +61,7 @@ public class ResourcePolicyClientTest {
     public void testGetAndDeleteResourcePolicy() throws Exception {
         CapturingClient client = new CapturingClient();
         client.setResponseBody("{\"resourceType\":\"logstore\",\"resourceName\":\"" + LOGSTORE
-                + "\",\"policyDocument\":" + JSONObject.toJSONString(POLICY)
+                + "\",\"policyDocument\":" + JsonCodec.toJson(POLICY)
                 + ",\"revision\":3,\"createTime\":10,\"updateTime\":20}");
 
         GetResourcePolicyResponse response = client.getResourcePolicy(new GetResourcePolicyRequest(PROJECT,

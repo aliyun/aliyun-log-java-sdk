@@ -1,12 +1,11 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.lang.reflect.Type;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class KafKaSource extends DataSource {
     private String topics;
@@ -22,7 +21,7 @@ public class KafKaSource extends DataSource {
     private String timeZone;
     private Map<String, String> additionalProps;
 
-    public enum KafkaPosition implements JSONSerializable {
+    public enum KafkaPosition {
         GROUP_OFFSETS,
         EARLIEST,
         LATEST,
@@ -37,13 +36,9 @@ public class KafKaSource extends DataSource {
             return null;
         }
 
-        @Override
-        public void write(JSONSerializer jsonSerializer, Object o, Type type, int i) {
-            jsonSerializer.write(name());
-        }
     }
 
-    public enum ValueType implements JSONSerializable {
+    public enum ValueType {
         JSON,
         TEXT;
 
@@ -56,10 +51,6 @@ public class KafKaSource extends DataSource {
             return null;
         }
 
-        @Override
-        public void write(JSONSerializer jsonSerializer, Object o, Type type, int i) {
-            jsonSerializer.write(name());
-        }
     }
 
     public KafKaSource() {
@@ -155,8 +146,9 @@ public class KafKaSource extends DataSource {
     }
 
     @Override
-    public void deserialize(JSONObject jsonObject) {
-        super.deserialize(jsonObject);
+    @InternalApi
+    public void fromJsonObject(JSONObject jsonObject) {
+        super.fromJsonObject(jsonObject);
         topics = JsonUtils.readOptionalString(jsonObject, "topics");
         bootstrapServers = JsonUtils.readOptionalString(jsonObject, "bootstrapServers");
         valueType = ValueType.fromString(jsonObject.getString("valueType"));

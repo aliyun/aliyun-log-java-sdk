@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.response;
 
+import com.aliyun.openservices.log.annotation.InternalApi;
 import com.aliyun.openservices.log.common.RebuildIndex;
 import com.aliyun.openservices.log.internal.Unmarshaller;
-import com.alibaba.fastjson.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONArray;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -16,12 +17,13 @@ public class ListRebuildIndexResponse extends ResponseList<RebuildIndex> impleme
     }
 
     @Override
+    @InternalApi
     public Unmarshaller<RebuildIndex> unmarshaller() {
         return new Unmarshaller<RebuildIndex>() {
             @Override
             public RebuildIndex unmarshal(JSONArray value, int index) {
                 RebuildIndex item = new RebuildIndex();
-                item.deserialize(value.getJSONObject(index));
+                item.fromJsonObject(value.getJSONObject(index));
                 return item;
             }
         };

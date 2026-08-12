@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.request;
 
-import com.alibaba.fastjson.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,9 @@ public class ConsumerGroupHeartBeatRequest extends ConsumerGroupRequest {
 
     public String GetRequestBody() {
         JSONArray array = new JSONArray();
-        array.addAll(shards);
+        for (Integer shard : shards) {
+            array.add(shard);
+        }
         return array.toString();
     }
 }

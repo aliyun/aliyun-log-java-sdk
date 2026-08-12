@@ -7,7 +7,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 /**
  * LogItem used to present a log, it contains log time, log source(ip/hostname,
@@ -16,7 +17,7 @@ import com.alibaba.fastjson.JSONObject;
  * @author sls_dev
  * 
  */
-public class LogItem implements Serializable {
+public class LogItem implements Serializable, JsonSerializable {
 	private static final long serialVersionUID = -3488075856612935955L;
 	public int mLogTime;
 	public int mLogTimeNsPart = 0;
@@ -148,7 +149,8 @@ public class LogItem implements Serializable {
 		return mContents;
 	}
 	
-	public String ToJsonString() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject obj = new JSONObject();
 		
 		obj.put("logtime", mLogTime);
@@ -158,7 +160,7 @@ public class LogItem implements Serializable {
 			obj.put(content.GetKey(), content.GetValue());
 		}
 		
-		return obj.toString();
+		return obj;
 	}
 
 }

@@ -1,50 +1,36 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
-public class Query implements Serializable {
+public class Query implements Serializable, JsonDeserializable {
 
     /**
      * The unique title for chart in a dashboard.
      */
-    @JSONField
     private String chartTitle;
 
-    @JSONField
     private String query;
 
-    @JSONField
     private String logStore;
 
-    @JSONField
     private TimeSpanType timeSpanType;
 
-    @JSONField
     private String start;
 
-    @JSONField
     private String end;
 
-    @JSONField
     private String storeType;
-    @JSONField
     private String project;
-    @JSONField
     private String store;
-    @JSONField
     private String ui;
-    @JSONField
     private String region;
-    @JSONField
     private String roleArn;
-    @JSONField
     private String dashboardId;
-    @JSONField
     private String powerSqlMode;
 
     public String getRoleArn() {
@@ -159,7 +145,8 @@ public class Query implements Serializable {
         this.powerSqlMode = powerSqlMode;
     }
 
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         setChartTitle(value.getString("chartTitle"));
         setLogStore(value.getString("logStore"));
         setQuery(value.getString("query"));

@@ -4,10 +4,11 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class GroupAttribute implements Serializable {
+public class GroupAttribute implements Serializable, JsonSerializable, JsonDeserializable {
 
 	private static final long serialVersionUID = -537679331882943768L;
 	private String externalName = "";
@@ -42,18 +43,17 @@ public class GroupAttribute implements Serializable {
 		this.groupTopic = groupTopic;
 	}
 	
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject groupAttributeDict = new JSONObject();
 		groupAttributeDict.put("groupTopic", GetGroupTopic());
 		groupAttributeDict.put("externalName", GetExternalName());
 		return groupAttributeDict;
 	}
 	
-	public String ToJsonString() {
-		return ToJsonObject().toString();
-	}
 	
-	public void FromJsonObject(JSONObject groupAttribute) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject groupAttribute) throws LogException {
 		try {
 			this.externalName = groupAttribute.getString("externalName");
 			this.groupTopic = groupAttribute.getString("groupTopic");
@@ -62,10 +62,10 @@ public class GroupAttribute implements Serializable {
 		}
 	}
 	
-	public void FromJsonString(String groupAttributeString) throws LogException {
+	public void fromJsonString(String groupAttributeString) throws LogException {
 		try {
 			JSONObject groupAttribute = JSONObject.parseObject(groupAttributeString);
-			FromJsonObject(groupAttribute);
+			fromJsonObject(groupAttribute);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateGroupAttribute", e.getMessage(), e, "");
 		}

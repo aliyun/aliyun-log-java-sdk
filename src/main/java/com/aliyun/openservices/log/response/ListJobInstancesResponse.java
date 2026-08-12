@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONArray;
+import com.aliyun.openservices.log.annotation.InternalApi;
+import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.common.JobInstance;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 import java.io.Serializable;
@@ -15,12 +16,13 @@ public class ListJobInstancesResponse extends ResponseList<JobInstance> implemen
         super(headers);
     }
     @Override
+    @InternalApi
     public Unmarshaller<JobInstance> unmarshaller() {
         return new Unmarshaller<JobInstance>() {
             @Override
             public JobInstance unmarshal(JSONArray value, int index) {
                 JobInstance jobInstance = new JobInstance();
-                jobInstance.deserialize(value.getJSONObject(index));
+                jobInstance.fromJsonObject(value.getJSONObject(index));
                 return jobInstance;
             }
         };

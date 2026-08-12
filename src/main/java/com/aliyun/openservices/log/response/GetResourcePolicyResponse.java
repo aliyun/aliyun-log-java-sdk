@@ -1,12 +1,11 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
 import com.aliyun.openservices.log.common.ResourcePolicyResourceType;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.http.comm.ResponseMessage;
 import com.aliyun.openservices.log.internal.ErrorCodes;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Map;
 
@@ -37,10 +36,10 @@ public class GetResourcePolicyResponse extends Response {
         this.updateTime = updateTime;
     }
 
-    public static GetResourcePolicyResponse deserializeFrom(ResponseMessage response) throws LogException {
+    public static GetResourcePolicyResponse fromResponse(ResponseMessage response) throws LogException {
         String body = response.GetStringBody();
         try {
-            JSONObject object = JSONObject.parseObject(body, Feature.DisableSpecialKeyDetect);
+            JSONObject object = JSONObject.parseObject(body);
             String resourceName = object.getString("resourceName");
             return new GetResourcePolicyResponse(response.getHeaders(),
                     ResourcePolicyResourceType.fromValue(object.getString("resourceType")),

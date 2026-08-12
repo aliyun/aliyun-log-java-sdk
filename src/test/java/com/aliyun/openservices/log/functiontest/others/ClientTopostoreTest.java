@@ -9,8 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.Topostore;
@@ -170,7 +169,7 @@ public class ClientTopostoreTest extends MetaAPIBaseFunctionTest {
 
         GetTopostoreRequest request = new GetTopostoreRequest(name);
         GetTopostoreResponse response = client.getTopostore(request);
-        System.out.println(response.getTopostore().ToJsonString());
+        System.out.println(response.getTopostore().toJsonString());
     }
 
     public void testListTopostore() throws LogException{
@@ -185,7 +184,7 @@ public class ClientTopostoreTest extends MetaAPIBaseFunctionTest {
         ListTopostoreResponse response = client.listTopostore(request);
 
         for(int i=0; i<response.getCount(); i++){
-            System.out.println(response.getTopostores().get(i).ToJsonObject());
+            System.out.println(response.getTopostores().get(i).toJsonObject());
         }
 
         System.out.println("filter with tag");
@@ -198,7 +197,7 @@ public class ClientTopostoreTest extends MetaAPIBaseFunctionTest {
         ListTopostoreResponse response2 = client.listTopostore(request2);
 
         for(int i=0; i<response2.getCount(); i++){
-            System.out.println(response2.getTopostores().get(i).ToJsonObject());
+            System.out.println(response2.getTopostores().get(i).toJsonObject());
         }
 
     }
@@ -275,7 +274,7 @@ public class ClientTopostoreTest extends MetaAPIBaseFunctionTest {
 
         GetTopostoreNodeRequest request = new GetTopostoreNodeRequest(name,"machine1");
         GetTopostoreNodeResponse response = client.getTopostoreNode(request);
-        System.out.println(response.getTopostoreNode().ToJsonString());
+        System.out.println(response.getTopostoreNode().toJsonString());
     }
 
     public void testDeleteTopostoreNode(String name) throws LogException{
@@ -408,7 +407,7 @@ public class ClientTopostoreTest extends MetaAPIBaseFunctionTest {
         // relation op
         GetTopostoreRelationRequest request = new GetTopostoreRelationRequest(topostoreName, "relation1");
         GetTopostoreRelationResponse response = client.getTopostoreRelation(request);
-        System.out.println(response.getTopostoreRelation().ToJsonString());
+        System.out.println(response.getTopostoreRelation().toJsonString());
     }
 
 
@@ -426,7 +425,7 @@ public class ClientTopostoreTest extends MetaAPIBaseFunctionTest {
         ListTopostoreRelationRequest request = new ListTopostoreRelationRequest(topostoreName);
         ListTopostoreRelationResponse response = client.listTopostoreRelation(request);
         for(TopostoreRelation r :response.getTopostoreRelations()){
-            System.out.println(r.ToJsonString());
+            System.out.println(r.toJsonString());
         }
     }
 
@@ -480,7 +479,7 @@ public class ClientTopostoreTest extends MetaAPIBaseFunctionTest {
         ListTopostoreRelationResponse resp = client.listTopostoreRelation(req);
 
         for(TopostoreRelation relation:resp.getTopostoreRelations()        ){
-            System.out.println(relation.ToJsonString());
+            System.out.println(relation.toJsonString());
         }
 
         // test node list
@@ -495,7 +494,7 @@ public class ClientTopostoreTest extends MetaAPIBaseFunctionTest {
         ListTopostoreNodeResponse resp2 = client.listTopostoreNode(req2);
 
         for(TopostoreNode node:resp2.getTopostoreNodes()){
-            System.out.println(node.ToJsonString());
+            System.out.println(node.toJsonString());
         }
 
     }
@@ -717,7 +716,6 @@ public class ClientTopostoreTest extends MetaAPIBaseFunctionTest {
         request.setNodeIds(nodeIds);
 
         ListTopostoreNodeRelationResponse resp = client.listTopostoreNodeRelations(request);
-        // System.out.println(JSONObject.toJSONString(resp));
         listNodeRelationResultCheck(resp, Arrays.asList("AAA", "BBB", "CCC", "DDD"), 
                 Arrays.asList("AAA-BBB", "BBB-AAA", "BBB-CCC", "CCC-BBB", "CCC-AAA","AAA-DDD"));
         // System.out.println("---------------------------");
@@ -828,10 +826,10 @@ public class ClientTopostoreTest extends MetaAPIBaseFunctionTest {
         Client client = new Client(endpoint, accessKeyId, accessKeySecret);
         String  s = "        {\"depth\":1,\"direction\":\"both\",\"from\":0,\"nodeIds\":[\"sls-mall_trace-type_sls-mall\"],\"nodeProperities\":{},\"nodeTypes\":[],\"to\":0,\"topostoreName\":\"SLS_DEFAULT_DATA_EXPRESSION\"}\n";
 
-        ListTopostoreNodeRelationRequest req = JSONObject.parseObject(s, ListTopostoreNodeRelationRequest.class);
+        ListTopostoreNodeRelationRequest req = JsonCodec.fromJson(s, ListTopostoreNodeRelationRequest.class);
         ListTopostoreNodeRelationResponse res = client.listTopostoreNodeRelations(req);
 
-        System.out.println(JSON.toJSONString(res.getRelations()));
+        System.out.println(JsonCodec.toJson(res.getRelations()));
     }
 
     private void listNodeRelationResultCheck(ListTopostoreNodeRelationResponse resp, List<String> expectNodes, List<String> expectRelations){

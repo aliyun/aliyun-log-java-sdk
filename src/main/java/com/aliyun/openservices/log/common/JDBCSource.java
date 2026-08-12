@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class JDBCSource extends DataSource {
 
@@ -158,8 +159,9 @@ public class JDBCSource extends DataSource {
 	}
 
 	@Override
-	public void deserialize(JSONObject jsonObject) {
-		super.deserialize(jsonObject);
+	@InternalApi
+	public void fromJsonObject(JSONObject jsonObject) {
+		super.fromJsonObject(jsonObject);
 		databaseType = jsonObject.getString("databaseType");
 		jdbcDatabase = jsonObject.getString("jdbcDatabase");
 		jdbcUsername = jsonObject.getString("jdbcUsername");

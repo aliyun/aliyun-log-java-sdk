@@ -1,15 +1,16 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 
 import java.io.Serializable;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class ResourceRecord implements Serializable {
+public class ResourceRecord implements Serializable, JsonSerializable, JsonDeserializable {
     private static final long serialVersionUID = -1184418783117426648L;
     private String value = null;
     private String tag = null;
@@ -66,7 +67,8 @@ public class ResourceRecord implements Serializable {
         return lastModifyTime;
     }
 
-    public JSONObject ToJsonObject() throws LogException {
+    @InternalApi
+    public JSONObject toJsonObject() throws LogException {
         JSONObject result = new JSONObject();
         if (tag != null) {
             result.put(Consts.RESOURCE_RECORD_TAG, tag);
@@ -78,21 +80,19 @@ public class ResourceRecord implements Serializable {
         return result;
     }
 
-    public static String ToJsonString(List<ResourceRecord> records) throws LogException {
+    public static String toJsonString(List<ResourceRecord> records) throws LogException {
         JSONObject result = new JSONObject();
         JSONArray recordArray = new JSONArray();
         for (ResourceRecord r: records) {
-            recordArray.add(r.ToJsonObject());
+            recordArray.add(r.toJsonObject());
         }
         result.put("records", recordArray);
         return result.toString();
     }
 
-    public String ToJsonString() throws LogException {
-        return ToJsonObject().toString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         setValue(dict.getString(Consts.RESOURCE_RECORD_VALUE));
 
         if (dict.containsKey(Consts.RESOURCE_RECORD_TAG)) {
@@ -118,9 +118,9 @@ public class ResourceRecord implements Serializable {
         }
     }
 
-    public void FromJsonString(String content) throws LogException {
+    public void fromJsonString(String content) throws LogException {
         JSONObject dict = JSONObject.parseObject(content);
-        FromJsonObject(dict);
+        fromJsonObject(dict);
     }
 
     public void checkForCreate() throws IllegalArgumentException {

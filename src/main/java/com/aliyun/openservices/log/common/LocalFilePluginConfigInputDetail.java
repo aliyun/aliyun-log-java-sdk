@@ -2,7 +2,6 @@ package com.aliyun.openservices.log.common;
 
 import java.util.ArrayList;
 
-import com.alibaba.fastjson.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
 

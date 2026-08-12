@@ -3,12 +3,13 @@ package com.aliyun.openservices.log.common;
 import java.io.Serializable;
 
 import com.aliyun.openservices.log.util.Args;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class MetricStore implements Serializable {
+public class MetricStore implements Serializable, JsonSerializable, JsonDeserializable {
 
     private static final long serialVersionUID = 7408057471332043832L;
     private String name = "";
@@ -170,7 +171,8 @@ public class MetricStore implements Serializable {
         this.mode = mode;
     }
 
-    public JSONObject ToRequestJson() {
+    @InternalApi
+    public JSONObject toRequestJson() {
         JSONObject metricStoreDict = new JSONObject();
         metricStoreDict.put("name", getName());
         metricStoreDict.put("shardCount", getShardCount());
@@ -193,22 +195,21 @@ public class MetricStore implements Serializable {
         return metricStoreDict;
     }
 
-    public String ToRequestString() {
-        return ToRequestJson().toString();
+    public String toRequestString() {
+        return toRequestJson().toString();
     }
 
-    public JSONObject ToJsonObject() {
-        JSONObject dict = ToRequestJson();
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject dict = toRequestJson();
         dict.put("createTime", getCreateTime());
         dict.put("lastModifyTime", getLastModifyTime());
         return dict;
     }
 
-    public String ToJsonString() {
-        return ToJsonObject().toString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         try {
             setName(dict.getString("name"));
             setTtl(dict.getIntValue("ttl"));
@@ -242,10 +243,10 @@ public class MetricStore implements Serializable {
         }
     }
 
-    public void FromJsonString(String metricStoreString) throws LogException {
+    public void fromJsonString(String metricStoreString) throws LogException {
         try {
             JSONObject dict = JSONObject.parseObject(metricStoreString);
-            FromJsonObject(dict);
+            fromJsonObject(dict);
         } catch (JSONException e) {
             throw new LogException("FailToGenerateMetricStore", e.getMessage(), e, "");
         }

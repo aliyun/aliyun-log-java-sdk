@@ -5,9 +5,10 @@ import java.util.ArrayList;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implements Serializable{
 	private static final long serialVersionUID = -9072422584563361211L;
@@ -71,10 +72,13 @@ public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implemen
 	}
 
 	@Override
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject obj = new JSONObject();
 		JSONArray columns = new JSONArray();
-		columns.addAll(this.mStorageColumns);
+		for (String column : this.mStorageColumns) {
+			columns.add(column);
+		}
 		JSONObject detail = new JSONObject();
 		detail.put("columns", columns);
 		detail.put("delimiter", this.delimiter);
@@ -90,7 +94,8 @@ public class OssShipperCsvStorageDetail extends OssShipperStorageDetail implemen
 	}
 
 	@Override
-	public void FromJsonObject(JSONObject storageDetail) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject storageDetail) throws LogException {
 		try {
 			JSONObject storage = storageDetail.getJSONObject("storage");
 			setStorageFormat(storage.getString("format"));

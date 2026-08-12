@@ -3,31 +3,36 @@ package com.aliyun.openservices.log.common;
 import java.io.Serializable;
 import java.util.List;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.annotation.InternalApi;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author xizongzheng.xzz
  */
-public class MetricsConfig implements Serializable {
+public class MetricsConfig implements Serializable, JsonSerializable, JsonDeserializable {
 
-    @JSONField(name = "query_cache_config")
+    @SerializedName("query_cache_config")
     private MetricQueryCacheConfig queryCacheConfig;
 
-    @JSONField(name = "parallel_config")
+    @SerializedName("parallel_config")
     private MetricParallelConfig parallelConfig;
 
-    @JSONField(name = "downsampling_config")
+    @SerializedName("downsampling_config")
     private MetricDownSamplingConfig downSamplingConfig;
 
-    @JSONField(name = "pushdown_config")
+    @SerializedName("pushdown_config")
     private MetricPushdownConfig pushdownConfig;
 
-    @JSONField(name = "remote_write_config")
+    @SerializedName("remote_write_config")
     private MetricRemoteWriteConfig remoteWriteConfig;
 
-    @JSONField(name = "store_view_routing_config")
+    @SerializedName("store_view_routing_config")
     private List<MetricStoreViewRoutingConfig> storeViewRoutingConfigs;
 
+    public MetricsConfig() {
+    }
 
     public MetricsConfig(MetricDownSamplingConfig downSamplingConfig) {
         this.downSamplingConfig = downSamplingConfig;
@@ -137,5 +142,23 @@ public class MetricsConfig implements Serializable {
 
     public void setStoreViewRoutingConfigs(List<MetricStoreViewRoutingConfig> storeViewRoutingConfigs) {
         this.storeViewRoutingConfigs = storeViewRoutingConfigs;
+    }
+
+    @Override
+    @InternalApi
+    public JSONObject toJsonObject() {
+        return JsonCodec.toJsonObject(this);
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
+        MetricsConfig parsed = JsonCodec.fromJson(value, MetricsConfig.class);
+        queryCacheConfig = parsed.queryCacheConfig;
+        parallelConfig = parsed.parallelConfig;
+        downSamplingConfig = parsed.downSamplingConfig;
+        pushdownConfig = parsed.pushdownConfig;
+        remoteWriteConfig = parsed.remoteWriteConfig;
+        storeViewRoutingConfigs = parsed.storeViewRoutingConfigs;
     }
 }

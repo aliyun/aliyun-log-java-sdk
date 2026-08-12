@@ -9,15 +9,20 @@ import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.util.GzipUtils;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class CsvExternalStore extends ExternalStore {
     private static final long serialVersionUID = 6493204290917634292L;
     private static final long MAX_FILE_SIZE = 50L * 1024 * 1024;
     private static final long MAX_FILE_SIZE_COMPRESSED = 10L * 1024 * 1024 - 10 * 1024;
     private static final String STORE_TYPE_CSV = "csv";
+
+    public CsvExternalStore() {
+        super();
+    }
 
     /**
      * @param externalStoreName external store name
@@ -53,6 +58,7 @@ public class CsvExternalStore extends ExternalStore {
         return getParameter().getObjects().get(0);
     }
 
+    @InternalApi
     public CsvExternalStore(JSONObject object) throws LogException {
         super(object);
     }

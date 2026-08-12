@@ -4,12 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
-public class ShardingPolicy implements Serializable {
+public class ShardingPolicy implements Serializable, JsonSerializable, JsonDeserializable {
 
     private static final long serialVersionUID = -1477618902401594872L;
 
@@ -63,13 +64,14 @@ public class ShardingPolicy implements Serializable {
         this.queryActiveTime = queryActiveTime;
     }
 
-    public JSONObject ToJsonObject() {
+    @InternalApi
+    public JSONObject toJsonObject() {
         JSONObject dict = new JSONObject();
         if (shardGroup != null) {
-            dict.put("shardGroup", shardGroup.ToJsonObject());
+            dict.put("shardGroup", shardGroup.toJsonObject());
         }
         if (shardHash != null) {
-            dict.put("shardHash", shardHash.ToJsonObject());
+            dict.put("shardHash", shardHash.toJsonObject());
         }
         if (queryActiveTime != null) {
             dict.put("queryActiveTime", queryActiveTime);
@@ -77,18 +79,16 @@ public class ShardingPolicy implements Serializable {
         return dict;
     }
 
-    public String ToJsonString() {
-        return ToJsonObject().toString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         try {
             if (dict.containsKey("shardGroup")) {
                 JSONObject shardGroupDict = dict.getJSONObject("shardGroup");
                 this.shardGroup = null;
                 if (shardGroupDict != null) {
                     ShardGroup group = new ShardGroup();
-                    group.FromJsonObject(shardGroupDict);
+                    group.fromJsonObject(shardGroupDict);
                     this.shardGroup = group;
                 }
             }
@@ -97,7 +97,7 @@ public class ShardingPolicy implements Serializable {
                 this.shardHash = null;
                 if (shardHashDict != null) {
                     ShardHash hash = new ShardHash();
-                    hash.FromJsonObject(shardHashDict);
+                    hash.fromJsonObject(shardHashDict);
                     this.shardHash = hash;
                 }
             }
@@ -109,10 +109,10 @@ public class ShardingPolicy implements Serializable {
         }
     }
 
-    public void FromJsonString(String shardingPolicyString) throws LogException {
+    public void fromJsonString(String shardingPolicyString) throws LogException {
         try {
             JSONObject dict = JSONObject.parseObject(shardingPolicyString);
-            FromJsonObject(dict);
+            fromJsonObject(dict);
         } catch (JSONException e) {
             throw new LogException("FailToGenerateShardingPolicy", e.getMessage(), e, "");
         }
@@ -156,7 +156,8 @@ public class ShardingPolicy implements Serializable {
             this.groupCount = groupCount;
         }
 
-        public JSONObject ToJsonObject() {
+        @InternalApi
+        public JSONObject toJsonObject() {
             JSONObject dict = new JSONObject();
             dict.put("keys", toJsonArray(keys));
             if (groupCount != null) {
@@ -165,7 +166,8 @@ public class ShardingPolicy implements Serializable {
             return dict;
         }
 
-        public void FromJsonObject(JSONObject dict) {
+        @InternalApi
+        public void fromJsonObject(JSONObject dict) {
             if (dict.containsKey("keys")) {
                 setKeys(toStringList(dict.getJSONArray("keys")));
             }
@@ -213,7 +215,8 @@ public class ShardingPolicy implements Serializable {
             this.maxHashCount = maxHashCount;
         }
 
-        public JSONObject ToJsonObject() {
+        @InternalApi
+        public JSONObject toJsonObject() {
             JSONObject dict = new JSONObject();
             dict.put("keys", toJsonArray(keys));
             if (maxHashCount != null) {
@@ -222,7 +225,8 @@ public class ShardingPolicy implements Serializable {
             return dict;
         }
 
-        public void FromJsonObject(JSONObject dict) {
+        @InternalApi
+        public void fromJsonObject(JSONObject dict) {
             if (dict.containsKey("keys")) {
                 setKeys(toStringList(dict.getJSONArray("keys")));
             }

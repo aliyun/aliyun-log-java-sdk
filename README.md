@@ -100,13 +100,22 @@ while(true) {
 ```
 
 ## Maven配置
+
+`master` 分支继续发布保留 fastjson 的 `0.6.x`；`non-fastjson` 分支在过渡期发布已移除
+fastjson 的 `0.6.x-non-fastjson`。当前 non-fastjson 版本不是 SNAPSHOT，必须显式指定：
+
 ```
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.97</version>
+    <version>0.6.161-non-fastjson.1</version>
 </dependency>
 ```
+
+`0.6.161` 与 `0.6.161-non-fastjson.1` 不能在同一个依赖图中共存。两者具有相同的
+Maven coordinates，但公开 JSON API 不同；Maven `ComparableVersion` 会把未知 qualifier
+排在无 qualifier 版本之后，即 `0.6.161-non-fastjson.1` 大于 `0.6.161`。迁移方式参见
+[MIGRATION.md](MIGRATION.md)。
 
 ## protobuf 冲突
 可以使用 Aliyun LOG java SDK 提供的一个特殊版本
@@ -114,7 +123,7 @@ while(true) {
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.97</version>
+    <version>0.6.161-non-fastjson.1</version>
     <classifier>jar-with-dependencies</classifier>
     <exclusions>
         <exclusion>
@@ -124,6 +133,9 @@ while(true) {
     </exclusions>
 </dependency>
 ```
+
+对应的 fat jar 文件名为
+`aliyun-log-0.6.161-non-fastjson.1-jar-with-dependencies.jar`。
 
 ## FAQ
 **Q**: `aliyun-log-java-sdk` 和 `aliyun-sls-xxx-inner` 版本冲突的问题及解决方案。

@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.logstore;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.QueriedLog;
 import com.aliyun.openservices.log.exception.LogException;
@@ -30,7 +30,7 @@ public class RandomDataTest extends FunctionTest {
             Response hres = getLogs("", "", b, e, "set session parallel_sql=false;");
             Response ares = getLogs("", "", b, e, "set session parallel_sql=true;");
             if (hres.complete && ares.complete && hres.res.size() != ares.res.size()) {
-                System.out.println(JSONObject.toJSONString(hres.res) + "\n" + JSONObject.toJSONString(ares.res) + b + e);
+                System.out.println(JsonCodec.toJson(hres.res) + "\n" + JsonCodec.toJson(ares.res) + b + e);
                 break;
             }
         }

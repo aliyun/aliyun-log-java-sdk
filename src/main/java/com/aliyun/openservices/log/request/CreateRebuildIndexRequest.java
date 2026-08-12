@@ -25,6 +25,10 @@ public class CreateRebuildIndexRequest extends JobRequest {
         return Consts.JOB_URI;
     }
 
+    public RebuildIndex getRebuildIndex() {
+        return rebuildIndex;
+    }
+
     @Override
     public Object getBody() {
         return rebuildIndex;

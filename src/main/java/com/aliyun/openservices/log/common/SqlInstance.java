@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class SqlInstance {
+public class SqlInstance implements JsonDeserializable {
     String name;
     int cu;
     boolean useAsDefault;
@@ -37,7 +38,8 @@ public class SqlInstance {
     public SqlInstance(){
 
     }
-    public void fromJson(JSONObject object) throws LogException{
+    @InternalApi
+    public void fromJsonObject(JSONObject object) throws LogException{
         try{
             name = object.getString("name");
             cu = object.getInteger("cu");

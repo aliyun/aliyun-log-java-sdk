@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class LinkStore implements Serializable {
     private static final long serialVersionUID = -4480238526625142008L;
@@ -47,7 +48,8 @@ public class LinkStore implements Serializable {
         this.sourceLogStoreName = sourceLogStoreName;
     }
 
-    public JSONObject ToRequestJson()
+    @InternalApi
+    public JSONObject toRequestJson()
     {
         JSONObject dict = new JSONObject();
         dict.put("type", "link");
@@ -57,7 +59,7 @@ public class LinkStore implements Serializable {
         return dict;
     }
 
-    public String ToRequestString() {
-        return ToRequestJson().toString();
+    public String toRequestString() {
+        return toRequestJson().toString();
     }
 }

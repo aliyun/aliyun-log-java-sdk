@@ -315,7 +315,7 @@ public class ScheduledSqlE2E extends FunctionTest {
 
     private void createIndex(String project, String logStore, String indexConfig, Client destClient) throws LogException {
         Index index = new Index();
-        index.FromJsonString(indexConfig);
+        index.fromJsonString(indexConfig);
         destClient.CreateIndex(new CreateIndexRequest(project, logStore, index));
     }
 

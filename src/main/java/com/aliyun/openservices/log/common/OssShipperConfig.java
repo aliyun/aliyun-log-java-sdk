@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class OssShipperConfig implements ShipperConfig {
 
@@ -199,7 +200,8 @@ public class OssShipperConfig implements ShipperConfig {
 		return storageDetail;
 	}
 
-	public void FromJsonObj(JSONObject obj) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject obj) throws LogException {
 		try {
 			this.ossBucket = obj.getString("ossBucket");
 			this.ossPrefix = obj.getString("ossPrefix");
@@ -223,9 +225,9 @@ public class OssShipperConfig implements ShipperConfig {
 			} else {
 				storageDetail = new OssShipperJsonStorageDetail();
 			}
-			storageDetail.FromJsonObject(obj);
+			storageDetail.fromJsonObject(obj);
 			if (obj.containsKey("encryptConf")) {
-				this.encryptConf = EncryptConfig.FromJsonObject(obj.getJSONObject("encryptConf"));
+				this.encryptConf = EncryptConfig.fromJsonObject(obj.getJSONObject("encryptConf"));
 			}
 		} catch (JSONException e) {
 			throw new LogException("FailToParseOssShipperConfig",
@@ -234,12 +236,13 @@ public class OssShipperConfig implements ShipperConfig {
 	}
 
 	@Override
-	public String GetShipperType() {
+	public String getShipperType() {
 		return "oss";
 	}
 
-	public JSONObject GetJsonObj() {
-		JSONObject obj = storageDetail.ToJsonObject();
+	@InternalApi
+	public JSONObject toJsonObject() {
+		JSONObject obj = storageDetail.toJsonObject();
 		obj.put("ossBucket", this.ossBucket);
 		obj.put("ossPrefix", this.ossPrefix);
 		obj.put("roleArn", this.roleArn);
@@ -249,7 +252,7 @@ public class OssShipperConfig implements ShipperConfig {
 		obj.put("pathFormat", this.pathFormat);
 		obj.put("timeZone", this.timeZone);
 		if (this.encryptConf != null) {
-			obj.put("encryptConf", this.encryptConf.ToJsonObject());
+			obj.put("encryptConf", this.encryptConf.toJsonObject());
 		}
 		return obj;
 	}

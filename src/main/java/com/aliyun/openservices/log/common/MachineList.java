@@ -5,8 +5,9 @@ import java.util.ArrayList;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class MachineList implements Serializable {
 
@@ -40,6 +41,7 @@ public class MachineList implements Serializable {
 		this.machineList.addAll(machineList);
 	}
 	
+	@InternalApi
 	public void SetMachineList(JSONArray machineListJSONArray) {
 		machineList = new ArrayList<String>();
 		for(int i = 0;i < machineListJSONArray.size();i++) {
@@ -48,17 +50,20 @@ public class MachineList implements Serializable {
 		}
 	}
 	
-	private JSONArray ToRequestJson() {
+	private JSONArray toRequestJson() {
 		JSONArray machineList = new JSONArray();
-		machineList.addAll(GetMachineList());
+		for (String machine : GetMachineList()) {
+			machineList.add(machine);
+		}
 		return machineList;
 	}
 	
-	public String ToRequestString() {
-		return ToRequestJson().toString();
+	public String toRequestString() {
+		return toRequestJson().toString();
 	}
 
-	public void FromJsonArray(JSONArray array) throws LogException {
+	@InternalApi
+	public void fromJsonArray(JSONArray array) throws LogException {
 		try {
 			SetMachineList(array);
 		} catch (JSONException e) {
@@ -66,10 +71,10 @@ public class MachineList implements Serializable {
 		}
 	}
 	
-	public void FromJsonString(String machineListString) throws LogException {
+	public void fromJsonString(String machineListString) throws LogException {
 		try {
 			JSONArray machineArray = JSONArray.parseArray(machineListString);
-			FromJsonArray(machineArray);
+			fromJsonArray(machineArray);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateMachineGroup", e.getMessage(), e, "");
 		}

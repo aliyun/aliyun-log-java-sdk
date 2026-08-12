@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.functiontest;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.*;
@@ -408,7 +408,7 @@ public class SlsScmFunctionTest extends MetaAPIBaseFunctionTest {
 				res = client.GetConfig(project, testConfigName);
 				assertEquals("configName does not match", testConfigName, res.GetConfig().GetConfigName());
 				
-				JSONObject inputDetailJsonRes = JSONObject.parseObject(((ConfigInputDetail)res.GetConfig().GetInputDetail()).ToJsonString());
+				JSONObject inputDetailJsonRes = JSONObject.parseObject(((ConfigInputDetail)res.GetConfig().GetInputDetail()).toJsonString());
 				
 				assertEquals("logType does not match", inputDetailJson.getString("logType"), inputDetailJsonRes.getString("logType"));
 				assertEquals("logPath does not match", inputDetailJson.getString("logPath"), inputDetailJsonRes.getString("logPath"));
@@ -437,7 +437,7 @@ public class SlsScmFunctionTest extends MetaAPIBaseFunctionTest {
 					assertEquals("filterRegex " + i + " does not match", filterRegexJsonArray.getString(0), filterRegexJsonArrayRes.getString(0));
 				}
 				
-				JSONObject outputDetailJsonRes = JSONObject.parseObject(res.GetConfig().GetOutputDetail().ToJsonString());
+				JSONObject outputDetailJsonRes = JSONObject.parseObject(res.GetConfig().GetOutputDetail().toJsonString());
 				//System.out.println(outputDetailJsonRes.toString());
 				//assertEquals("projectName does not match"+outputDetailJson.getString("projectName"), outputDetailJson.getString("projectName"), outputDetailJsonRes.getString("projectName"));
 				assertEquals("logstoreName does not match", outputDetailJson.getString("logstoreName"), outputDetailJsonRes.getString("logstoreName"));
@@ -554,7 +554,7 @@ public class SlsScmFunctionTest extends MetaAPIBaseFunctionTest {
 		try {
 			ListProjectResponse response = client.ListProject();
 			for (Project project:response.getProjects()) {
-				System.out.println(project.ToJsonString());
+				System.out.println(project.toJsonString());
 			}
 			System.out.println(response.getCount());
 			System.out.println(response.getTotal());

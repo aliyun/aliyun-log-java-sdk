@@ -18,6 +18,7 @@ import com.aliyun.openservices.log.common.Consts;
 public class Response implements Serializable {
 	private static final long serialVersionUID = 7331835262124313824L;
 	private Map<String, String> mHeaders = new HashMap<String, String>();
+	private String rawResponseBody;
 
 	/**
 	 * Construct the base response body with http headers
@@ -71,6 +72,19 @@ public class Response implements Serializable {
 	 */
 	public Map<String, String> GetAllHeaders() {
 		return mHeaders;
+	}
+
+	/**
+	 * @return the raw JSON response body, or null if the SDK did not capture
+	 *         it for this API. Intended for reading server fields not yet
+	 *         modeled by the SDK.
+	 */
+	public String getRawResponseBody() {
+		return rawResponseBody;
+	}
+
+	public void setRawResponseBody(String rawResponseBody) {
+		this.rawResponseBody = rawResponseBody;
 	}
 
 }

@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class AliyunBSSSource extends DataSource {
 
@@ -30,8 +31,9 @@ public class AliyunBSSSource extends DataSource {
     }
 
     @Override
-    public void deserialize(JSONObject jsonObject) {
-        super.deserialize(jsonObject);
+    @InternalApi
+    public void fromJsonObject(JSONObject jsonObject) {
+        super.fromJsonObject(jsonObject);
         roleARN = JsonUtils.readOptionalString(jsonObject, "roleARN");
         historyMonth = JsonUtils.readOptionalInt(jsonObject, "historyMonth");
     }

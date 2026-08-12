@@ -3,11 +3,13 @@ package com.aliyun.openservices.log.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class OdpsShipperConfig implements ShipperConfig {
 
@@ -79,7 +81,7 @@ public class OdpsShipperConfig implements ShipperConfig {
 		return bufferInterval;
 	}
 
-	public String GetShipperType() {
+	public String getShipperType() {
 		return "odps";
 	}
 
@@ -111,19 +113,20 @@ public class OdpsShipperConfig implements ShipperConfig {
 		this.bufferInterval = bufferInterval;
 	}
 
-	public JSONObject GetJsonObj() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject obj = new JSONObject();
 		obj.put("odpsEndpoint", this.odpsEndPoint);
 		obj.put("odpsProject", this.odpsProject);
 		obj.put("odpsTable", this.odpsTable);
-		obj.put("fields", this.logFieldsList);
-		obj.put("partitionColumn", this.partitionColumn);
+		obj.put("fields", JsonCodec.toJsonArray(this.logFieldsList));
+		obj.put("partitionColumn", JsonCodec.toJsonArray(this.partitionColumn));
 		obj.put("partitionTimeFormat", this.partitionTimeFormat);
 		obj.put("bufferInterval", this.bufferInterval);
 		return obj;
 	}
 
-	private List<String> FromJsonArray(JSONArray jsonArray) {
+	private List<String> fromJsonArray(JSONArray jsonArray) {
 		List<String> list = new ArrayList<String>();
 		for (int i = 0; i < jsonArray.size(); i++) {
 			list.add(jsonArray.getString(i));
@@ -131,13 +134,14 @@ public class OdpsShipperConfig implements ShipperConfig {
 		return list;
 	}
 
-	public void FromJsonObj(JSONObject obj) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject obj) throws LogException {
 		try {
 			this.odpsEndPoint = obj.getString("odpsEndpoint");
 			this.odpsProject = obj.getString("odpsProject");
 			this.odpsTable = obj.getString("odpsTable");
-			this.logFieldsList = FromJsonArray(obj.getJSONArray("fields"));
-			this.partitionColumn = FromJsonArray(obj.getJSONArray("partitionColumn"));
+			this.logFieldsList = fromJsonArray(obj.getJSONArray("fields"));
+			this.partitionColumn = fromJsonArray(obj.getJSONArray("partitionColumn"));
 			this.partitionTimeFormat = obj.getString("partitionTimeFormat");
 			this.bufferInterval = obj.getIntValue("bufferInterval");
 		} catch (JSONException e) {

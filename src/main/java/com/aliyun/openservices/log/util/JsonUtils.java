@@ -1,15 +1,11 @@
 package com.aliyun.openservices.log.util;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.JSONSerializer;
-import com.alibaba.fastjson.serializer.ObjectSerializer;
-import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.aliyun.openservices.log.internal.Unmarshaller;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -17,23 +13,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
+@InternalApi
 public final class JsonUtils {
-
-    /**
-     * Serialize Date to Unix timestamp and deserialize Unix timestamp to date.
-     */
-    private static final SerializeConfig SERIALIZE_CONFIG = new SerializeConfig();
-
-    static {
-        SERIALIZE_CONFIG.put(Date.class, new DateToUnixTimestampSerializer());
-    }
 
     private JsonUtils() {
     }
 
     public static String serialize(Object object) {
-        return JSON.toJSONString(object, SERIALIZE_CONFIG);
+        return JsonCodec.toJson(object);
     }
 
     public static <T> List<T> readList(JSONObject value, String key, Unmarshaller<T> unmarshaller) {
@@ -113,23 +102,6 @@ public final class JsonUtils {
             map.put(fieldName, value.getString(fieldName));
         }
         return map;
-    }
-
-    /**
-     * Serialize date to unix timestamp.
-     */
-    private static class DateToUnixTimestampSerializer implements ObjectSerializer {
-
-        @Override
-        public void write(JSONSerializer serializer,
-                          Object date,
-                          Object fieldName,
-                          Type fieldType,
-                          int features) {
-            if (date != null) {
-                serializer.write(Utils.dateToTimestamp((Date) date));
-            }
-        }
     }
 
 }

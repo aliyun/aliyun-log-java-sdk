@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.response;
 
+import com.aliyun.openservices.log.annotation.InternalApi;
 import com.aliyun.openservices.log.common.AuditJob;
 import com.aliyun.openservices.log.internal.Unmarshaller;
-import com.alibaba.fastjson.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONArray;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -16,12 +17,13 @@ public class ListAuditJobResponse extends ResponseList<AuditJob> implements Seri
     }
 
     @Override
+    @InternalApi
     public Unmarshaller<AuditJob> unmarshaller() {
         return new Unmarshaller<AuditJob>() {
             @Override
             public AuditJob unmarshal(JSONArray value, int index) {
                 AuditJob audit = new AuditJob();
-                audit.deserialize(value.getJSONObject(index));
+                audit.fromJsonObject(value.getJSONObject(index));
                 return audit;
             }
         };

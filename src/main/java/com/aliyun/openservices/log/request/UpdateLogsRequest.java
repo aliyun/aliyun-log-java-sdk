@@ -1,9 +1,10 @@
 package com.aliyun.openservices.log.request;
 
-import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.http.client.HttpMethod;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.util.Map;
 
@@ -114,7 +115,7 @@ public class UpdateLogsRequest extends BasicRequest {
     }
 
     public void setDataFromMap(Map<String, ?> data) {
-        this.data = data == null ? null : JSONObject.toJSONString(data);
+        this.data = data == null ? null : JsonUtils.serialize(data);
     }
 
     public void setLogItem(LogItem logItem) {

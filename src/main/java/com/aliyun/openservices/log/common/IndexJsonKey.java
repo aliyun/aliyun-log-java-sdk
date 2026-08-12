@@ -1,11 +1,12 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.io.Serializable;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Index config of a json key
@@ -72,8 +73,9 @@ public class IndexJsonKey extends IndexKey implements Serializable {
     }
 
     @Override
-    public void FromJsonObject(JSONObject dict) throws LogException {
-        super.FromJsonObject(dict);
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
+        super.fromJsonObject(dict);
         if (dict.containsKey("index_all")) {
             setIndexAll(dict.getBooleanValue("index_all"));
         }
@@ -82,15 +84,18 @@ public class IndexJsonKey extends IndexKey implements Serializable {
         }
         if (dict.containsKey("json_keys")) {
             JSONObject jsonObject = dict.getJSONObject("json_keys");
-            jsonKeys.FromJsonObject(jsonObject);
+            jsonKeys.fromJsonObject(jsonObject);
         }
     }
 
     @Override
-    public JSONObject ToRequestJson() throws LogException {
-        JSONObject allKeys = super.ToRequestJson();
+    @InternalApi
+    public JSONObject toRequestJson() throws LogException {
+        JSONObject allKeys = super.toRequestJson();
         JSONArray tokenDict = new JSONArray();
-        tokenDict.addAll(GetToken());
+        for (String item : GetToken()) {
+            tokenDict.add(item);
+        }
         if ("json".equals(GetType())) {
             allKeys.put("token", tokenDict);
             allKeys.put("caseSensitive", GetCaseSensitive());
@@ -98,7 +103,7 @@ public class IndexJsonKey extends IndexKey implements Serializable {
         }
         allKeys.put("index_all", isIndexAll());
         allKeys.put("max_depth", getMaxDepth());
-        allKeys.put("json_keys", getJsonKeys().ToRequestJson());
+        allKeys.put("json_keys", getJsonKeys().toRequestJson());
         return allKeys;
     }
 }

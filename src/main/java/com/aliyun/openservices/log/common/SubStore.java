@@ -1,14 +1,15 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class SubStore {
+public class SubStore implements JsonDeserializable {
     private String name;
     private int ttl;
     private int sortedKeyCount;
@@ -103,7 +104,8 @@ public class SubStore {
         }
     }
 
-    private void fromJsonObject(JSONObject dict) {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) {
         this.setName(dict.getString("name"));
         this.setTtl(dict.getIntValue("ttl"));
         this.setSortedKeyCount(dict.getIntValue("sortedKeyCount"));
@@ -127,6 +129,7 @@ public class SubStore {
     }
 
 
+    @InternalApi
     public JSONObject toRequestJson() {
         JSONObject subStoreDict = new JSONObject();
         subStoreDict.put("name", getName());

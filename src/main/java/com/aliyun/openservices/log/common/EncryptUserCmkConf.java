@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class EncryptUserCmkConf {
+public class EncryptUserCmkConf implements JsonSerializable, JsonDeserializable {
     private String cmk_key_id;
     private String arn;
     private String region_id;
@@ -43,7 +44,8 @@ public class EncryptUserCmkConf {
         this.region_id = region_id;
     }
 
-    public JSONObject ToJsonObject() {
+    @InternalApi
+    public JSONObject toJsonObject() {
         JSONObject dict = new JSONObject();
         dict.put("cmk_key_id", this.cmk_key_id);
         dict.put("arn", this.arn);
@@ -51,11 +53,9 @@ public class EncryptUserCmkConf {
         return dict;
     }
 
-    public String ToJsonString() {
-        return ToJsonObject().toString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         try {
             setCmkKeyId(dict.getString("cmk_key_id"));
             setArn(dict.getString("arn"));
@@ -65,10 +65,10 @@ public class EncryptUserCmkConf {
         }
     }
 
-    public void FromJsonString(String logStoreString) throws LogException {
+    public void fromJsonString(String logStoreString) throws LogException {
         try {
             JSONObject dict = JSONObject.parseObject(logStoreString);
-            FromJsonObject(dict);
+            fromJsonObject(dict);
         } catch (JSONException e) {
             throw new LogException("The Encrypt User config is invalid", e.getMessage(), e, "");
         }

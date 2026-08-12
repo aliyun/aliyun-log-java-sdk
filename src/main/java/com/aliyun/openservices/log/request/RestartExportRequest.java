@@ -21,6 +21,10 @@ public class RestartExportRequest extends JobRequest {
         return HttpMethod.PUT;
     }
 
+    public Export getExport() {
+        return export;
+    }
+
     @Override
     public Object getBody() {
         return export;

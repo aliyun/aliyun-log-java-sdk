@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class LineFormat extends DataFormat {
 
@@ -24,8 +25,19 @@ public class LineFormat extends DataFormat {
     }
 
     @Override
-    public void deserialize(JSONObject jsonObject) {
-        super.deserialize(jsonObject);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (timePattern != null) {
+            value.put("timePattern", timePattern);
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject jsonObject) {
+        super.fromJsonObject(jsonObject);
         timePattern = JsonUtils.readOptionalString(jsonObject, "timePattern");
     }
 }

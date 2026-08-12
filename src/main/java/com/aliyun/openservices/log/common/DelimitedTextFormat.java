@@ -2,11 +2,13 @@ package com.aliyun.openservices.log.common;
 
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class DelimitedTextFormat extends StructuredDataFormat {
 
@@ -79,8 +81,35 @@ public class DelimitedTextFormat extends StructuredDataFormat {
     }
 
     @Override
-    public void deserialize(JSONObject jsonObject) {
-        super.deserialize(jsonObject);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (fieldNames != null) {
+            value.put("fieldNames", JsonCodec.toJsonArray(fieldNames));
+        }
+        if (fieldDelimiter != null) {
+            value.put("fieldDelimiter", fieldDelimiter);
+        }
+        if (quoteChar != null) {
+            value.put("quoteChar", quoteChar);
+        }
+        if (escapeChar != null) {
+            value.put("escapeChar", escapeChar);
+        }
+        if (skipLeadingRows != null) {
+            value.put("skipLeadingRows", skipLeadingRows);
+        }
+        if (maxLines != null) {
+            value.put("maxLines", maxLines);
+        }
+        value.put("firstRowAsHeader", firstRowAsHeader);
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject jsonObject) {
+        super.fromJsonObject(jsonObject);
         fieldDelimiter = JsonUtils.readOptionalString(jsonObject, "fieldDelimiter");
         quoteChar = JsonUtils.readOptionalString(jsonObject, "quoteChar");
         escapeChar = JsonUtils.readOptionalString(jsonObject, "escapeChar");

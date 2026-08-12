@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class CertificateConfiguration {
     /**
@@ -209,6 +210,7 @@ public class CertificateConfiguration {
         return this;
     }
 
+    @InternalApi
     public JSONObject marshal() {
         JSONObject object = new JSONObject();
         object.put("publicKey", publicKey);

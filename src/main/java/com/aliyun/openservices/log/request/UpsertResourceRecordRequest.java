@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.request;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.ResourceRecord;
 
@@ -23,8 +24,7 @@ public class UpsertResourceRecordRequest extends RecordRequest {
 
     public String getPostBody() {
         JSONObject result = new JSONObject();
-        JSONArray encodedRecords = new JSONArray();
-        encodedRecords.addAll(records);
+        JSONArray encodedRecords = JsonCodec.toJsonArray(records);
         result.put(Consts.RESOURCE_RECORDS, encodedRecords);
         return result.toString();
     }

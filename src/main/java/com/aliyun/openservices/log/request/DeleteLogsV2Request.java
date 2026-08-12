@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.request;
 
-import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.http.client.HttpMethod;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 /**
  * Request for deleting logs from a logstore using the DeleteLogs V2 API.

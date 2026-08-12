@@ -1,9 +1,10 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Export extends ScheduledJob implements Serializable {
 
@@ -33,10 +34,19 @@ public class Export extends ScheduledJob implements Serializable {
         return scheduleId;
     }
 
-    public void deserialize(JSONObject jsonObject) {
-        super.deserialize(jsonObject);
+    @Override
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        put(value, "scheduleId", scheduleId);
+        return value;
+    }
+
+    @InternalApi
+    public void fromJsonObject(JSONObject jsonObject) {
+        super.fromJsonObject(jsonObject);
         scheduleId = JsonUtils.readOptionalString(jsonObject,"scheduleId","");
         configuration = new ExportConfiguration();
-        configuration.deserialize(jsonObject.getJSONObject("configuration"));
+        configuration.fromJsonObject(jsonObject.getJSONObject("configuration"));
     }
 }

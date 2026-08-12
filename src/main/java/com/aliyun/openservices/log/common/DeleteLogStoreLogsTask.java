@@ -1,37 +1,30 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * DeleteLogStoreLogsTask represents a soft delete task for log store logs
  */
-public class DeleteLogStoreLogsTask implements Serializable {
+public class DeleteLogStoreLogsTask implements Serializable, JsonSerializable, JsonDeserializable {
     private static final long serialVersionUID = 6842917394758326187L;
 
-    @JSONField
     private int progress;
 
-    @JSONField
     private String taskId;
 
-    @JSONField
     private String query;
 
-    @JSONField
     private int errorCode;
 
-    @JSONField
     private int from;
 
-    @JSONField
     private int to;
 
-    @JSONField
     private String errorMessage;
 
     public DeleteLogStoreLogsTask() {
@@ -103,6 +96,7 @@ public class DeleteLogStoreLogsTask implements Serializable {
         this.errorMessage = errorMessage;
     }
 
+    @InternalApi
     public JSONObject toJsonObject() {
         JSONObject json = new JSONObject();
         json.put("progress", progress);
@@ -115,6 +109,7 @@ public class DeleteLogStoreLogsTask implements Serializable {
         return json;
     }
 
+    @InternalApi
     public void fromJsonObject(JSONObject jsonObject) throws LogException {
         try {
             this.progress = jsonObject.getIntValue("progress");

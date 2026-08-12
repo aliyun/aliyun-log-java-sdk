@@ -1,48 +1,45 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.json.JSONException;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Utils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 /**
  * Will be removed in next release.
  */
 
-public class Job implements Serializable {
+public class Job implements Serializable, JsonSerializable, JsonDeserializable {
 
     private static final long serialVersionUID = 6457720937101208563L;
 
     /**
      * The name of job.
      */
-    @JSONField
     private String name;
 
-    @JSONField
     private String displayName;
 
     /**
      * The type of job. See {@link JobType}
      */
-    @JSONField
     private JobType type;
 
     /**
      * The description of job
      */
-    @JSONField
     private String description;
 
     /**
      * The scheduleId of job
      */
-    @JSONField
     private String scheduleId;
 
     /**
@@ -58,22 +55,18 @@ public class Job implements Serializable {
     /**
      * When and how often to repeat the job.
      */
-    @JSONField
     private JobSchedule schedule;
 
     /**
      * The state of job. See {@link JobState}
      */
-    @JSONField
     private JobState state;
 
-    @JSONField
     private String status;
 
     /**
      * The configuration of job.
      */
-    @JSONField
     private JobConfiguration configuration;
 
     public String getName() {
@@ -190,7 +183,50 @@ public class Job implements Serializable {
         }
     }
 
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = new JSONObject();
+        put(value, "name", name);
+        put(value, "displayName", displayName);
+        put(value, "type", type == null ? null : type.toString());
+        put(value, "description", description);
+        put(value, "scheduleId", scheduleId);
+        if (createTime != null) {
+            value.put("createTime", Utils.dateToTimestamp(createTime));
+        }
+        if (lastModifiedTime != null) {
+            value.put("lastModifiedTime", Utils.dateToTimestamp(lastModifiedTime));
+        }
+        if (schedule != null) {
+            value.put("schedule", schedule.toJsonObject());
+        }
+        put(value, "state", state == null ? null : state.toString());
+        put(value, "status", status);
+        if (configuration != null) {
+            value.put("configuration", configuration.toJsonObject());
+        }
+        return value;
+    }
+
+    /**
+     * Convert this job to its JSON representation.
+     */
+    private static void put(JSONObject value, String key, String item) {
+        if (item != null) {
+            value.put(key, item);
+        }
+    }
+
+    public void fromJsonString(String jobString) throws LogException {
+        try {
+            fromJsonObject(JSONObject.parseObject(jobString));
+        } catch (JSONException e) {
+            throw new LogException("FailToGenerateJob", e.getMessage(), e, "");
+        }
+    }
+
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         name = value.getString("name");
         displayName = JsonUtils.readOptionalString(value, "displayName");
         type = JobType.fromString(value.getString("type"));
@@ -210,11 +246,11 @@ public class Job implements Serializable {
         }
         if (value.containsKey("schedule")) {
             schedule = new JobSchedule();
-            schedule.deserialize(value.getJSONObject("schedule"));
+            schedule.fromJsonObject(value.getJSONObject("schedule"));
         }
         configuration = createConfiguration(type);
         if (configuration != null) {
-            configuration.deserialize(value.getJSONObject("configuration"));
+            configuration.fromJsonObject(value.getJSONObject("configuration"));
         }
     }
 

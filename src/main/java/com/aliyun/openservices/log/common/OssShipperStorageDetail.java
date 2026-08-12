@@ -2,9 +2,10 @@ package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public abstract class OssShipperStorageDetail {
+public abstract class OssShipperStorageDetail implements JsonDeserializable {
 	private String storageFormat = "";
 	
 	public String getStorageFormat() {
@@ -13,6 +14,8 @@ public abstract class OssShipperStorageDetail {
 	public void setStorageFormat(String storageFormat) {
 		this.storageFormat = storageFormat;
 	}
-	public abstract JSONObject ToJsonObject();
-	public abstract void FromJsonObject(JSONObject inputDetail) throws LogException;
+	@InternalApi
+	public abstract JSONObject toJsonObject();
+	@InternalApi
+	public abstract void fromJsonObject(JSONObject inputDetail) throws LogException;
 }

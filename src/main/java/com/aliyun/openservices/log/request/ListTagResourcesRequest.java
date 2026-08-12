@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.request;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class ListTagResourcesRequest extends Request {
         for (String resourceId : resourceIdList) {
             resourceIdArray.add(resourceId);
         }
-        SetParam("resourceId", resourceIdArray.toJSONString());
+        SetParam("resourceId", resourceIdArray.toString());
     }
 
     public void setTagList(Map<String, String> tagList) {
@@ -42,6 +42,6 @@ public class ListTagResourcesRequest extends Request {
             tagJson.put("value", entry.getValue());
             tagListJson.add(tagJson);
         }
-        SetParam("tags", tagListJson.toJSONString());
+        SetParam("tags", tagListJson.toString());
     }
 }

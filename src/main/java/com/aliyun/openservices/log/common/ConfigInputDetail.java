@@ -3,17 +3,18 @@ package com.aliyun.openservices.log.common;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The input config of a logtail config
  * @author log-service-dev
  *
  */
-public class ConfigInputDetail extends LocalFileConfigInputDetail implements Serializable {
+public class ConfigInputDetail extends LocalFileConfigInputDetail implements Serializable, JsonSerializable {
 	private static final long serialVersionUID = 8699540049365755476L;
 	private ArrayList<String> key = new ArrayList<String>();
 	private String logBeginRegex = "";
@@ -102,12 +103,15 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		this.customizedFields = customizedFields;
 	}
 		
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject jsonObj = new JSONObject();
-		LocalFileConfigToJsonObject(jsonObj);
+		localFileConfigToJsonObject(jsonObj);
 
 		JSONArray keyArray = new JSONArray();
-		keyArray.addAll(key);
+		for (String item : key) {
+			keyArray.add(item);
+		}
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_KEY, keyArray);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX, logBeginRegex);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_REGEX, regex);
@@ -122,31 +126,35 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		return jsonObj;
 	}
 
-	public String ToJsonString() {
-		return ToJsonObject().toString();
-	}
 
-	public void FromJsonObject(JSONObject inputDetail) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject inputDetail) throws LogException {
 		try {
-			LocalFileConfigFromJsonObject(inputDetail);
+			localFileConfigFromJsonObject(inputDetail);
 			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX))
 				this.logBeginRegex = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_LOGBEGINREGEX);
 			else
 				this.logBeginRegex = ".*";
 			this.regex = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_REGEX);
 			SetKey(inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_KEY));
-			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS))
-				this.customizedFields = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS);
+			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS)) {
+				if (inputDetail.isString(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS)) {
+					this.customizedFields = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS);
+				} else {
+					JSONObject fields = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_CUSTOMIZEDFIELDS);
+					this.customizedFields = fields == null ? null : fields.toString();
+				}
+			}
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateInputDetail", e.getMessage(),
 					e, "");
 		}
 	}
 
-	public void FromJsonString(String inputDetailString) throws LogException {
+	public void fromJsonString(String inputDetailString) throws LogException {
 		try {
 			JSONObject inputDetail = JSONObject.parseObject(inputDetailString);
-			FromJsonObject(inputDetail);
+			fromJsonObject(inputDetail);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateInputDetail", e.getMessage(),
 					e, "");
@@ -177,6 +185,7 @@ public class ConfigInputDetail extends LocalFileConfigInputDetail implements Ser
 		this.key = new ArrayList<String>(key);
 	}
 
+	@InternalApi
 	public void SetKey(JSONArray key) throws LogException {
 		try {
 			this.key = new ArrayList<String>();

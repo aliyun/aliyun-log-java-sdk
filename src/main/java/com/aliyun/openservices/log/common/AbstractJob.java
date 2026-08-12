@@ -1,31 +1,25 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Utils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Date;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
-abstract class AbstractJob {
+abstract class AbstractJob implements JsonSerializable, JsonDeserializable {
 
-    @JSONField
     private String name;
 
-    @JSONField
     private String displayName;
 
-    @JSONField
     private String description;
 
-    @JSONField
     private JobType type;
 
-    @JSONField
     private boolean recyclable;
 
-    @JSONField
     private String adminAttribute;
 
     private Date createTime;
@@ -95,7 +89,36 @@ abstract class AbstractJob {
 
     public abstract JobConfiguration getConfiguration();
 
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = new JSONObject();
+        put(value, "name", name);
+        put(value, "displayName", displayName);
+        put(value, "description", description);
+        put(value, "type", type == null ? null : type.toString());
+        value.put("recyclable", recyclable);
+        put(value, "adminAttribute", adminAttribute);
+        if (createTime != null) {
+            value.put("createTime", Utils.dateToTimestamp(createTime));
+        }
+        if (lastModifiedTime != null) {
+            value.put("lastModifiedTime", Utils.dateToTimestamp(lastModifiedTime));
+        }
+        JobConfiguration configuration = getConfiguration();
+        if (configuration != null) {
+            value.put("configuration", configuration.toJsonObject());
+        }
+        return value;
+    }
+
+    static void put(JSONObject value, String key, String item) {
+        if (item != null) {
+            value.put(key, item);
+        }
+    }
+
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         name = value.getString("name");
         type = JobType.fromString(value.getString("type"));
         displayName = JsonUtils.readOptionalString(value, "displayName");

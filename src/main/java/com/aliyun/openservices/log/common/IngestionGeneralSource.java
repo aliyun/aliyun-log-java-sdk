@@ -1,13 +1,13 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONType;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
-@JSONType(serializer = ToGeneralSerializer.class)
 public class IngestionGeneralSource extends DataSource {
 
     private Map<String, Object> fields = new HashMap<String, Object>();
@@ -33,15 +33,15 @@ public class IngestionGeneralSource extends DataSource {
     }
 
     @Override
-    public void deserialize(JSONObject jsonObject) {
-        super.deserialize(jsonObject);
-        for (String field : jsonObject.keySet()) {
-            put(field, jsonObject.get(field));
-        }
+    @InternalApi
+    public void fromJsonObject(JSONObject jsonObject) {
+        super.fromJsonObject(jsonObject);
+        fields = JsonCodec.toMap(jsonObject);
     }
 
     @Override
-    public String toString() {
-        return JSONObject.toJSONString(fields);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        return JsonCodec.toJsonObject(fields);
     }
 }

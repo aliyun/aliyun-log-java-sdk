@@ -10,22 +10,27 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "non-fastjson" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "non-fastjson" ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '8', '17' ]
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 17
+    - name: Set up JDK ${{ matrix.java }}
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: ${{ matrix.java }}
         distribution: 'temurin'
         cache: maven
+    - name: Run offline unit tests
+      run: mvn -B -Dtest='**/*Test,!**/functiontest/**,!ClientTest' test --file pom.xml
     - name: Build with Maven
       run: mvn -B package --file pom.xml -DskipTests

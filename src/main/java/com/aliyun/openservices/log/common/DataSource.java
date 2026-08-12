@@ -1,8 +1,10 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public abstract class DataSource {
+public abstract class DataSource implements JsonSerializable, JsonDeserializable {
 
     protected DataSourceType type;
 
@@ -18,7 +20,13 @@ public abstract class DataSource {
         this.type = type;
     }
 
-    public void deserialize(JSONObject jsonObject) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        return JsonCodec.toJsonObject(this);
+    }
+
+    @InternalApi
+    public void fromJsonObject(JSONObject jsonObject) {
         // No-op
     }
 }

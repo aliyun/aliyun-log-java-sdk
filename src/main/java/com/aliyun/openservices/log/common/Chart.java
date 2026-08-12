@@ -5,11 +5,12 @@ import java.util.ArrayList;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class Chart implements Serializable {
+public class Chart implements Serializable, JsonSerializable, JsonDeserializable {
 
 	private static final long serialVersionUID = 7056271803253344862L;
 	private String title = "";
@@ -161,7 +162,8 @@ public class Chart implements Serializable {
 		this.displayName = displayName;
 	}
 	
-	public JSONObject RawDisplayToJsonObject() {
+	@InternalApi
+	public JSONObject rawDisplayToJsonObject() {
 		JSONObject displayJson = new JSONObject();
 		
 		displayJson.put("xPos", getxPosition());
@@ -192,7 +194,8 @@ public class Chart implements Serializable {
 		return displayJson;
 	}
 	
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject chartJson = new JSONObject();
 		chartJson.put("title", getTitle());
 		chartJson.put("type", getType());
@@ -208,7 +211,7 @@ public class Chart implements Serializable {
 		searchJson.put("end", getEnd());
 		chartJson.put("search", searchJson);
 		
-		chartJson.put("display", RawDisplayToJsonObject());
+		chartJson.put("display", rawDisplayToJsonObject());
 
 		if (getRawActionAttr().length() > 0) {
 			chartJson.put("action", JSONObject.parseObject(getRawActionAttr()));
@@ -218,10 +221,8 @@ public class Chart implements Serializable {
 
 		return chartJson;
 	}
-	public String ToJsonString() {
-		return ToJsonObject().toString();
-	}
-	public void FromJsonObject(JSONObject dict) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject dict) throws LogException {
 		try {		
 			setTitle(dict.getString("title"));
 			setType(dict.getString("type"));
@@ -271,10 +272,10 @@ public class Chart implements Serializable {
 			throw new LogException("FailedToGenerateChart",  e.getMessage(), e, "");
 		}
 	}
-	public void FromJsonString(String chartString) throws LogException {
+	public void fromJsonString(String chartString) throws LogException {
 		try {
 			JSONObject dict = JSONObject.parseObject(chartString);
-			FromJsonObject(dict);
+			fromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateChart", e.getMessage(), e, "");
 		}

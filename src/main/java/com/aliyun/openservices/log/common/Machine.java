@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The config of a machine
@@ -13,7 +14,7 @@ import com.alibaba.fastjson.JSONObject;
  * @author log-service-dev
  *
  */
-public class Machine implements Serializable {
+public class Machine implements Serializable, JsonSerializable, JsonDeserializable {
 	private static final long serialVersionUID = 5945880426501816900L;
 	protected String ip = "";
 	protected String machine_unique_id = "";
@@ -75,7 +76,8 @@ public class Machine implements Serializable {
 	 *
 	 * @return the Jonsobject of the machine
 	 */
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("ip", ip);
 		jsonObj.put("machine-uniqueid", machine_unique_id);
@@ -92,9 +94,6 @@ public class Machine implements Serializable {
 	 *
 	 * @return the json string of the machine
 	 */
-	public String ToJsonString() {
-		return ToJsonObject().toString();
-	}
 
 	/**
 	 * Construct a machine from a json object
@@ -104,7 +103,8 @@ public class Machine implements Serializable {
 	 * @throws LogException
 	 *             if any error happen
 	 */
-	public void FromJsonObject(JSONObject dict) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject dict) throws LogException {
 		try {
 			this.ip = dict.getString("ip");
 			this.machine_unique_id = dict.getString("machine-uniqueid");
@@ -127,10 +127,10 @@ public class Machine implements Serializable {
 	 * @throws LogException
 	 *             if any error happen
 	 */
-	public void FromJsonString(String machineString) throws LogException {
+	public void fromJsonString(String machineString) throws LogException {
 		try {
 			JSONObject dict = JSONObject.parseObject(machineString);
-			FromJsonObject(dict);
+			fromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateMachine", e.getMessage(), e,
 					"");

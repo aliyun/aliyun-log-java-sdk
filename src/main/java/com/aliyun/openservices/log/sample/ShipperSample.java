@@ -50,8 +50,8 @@ public class ShipperSample {
 
         GetShipperResponse res = client.GetShipperConfig(project, logStore,
                 shipperName);
-        System.out.println(res.GetConfig().GetShipperType());
-        System.out.println(res.GetConfig().GetJsonObj());
+        System.out.println(res.GetConfig().getShipperType());
+        System.out.println(res.GetConfig().toJsonObject());
 
         try {
             Thread.sleep(5 * 1000);
@@ -80,8 +80,8 @@ public class ShipperSample {
 		client.CreateShipper(project, logStore, shipperName, ossConfig);
 
 		GetShipperResponse ossRes = client.GetShipperConfig(project, logStore, shipperName);
-        System.out.println(ossRes.GetConfig().GetShipperType());
-        System.out.println(ossRes.GetConfig().GetJsonObj());
+        System.out.println(ossRes.GetConfig().getShipperType());
+        System.out.println(ossRes.GetConfig().toJsonObject());
 
         client.DeleteShipper(project, logStore, shipperName);
     }
@@ -100,8 +100,8 @@ public class ShipperSample {
         client.CreateShipper(project, logStore, shipperName, ossConfig);
 
         GetShipperResponse ossRes = client.GetShipperConfig(project, logStore, shipperName);
-        System.out.println(ossRes.GetConfig().GetShipperType());
-        System.out.println(ossRes.GetConfig().GetJsonObj());
+        System.out.println(ossRes.GetConfig().getShipperType());
+        System.out.println(ossRes.GetConfig().toJsonObject());
 
         client.DeleteShipper(project, logStore, shipperName);
     }
@@ -125,8 +125,8 @@ public class ShipperSample {
         client.CreateShipper(project, logStore, shipperName, ossConfig);
 
         GetShipperResponse ossRes = client.GetShipperConfig(project, logStore, shipperName);
-        System.out.println(ossRes.GetConfig().GetShipperType());
-        System.out.println(ossRes.GetConfig().GetJsonObj());
+        System.out.println(ossRes.GetConfig().getShipperType());
+        System.out.println(ossRes.GetConfig().toJsonObject());
 
         client.DeleteShipper(project, logStore, shipperName);
     }

@@ -1,9 +1,8 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONType;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-@JSONType(serializer = ToGeneralSerializer.class)
 public class GeneralJobConfiguration extends JobConfiguration {
 
     private String detail;
@@ -24,7 +23,8 @@ public class GeneralJobConfiguration extends JobConfiguration {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         detail = value.toString();
     }
 
@@ -46,12 +46,9 @@ public class GeneralJobConfiguration extends JobConfiguration {
         return result;
     }
 
+    @InternalApi
     @Override
-    public String toString() {
-        return this.detail;
-    }
-
     public JSONObject toJsonObject() {
-        return JSONObject.parseObject(this.detail);
+        return this.detail == null ? null : JSONObject.parseObject(this.detail);
     }
 }

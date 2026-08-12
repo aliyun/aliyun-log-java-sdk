@@ -3,11 +3,12 @@
  */
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.MultimodalStatus;
 import com.aliyun.openservices.log.common.AnonymousWriteStatus;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The response of the get logstore multimodal configuration API from log service.
@@ -64,15 +65,15 @@ public class GetLogStoreMultimodalConfigurationResponse extends Response {
     }
 
     /**
-     * Deserialize from JSON object.
+     * Read fields from a JSON object.
      *
      * @param asJson JSON object
      */
-    public void deserializeFrom(JSONObject asJson) {
+    @InternalApi
+    public void fromJsonObject(JSONObject asJson) {
         String statusStr = asJson.getString("status");
         status = statusStr != null ? MultimodalStatus.fromValue(statusStr) : null;
         String anonymousWriteStr = asJson.getString("anonymousWrite");
         anonymousWrite = anonymousWriteStr != null ? AnonymousWriteStatus.fromValue(anonymousWriteStr) : null;
     }
 }
-

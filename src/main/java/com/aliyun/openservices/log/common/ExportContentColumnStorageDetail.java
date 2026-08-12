@@ -1,9 +1,10 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.ArrayList;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ExportContentColumnStorageDetail extends ExportContentDetail {
 
@@ -24,7 +25,29 @@ public class ExportContentColumnStorageDetail extends ExportContentDetail {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (columns != null) {
+            JSONArray columnsArray = new JSONArray();
+            for (ExportContentStorageColumn column : columns) {
+                if (column == null) {
+                    columnsArray.add((JSONObject) null);
+                    continue;
+                }
+                JSONObject item = new JSONObject();
+                item.put("name", column.getName());
+                item.put("type", column.getType());
+                columnsArray.add(item);
+            }
+            value.put("columns", columnsArray);
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         JSONArray columnsArray = value.getJSONArray("columns");
         columns = new ArrayList<ExportContentStorageColumn>();
         if (columnsArray != null) {

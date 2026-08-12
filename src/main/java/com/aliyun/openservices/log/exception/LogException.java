@@ -3,9 +3,12 @@
  */
 package com.aliyun.openservices.log.exception;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
+import java.util.Map;
+
 import com.aliyun.openservices.log.common.Consts;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.util.JsonUtils;
 
 /**
  * The exception is thrown if error happen.
@@ -24,7 +27,7 @@ public class LogException extends Exception {
 
     private String rawResponseError;
 
-    private JSONObject accessDeniedDetail;
+    private Map<String, Object> accessDeniedDetail;
 
     /**
      * Construct LogException
@@ -90,8 +93,8 @@ public class LogException extends Exception {
         if (rawResponseError == null || rawResponseError.trim().isEmpty()) {
             return;
         }
-        JSONObject object = JSONObject.parseObject(rawResponseError, Feature.DisableSpecialKeyDetect);
-        this.accessDeniedDetail = object.getJSONObject(Consts.ACCESS_DENIED_DETAIL);
+        JSONObject object = JSONObject.parseObject(rawResponseError);
+        this.accessDeniedDetail = JsonCodec.toMap(object.getJSONObject(Consts.ACCESS_DENIED_DETAIL));
     }
 
     /**
@@ -174,19 +177,26 @@ public class LogException extends Exception {
         this.rawResponseError = rawResponseError;
     }
 
-    public JSONObject getAccessDeniedDetail() {
+    public Map<String, Object> getAccessDeniedDetail() {
         return accessDeniedDetail;
     }
 
-    public void setAccessDeniedDetail(JSONObject accessDeniedDetail) {
+    public void setAccessDeniedDetail(Map<String, Object> accessDeniedDetail) {
         this.accessDeniedDetail = accessDeniedDetail;
+    }
+
+    /**
+     * @return the access denied detail as a raw JSON string, or null if absent.
+     */
+    public String getAccessDeniedDetailRaw() {
+        return accessDeniedDetail == null ? null : JsonUtils.serialize(accessDeniedDetail);
     }
 
     @Override
     public String toString() {
         String accessDeniedDetailStr = "";
         if (accessDeniedDetail != null) {
-            accessDeniedDetailStr = ", accessDeniedDetail='" + accessDeniedDetail + '\'';
+            accessDeniedDetailStr = ", accessDeniedDetail='" + getAccessDeniedDetailRaw() + '\'';
         }
         return "LogException{" +
                 "httpCode=" + httpCode +

@@ -3,16 +3,19 @@ package com.aliyun.openservices.log.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.annotation.InternalApi;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author xizongzheng.xzz
  */
-public class MetricDownSamplingConfig {
-    @JSONField(name = "base")
+public class MetricDownSamplingConfig implements JsonSerializable, JsonDeserializable {
+    @SerializedName("base")
     private MetricDownSamplingStatus base;
 
-    @JSONField(name = "downsampling")
+    @SerializedName("downsampling")
     private List<MetricDownSamplingStatus> downsampling = new ArrayList<MetricDownSamplingStatus>();
 
     public MetricDownSamplingStatus getBase() {
@@ -31,13 +34,27 @@ public class MetricDownSamplingConfig {
         this.downsampling = downsampling;
     }
 
+    @Override
+    @InternalApi
+    public JSONObject toJsonObject() {
+        return JsonCodec.toJsonObject(this);
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
+        MetricDownSamplingConfig parsed = JsonCodec.fromJson(value, MetricDownSamplingConfig.class);
+        base = parsed.base;
+        downsampling = parsed.downsampling;
+    }
+
 
     public static class MetricDownSamplingStatus {
-        @JSONField(name = "create_time")
+        @SerializedName("create_time")
         private long createTime;
-        @JSONField(name = "ttl")
+        @SerializedName("ttl")
         private int ttl;
-        @JSONField(name = "resolution_seconds")
+        @SerializedName("resolution_seconds")
         private int resolutionSeconds;
 
         public boolean isTtlDifferent(MetricDownSamplingStatus status) {

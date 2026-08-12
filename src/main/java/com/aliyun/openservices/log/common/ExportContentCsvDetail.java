@@ -1,19 +1,21 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ExportContentCsvDetail extends ExportContentDetail {
     private String delimiter = ",";
     private String quote = "";
     private String lineFeed = "\n";
-    @JSONField(name = "null")
+    @SerializedName("null")
     private String nullIdentifier = "";
     private boolean header = false;
-    @JSONField(name = "columns")
+    @SerializedName("columns")
     private ArrayList<String> storageColumns = new ArrayList<String>();
 
     public ExportContentCsvDetail() {}
@@ -77,7 +79,23 @@ public class ExportContentCsvDetail extends ExportContentDetail {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        value.put("delimiter", delimiter);
+        value.put("quote", quote);
+        value.put("lineFeed", lineFeed);
+        value.put("null", nullIdentifier);
+        value.put("header", header);
+        if (storageColumns != null) {
+            value.put("columns", JsonCodec.toJsonArray(storageColumns));
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         delimiter = value.getString("delimiter");
         quote = value.getString("quote");
         lineFeed = value.getString("lineFeed");

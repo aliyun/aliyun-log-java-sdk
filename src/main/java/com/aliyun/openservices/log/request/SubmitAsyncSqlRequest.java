@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.request;
 
-import com.alibaba.fastjson.JSON;
+import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -79,6 +79,6 @@ public class SubmitAsyncSqlRequest extends Request {
         }
         contents.put("extensions", extensions);
 
-        return JSON.toJSONString(contents).getBytes(StandardCharsets.UTF_8);
+        return JsonUtils.serialize(contents).getBytes(StandardCharsets.UTF_8);
     }
 }

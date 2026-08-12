@@ -1,7 +1,5 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.Map;

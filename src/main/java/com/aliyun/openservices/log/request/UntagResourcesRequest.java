@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.request;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,7 +12,7 @@ public class UntagResourcesRequest implements Serializable {
     private String resourceType;
     private List<String> resourceId;
     private List<String> tags;
-    @JSONField(name = "all")
+    @SerializedName("all")
     private boolean all;
 
     public UntagResourcesRequest(String resourceType, List<String> resourceId, List<String> tags) {

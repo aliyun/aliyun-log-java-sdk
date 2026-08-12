@@ -1,7 +1,7 @@
 package com.aliyun.openservices.log.functiontest.metricstore;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JsonAsserts;
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.MetricsConfig;
 import com.aliyun.openservices.log.exception.LogException;
@@ -21,31 +21,31 @@ public class MetricsConfigTest {
 
     @Test
     public void testMetricsConfig(){
-        MetricsConfig nullValueConf = JSONObject.parseObject(nullValueMetricsConfig, MetricsConfig.class);
+        MetricsConfig nullValueConf = JsonCodec.fromJson(nullValueMetricsConfig, MetricsConfig.class);
         Assert.assertEquals(nullValueConf.getParallelConfig().getTimePieceCount(), 0);
-        MetricsConfig noPushdownConf = JSONObject.parseObject(noPushdownMetricsConfig, MetricsConfig.class);
+        MetricsConfig noPushdownConf = JsonCodec.fromJson(noPushdownMetricsConfig, MetricsConfig.class);
         Assert.assertNull(noPushdownConf.getPushdownConfig());
-        MetricsConfig extraConf = JSONObject.parseObject(extraMetricsConfig, MetricsConfig.class);
+        MetricsConfig extraConf = JsonCodec.fromJson(extraMetricsConfig, MetricsConfig.class);
         Assert.assertTrue(extraConf != null);
         Assert.assertTrue(extraConf.getPushdownConfig().isEnable());
 
-        final String jsonString = JSON.toJSONString(null);
+        final String jsonString = JsonCodec.toJson(null);
         System.out.println(jsonString);
     }
 
     @Test
     public void testRemoteWriteConfig() {
         String conf = "{\"downsampling_config\":null,\"parallel_config\":null,\"query_cache_config\":null,\"pushdown_config\":null,\"remote_write_config\":{\"enable\":true,\"replica_field\":\"\",\"replica_timeout_seconds\":0,\"history_interval\":0,\"future_interval\":0,\"shard_group_strategy_list\":{\"strategies\":[{\"metric_names\":[\".*bucket\"],\"hash_labels\":[\"instance\"],\"shard_group_count\":64,\"priority\":3},{\"metric_names\":[\"up\"],\"hash_labels\":[\"instance\"],\"shard_group_count\":32,\"priority\":4}],\"try_other_shard\":true,\"last_update_time\":1708409523}}}\n";
-        MetricsConfig metricsConfig = JSONObject.parseObject(conf, MetricsConfig.class);
+        MetricsConfig metricsConfig = JsonCodec.fromJson(conf, MetricsConfig.class);
         Assert.assertEquals(metricsConfig.getRemoteWriteConfig().getShardGroupStrategyList().getStrategies().size(), 2);
     }
 
     @Test
     public void testStoreViewRoutingConfig() {
         String conf = "{\"store_view_routing_config\":[{\"metric_names\":[\".*api.*\"],\"project_stores\":[{\"metricstore\":\"prometheus\",\"project\":\"haoqi-sls-metric-test\"}]},{\"metric_names\":[\".*batch.*\"],\"project_stores\":[{\"metricstore\":\"prometheus-1\",\"project\":\"haoqi-sls-metric-test\"}]}]}";
-        MetricsConfig metricsConfig = JSONObject.parseObject(conf, MetricsConfig.class);
-        final String jsonString = JSONObject.toJSONString(metricsConfig);
-        Assert.assertEquals(conf, jsonString);
+        MetricsConfig metricsConfig = JsonCodec.fromJson(conf, MetricsConfig.class);
+        final String jsonString = JsonCodec.toJson(metricsConfig);
+        JsonAsserts.assertJsonEquals(conf, jsonString);
         System.out.println(jsonString);
     }
 
@@ -56,14 +56,14 @@ public class MetricsConfigTest {
 
         String conf = "{\"downsampling_config\":null,\"parallel_config\":null,\"query_cache_config\":null,\"pushdown_config\":null,\"remote_write_config\":{\"enable\":true,\"replica_field\":\"\",\"replica_timeout_seconds\":0,\"history_interval\":0,\"future_interval\":0,\"shard_group_strategy_list\":{\"strategies\":[{\"metric_names\":[\".*_bucket\", \"apiserver_.*\"],\"hash_labels\":[],\"shard_group_count\":1,\"priority\":2},{\"metric_names\":[\".*_total\", \".*_count\", \".*_sum\"],\"hash_labels\":[],\"shard_group_count\":8,\"priority\":3},{\"metric_names\":[\".*\"],\"hash_labels\":[],\"shard_group_count\":32,\"priority\":4}],\"try_other_shard\":true,\"last_update_time\":1709192903}}}";
 
-        MetricsConfig metricsConfig = JSONObject.parseObject(conf, MetricsConfig.class);
-        final String jsonString = JSONObject.toJSONString(metricsConfig);
+        MetricsConfig metricsConfig = JsonCodec.fromJson(conf, MetricsConfig.class);
+        final String jsonString = JsonCodec.toJson(metricsConfig);
         System.out.println(jsonString);
         try{
             client.createMetricsConfig(new CreateMetricsConfigRequest("haoqi-sls-metric-test", "view_test", metricsConfig));
 //            client.updateMetricsConfig(new UpdateMetricsConfigRequest("haoqi-sls-metric-test", "view_test", metricsConfig));
             GetMetricsConfigResponse test = client.getMetricsConfig(new GetMetricsConfigRequest("haoqi-sls-metric-test", "view_test"));
-            System.out.println(JSONObject.toJSON(test.getMetricsConfig()));
+            System.out.println(JsonCodec.toJson(test.getMetricsConfig()));
         } catch (LogException e) {
             System.out.println(e);
         }
@@ -78,15 +78,15 @@ public class MetricsConfigTest {
 
         String conf = "{\"query_cache_config\":null,\"parallel_config\":null,\"downsampling_config\":null,\"pushdown_config\":null,\"remote_write_config\":{\"enable\":true,\"history_interval\":0,\"future_interval\":0,\"replica_field\":\"\",\"replica_timeout_seconds\":0,\"shard_group_strategy_list\":{\"strategies\":null,\"try_other_shard\":false,\"last_update_time\":0},\"trim_same_labels\":true,\"trim_empty_labels\":true},\"store_view_routing_config\":null,\"agg_service_config\":null}";
 
-        MetricsConfig metricsConfig = JSONObject.parseObject(conf, MetricsConfig.class);
-        final String jsonString = JSONObject.toJSONString(metricsConfig);
+        MetricsConfig metricsConfig = JsonCodec.fromJson(conf, MetricsConfig.class);
+        final String jsonString = JsonCodec.toJson(metricsConfig);
         System.out.println(jsonString);
         try{
 //            client.createMetricsConfig(new CreateMetricsConfigRequest(project, metricStore, metricsConfig));
             client.updateMetricsConfig(new UpdateMetricsConfigRequest(project, metricStore, metricsConfig));
 //            client.deleteMetricsConfig(new DeleteMetricsConfigRequest(project, metricStore));
             GetMetricsConfigResponse test = client.getMetricsConfig(new GetMetricsConfigRequest(project, metricStore));
-            System.out.println(JSONObject.toJSON(test.getMetricsConfig()));
+            System.out.println(JsonCodec.toJson(test.getMetricsConfig()));
         } catch (LogException e) {
             System.out.println(e);
         }

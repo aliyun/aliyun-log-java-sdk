@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class TagResource implements Serializable {
     private static final long serialVersionUID = 1871783791415724270L;
@@ -51,7 +52,8 @@ public class TagResource implements Serializable {
         this.tagValue = tagValue;
     }
 
-    public static TagResource FromJsonObject(JSONObject object) {
+    @InternalApi
+    public static TagResource fromJsonObject(JSONObject object) {
         return new TagResource(
                 object.getString("resourceId"),
                 object.getString("resourceType"),

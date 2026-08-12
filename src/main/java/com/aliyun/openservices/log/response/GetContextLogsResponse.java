@@ -5,6 +5,7 @@ import com.aliyun.openservices.log.common.QueriedLog;
 
 import java.util.List;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetContextLogsResponse extends BasicGetLogsResponse {
     private boolean isCompleted = false;
@@ -12,7 +13,8 @@ public class GetContextLogsResponse extends BasicGetLogsResponse {
     private int backLines;
     private int forwardLines;
 
-    public GetContextLogsResponse(Map<String, String> headers, com.alibaba.fastjson.JSONObject object) {
+    @InternalApi
+    public GetContextLogsResponse(Map<String, String> headers, com.aliyun.openservices.log.internal.json.JSONObject object) {
         super(headers);
         setProcessStatus(object.getString(Consts.CONST_RESULT_PROCESS));
         this.totalLines = object.getIntValue(Consts.CONST_TOTAL_LINES);

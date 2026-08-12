@@ -1,16 +1,14 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.*;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class ScheduledSQLBaseParameters implements ScheduledSQLParameters {
-    @JSONField(unwrapped = true)
     private Map<String, String> baseParams;
 
-    @JSONField(serialize = false)
     private final Set<String> fields = new HashSet<String>();
 
     public ScheduledSQLBaseParameters() {
@@ -41,7 +39,18 @@ public class ScheduledSQLBaseParameters implements ScheduledSQLParameters {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = new JSONObject();
+        for (Map.Entry<String, String> entry : baseParams.entrySet()) {
+            value.put(entry.getKey(), entry.getValue());
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         for (String key : value.keySet()) {
             if (!fields.contains(key)) {
                 continue;

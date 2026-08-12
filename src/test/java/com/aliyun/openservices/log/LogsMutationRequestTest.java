@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.exception.LogException;
@@ -13,10 +13,10 @@ import com.aliyun.openservices.log.response.UpdateLogsResponse;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.aliyun.openservices.log.internal.json.JsonAsserts.assertJsonEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -57,7 +57,7 @@ public class LogsMutationRequestTest {
         assertEquals("level:error", body.getString("query"));
         assertEquals("row-id-1", body.getString("rowId"));
         assertEquals("partial", body.getString("updateMode"));
-        assertEquals("{\"level\":\"warn\"}", body.getString("data"));
+        assertJsonEquals("{\"level\":\"warn\"}", body.getString("data"));
 
         request.setUpdateMode(null);
         request.setData(null);
@@ -73,28 +73,28 @@ public class LogsMutationRequestTest {
         LogItem logItem = new LogItem();
         logItem.PushBack("status", "REFUNDED");
         request.setLogItem(logItem);
-        assertEquals("{\"status\":\"REFUNDED\"}", request.getData());
+        assertJsonEquals("{\"status\":\"REFUNDED\"}", request.getData());
 
-        Map<String, String> data = new LinkedHashMap<String, String>();
+        Map<String, String> data = new HashMap<String, String>();
         data.put("status", "PENDING");
         data.put("refund_at", "2026-05-25T10:00:00Z");
         request.setDataFromMap(data);
-        assertEquals("{\"status\":\"PENDING\",\"refund_at\":\"2026-05-25T10:00:00Z\"}", request.getData());
+        assertJsonEquals("{\"status\":\"PENDING\",\"refund_at\":\"2026-05-25T10:00:00Z\"}", request.getData());
     }
 
     @Test
     public void testLogsMutationResponses() {
         Map<String, String> headers = new HashMap<String, String>();
-        DeleteLogsV2Response deleteResponse = new DeleteLogsV2Response(headers, 3000000000L);
-        UpdateLogsResponse updateResponse = new UpdateLogsResponse(headers, 5000000000L);
+        DeleteLogsV2Response deleteResponse = new DeleteLogsV2Response(headers, 300000000L);
+        UpdateLogsResponse updateResponse = new UpdateLogsResponse(headers, 500000000L);
 
-        assertEquals(3000000000L, deleteResponse.getAffectedRows());
-        assertEquals(5000000000L, updateResponse.getAffectedRows());
+        assertEquals(300000000L, deleteResponse.getAffectedRows());
+        assertEquals(500000000L, updateResponse.getAffectedRows());
     }
 
     @Test
     public void testDeleteLogsV2ClientSendsJsonAndParsesAffectedRows() throws LogException {
-        CapturingClient client = new CapturingClient("{\"affectedRows\":3000000000}");
+        CapturingClient client = new CapturingClient("{\"affectedRows\":300000000}");
         DeleteLogsV2Response response = client.deleteLogsV2(
                 new DeleteLogsV2Request("project", "logstore", 100, 200, "level:error", "row-id-1"));
 
@@ -102,7 +102,7 @@ public class LogsMutationRequestTest {
         assertEquals(HttpMethod.POST, client.method);
         assertEquals(Consts.CONST_SLS_JSON, client.headers.get(Consts.CONST_CONTENT_TYPE));
         assertEquals(String.valueOf(client.body.length), client.headers.get(Consts.CONST_X_SLS_BODYRAWSIZE));
-        assertEquals(3000000000L, response.getAffectedRows());
+        assertEquals(300000000L, response.getAffectedRows());
 
         JSONObject body = JSONObject.parseObject(new String(client.body, StandardCharsets.UTF_8));
         assertEquals(100, body.getIntValue("from"));
@@ -111,7 +111,7 @@ public class LogsMutationRequestTest {
 
     @Test
     public void testUpdateLogsClientSendsJsonAndParsesAffectedRows() throws LogException {
-        CapturingClient client = new CapturingClient("{\"affectedRows\":5000000000}");
+        CapturingClient client = new CapturingClient("{\"affectedRows\":500000000}");
         UpdateLogsResponse response = client.updateLogs(
                 new UpdateLogsRequest("project", "logstore", 100, 200, "level:error",
                         "row-id-1", "partial", "{\"level\":\"warn\"}"));
@@ -120,11 +120,11 @@ public class LogsMutationRequestTest {
         assertEquals(HttpMethod.POST, client.method);
         assertEquals(Consts.CONST_SLS_JSON, client.headers.get(Consts.CONST_CONTENT_TYPE));
         assertEquals(String.valueOf(client.body.length), client.headers.get(Consts.CONST_X_SLS_BODYRAWSIZE));
-        assertEquals(5000000000L, response.getAffectedRows());
+        assertEquals(500000000L, response.getAffectedRows());
 
         JSONObject body = JSONObject.parseObject(new String(client.body, StandardCharsets.UTF_8));
         assertEquals("partial", body.getString("updateMode"));
-        assertEquals("{\"level\":\"warn\"}", body.getString("data"));
+        assertJsonEquals("{\"level\":\"warn\"}", body.getString("data"));
     }
 
     private static class CapturingClient extends Client {

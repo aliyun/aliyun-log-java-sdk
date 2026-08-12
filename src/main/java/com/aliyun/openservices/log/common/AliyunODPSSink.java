@@ -1,5 +1,10 @@
 package com.aliyun.openservices.log.common;
 
+import com.aliyun.openservices.log.annotation.InternalApi;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.util.JsonUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -117,5 +122,52 @@ public class AliyunODPSSink extends DataSink {
         super(DataSinkType.ALIYUN_ODPS);
         partitionColumn = new ArrayList<String>();
         fields = new ArrayList<String>();
+    }
+
+    @Override
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = new JSONObject();
+        value.put("type", getType().toString());
+        put(value, "odpsRolearn", odpsRolearn);
+        put(value, "odpsEndpoint", odpsEndpoint);
+        put(value, "odpsTunnelEndpoint", odpsTunnelEndpoint);
+        put(value, "odpsProject", odpsProject);
+        put(value, "odpsTable", odpsTable);
+        put(value, "timeZone", timeZone);
+        put(value, "partitionTimeFormat", partitionTimeFormat);
+        if (fields != null) {
+            value.put("fields", JsonCodec.toJsonArray(fields));
+        }
+        if (partitionColumn != null) {
+            value.put("partitionColumn", JsonCodec.toJsonArray(partitionColumn));
+        }
+        put(value, "odpsAccessKeyId", odpsAccessKeyId);
+        put(value, "odpsAccessSecret", odpsAccessSecret);
+        put(value, "mode", mode);
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
+        odpsRolearn = value.getString("odpsRolearn");
+        odpsEndpoint = value.getString("odpsEndpoint");
+        odpsTunnelEndpoint = value.getString("odpsTunnelEndpoint");
+        odpsProject = value.getString("odpsProject");
+        odpsTable = value.getString("odpsTable");
+        timeZone = value.getString("timeZone");
+        partitionTimeFormat = value.getString("partitionTimeFormat");
+        fields = JsonUtils.readStringList(value, "fields");
+        partitionColumn = JsonUtils.readStringList(value, "partitionColumn");
+        odpsAccessKeyId = value.getString("odpsAccessKeyId");
+        odpsAccessSecret = value.getString("odpsAccessSecret");
+        mode = value.getString("mode");
+    }
+
+    private static void put(JSONObject value, String key, String item) {
+        if (item != null) {
+            value.put(key, item);
+        }
     }
 }

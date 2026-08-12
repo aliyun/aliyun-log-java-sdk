@@ -1,12 +1,13 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.exception.LogException;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class SensitiveKey implements Serializable {
+public class SensitiveKey implements Serializable, JsonDeserializable {
 	private static final long serialVersionUID = 5303674958351023026L;
 	private String key;
 	private String type;
@@ -63,7 +64,8 @@ public class SensitiveKey implements Serializable {
 		this.all = all;
 	}
 	
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject sensitiveKeyJson = new JSONObject();
 		sensitiveKeyJson.put(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_KEY, key);
 		sensitiveKeyJson.put(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_TYPE, type);
@@ -75,7 +77,8 @@ public class SensitiveKey implements Serializable {
 		return sensitiveKeyJson;
 	}
 	
-	public void FromJsonObject(JSONObject dict) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject dict) throws LogException {
 		setKey(dict.getString(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_KEY));
 		setType(dict.getString(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_TYPE));
 		if (type.equals("const")) {
@@ -86,10 +89,10 @@ public class SensitiveKey implements Serializable {
 		setAll(dict.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS_ALL));
 	}
 	
-	public void FromJsonString(String sensitiveKeyString) throws LogException {
+	public void fromJsonString(String sensitiveKeyString) throws LogException {
 		try {
 			JSONObject dict = JSONObject.parseObject(sensitiveKeyString);
-			FromJsonObject(dict);
+			fromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateChart", e.getMessage(), e, "");
 		}

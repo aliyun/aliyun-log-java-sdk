@@ -1,12 +1,11 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 abstract class HttpNotification extends Notification {
 
-    @JSONField
     private String serviceUri;
 
     HttpNotification(NotificationType type) {
@@ -22,8 +21,19 @@ abstract class HttpNotification extends Notification {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
-        super.deserialize(value);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (serviceUri != null) {
+            value.put(Consts.SERVICE_URI, serviceUri);
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
+        super.fromJsonObject(value);
         serviceUri = value.getString(Consts.SERVICE_URI);
     }
 

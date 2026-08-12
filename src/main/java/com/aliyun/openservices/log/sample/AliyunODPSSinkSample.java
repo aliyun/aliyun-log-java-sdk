@@ -1,6 +1,8 @@
 package com.aliyun.openservices.log.sample;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.util.JsonUtils;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.AliyunODPSSink;
 import com.aliyun.openservices.log.common.ExportConfiguration;
 import com.aliyun.openservices.log.common.ExportGeneralSink;
@@ -25,10 +27,10 @@ public class AliyunODPSSinkSample {
         sink.setPartitionColumn("bucket");
         sink.setPartitionTimeFormat("%Y");
         sink.setMode("interval");
-        String encoded = JSONObject.toJSONString(sink);
+        String encoded = sink.toJsonString();
 
         ExportGeneralSink general = new ExportGeneralSink();
-        general.setFields(JSONObject.parseObject(encoded).getInnerMap());
+        general.setFields(JsonCodec.toMap(JSONObject.parseObject(encoded)));
         ExportConfiguration conf = new ExportConfiguration();
         conf.setRoleArn("your_roleArn");
         conf.setLogstore("your_logstore");
@@ -44,9 +46,9 @@ public class AliyunODPSSinkSample {
         CreateExportRequest request = new CreateExportRequest(project, export);
         Client client = new Client("your_endpoint", "your_access_id", "your_access_key");
         CreateExportResponse resp = client.createExport(request);
-        System.out.println(JSONObject.toJSONString(resp));
+        System.out.println(JsonUtils.serialize(resp));
         GetExportRequest requestExport = new GetExportRequest(project, "my-odps-sink");
         GetExportResponse respExport = client.getExport(requestExport);
-        System.out.println(JSONObject.toJSONString(respExport));
+        System.out.println(JsonUtils.serialize(respExport));
     }
 }

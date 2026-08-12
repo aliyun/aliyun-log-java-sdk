@@ -128,35 +128,38 @@ public class AlertFunctionTest extends JobIntgTest {
         configuration.setGroupConfiguration(groupConfig);
 
         List<AlertConfiguration.Tag> annotations = new ArrayList<AlertConfiguration.Tag>();
-        annotations.add(new AlertConfiguration.Tag(){{
-            setKey("count");
-            setValue("there are ${__count__} results, ${__pass_count__} passed");
-        }});
-        annotations.add(new AlertConfiguration.Tag(){{
-            setKey("name");
-            setValue("this is name");
-        }});
+        AlertConfiguration.Tag countAnnotation = new AlertConfiguration.Tag();
+        countAnnotation.setKey("count");
+        countAnnotation.setValue("there are ${__count__} results, ${__pass_count__} passed");
+        annotations.add(countAnnotation);
+        AlertConfiguration.Tag nameAnnotation = new AlertConfiguration.Tag();
+        nameAnnotation.setKey("name");
+        nameAnnotation.setValue("this is name");
+        annotations.add(nameAnnotation);
         configuration.setAnnotations(annotations);
 
         List<AlertConfiguration.Tag> labels = new ArrayList<AlertConfiguration.Tag>();
-        labels.add(new AlertConfiguration.Tag(){{
-            setKey("env");
-            setValue("test");
-        }});
+        AlertConfiguration.Tag environmentLabel = new AlertConfiguration.Tag();
+        environmentLabel.setKey("env");
+        environmentLabel.setValue("test");
+        labels.add(environmentLabel);
         configuration.setLabels(labels);
 
 
         List<AlertConfiguration.SeverityConfiguration> severityConfigurations = new ArrayList<AlertConfiguration.SeverityConfiguration>();
-        severityConfigurations.add(new AlertConfiguration.SeverityConfiguration(){{
-            setSeverity(AlertConfiguration.Severity.High);
-            setEvalCondition(new AlertConfiguration.ConditionConfiguration(){{
-                setCondition("cnt > 90");
-                setCountCondition("__count__ > 3");
-            }});
-        }});
-        severityConfigurations.add(new AlertConfiguration.SeverityConfiguration(){{
-            setSeverity(AlertConfiguration.Severity.Medium);
-        }});
+        AlertConfiguration.SeverityConfiguration highSeverity =
+                new AlertConfiguration.SeverityConfiguration();
+        highSeverity.setSeverity(AlertConfiguration.Severity.High);
+        AlertConfiguration.ConditionConfiguration evalCondition =
+                new AlertConfiguration.ConditionConfiguration();
+        evalCondition.setCondition("cnt > 90");
+        evalCondition.setCountCondition("__count__ > 3");
+        highSeverity.setEvalCondition(evalCondition);
+        severityConfigurations.add(highSeverity);
+        AlertConfiguration.SeverityConfiguration mediumSeverity =
+                new AlertConfiguration.SeverityConfiguration();
+        mediumSeverity.setSeverity(AlertConfiguration.Severity.Medium);
+        severityConfigurations.add(mediumSeverity);
         configuration.setSeverityConfigurations(severityConfigurations);
 
         AlertConfiguration.PolicyConfiguration policyConfiguration = new AlertConfiguration.PolicyConfiguration();

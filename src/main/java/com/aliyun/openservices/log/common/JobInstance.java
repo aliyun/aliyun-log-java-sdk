@@ -1,38 +1,24 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 import java.io.Serializable;
-public class JobInstance implements Serializable {
+import com.aliyun.openservices.log.annotation.InternalApi;
+public class JobInstance implements Serializable, JsonDeserializable {
     private static final long serialVersionUID = 949227748635414993L;
-    @JSONField
     private String instanceId;
-    @JSONField
     private String jobName;
-    @JSONField
     private String jobScheduleId;
-    @JSONField
     private String displayName;
-    @JSONField
     private String description;
-    @JSONField
     private long createTimeInMillis;
-    @JSONField
     private long beginTimeInMillis;
-    @JSONField
     private long updateTimeInMillis;
-    @JSONField
     private long scheduleTimeInMillis;
-    @JSONField
     private String state;
-    @JSONField
     private String errorCode;
-    @JSONField
     private String errorMessage;
-    @JSONField
     private String summary;
-    @JSONField
     private String result;
     public String getInstanceId() {
         return instanceId;
@@ -121,7 +107,8 @@ public class JobInstance implements Serializable {
         this.beginTimeInMillis = beginTimeInMillis;
     }
 
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         instanceId = value.getString("instanceId");
         jobScheduleId = JsonUtils.readOptionalString(value, "jobScheduleId", "");
         jobName = JsonUtils.readOptionalString(value, "jobName", "");

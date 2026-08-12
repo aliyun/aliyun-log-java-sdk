@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.sample;
 
-import com.alibaba.fastjson.JSON;
+import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.request.CreateMaterializedViewRequest;
 import com.aliyun.openservices.log.request.ListMaterializedViewsRequest;
@@ -43,7 +43,7 @@ public class MaterializedViewTest
 
     public static void testGetMv() throws Exception {
         GetMaterializedViewResponse response = CLIENT.getMaterializedView(PROJECT_NAME, "perf_test_1_mv");
-        System.out.println(JSON.toJSONString(response));
+        System.out.println(JsonUtils.serialize(response));
     }
 
     public static void testUpdateMv() throws Exception {

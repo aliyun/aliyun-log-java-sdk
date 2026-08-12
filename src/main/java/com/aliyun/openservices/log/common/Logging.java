@@ -1,12 +1,15 @@
 package com.aliyun.openservices.log.common;
 
+import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.util.Args;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Logging implements Serializable {
 
@@ -36,6 +39,15 @@ public class Logging implements Serializable {
         this.loggingDetails = new ArrayList<LoggingDetail>(loggingDetails);
     }
 
+    public static Logging fromJsonString(String loggingString) throws LogException {
+        try {
+            return unmarshal(JSONObject.parseObject(loggingString));
+        } catch (JSONException | IllegalArgumentException e) {
+            throw new LogException("FailToGenerateLogging", e.getMessage(), e, "");
+        }
+    }
+
+    @InternalApi
     public JSONObject marshal() {
         JSONObject object = new JSONObject();
         object.put("loggingProject", loggingProject);
@@ -47,12 +59,16 @@ public class Logging implements Serializable {
         return object;
     }
 
+    @InternalApi
     public static Logging unmarshal(final JSONObject object) {
         Args.notNull(object, "object");
         final String project = object.getString("loggingProject");
         Args.notNullOrEmpty(project, "loggingProject");
         final JSONArray details = object.getJSONArray("loggingDetails");
-        Args.notNullOrEmpty(details, "loggingDetails");
+        Args.notNull(details, "loggingDetails");
+        if (details.isEmpty()) {
+            throw new IllegalArgumentException("loggingDetails must not be empty");
+        }
         List<LoggingDetail> loggingDetails = new ArrayList<LoggingDetail>(details.size());
         for (int i = 0; i < details.size(); i++) {
             loggingDetails.add(LoggingDetail.unmarshal(details.getJSONObject(i)));

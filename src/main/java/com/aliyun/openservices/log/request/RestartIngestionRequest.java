@@ -21,6 +21,10 @@ public class RestartIngestionRequest extends JobRequest {
         return HttpMethod.PUT;
     }
 
+    public Ingestion getIngestion() {
+        return ingestion;
+    }
+
     @Override
     public Object getBody() {
         return ingestion;

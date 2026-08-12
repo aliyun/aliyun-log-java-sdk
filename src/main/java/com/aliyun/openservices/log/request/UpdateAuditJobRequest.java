@@ -20,6 +20,10 @@ public class UpdateAuditJobRequest extends JobRequest  {
         return HttpMethod.PUT;
     }
 
+    public AuditJob getAuditJob() {
+        return auditJob;
+    }
+
     @Override
     public Object getBody() {
         return auditJob;

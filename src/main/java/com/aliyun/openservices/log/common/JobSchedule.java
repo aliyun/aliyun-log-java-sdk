@@ -1,31 +1,28 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.util.Utils;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import static com.aliyun.openservices.log.util.Args.checkDuration;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class JobSchedule implements Serializable {
+public class JobSchedule implements Serializable, JsonSerializable, JsonDeserializable {
 
     private static final long serialVersionUID = 8400426178465652937L;
 
     private String id;
 
-    @JSONField
     private String displayName;
 
-    @JSONField
     private String description;
 
-    @JSONField
     private String jobName;
 
-    @JSONField
     private JobScheduleType type;
 
     // TODO Move schedule info to a separate class
@@ -33,37 +30,30 @@ public class JobSchedule implements Serializable {
     /**
      * Interval in duration format e,g "60s", "1h". Required for {@code JobScheduleType.FIXED_RATE} only.
      */
-    @JSONField
     private String interval;
 
     /**
      * Cron expression for CRON type.
      */
-    @JSONField
     private String cronExpression;
 
     /**
      * An optional delay to avoid missing data.
      */
-    @JSONField
     private Integer delay;
 
     /**
      * sunday, monday, tuesday, wednesday, thursday, friday and saturday
      */
-    @JSONField
     private Integer dayOfWeek;
 
     /**
      * hour at a day
      */
-    @JSONField
     private Integer hour;
 
-    @JSONField
     private Integer fromTime;
 
-    @JSONField
     private Integer toTime;
 
     private String status;
@@ -81,7 +71,6 @@ public class JobSchedule implements Serializable {
     /**
      * timeZone eg. +0800
      */
-    @JSONField
     private String timeZone;
 
     public String getId() {
@@ -236,8 +225,52 @@ public class JobSchedule implements Serializable {
         this.timeZone = timeZone;
     }
 
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = new JSONObject();
+        put(value, "id", id);
+        put(value, "displayName", displayName);
+        put(value, "description", description);
+        put(value, "jobName", jobName);
+        put(value, "type", type == null ? null : type.toString());
+        put(value, "interval", interval);
+        put(value, "cronExpression", cronExpression);
+        put(value, "delay", delay);
+        put(value, "dayOfWeek", dayOfWeek);
+        put(value, "hour", hour);
+        put(value, "fromTime", fromTime);
+        put(value, "toTime", toTime);
+        put(value, "status", status);
+        put(value, "createTime", createTime);
+        put(value, "lastModifiedTime", lastModifiedTime);
+        put(value, "startTime", startTime);
+        put(value, "completeTime", completeTime);
+        value.put("runImmediately", runImmediately);
+        put(value, "timeZone", timeZone);
+        return value;
+    }
 
-    public void deserialize(JSONObject value) {
+
+    private static void put(JSONObject value, String key, String item) {
+        if (item != null) {
+            value.put(key, item);
+        }
+    }
+
+    private static void put(JSONObject value, String key, Number item) {
+        if (item != null) {
+            value.put(key, item);
+        }
+    }
+
+    private static void put(JSONObject value, String key, Date item) {
+        if (item != null) {
+            value.put(key, Utils.dateToTimestamp(item));
+        }
+    }
+
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         id = JsonUtils.readOptionalString(value, "id");
         displayName = JsonUtils.readOptionalString(value, "displayName");
         jobName = JsonUtils.readOptionalString(value, "jobName");

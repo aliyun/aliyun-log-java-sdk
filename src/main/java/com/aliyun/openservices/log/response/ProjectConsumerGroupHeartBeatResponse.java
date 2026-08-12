@@ -1,15 +1,17 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.*;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ProjectConsumerGroupHeartBeatResponse extends Response {
 
     private static final long serialVersionUID = 3558359690750583972L;
     private Map<String, List<Integer>> logStoreShards;
 
+    @InternalApi
     public ProjectConsumerGroupHeartBeatResponse(Map<String, String> headers, JSONObject obj) {
         super(headers);
         logStoreShards = new HashMap<String, List<Integer>>();

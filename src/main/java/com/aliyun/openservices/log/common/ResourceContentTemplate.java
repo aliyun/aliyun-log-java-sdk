@@ -1,32 +1,32 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
 
 public class ResourceContentTemplate implements Serializable {
-    @JSONField(name = "template_id")
+    @SerializedName("template_id")
     private String templateId;
-    @JSONField(name = "template_name")
+    @SerializedName("template_name")
     private String templateName;
-    @JSONField(name = "is_default")
+    @SerializedName("is_default")
     private boolean isDefault;
-    @JSONField(name = "templates")
+    @SerializedName("templates")
     private Templates templates;
 
     public static class Template {
-        @JSONField(name = "content")
+        @SerializedName("content")
         private String content;
-        @JSONField(name = "locale")
+        @SerializedName("locale")
         private String locale;
-        @JSONField(name = "title")
+        @SerializedName("title")
         private String title;
-        @JSONField(name = "subject")
+        @SerializedName("subject")
         private String subject;
-        @JSONField(name = "send_type")
+        @SerializedName("send_type")
         private String sendType;
-        @JSONField(name = "limit")
+        @SerializedName("limit")
         private int limit;
 
         public String getContent() {
@@ -79,23 +79,23 @@ public class ResourceContentTemplate implements Serializable {
     }
 
     public static class Templates {
-        @JSONField(name = "sms")
+        @SerializedName("sms")
         private Template sms;
-        @JSONField(name = "voice")
+        @SerializedName("voice")
         private Template voice;
-        @JSONField(name = "email")
+        @SerializedName("email")
         private Template email;
-        @JSONField(name = "dingtalk")
+        @SerializedName("dingtalk")
         private Template dingtalk;
-        @JSONField(name = "webhook")
+        @SerializedName("webhook")
         private Template webhook;
-        @JSONField(name = "message_center")
+        @SerializedName("message_center")
         private Template messageCenter;
-        @JSONField(name = "wechat")
+        @SerializedName("wechat")
         private Template wechat;
-        @JSONField(name = "lark")
+        @SerializedName("lark")
         private Template lark;
-        @JSONField(name = "slack")
+        @SerializedName("slack")
         private Template slack;
 
         public Template getSms() {

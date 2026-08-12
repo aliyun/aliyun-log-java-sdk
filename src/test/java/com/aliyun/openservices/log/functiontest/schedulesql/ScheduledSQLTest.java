@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.schedulesql;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 import com.aliyun.openservices.log.Client;
 import com.aliyun.openservices.log.common.JobSchedule;
 import com.aliyun.openservices.log.common.JobScheduleType;
@@ -132,7 +132,7 @@ public class ScheduledSQLTest extends FunctionTest {
 
     private void testGetScheduledSQL() throws LogException {
         GetScheduledSQLResponse scheduledSQLResponse = getScheduledSQL();
-        System.out.println(JSONObject.toJSONString(scheduledSQLResponse));
+        System.out.println(JsonCodec.toJson(scheduledSQLResponse));
         assertEquals(sqlTaskName, scheduledSQLResponse.getScheduledSQL().getName());
         assertEquals("ScheduledSqlTask", scheduledSQLResponse.getScheduledSQL().getDisplayName());
         assertFalse(scheduledSQLResponse.getScheduledSQL().getRecyclable());
@@ -203,7 +203,7 @@ public class ScheduledSQLTest extends FunctionTest {
         UpdateScheduledSQLResponse scheduledSQLResponse = client.updateScheduledSQL(new UpdateScheduledSQLRequest(project, scheduledSql));
         // Proof Update
         GetScheduledSQLResponse getScheduledSQLResponse = getScheduledSQL();
-        System.out.println(JSONObject.toJSONString(getScheduledSQLResponse));
+        System.out.println(JsonCodec.toJson(getScheduledSQLResponse));
         assertEquals(sqlTaskName, getScheduledSQLResponse.getScheduledSQL().getName());
         assertEquals("UpdateTest", getScheduledSQLResponse.getScheduledSQL().getDisplayName());
         assertEquals("select min(Id) as min_id, max(Id) as max_id from test", getScheduledSQLResponse.getScheduledSQL().getConfiguration().getScript());
@@ -215,7 +215,7 @@ public class ScheduledSQLTest extends FunctionTest {
         GetJobInstanceResponse getJobInstanceResponse = getJobInstance();
         assertEquals(sqlTaskName, getJobInstanceResponse.getJobInstance().getJobName());
         assertNotNull(getJobInstanceResponse.getJobInstance().getJobScheduleId());
-        System.out.println("getJobInstance: " + JSONObject.toJSONString(getJobInstanceResponse));
+        System.out.println("getJobInstance: " + JsonCodec.toJson(getJobInstanceResponse));
     }
 
     private void testListJobInstance() throws LogException, InterruptedException {
@@ -228,7 +228,7 @@ public class ScheduledSQLTest extends FunctionTest {
         } else {
             throw new LogException("NoJobInstance", "JobInstances have not start, please wait.", "");
         }
-        System.out.println("list JobInstances: " + JSONObject.toJSONString(listJobInstancesResponse));
+        System.out.println("list JobInstances: " + JsonCodec.toJson(listJobInstancesResponse));
     }
 
     private void testRerunJobInstance() throws LogException, InterruptedException {

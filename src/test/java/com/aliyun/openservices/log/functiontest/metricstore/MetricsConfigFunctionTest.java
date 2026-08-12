@@ -2,8 +2,7 @@ package com.aliyun.openservices.log.functiontest.metricstore;
 
 import java.util.List;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.MetricStore;
 import com.aliyun.openservices.log.common.MetricDownSamplingConfig;
@@ -69,7 +68,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
         + "        ]\n"
         + "    }\n"
         + "}";
-    static MetricsConfig CONFIG = JSONObject.parseObject(CONFIG_STRING, MetricsConfig.class);
+    static MetricsConfig CONFIG = JsonCodec.fromJson(CONFIG_STRING, MetricsConfig.class);
     static String CONFIGWRONG_STRING = "wrong";
     static String PROJECTNOTEXISTERROR = "ProjectNotExist";
     static String LOGSTORENOTEXISTERROR = "LogStoreNotExist";
@@ -341,7 +340,7 @@ public class MetricsConfigFunctionTest extends FunctionTest {
         if (null == expected || null == actual) {
             return false;
         }
-        return JSON.toJSONString(expected).equals(JSON.toJSONString(actual));
+        return JsonCodec.toJson(expected).equals(JsonCodec.toJson(actual));
 
     }
 }

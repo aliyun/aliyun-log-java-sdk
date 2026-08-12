@@ -1,13 +1,14 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class Resource implements Serializable {
+public class Resource implements Serializable, JsonSerializable, JsonDeserializable {
     private static final long serialVersionUID = 8648928694568240078L;
     private String name = "";
     private String type = "";
@@ -86,7 +87,8 @@ public class Resource implements Serializable {
         this.extInfo = extInfo;
     }
 
-    public JSONObject ToJsonObject() throws LogException {
+    @InternalApi
+    public JSONObject toJsonObject() throws LogException {
         JSONObject result = new JSONObject();
         result.put(Consts.RESOURCE_NAME, getName());
         result.put(Consts.RESOURCE_TYPE, getType());
@@ -108,11 +110,9 @@ public class Resource implements Serializable {
         return result;
     }
 
-    public String ToJsonString() throws LogException {
-        return ToJsonObject().toString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         setName(dict.getString(Consts.RESOURCE_NAME));
         setType(dict.getString(Consts.RESOURCE_TYPE));
 
@@ -155,9 +155,9 @@ public class Resource implements Serializable {
         }
     }
 
-    public void FromJsonString(String content) throws LogException {
+    public void fromJsonString(String content) throws LogException {
         JSONObject dict = JSONObject.parseObject(content);
-        FromJsonObject(dict);
+        fromJsonObject(dict);
     }
 
     public void checkForCreate() throws IllegalArgumentException {

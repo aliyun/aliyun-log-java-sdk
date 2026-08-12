@@ -1,21 +1,21 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Index config for a logstore,  it contains the index data life cycle(ttl),  index for keys and for log line
  *
  * @author log-service-dev
  */
-public class Index {
+public class Index implements JsonSerializable, JsonDeserializable {
     private int ttl = -1;
     private IndexKeys keys = new IndexKeys();
     private IndexLine line = new IndexLine();
@@ -165,7 +165,8 @@ public class Index {
      * @return index in json object
      * @throws LogException if any error happened
      */
-    public JSONObject ToRequestJson() throws LogException {
+    @InternalApi
+    public JSONObject toRequestJson() throws LogException {
         JSONObject index = new JSONObject();
 
         index.put("ttl", ttl);
@@ -173,12 +174,12 @@ public class Index {
         index.put("scan_index", scanIndexEnable);
 
         if (isLineSet()) {
-            JSONObject lineDict = line.ToJsonObject();
+            JSONObject lineDict = line.toJsonObject();
             index.put("line", lineDict);
         }
 
         if (isKeysSet()) {
-            JSONObject keysDict = keys.ToJsonObject();
+            JSONObject keysDict = keys.toJsonObject();
             index.put("keys", keysDict);
         }
 
@@ -188,44 +189,47 @@ public class Index {
 
         if (logReduceWhiteList.size() > 0) {
             JSONArray logReduceWhiteListDict = new JSONArray();
-            logReduceWhiteListDict.addAll(logReduceWhiteList);
+            for (String item : logReduceWhiteList) {
+                logReduceWhiteListDict.add(item);
+            }
             index.put("log_reduce_white_list", logReduceWhiteListDict);
         }
 
         if (logReduceBlackList.size() > 0) {
             JSONArray logReduceBlackListDict = new JSONArray();
-            logReduceBlackListDict.addAll(logReduceBlackList);
+            for (String item : logReduceBlackList) {
+                logReduceBlackListDict.add(item);
+            }
             index.put("log_reduce_black_list", logReduceBlackListDict);
         }
 
         return index;
     }
 
-    public String ToRequestString() throws LogException {
-        return ToRequestJson().toString();
+    public String toRequestString() throws LogException {
+        return toRequestJson().toString();
     }
 
-    public JSONObject ToJsonObject() throws LogException {
-        JSONObject index = ToRequestJson();
+    @InternalApi
+    public JSONObject toJsonObject() throws LogException {
+        JSONObject index = toRequestJson();
         return index;
     }
 
-    public String ToJsonString() throws LogException {
-        return ToJsonObject().toString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         try {
             ttl = dict.getIntValue("ttl");
 
             if (dict.containsKey("line")) {
                 JSONObject lineDict = dict.getJSONObject("line");
-                line.FromJsonObject(lineDict);
+                line.fromJsonObject(lineDict);
             }
 
             if (dict.containsKey("keys")) {
                 JSONObject keysDict = dict.getJSONObject("keys");
-                keys.FromJsonObject(keysDict);
+                keys.fromJsonObject(keysDict);
             }
 
             if (dict.containsKey("log_reduce")) {
@@ -261,10 +265,10 @@ public class Index {
         }
     }
 
-    public void FromJsonString(String indexString) throws LogException {
+    public void fromJsonString(String indexString) throws LogException {
         try {
-            JSONObject dict = JSONObject.parseObject(indexString, Feature.DisableSpecialKeyDetect);
-            FromJsonObject(dict);
+            JSONObject dict = JSONObject.parseObject(indexString);
+            fromJsonObject(dict);
         } catch (JSONException e) {
             throw new LogException("FailToGenerateIndex", e.getMessage(), e, "");
         }

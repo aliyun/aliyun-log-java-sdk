@@ -2,9 +2,10 @@ package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The logtail config
@@ -12,7 +13,7 @@ import com.aliyun.openservices.log.exception.LogException;
  * @author log-service-dev
  *
  */
-public class Config implements Serializable {
+public class Config implements Serializable, JsonSerializable, JsonDeserializable {
 
 	private static final long serialVersionUID = -8687635889524799595L;
 	protected String logSample = "";
@@ -92,15 +93,24 @@ public class Config implements Serializable {
 	}
 
 	public void SetInputDetail(String inputDetailString) throws LogException {
-		inputDetail = CommonConfigInputDetail.FromJsonStringS(inputType, inputDetailString);
+		inputDetail = CommonConfigInputDetail.fromJsonString(inputType, inputDetailString);
 	}
 
+	@InternalApi
 	public void SetInputDetail(JSONObject inputDetail) throws LogException {
-		this.inputDetail = CommonConfigInputDetail.FromJsonObjectS(inputType, inputDetail);
+		this.inputDetail = CommonConfigInputDetail.fromJsonObject(inputType, inputDetail);
 	}
 
 	public ConfigOutputDetail GetOutputDetail() {
 		return outputDetail;
+	}
+
+	public String getOutputType() {
+		return outputType;
+	}
+
+	public void setOutputType(String outputType) {
+		this.outputType = outputType;
 	}
 
 	public void SetOutputDetail(ConfigOutputDetail outputDetail) {
@@ -109,12 +119,13 @@ public class Config implements Serializable {
 
 	public void SetOutputDetail(String outputDetailString) throws LogException {
 		this.outputDetail = new ConfigOutputDetail();
-		this.outputDetail.FromJsonString(outputDetailString);
+		this.outputDetail.fromJsonString(outputDetailString);
 	}
 
+	@InternalApi
 	public void SetOutputDetail(JSONObject outputDetail) throws LogException {
 		this.outputDetail = new ConfigOutputDetail();
-		this.outputDetail.FromJsonObject(outputDetail);
+		this.outputDetail.fromJsonObject(outputDetail);
 	}
 
 	public int GetCreateTime() {
@@ -133,40 +144,42 @@ public class Config implements Serializable {
 		this.lastModifyTime = lastModifyTime;
 	}
 
-	private JSONObject ToRequestJson() {
+	private JSONObject toRequestJson() {
 		JSONObject configDict = new JSONObject();
 
 		configDict.put("configName", GetConfigName());
 		configDict.put("logSample", logSample);
 		configDict.put("inputType", inputType);
-		configDict.put("inputDetail", GetInputDetail().ToJsonObject());
+		configDict.put("inputDetail", GetInputDetail().toJsonObject());
 		configDict.put("outputType", outputType);
-		configDict.put("outputDetail", GetOutputDetail().ToJsonObject());
+		configDict.put("outputDetail", GetOutputDetail().toJsonObject());
 
 		return configDict;
 	}
 
-	public String ToRequestString() {
-		return ToRequestJson().toString();
+	public String toRequestString() {
+		return toRequestJson().toString();
 	}
 
-	public JSONObject ToJsonObject() {
-		JSONObject configDict = ToRequestJson();
+	@InternalApi
+	public JSONObject toJsonObject() {
+		JSONObject configDict = toRequestJson();
 		configDict.put("createTime", GetCreateTime());
 		configDict.put("lastModifyTime", GetLastModifyTime());
 		return configDict;
 	}
 
-	public String ToJsonString() {
-		return ToJsonObject().toString();
-	}
 
-	public void FromJsonObject(JSONObject dict) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject dict) throws LogException {
 		try {
 			String configName = dict.getString("configName");
 
 			SetConfigName(configName);
 			SetInputType(dict.getString("inputType"));
+			if (dict.containsKey("outputType")) {
+				outputType = dict.getString("outputType");
+			}
 			if (dict.containsKey("inputDetail")) {
 				SetInputDetail(dict.getJSONObject("inputDetail"));
 			}
@@ -190,10 +203,10 @@ public class Config implements Serializable {
 		}
 	}
 
-	public void FromJsonString(String configString) throws LogException {
+	public void fromJsonString(String configString) throws LogException {
 		try {
 			JSONObject dict = JSONObject.parseObject(configString);
-			FromJsonObject(dict);
+			fromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateConfig",  e.getMessage(), e, "");
 		}

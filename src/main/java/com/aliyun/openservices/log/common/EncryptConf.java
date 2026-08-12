@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class EncryptConf {
+public class EncryptConf implements JsonSerializable, JsonDeserializable {
     private boolean enable = false;
     private String encrypt_type = "default";
     private EncryptUserCmkConf user_cmk_info = null;
@@ -51,28 +52,27 @@ public class EncryptConf {
         this.user_cmk_info = user_cmk_info;
     }
 
-    public JSONObject ToJsonObject() {
+    @InternalApi
+    public JSONObject toJsonObject() {
         JSONObject dict = new JSONObject();
         dict.put("enable", this.enable);
         dict.put("encrypt_type", this.encrypt_type);
         if (user_cmk_info != null) {
-            dict.put("user_cmk_info", user_cmk_info.ToJsonObject());
+            dict.put("user_cmk_info", user_cmk_info.toJsonObject());
         }
         return dict;
 
     }
 
-    public String ToJsonString() {
-        return ToJsonObject().toString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         try {
             setEnable(dict.getBooleanValue("enable"));
             setEncryptType(dict.getString("encrypt_type"));
             if (dict.containsKey("user_cmk_info")) {
                 EncryptUserCmkConf user_cmk_info = new EncryptUserCmkConf();
-                user_cmk_info.FromJsonObject(dict.getJSONObject("user_cmk_info"));
+                user_cmk_info.fromJsonObject(dict.getJSONObject("user_cmk_info"));
                 setUserCmkConf(user_cmk_info);
             }
         } catch (JSONException e) {
@@ -80,10 +80,10 @@ public class EncryptConf {
         }
     }
 
-    public void FromJsonString(String logStoreString) throws LogException {
+    public void fromJsonString(String logStoreString) throws LogException {
         try {
             JSONObject dict = JSONObject.parseObject(logStoreString);
-            FromJsonObject(dict);
+            fromJsonObject(dict);
         } catch (JSONException e) {
             throw new LogException("The Encrypt User config is invalid", e.getMessage(), e, "");
         }

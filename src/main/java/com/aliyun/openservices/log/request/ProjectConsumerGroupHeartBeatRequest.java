@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.request;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -18,8 +19,7 @@ public class ProjectConsumerGroupHeartBeatRequest extends Request {
 
     public String GetRequestBody()
     {
-        JSONObject obj = new JSONObject();
-        obj.putAll(logStoreShards);
+        JSONObject obj = JsonCodec.toJsonObject(logStoreShards);
 
         JSONObject wrapper = new JSONObject();
         wrapper.put("logstores", obj);

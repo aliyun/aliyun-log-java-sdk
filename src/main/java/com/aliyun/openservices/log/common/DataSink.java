@@ -1,11 +1,13 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class DataSink implements Serializable {
+public class DataSink implements Serializable, JsonSerializable, JsonDeserializable {
 
     private DataSinkType type;
 
@@ -21,7 +23,13 @@ public class DataSink implements Serializable {
         this.type = type;
     }
 
-    public void deserialize(JSONObject jsonObject) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        return JsonCodec.toJsonObject(this);
+    }
+
+    @InternalApi
+    public void fromJsonObject(JSONObject jsonObject) {
         // No-op
     }
 }

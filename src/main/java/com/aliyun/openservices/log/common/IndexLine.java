@@ -3,12 +3,13 @@ package com.aliyun.openservices.log.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class IndexLine {
+public class IndexLine implements JsonSerializable, JsonDeserializable {
 	private List<String> token = new ArrayList<String>();
 	private List<String> optionToken = new ArrayList<String>();
 	private boolean caseSensitive;
@@ -137,27 +138,36 @@ public class IndexLine {
 		this.autoKeyCountLimit = autoKeyCountLimit;
 	}
 
-	public JSONObject ToRequestJson() {
+	@InternalApi
+	public JSONObject toRequestJson() {
 		JSONObject line = new JSONObject();
 		JSONArray tokenDict = new JSONArray();
-		tokenDict.addAll(token);
+		for (String item : token) {
+			tokenDict.add(item);
+		}
 		line.put("token", tokenDict);
 
 		if (!optionToken.isEmpty()) {
 			JSONArray optionTokenDict = new JSONArray();
-			optionTokenDict.addAll(optionToken);
+			for (String item : optionToken) {
+				optionTokenDict.add(item);
+			}
 			line.put("option_token", optionTokenDict);
 		}
 
 		if (includeKeys.size() > 0) {
 			JSONArray includeKeysDict = new JSONArray();
-			includeKeysDict.addAll(includeKeys);
+			for (String item : includeKeys) {
+				includeKeysDict.add(item);
+			}
 			line.put("include_keys", includeKeysDict);
 		}
 
 		if (excludeKeys.size() > 0) {
 			JSONArray excludeKeysDict = new JSONArray();
-			excludeKeysDict.addAll(excludeKeys);
+			for (String item : excludeKeys) {
+				excludeKeysDict.add(item);
+			}
 			line.put("exclude_keys", excludeKeysDict);
 		}
 
@@ -170,19 +180,18 @@ public class IndexLine {
 		return line;
 	}
 
-	public String ToRequestString() {
-		return ToRequestJson().toString();
+	public String toRequestString() {
+		return toRequestJson().toString();
 	}
 
-	public JSONObject ToJsonObject() {
-		return ToRequestJson();
+	@InternalApi
+	public JSONObject toJsonObject() {
+		return toRequestJson();
 	}
 
-	public String ToJsonString() {
-		return ToJsonObject().toString();
-	}
 
-	public void FromJsonObject(JSONObject dict) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject dict) throws LogException {
 		try {
 			if (dict.containsKey("caseSensitive")) {
 				SetCaseSensitive(dict.getBoolean("caseSensitive"));
@@ -227,10 +236,10 @@ public class IndexLine {
 		}
 	}
 
-	public void FromJsonString(String indexLineString) throws LogException {
+	public void fromJsonString(String indexLineString) throws LogException {
 		try {
 			JSONObject dict = JSONObject.parseObject(indexLineString);
-			FromJsonObject(dict);
+			fromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateIndexLine", e.getMessage(), e, "");
 		}

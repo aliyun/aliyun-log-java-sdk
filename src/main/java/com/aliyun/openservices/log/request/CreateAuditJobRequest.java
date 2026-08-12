@@ -25,6 +25,10 @@ public class CreateAuditJobRequest extends JobRequest {
         return Consts.JOB_URI;
     }
 
+    public AuditJob getAuditJob() {
+        return auditJob;
+    }
+
     @Override
     public Object getBody() {
         return auditJob;

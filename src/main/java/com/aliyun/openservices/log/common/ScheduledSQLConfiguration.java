@@ -1,9 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.annotation.JSONPOJOBuilder;
-import com.alibaba.fastjson.annotation.JSONType;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ScheduledSQLConfiguration extends JobConfiguration {
     private String sourceLogstore;
@@ -168,7 +166,18 @@ public class ScheduledSQLConfiguration extends JobConfiguration {
     public Boolean getForceComplete() { return forceComplete; }
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (parameters != null) {
+            value.put("parameters", parameters.toJsonObject());
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         sourceLogstore = value.getString("sourceLogstore");
         roleArn = value.getString("roleArn");
         destRoleArn = value.getString("destRoleArn");
@@ -189,13 +198,13 @@ public class ScheduledSQLConfiguration extends JobConfiguration {
 
         if ("log2metric".equals(dataFormat)) {
             parameters = new Log2MetricParameters();
-            parameters.deserialize(value.getJSONObject("parameters"));
+            parameters.fromJsonObject(value.getJSONObject("parameters"));
         } else if ("metric2metric".equals(dataFormat)) {
             parameters = new Metric2MetricParameters();
-            parameters.deserialize(value.getJSONObject("parameters"));
+            parameters.fromJsonObject(value.getJSONObject("parameters"));
         } else if (value.containsKey("parameters")) {
             parameters = new ScheduledSQLBaseParameters();
-            parameters.deserialize(value.getJSONObject("parameters"));
+            parameters.fromJsonObject(value.getJSONObject("parameters"));
         }
     }
 

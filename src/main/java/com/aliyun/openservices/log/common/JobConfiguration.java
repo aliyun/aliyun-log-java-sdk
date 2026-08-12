@@ -1,12 +1,20 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public abstract class JobConfiguration {
+public abstract class JobConfiguration implements JsonSerializable, JsonDeserializable {
+
+    @InternalApi
+    public JSONObject toJsonObject() {
+        return JsonCodec.toJsonObject(this);
+    }
 
     /**
-     * Deserialize instance from JSON object.
+     * Read fields from a JSON object.
      **/
-    public abstract void deserialize(JSONObject value);
+    @InternalApi
+    public abstract void fromJsonObject(JSONObject value);
 }

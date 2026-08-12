@@ -4,10 +4,11 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail implements Serializable {
 	
@@ -185,8 +186,9 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 
 	public void SetPluginDetail(String pluginDetail) { this.pluginDetail = pluginDetail; }
 	
-	protected void LocalFileConfigToJsonObject(JSONObject jsonObj) {
-		CommonConfigToJsonObject(jsonObj);
+	@InternalApi
+	protected void localFileConfigToJsonObject(JSONObject jsonObj) {
+		commonConfigToJsonObject(jsonObj);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOGPATH, logPath);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_FILEPATTERN, filePattern);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOGTYPE, logType);
@@ -235,9 +237,10 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 		}
 	}
 	
-	protected void LocalFileConfigFromJsonObject(JSONObject inputDetail) throws LogException {
+	@InternalApi
+	protected void localFileConfigFromJsonObject(JSONObject inputDetail) throws LogException {
 		try {
-			CommonConfigFromJsonObject(inputDetail);
+			commonConfigFromJsonObject(inputDetail);
 			this.logPath = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_LOGPATH);
 			this.filePattern = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_FILEPATTERN);
 			this.logType = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_LOGTYPE);
@@ -295,29 +298,29 @@ public abstract class LocalFileConfigInputDetail extends CommonConfigInputDetail
 
 			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV)) {
 				JSONObject dockerIncludeEnvJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_ENV);
-				for(Map.Entry<String, Object> entry : dockerIncludeEnvJson.entrySet()) {
-					dockerIncludeEnv.put(entry.getKey(), entry.getValue().toString());
+				for(String key : dockerIncludeEnvJson.keySet()) {
+					dockerIncludeEnv.put(key, dockerIncludeEnvJson.getString(key));
 				}
 			}
 
 			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_ENV)) {
 				JSONObject dockerExcludeEnvJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_ENV);
-				for(Map.Entry<String, Object> entry : dockerExcludeEnvJson.entrySet()) {
-					dockerExcludeEnv.put(entry.getKey(), entry.getValue().toString());
+				for(String key : dockerExcludeEnvJson.keySet()) {
+					dockerExcludeEnv.put(key, dockerExcludeEnvJson.getString(key));
 				}
 			}
 
 			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL)) {
 				JSONObject dockerIncludeLabelJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_INCLUDE_LABEL);
-				for(Map.Entry<String, Object> entry : dockerIncludeLabelJson.entrySet()) {
-					dockerIncludeLabel.put(entry.getKey(), entry.getValue().toString());
+				for(String key : dockerIncludeLabelJson.keySet()) {
+					dockerIncludeLabel.put(key, dockerIncludeLabelJson.getString(key));
 				}
 			}
 			
 			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL)) {
 				JSONObject dockerExcludeLabelJson = inputDetail.getJSONObject(Consts.CONST_CONFIG_INPUTDETAIL_DOCKER_EXCLUDE_LABEL);
-				for(Map.Entry<String, Object> entry : dockerExcludeLabelJson.entrySet()) {
-					dockerExcludeLabel.put(entry.getKey(), entry.getValue().toString());
+				for(String key : dockerExcludeLabelJson.keySet()) {
+					dockerExcludeLabel.put(key, dockerExcludeLabelJson.getString(key));
 				}
 			}
 

@@ -24,6 +24,10 @@ public class CreateExportRequest extends JobRequest {
         return Consts.JOB_URI;
     }
 
+    public Export getExport() {
+        return export;
+    }
+
     @Override
     public Object getBody() {
         return export;

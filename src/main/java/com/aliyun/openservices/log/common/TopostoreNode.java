@@ -1,14 +1,15 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class TopostoreNode implements Serializable {
+public class TopostoreNode implements Serializable, JsonSerializable, JsonDeserializable {
     private String nodeId = "";
     private String nodeType = "";
     private String property = null;
@@ -82,7 +83,7 @@ public class TopostoreNode implements Serializable {
         for(Map.Entry<String, String> kv : properties.entrySet()){
             proObj.put(kv.getKey(), kv.getValue());
         }
-        setProperty(proObj.toJSONString());
+        setProperty(proObj.toString());
     }
 
     public String getDescription() {
@@ -101,7 +102,8 @@ public class TopostoreNode implements Serializable {
         this.displayName = displayName;
     }
 
-    public JSONObject ToJsonObject() throws LogException {
+    @InternalApi
+    public JSONObject toJsonObject() throws LogException {
         JSONObject result = new JSONObject();
         result.put(Consts.TOPOSTORE_NODE_ID, getNodeId());
         result.put(Consts.TOPOSTORE_NODE_TYPE, getNodeType());
@@ -120,11 +122,9 @@ public class TopostoreNode implements Serializable {
         return result;
     }
 
-    public String ToJsonString() throws LogException {
-        return ToJsonObject().toJSONString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         setNodeId(dict.getString(Consts.TOPOSTORE_NODE_ID));
         setNodeType(dict.getString(Consts.TOPOSTORE_NODE_TYPE));
 
@@ -152,9 +152,9 @@ public class TopostoreNode implements Serializable {
         }
     }
 
-    public void FromJsonString(String content) throws LogException {
+    public void fromJsonString(String content) throws LogException {
         JSONObject dict = JSONObject.parseObject(content);
-        FromJsonObject(dict);
+        fromJsonObject(dict);
     }
 
     public void checkForCreate() throws IllegalArgumentException {

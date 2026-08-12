@@ -1,38 +1,38 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.Map;
 
 public class ResourceActionPolicy implements Serializable {
-    @JSONField(name = "action_policy_id")
+    @SerializedName("action_policy_id")
     private String actionPolicyId;
-    @JSONField(name = "action_policy_name")
+    @SerializedName("action_policy_name")
     private String actionPolicyName;
-    @JSONField(name = "is_default")
+    @SerializedName("is_default")
     private boolean isDefault;
-    @JSONField(name = "primary_policy_script")
+    @SerializedName("primary_policy_script")
     private String primaryPolicyScript;
-    @JSONField(name = "secondary_policy_script")
+    @SerializedName("secondary_policy_script")
     private String secondaryPolicyScript;
 
-    @JSONField(name = "escalation_start_enabled")
+    @SerializedName("escalation_start_enabled")
     private boolean escalationStartEnabled;
-    @JSONField(name = "escalation_start_timeout")
+    @SerializedName("escalation_start_timeout")
     private String escalationStartTimeout;
 
-    @JSONField(name = "escalation_inprogress_enabled")
+    @SerializedName("escalation_inprogress_enabled")
     private boolean escalationInProgressEnabled;
-    @JSONField(name = "escalation_inprogress_timeout")
+    @SerializedName("escalation_inprogress_timeout")
     private String escalationInProgressTimeout;
 
-    @JSONField(name = "escalation_enabled")
+    @SerializedName("escalation_enabled")
     private boolean escalationEnabled;
-    @JSONField(name = "escalation_timeout")
+    @SerializedName("escalation_timeout")
     private String escalationTimeout;
 
-    @JSONField(name = "labels")
+    @SerializedName("labels")
     private Map<String, String> labels;
 
     public String getActionPolicyId() {

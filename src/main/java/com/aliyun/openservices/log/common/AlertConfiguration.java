@@ -1,18 +1,19 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JsonEnumAdapter;
+import com.aliyun.openservices.log.internal.json.JsonEnumCreator;
+import com.aliyun.openservices.log.internal.json.JsonEnumValue;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 import com.aliyun.openservices.log.util.JsonUtils;
 import com.aliyun.openservices.log.util.Utils;
 
-import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Configuration for alert job.
@@ -24,72 +25,47 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
      * Which depends on the order of queries in {@code queryList}.
      */
     @Deprecated
-    @JSONField
     private String condition;
 
-    @JSONField
     private List<Query> queryList;
 
-    @JSONField
     private Date muteUntil;
 
     /**
      * Optional notify threshold, defaults to 1.
      */
     @Deprecated
-    @JSONField
     private Integer notifyThreshold = 1;
 
     /**
      * Duration with format '1h', '2s'
      */
-    @JSONField
     private String throttling;
 
     @Deprecated
-    @JSONField
     private boolean sendRecoveryMessage;
 
-    @JSONField
     private boolean autoAnnotation;
-    @JSONField
     private String version;
-    @JSONField
     private String type;
     /**
      * Optional eval threshold, defaults to 1.
      */
-    @JSONField
     private int threshold = 1;
-    @JSONField
     private boolean noDataFire;
-    @JSONField
     private int noDataSeverity = Severity.Medium.value();
-    @JSONField
     private boolean sendResolved;
-    @JSONField
     private TemplateConfiguration templateConfiguration;
-    @JSONField
     private ConditionConfiguration conditionConfiguration;
-    @JSONField
     private List<Tag> annotations;
-    @JSONField
     private List<Tag> labels;
-    @JSONField
     private List<SeverityConfiguration> severityConfigurations;
-    @JSONField
     private List<JoinConfiguration> joinConfigurations;
-    @JSONField
     private GroupConfiguration groupConfiguration;
-    @JSONField
     private PolicyConfiguration policyConfiguration;
-    @JSONField
     private List<String> tags;
-    @JSONField
     private SinkEventStoreConfiguration sinkEventStore;
-    @JSONField
     private SinkCmsConfiguration sinkCms;
-    @JSONField
     private SinkAlerthubConfiguration sinkAlerthub;
 
     public String getCondition() {
@@ -155,23 +131,34 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
-        super.deserialize(value);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (muteUntil != null) {
+            value.put("muteUntil", Utils.dateToTimestamp(muteUntil));
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
+        super.fromJsonObject(value);
         setVersion(JsonUtils.readOptionalString(value, "version"));
         if (getVersion() != null) {
-            deserializeAlert2(value);
+            fromJsonObjectV2(value);
         } else {
-            deserializeAlert(value);
+            fromJsonObjectV1(value);
         }
     }
 
-    private void deserializeAlert(JSONObject value) {
+    private void fromJsonObjectV1(JSONObject value) {
         condition = value.getString("condition");
         queryList = JsonUtils.readList(value, "queryList", new Unmarshaller<Query>() {
             @Override
             public Query unmarshal(JSONArray value, int index) {
                 Query query = new Query();
-                query.deserialize(value.getJSONObject(index));
+                query.fromJsonObject(value.getJSONObject(index));
                 return query;
             }
         });
@@ -186,7 +173,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
     }
 
-    private void deserializeAlert2(JSONObject value) {
+    private void fromJsonObjectV2(JSONObject value) {
         if (value.containsKey("muteUntil")) {
             muteUntil = Utils.timestampToDate(value.getLong("muteUntil"));
         }
@@ -212,17 +199,17 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
         templateConfiguration = new TemplateConfiguration();
         if (value.containsKey("templateConfiguration") && value.getJSONObject("templateConfiguration") != null) {
-            templateConfiguration.deserialize(value.getJSONObject("templateConfiguration"));
+            templateConfiguration.fromJsonObject(value.getJSONObject("templateConfiguration"));
         }
         conditionConfiguration = new ConditionConfiguration();
         if (value.containsKey("conditionConfiguration")) {
-            conditionConfiguration.deserialize(value.getJSONObject("conditionConfiguration"));
+            conditionConfiguration.fromJsonObject(value.getJSONObject("conditionConfiguration"));
         }
         queryList = JsonUtils.readList(value, "queryList", new Unmarshaller<Query>() {
             @Override
             public Query unmarshal(JSONArray value, int index) {
                 Query query = new Query();
-                query.deserialize(value.getJSONObject(index));
+                query.fromJsonObject(value.getJSONObject(index));
                 return query;
             }
         });
@@ -230,7 +217,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             @Override
             public Tag unmarshal(JSONArray value, int index) {
                 Tag tag = new Tag();
-                tag.deserialize(value.getJSONObject(index));
+                tag.fromJsonObject(value.getJSONObject(index));
                 return tag;
             }
         });
@@ -238,7 +225,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             @Override
             public Tag unmarshal(JSONArray value, int index) {
                 Tag tag = new Tag();
-                tag.deserialize(value.getJSONObject(index));
+                tag.fromJsonObject(value.getJSONObject(index));
                 return tag;
             }
         });
@@ -247,7 +234,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             @Override
             public SeverityConfiguration unmarshal(JSONArray value, int index) {
                 SeverityConfiguration severityConfiguration = new SeverityConfiguration();
-                severityConfiguration.deserialize(value.getJSONObject(index));
+                severityConfiguration.fromJsonObject(value.getJSONObject(index));
                 return severityConfiguration;
             }
         });
@@ -256,18 +243,18 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             @Override
             public JoinConfiguration unmarshal(JSONArray value, int index) {
                 JoinConfiguration joinConfiguration = new JoinConfiguration();
-                joinConfiguration.deserialize(value.getJSONObject(index));
+                joinConfiguration.fromJsonObject(value.getJSONObject(index));
                 return joinConfiguration;
             }
         });
         groupConfiguration = new GroupConfiguration();
         if (value.containsKey("groupConfiguration") && value.getJSONObject("groupConfiguration") != null) {
-            groupConfiguration.deserialize(value.getJSONObject("groupConfiguration"));
+            groupConfiguration.fromJsonObject(value.getJSONObject("groupConfiguration"));
         }
 
         policyConfiguration = new PolicyConfiguration();
         if (value.containsKey("policyConfiguration") && value.getJSONObject("policyConfiguration") != null) {
-            policyConfiguration.deserialize(value.getJSONObject("policyConfiguration"));
+            policyConfiguration.fromJsonObject(value.getJSONObject("policyConfiguration"));
         }
 
         if (value.containsKey("tags")) {
@@ -276,17 +263,17 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
 
         if (value.containsKey("sinkEventStore") && value.getJSONObject("sinkEventStore") != null) {
             sinkEventStore = new SinkEventStoreConfiguration();
-            sinkEventStore.deserialize(value.getJSONObject("sinkEventStore"));
+            sinkEventStore.fromJsonObject(value.getJSONObject("sinkEventStore"));
         }
 
         if (value.containsKey("sinkCms") && value.getJSONObject("sinkCms") != null) {
             sinkCms = new SinkCmsConfiguration();
-            sinkCms.deserialize(value.getJSONObject("sinkCms"));
+            sinkCms.fromJsonObject(value.getJSONObject("sinkCms"));
         }
 
         if (value.containsKey("sinkAlerthub") && value.getJSONObject("sinkAlerthub") != null) {
             sinkAlerthub = new SinkAlerthubConfiguration();
-            sinkAlerthub.deserialize(value.getJSONObject("sinkAlerthub"));
+            sinkAlerthub.fromJsonObject(value.getJSONObject("sinkAlerthub"));
         }
     }
 
@@ -513,7 +500,8 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
     }
 
-    public enum JoinType implements JSONSerializable {
+    @JsonEnumAdapter
+    public enum JoinType {
         CROSS_JOIN("cross_join"),
         INNER_JOIN("inner_join"),
         LEFT_JOIN("left_join"),
@@ -530,6 +518,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.value = value;
         }
 
+        @JsonEnumCreator
         public static JoinType fromString(String value) {
             for (JoinType type : JoinType.values()) {
                 if (type.value.equals(value)) {
@@ -539,18 +528,16 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             return null;
         }
 
+        @JsonEnumValue
         @Override
         public String toString() {
             return value;
         }
 
-        @Override
-        public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-            serializer.write(toString());
-        }
     }
 
-    public enum GroupType implements JSONSerializable {
+    @JsonEnumAdapter
+    public enum GroupType {
         NO_GROUP("no_group"),
         LABELS_AUTO("labels_auto"),
         CUSTOM("custom");
@@ -561,6 +548,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.value = value;
         }
 
+        @JsonEnumCreator
         public static GroupType fromString(String value) {
             for (GroupType type : GroupType.values()) {
                 if (type.value.equals(value)) {
@@ -570,18 +558,16 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             return null;
         }
 
+        @JsonEnumValue
         @Override
         public String toString() {
             return value;
         }
 
-        @Override
-        public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-            serializer.write(toString());
-        }
     }
 
-    public enum StoreType implements JSONSerializable {
+    @JsonEnumAdapter
+    public enum StoreType {
         LOG("log"),
         METRIC("metric"),
         META("meta");
@@ -592,6 +578,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.value = value;
         }
 
+        @JsonEnumCreator
         public static StoreType fromString(String value) {
             for (StoreType type : StoreType.values()) {
                 if (type.value.equals(value)) {
@@ -601,29 +588,20 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             return null;
         }
 
+        @JsonEnumValue
         @Override
         public String toString() {
             return value;
         }
 
-        @Override
-        public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-            serializer.write(toString());
-        }
     }
 
-    public static class TemplateConfiguration {
-        @JSONField
+    public static class TemplateConfiguration implements JsonSerializable, JsonDeserializable {
         private String id;
-        @JSONField
         private String type;
-        @JSONField
         private String version;
-        @JSONField
         private String lang;
-        @JSONField
         private Map<String, String> tokens;
-        @JSONField
         private Map<String, String> annotations;
 
         public String getId() {
@@ -674,7 +652,15 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.annotations = annotations;
         }
 
-        public void deserialize(JSONObject value) {
+        @Override
+        @InternalApi
+        public JSONObject toJsonObject() {
+            return JsonCodec.toJsonObject(this);
+        }
+
+        @Override
+        @InternalApi
+        public void fromJsonObject(JSONObject value) {
             setId(JsonUtils.readOptionalString(value, "id"));
             setType(JsonUtils.readOptionalString(value, "type"));
             setLang(JsonUtils.readOptionalString(value, "lang"));
@@ -684,10 +670,8 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
     }
 
-    public static class ConditionConfiguration {
-        @JSONField
+    public static class ConditionConfiguration implements JsonSerializable, JsonDeserializable {
         private String condition;
-        @JSONField
         private String countCondition;
 
         public String getCondition() {
@@ -706,7 +690,15 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.countCondition = countCondition;
         }
 
-        public void deserialize(JSONObject value) {
+        @Override
+        @InternalApi
+        public JSONObject toJsonObject() {
+            return JsonCodec.toJsonObject(this);
+        }
+
+        @Override
+        @InternalApi
+        public void fromJsonObject(JSONObject value) {
             if (value != null) {
                 setCondition(JsonUtils.readOptionalString(value, "condition"));
                 setCountCondition(JsonUtils.readOptionalString(value, "countCondition"));
@@ -714,12 +706,9 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
     }
 
-    public static class JoinConfiguration {
-        @JSONField
+    public static class JoinConfiguration implements JsonSerializable, JsonDeserializable {
         private String type;
-        @JSONField
         private String condition;
-        @JSONField
         private String ui;
 
         public String getType() {
@@ -746,17 +735,23 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.ui = ui;
         }
 
-        public void deserialize(JSONObject value) {
+        @Override
+        @InternalApi
+        public JSONObject toJsonObject() {
+            return JsonCodec.toJsonObject(this);
+        }
+
+        @Override
+        @InternalApi
+        public void fromJsonObject(JSONObject value) {
             setType(value.getString("type"));
             setCondition(value.getString("condition"));
             setUi(value.getString("ui"));
         }
     }
 
-    public static class Tag {
-        @JSONField
+    public static class Tag implements JsonSerializable, JsonDeserializable {
         private String key;
-        @JSONField
         private String value;
 
         public String getKey() {
@@ -776,7 +771,15 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
 
 
-        public void deserialize(JSONObject value) {
+        @Override
+        @InternalApi
+        public JSONObject toJsonObject() {
+            return JsonCodec.toJsonObject(this);
+        }
+
+        @Override
+        @InternalApi
+        public void fromJsonObject(JSONObject value) {
             if (value != null) {
                 setKey(value.getString("key"));
                 setValue(value.getString("value"));
@@ -784,10 +787,8 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
     }
 
-    public static class SeverityConfiguration {
-        @JSONField
+    public static class SeverityConfiguration implements JsonSerializable, JsonDeserializable {
         private int severity;
-        @JSONField
         private ConditionConfiguration evalCondition;
 
         public int getSeverity() {
@@ -807,21 +808,27 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
 
 
-        public void deserialize(JSONObject value) {
+        @Override
+        @InternalApi
+        public JSONObject toJsonObject() {
+            return JsonCodec.toJsonObject(this);
+        }
+
+        @Override
+        @InternalApi
+        public void fromJsonObject(JSONObject value) {
             if (value.containsKey("severity")) {
                 setSeverity(Severity.valueOf(value.getInteger("severity")));
             }
             evalCondition = new ConditionConfiguration();
             if (value.containsKey("evalCondition") && value.getJSONObject("evalCondition") != null) {
-                evalCondition.deserialize(value.getJSONObject("evalCondition"));
+                evalCondition.fromJsonObject(value.getJSONObject("evalCondition"));
             }
         }
     }
 
-    public static class GroupConfiguration {
-        @JSONField
+    public static class GroupConfiguration implements JsonSerializable, JsonDeserializable {
         private String type;
-        @JSONField
         private List<String> fields;
 
         public String getType() {
@@ -840,20 +847,24 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.fields = fields;
         }
 
-        public void deserialize(JSONObject value) {
+        @Override
+        @InternalApi
+        public JSONObject toJsonObject() {
+            return JsonCodec.toJsonObject(this);
+        }
+
+        @Override
+        @InternalApi
+        public void fromJsonObject(JSONObject value) {
             setType(value.getString("type"));
             setFields(JsonUtils.readStringList(value, "fields"));
         }
     }
 
-    public static class PolicyConfiguration {
-        @JSONField
+    public static class PolicyConfiguration implements JsonSerializable, JsonDeserializable {
         private String actionPolicyId;
-        @JSONField
         private String alertPolicyId;
-        @JSONField
         private boolean useDefault;
-        @JSONField
         private String repeatInterval;
 
         public String getActionPolicyId() {
@@ -888,7 +899,15 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.repeatInterval = repeatInterval;
         }
 
-        public void deserialize(JSONObject value) {
+        @Override
+        @InternalApi
+        public JSONObject toJsonObject() {
+            return JsonCodec.toJsonObject(this);
+        }
+
+        @Override
+        @InternalApi
+        public void fromJsonObject(JSONObject value) {
             setUseDefault(JsonUtils.readBool(value, "useDefault", false));
             setRepeatInterval(JsonUtils.readOptionalString(value, "repeatInterval"));
             setActionPolicyId(JsonUtils.readOptionalString(value, "actionPolicyId"));
@@ -896,16 +915,11 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
     }
 
-    public static class SinkEventStoreConfiguration {
-        @JSONField
+    public static class SinkEventStoreConfiguration implements JsonSerializable, JsonDeserializable {
         private boolean enabled;
-        @JSONField
         private String endpoint;
-        @JSONField
         private String project;
-        @JSONField
         private String eventStore;
-        @JSONField
         private String roleArn;
 
         public boolean isEnabled() {
@@ -948,7 +962,15 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.roleArn = roleArn;
         }
 
-        public void deserialize(JSONObject value) {
+        @Override
+        @InternalApi
+        public JSONObject toJsonObject() {
+            return JsonCodec.toJsonObject(this);
+        }
+
+        @Override
+        @InternalApi
+        public void fromJsonObject(JSONObject value) {
             setEnabled(JsonUtils.readBool(value, "enabled", false));
             setEndpoint(JsonUtils.readOptionalString(value, "endpoint"));
             setProject(JsonUtils.readOptionalString(value, "project"));
@@ -957,8 +979,7 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
         }
     }
 
-    public static class SinkCmsConfiguration {
-        @JSONField
+    public static class SinkCmsConfiguration implements JsonSerializable, JsonDeserializable {
         private boolean enabled;
 
         public boolean isEnabled() {
@@ -969,13 +990,20 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.enabled = enabled;
         }
 
-        public void deserialize(JSONObject value) {
+        @Override
+        @InternalApi
+        public JSONObject toJsonObject() {
+            return JsonCodec.toJsonObject(this);
+        }
+
+        @Override
+        @InternalApi
+        public void fromJsonObject(JSONObject value) {
             setEnabled(JsonUtils.readBool(value, "enabled", false));
         }
     }
 
-    public static class SinkAlerthubConfiguration {
-        @JSONField
+    public static class SinkAlerthubConfiguration implements JsonSerializable, JsonDeserializable {
         private boolean enabled;
 
         public boolean isEnabled() {
@@ -986,7 +1014,15 @@ public class AlertConfiguration extends DashboardBasedJobConfiguration {
             this.enabled = enabled;
         }
 
-        public void deserialize(JSONObject value) {
+        @Override
+        @InternalApi
+        public JSONObject toJsonObject() {
+            return JsonCodec.toJsonObject(this);
+        }
+
+        @Override
+        @InternalApi
+        public void fromJsonObject(JSONObject value) {
             setEnabled(JsonUtils.readBool(value, "enabled", false));
         }
     }

@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class AliyunOSSSource extends DataSource {
 
@@ -129,8 +130,19 @@ public class AliyunOSSSource extends DataSource {
     }
 
     @Override
-    public void deserialize(JSONObject jsonObject) {
-        super.deserialize(jsonObject);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (format != null) {
+            value.put("format", format.toJsonObject());
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject jsonObject) {
+        super.fromJsonObject(jsonObject);
         bucket = jsonObject.getString("bucket");
         endpoint = jsonObject.getString("endpoint");
         roleARN = jsonObject.getString("roleARN");
@@ -145,7 +157,7 @@ public class AliyunOSSSource extends DataSource {
             String type = JsonUtils.readOptionalString(formatObject, "type");
             if (type != null && !type.equals("")) {
                 format = createFormat(type);
-                format.deserialize(formatObject);
+                format.fromJsonObject(formatObject);
             }
         }
     }

@@ -1,8 +1,8 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class ReportConfiguration extends DashboardBasedJobConfiguration {
@@ -10,37 +10,30 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
     /**
      * Whether add watermark on image, default to false.
      */
-    @JSONField
     private boolean enableWatermark;
 
     /**
      * Whether create a public access url for dashboard, default to false.
      */
-    @JSONField
     private boolean allowAnonymousAccess;
 
     /**
      * Optional language for internationalization. Defaults as zh.
      */
-    @JSONField
     private String language;
 
     /**
      * Extra parameters passed to dashboard-render-service, which is encoded into base64
      */
-    @JSONField
     private String extraParams;
 
-    @JSONField
     private boolean customizePeriod;
 
-    @JSONField
     private boolean attachCsv;
 
     /**
      * Must be specified if customizePeriod is true.
      */
-    @JSONField
     private TimeSpan period;
 
     public boolean getEnableWatermark() {
@@ -114,8 +107,9 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
-        super.deserialize(value);
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
+        super.fromJsonObject(value);
         enableWatermark = JsonUtils.readBool(value, "enableWatermark", false);
         allowAnonymousAccess = JsonUtils.readBool(value, "allowAnonymousAccess", false);
         language = JsonUtils.readOptionalString(value, "language");
@@ -124,7 +118,7 @@ public class ReportConfiguration extends DashboardBasedJobConfiguration {
         attachCsv = JsonUtils.readBool(value, "attachCsv", false);
         if (customizePeriod) {
             period = new TimeSpan();
-            period.deserialize(value.getJSONObject("period"));
+            period.fromJsonObject(value.getJSONObject("period"));
         }
     }
 

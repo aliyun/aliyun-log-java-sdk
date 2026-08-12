@@ -4,10 +4,11 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class OssShipperStorageColumn implements Serializable {
+public class OssShipperStorageColumn implements Serializable, JsonSerializable, JsonDeserializable {
 	
 	private static final long serialVersionUID = -4734086474258335426L;
 	protected String name = "";
@@ -34,18 +35,17 @@ public class OssShipperStorageColumn implements Serializable {
 		this.type = type;
 	}
 	
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject configDict = new JSONObject();
 		configDict.put("name", getName());
 		configDict.put("type", getType());
 		return configDict;
 	}
 	
-	public String ToJsonString() {
-		return ToJsonObject().toString();
-	}
 	
-	public void FromJsonObject(JSONObject dict) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject dict) throws LogException {
 		try {			
 			setName(dict.getString("name"));
 			setType(dict.getString("type"));
@@ -54,10 +54,10 @@ public class OssShipperStorageColumn implements Serializable {
 		}
 	}
 	
-	public void FromJsonString(String columnString) throws LogException {
+	public void fromJsonString(String columnString) throws LogException {
 		try {
 			JSONObject dict = JSONObject.parseObject(columnString);
-			FromJsonObject(dict);
+			fromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateColumn",  e.getMessage(), e, "");
 		}

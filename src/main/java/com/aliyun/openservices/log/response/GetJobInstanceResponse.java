@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.JobInstance;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * ScheduledSQL jobInstances Response
@@ -21,12 +22,13 @@ public class GetJobInstanceResponse extends Response {
     public void setJobInstance(JobInstance jobInstance) {
         this.jobInstance = jobInstance;
     }
-    public void deserialize(JSONObject value, String requestId) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject value, String requestId) throws LogException {
         jobInstance = new JobInstance();
         try {
-            jobInstance.deserialize(value);
+            jobInstance.fromJsonObject(value);
         } catch (final Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, "Unable to deserialize JSON to model: " + ex.getMessage(), ex, requestId);
+            throw new LogException(ErrorCodes.BAD_RESPONSE, "Unable to read JSON model: " + ex.getMessage(), ex, requestId);
         }
     }
 }

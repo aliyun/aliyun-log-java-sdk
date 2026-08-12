@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ProjectConsumerGroup implements Serializable {
     private String consumerGroupName;
@@ -55,7 +56,8 @@ public class ProjectConsumerGroup implements Serializable {
         this.inOrder = inOrder;
     }
 
-    public JSONObject ToRequestJson() {
+    @InternalApi
+    public JSONObject toRequestJson() {
         JSONObject logStoreDict = new JSONObject();
         logStoreDict.put("consumerGroup", getConsumerGroupName());
         logStoreDict.put("timeout", getTimeout());
@@ -65,8 +67,8 @@ public class ProjectConsumerGroup implements Serializable {
         return logStoreDict;
     }
 
-    public String ToRequestString() {
-        return ToRequestJson().toString();
+    public String toRequestString() {
+        return toRequestJson().toString();
     }
 
     @Override

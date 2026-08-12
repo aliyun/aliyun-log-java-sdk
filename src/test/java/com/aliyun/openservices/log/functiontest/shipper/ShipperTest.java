@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.functiontest.shipper;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.EncryptConfig;
 import com.aliyun.openservices.log.common.OdpsShipperConfig;
@@ -98,7 +99,7 @@ public class ShipperTest extends JobIntgTest {
 
             GetShipperResponse res = client.GetShipperConfig(TEST_PROJECT, TEST_LOGSTORE,
                     shipperName);
-            assertEquals("odps", res.GetConfig().GetShipperType());
+            assertEquals("odps", res.GetConfig().getShipperType());
 
             logFieldsList.add("id");
             shipConfig = new OdpsShipperConfig(odpsEndPoint,
@@ -107,16 +108,16 @@ public class ShipperTest extends JobIntgTest {
             client.UpdateShipper(TEST_PROJECT, TEST_LOGSTORE, shipperName, shipConfig);
             GetShipperResponse resUpdate = client.GetShipperConfig(TEST_PROJECT, TEST_LOGSTORE,
                     shipperName);
-            JSONObject odpsJson = resUpdate.GetConfig().GetJsonObj();
+            JSONObject odpsJson = resUpdate.GetConfig().toJsonObject();
             // test fields
-            List<String> fieldupdate = (List<String>) odpsJson.get("fields");
+            List<String> fieldupdate = (List<String>) JsonCodec.toMap(odpsJson).get("fields");
             assertEquals(3, fieldupdate.size());
             assertTrue(fieldupdate.contains("__time__"));
             assertTrue(fieldupdate.contains("uuid"));
             assertTrue(fieldupdate.contains("id"));
             // test bufferInterval
-            String bufferInterval = odpsJson.getString("bufferInterval");
-            assertEquals("1800", bufferInterval);
+            int bufferInterval = odpsJson.getIntValue("bufferInterval");
+            assertEquals(1800, bufferInterval);
             // test partitionTimeFormatString
             String partitionTimeFormatString = odpsJson.getString("partitionTimeFormat");
             assertEquals("yyyy_MM_dd_HH_mm", partitionTimeFormatString);
@@ -124,7 +125,7 @@ public class ShipperTest extends JobIntgTest {
             String odpsEndpointString = odpsJson.getString("odpsEndpoint");
             assertEquals("http://odps-ext.aliyun-inc.com/api", odpsEndpointString);
             // test partitionColumn
-            List<String> partitionColumnList = (List<String>) odpsJson.get("partitionColumn");
+            List<String> partitionColumnList = (List<String>) JsonCodec.toMap(odpsJson).get("partitionColumn");
             assertEquals("__PARTITION_TIME__", partitionColumnList.get(0));
             // test odpsProject
             String odpsProjectString = odpsJson.getString("odpsProject");
@@ -168,24 +169,24 @@ public class ShipperTest extends JobIntgTest {
             client.CreateShipper(TEST_PROJECT, TEST_LOGSTORE, shipperName, ossConfig);
 
             GetShipperResponse ossRes = client.GetShipperConfig(TEST_PROJECT, TEST_LOGSTORE, shipperName);
-            assertEquals("oss", ossRes.GetConfig().GetShipperType());
-            assertEquals(ossPrefix, ossRes.GetConfig().GetJsonObj().get("ossPrefix"));
+            assertEquals("oss", ossRes.GetConfig().getShipperType());
+            assertEquals(ossPrefix, ossRes.GetConfig().toJsonObject().getString("ossPrefix"));
 
             ossConfig = new OssShipperConfig(ossBucket, "updatePrefix", roleArn, bufferInterval, bufferSize,
                     compressType, pathFormat, "json", "");
             client.UpdateShipper(TEST_PROJECT, TEST_LOGSTORE, shipperName,
                     ossConfig);
             GetShipperResponse ossResUpdate = client.GetShipperConfig(TEST_PROJECT, TEST_LOGSTORE, shipperName);
-            JSONObject ossJson = ossResUpdate.GetConfig().GetJsonObj();
-            assertEquals("updatePrefix", ossJson.get("ossPrefix"));
-            assertEquals("audit-zyf-hangzhou", ossJson.get("ossBucket"));
-            assertEquals(10, ossJson.get("bufferSize"));
-            assertEquals(300, ossJson.get("bufferInterval"));
-            assertEquals("%Y/%m/%d/%H", ossJson.get("pathFormat"));
+            JSONObject ossJson = ossResUpdate.GetConfig().toJsonObject();
+            assertEquals("updatePrefix", ossJson.getString("ossPrefix"));
+            assertEquals("audit-zyf-hangzhou", ossJson.getString("ossBucket"));
+            assertEquals(10, ossJson.getIntValue("bufferSize"));
+            assertEquals(300, ossJson.getIntValue("bufferInterval"));
+            assertEquals("%Y/%m/%d/%H", ossJson.getString("pathFormat"));
             JSONObject storageObj = ossJson.getJSONObject("storage");
-            assertEquals("json", storageObj.get("format"));
+            assertEquals("json", storageObj.getString("format"));
             JSONObject detailObj = storageObj.getJSONObject("detail");
-            assertFalse(Boolean.parseBoolean(detailObj.get("enableTag").toString()));
+            assertFalse(detailObj.getBooleanValue("enableTag"));
 
             int startTime = (int) (System.currentTimeMillis() / 1000.0 - 7200);
             int endTime = (int) (System.currentTimeMillis() / 1000.0);
@@ -229,8 +230,8 @@ public class ShipperTest extends JobIntgTest {
             client.CreateShipper(TEST_PROJECT, TEST_LOGSTORE, shipperName, ossConfig);
 
             GetShipperResponse ossRes = client.GetShipperConfig(TEST_PROJECT, TEST_LOGSTORE, shipperName);
-            assertEquals("oss", ossRes.GetConfig().GetShipperType());
-            assertEquals(ossPrefix, ossRes.GetConfig().GetJsonObj().get("ossPrefix"));
+            assertEquals("oss", ossRes.GetConfig().getShipperType());
+            assertEquals(ossPrefix, ossRes.GetConfig().toJsonObject().getString("ossPrefix"));
 
             ossConfig = new OssShipperConfig(ossBucket, "updatePrefix", roleArn, bufferInterval, bufferSize,
                     compressType, pathFormat, "parquet", "");
@@ -239,14 +240,14 @@ public class ShipperTest extends JobIntgTest {
             client.UpdateShipper(TEST_PROJECT, TEST_LOGSTORE, shipperName,
                     ossConfig);
             GetShipperResponse ossResUpdate = client.GetShipperConfig(TEST_PROJECT, TEST_LOGSTORE, shipperName);
-            JSONObject ossJson = ossResUpdate.GetConfig().GetJsonObj();
-            assertEquals("updatePrefix", ossJson.get("ossPrefix"));
-            assertEquals("audit-zyf-hangzhou", ossJson.get("ossBucket"));
-            assertEquals(10, ossJson.get("bufferSize"));
-            assertEquals(300, ossJson.get("bufferInterval"));
-            assertEquals("%Y/%m/%d/%H", ossJson.get("pathFormat"));
+            JSONObject ossJson = ossResUpdate.GetConfig().toJsonObject();
+            assertEquals("updatePrefix", ossJson.getString("ossPrefix"));
+            assertEquals("audit-zyf-hangzhou", ossJson.getString("ossBucket"));
+            assertEquals(10, ossJson.getIntValue("bufferSize"));
+            assertEquals(300, ossJson.getIntValue("bufferInterval"));
+            assertEquals("%Y/%m/%d/%H", ossJson.getString("pathFormat"));
             JSONObject storageObj = ossJson.getJSONObject("storage");
-            assertEquals("parquet", storageObj.get("format"));
+            assertEquals("parquet", storageObj.getString("format"));
             JSONObject detailObj = storageObj.getJSONObject("detail");
             JSONArray columnsArray = detailObj.getJSONArray("columns");
             assertEquals(5, columnsArray.size());
@@ -298,8 +299,8 @@ public class ShipperTest extends JobIntgTest {
             client.CreateShipper(TEST_PROJECT, TEST_LOGSTORE, shipperName, ossConfig);
 
             GetShipperResponse ossRes = client.GetShipperConfig(TEST_PROJECT, TEST_LOGSTORE, shipperName);
-            assertEquals("oss", ossRes.GetConfig().GetShipperType());
-            assertEquals(ossPrefix, ossRes.GetConfig().GetJsonObj().get("ossPrefix"));
+            assertEquals("oss", ossRes.GetConfig().getShipperType());
+            assertEquals(ossPrefix, ossRes.GetConfig().toJsonObject().getString("ossPrefix"));
 
             ossConfig = new OssShipperConfig(ossBucket, "updatePrefix", roleArn, bufferInterval, bufferSize,
                     compressType, pathFormat, "csv", "");
@@ -318,18 +319,18 @@ public class ShipperTest extends JobIntgTest {
             detail.setNullIdentifier("");
             detail.setHeader(false);
             GetShipperResponse ossResUpdate = client.GetShipperConfig(TEST_PROJECT, TEST_LOGSTORE, shipperName);
-            JSONObject ossJson = ossResUpdate.GetConfig().GetJsonObj();
-            assertEquals("updatePrefix", ossJson.get("ossPrefix"));
-            assertEquals("audit-zyf-hangzhou", ossJson.get("ossBucket"));
-            assertEquals(10, ossJson.get("bufferSize"));
-            assertEquals(300, ossJson.get("bufferInterval"));
-            assertEquals("%Y/%m/%d/%H", ossJson.get("pathFormat"));
+            JSONObject ossJson = ossResUpdate.GetConfig().toJsonObject();
+            assertEquals("updatePrefix", ossJson.getString("ossPrefix"));
+            assertEquals("audit-zyf-hangzhou", ossJson.getString("ossBucket"));
+            assertEquals(10, ossJson.getIntValue("bufferSize"));
+            assertEquals(300, ossJson.getIntValue("bufferInterval"));
+            assertEquals("%Y/%m/%d/%H", ossJson.getString("pathFormat"));
             JSONObject storageObj = ossJson.getJSONObject("storage");
-            assertEquals("csv", storageObj.get("format"));
+            assertEquals("csv", storageObj.getString("format"));
             JSONObject detailObj = storageObj.getJSONObject("detail");
-            assertEquals("\n", detailObj.get("lineFeed"));
-            assertEquals("\"", detailObj.get("quote"));
-            List<String> columnsList = (List<String>) detailObj.get("columns");
+            assertEquals("\n", detailObj.getString("lineFeed"));
+            assertEquals("\"", detailObj.getString("quote"));
+            List<String> columnsList = (List<String>) JsonCodec.toMap(detailObj).get("columns");
             assertTrue(columnsList.contains("__topic__"));
             assertTrue(columnsList.contains("alarm_count"));
             assertTrue(columnsList.contains("alarm_message"));

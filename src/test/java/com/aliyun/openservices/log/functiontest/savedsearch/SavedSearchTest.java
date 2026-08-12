@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.savedsearch;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.SavedSearch;
 import com.aliyun.openservices.log.exception.LogException;

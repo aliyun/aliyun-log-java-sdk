@@ -4,16 +4,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Index config for keys
  *
  * @author log-service-dev
  */
-public class IndexKeys {
+public class IndexKeys implements JsonSerializable, JsonDeserializable {
     private Map<String, IndexKey> keys = new HashMap<String, IndexKey>();
 
     public IndexKeys() {
@@ -43,28 +44,28 @@ public class IndexKeys {
         return keys == null || keys.isEmpty();
     }
 
-    public JSONObject ToRequestJson() throws LogException {
+    @InternalApi
+    public JSONObject toRequestJson() throws LogException {
         JSONObject keysDict = new JSONObject();
         for (Map.Entry<String, IndexKey> entry : keys.entrySet()) {
-            keysDict.put(entry.getKey(), entry.getValue().ToRequestJson());
+            keysDict.put(entry.getKey(), entry.getValue().toRequestJson());
         }
         return keysDict;
     }
 
-    public String ToRequestString() throws LogException {
-        return ToRequestJson().toString();
+    public String toRequestString() throws LogException {
+        return toRequestJson().toString();
     }
 
-    public JSONObject ToJsonObject() throws LogException {
-        JSONObject keysDict = ToRequestJson();
+    @InternalApi
+    public JSONObject toJsonObject() throws LogException {
+        JSONObject keysDict = toRequestJson();
         return keysDict;
     }
 
-    public String ToJsonString() throws LogException {
-        return ToJsonObject().toString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         try {
             keys = new HashMap<String, IndexKey>();
             for (String key : dict.keySet()) {
@@ -75,7 +76,7 @@ public class IndexKeys {
                 } else {
                     indexKey = new IndexKey();
                 }
-                indexKey.FromJsonObject(value);
+                indexKey.fromJsonObject(value);
                 AddKey(key, indexKey);
             }
         } catch (JSONException e) {
@@ -83,10 +84,10 @@ public class IndexKeys {
         }
     }
 
-    public void FromJsonString(String indexKeysString) throws LogException {
+    public void fromJsonString(String indexKeysString) throws LogException {
         try {
             JSONObject dict = JSONObject.parseObject(indexKeysString);
-            FromJsonObject(dict);
+            fromJsonObject(dict);
         } catch (JSONException e) {
             throw new LogException("FailToGenerateIndexKeys", e.getMessage(), e, "");
         }

@@ -1,11 +1,12 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
 
-import java.lang.reflect.Type;
+import com.aliyun.openservices.log.internal.json.JsonEnumAdapter;
+import com.aliyun.openservices.log.internal.json.JsonEnumCreator;
+import com.aliyun.openservices.log.internal.json.JsonEnumValue;
 
-public enum ResourceName implements JSONSerializable {
+@JsonEnumAdapter
+public enum ResourceName {
     ALERT_POLICY("sls.alert.alert_policy"),
     ACTION_POLICY("sls.alert.action_policy"),
     USER("sls.common.user"),
@@ -20,6 +21,7 @@ public enum ResourceName implements JSONSerializable {
         this.value = value;
     }
 
+    @JsonEnumCreator
     public static ResourceName fromString(String value) {
         for (ResourceName type : ResourceName.values()) {
             if (type.value.equals(value)) {
@@ -29,13 +31,10 @@ public enum ResourceName implements JSONSerializable {
         return null;
     }
 
+    @JsonEnumValue
     @Override
     public String toString() {
         return value;
     }
 
-    @Override
-    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-        serializer.write(toString());
-    }
 }

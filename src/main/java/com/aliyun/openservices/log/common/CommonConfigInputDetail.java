@@ -3,13 +3,14 @@ package com.aliyun.openservices.log.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
-public abstract class CommonConfigInputDetail {
+public abstract class CommonConfigInputDetail implements JsonDeserializable {
 	protected boolean localStorage = true;
 	protected ArrayList<String> filterRegex = new ArrayList<String>();
 	protected ArrayList<String> filterKey = new ArrayList<String>();
@@ -128,6 +129,7 @@ public abstract class CommonConfigInputDetail {
 		this.shardHashKey = new ArrayList<String>(shardHashKey);
 	}
 	
+	@InternalApi
 	public void SetShardHashKey(JSONArray shardHashKey) throws LogException {
 		try {
 			this.shardHashKey = new ArrayList<String>();
@@ -142,6 +144,7 @@ public abstract class CommonConfigInputDetail {
 		return filterRegex;
 	}
 	
+	@InternalApi
 	public void SetFilterRegex(JSONArray filterRegex) throws LogException {
 		try {
 			this.filterRegex = new ArrayList<String>();
@@ -157,6 +160,7 @@ public abstract class CommonConfigInputDetail {
 		return filterKey;
 	}
 	
+	@InternalApi
 	public void SetFilterKey(JSONArray filterKey) throws LogException {
 		try {
 			this.filterKey = new ArrayList<String>();
@@ -168,10 +172,13 @@ public abstract class CommonConfigInputDetail {
 		}
 	}
 	
-	public abstract JSONObject ToJsonObject();
-	public abstract void FromJsonObject(JSONObject inputDetail) throws LogException;
+	@InternalApi
+	public abstract JSONObject toJsonObject();
+	@InternalApi
+	public abstract void fromJsonObject(JSONObject inputDetail) throws LogException;
 	
-	protected void CommonConfigToJsonObject(JSONObject jsonObj) {
+	@InternalApi
+	protected void commonConfigToJsonObject(JSONObject jsonObj) {
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_LOCALSTORAGE, localStorage);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ENABLETAG, enableTag);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_ENABLERAWLOG, enableRawLog);
@@ -184,7 +191,7 @@ public abstract class CommonConfigInputDetail {
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_PRIORITY, priority);
 		JSONArray sensitiveKeysArray = new JSONArray();
 		for (SensitiveKey sensitiveKey : sensitiveKeys) {
-			sensitiveKeysArray.add(sensitiveKey.ToJsonObject());
+			sensitiveKeysArray.add(sensitiveKey.toJsonObject());
 		}
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS, sensitiveKeysArray);
 		JSONArray filterRegexArray = new JSONArray();
@@ -206,7 +213,8 @@ public abstract class CommonConfigInputDetail {
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_SHARDHASHKEY, shardHashKeyArray);
 	}
 	
-	protected void CommonConfigFromJsonObject(JSONObject inputDetail) throws LogException {
+	@InternalApi
+	protected void commonConfigFromJsonObject(JSONObject inputDetail) throws LogException {
 		try {
 			if (inputDetail.containsKey(Consts.CONST_CONFIG_INPUTDETAIL_ADJUSTTIMEZONE)) {
 				this.adjustTimezone = inputDetail.getBoolean(Consts.CONST_CONFIG_INPUTDETAIL_ADJUSTTIMEZONE);
@@ -260,7 +268,7 @@ public abstract class CommonConfigInputDetail {
 				JSONArray sensitiveKeysArray = inputDetail.getJSONArray(Consts.CONST_CONFIG_INPUTDETAIL_SENSITIVEKEYS);
 				for (int index = 0; index < sensitiveKeysArray.size(); index++) {
 					SensitiveKey sensitiveKey = new SensitiveKey();
-					sensitiveKey.FromJsonString(sensitiveKeysArray.getJSONObject(index).toString());
+					sensitiveKey.fromJsonString(sensitiveKeysArray.getJSONObject(index).toString());
 					sensitiveKeys.add(sensitiveKey);
 				}
 			}
@@ -269,50 +277,51 @@ public abstract class CommonConfigInputDetail {
 		}
 	}
 	
-	public static CommonConfigInputDetail FromJsonStringS(final String inputType, final String jsonString) throws LogException 
+	public static CommonConfigInputDetail fromJsonString(final String inputType, final String jsonString) throws LogException 
 	{
 		try {
 			JSONObject inputDetail = JSONObject.parseObject(jsonString);
-			return FromJsonObjectS(inputType, inputDetail);
+			return fromJsonObject(inputType, inputDetail);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateInputDetail", e.getMessage(),
 					e, "");
 		}
 	}
 
-	public static CommonConfigInputDetail FromJsonObjectS(final String inputType, JSONObject inputDetail)
+	@InternalApi
+	public static CommonConfigInputDetail fromJsonObject(final String inputType, JSONObject inputDetail)
 			throws LogException {
 		try {
 			if (inputType.equals(Consts.CONST_CONFIG_INPUTTYPE_SYSLOG)
 					|| inputType.equals(Consts.CONST_CONFIG_INPUTTYPE_STREAMLOG)) {
 				StreamLogConfigInputDetail res = new StreamLogConfigInputDetail();
-				res.FromJsonObject(inputDetail);
+				res.fromJsonObject(inputDetail);
 				return res;
 			} else if (inputType.equals(Consts.CONST_CONFIG_INPUTTYPE_PLUGIN)) {
 				PluginLogConfigInputDetail res = new PluginLogConfigInputDetail();
-				res.FromJsonObject(inputDetail);
+				res.fromJsonObject(inputDetail);
 				return res;
 			} else if (inputType.equals(Consts.CONST_CONFIG_INPUTTYPE_FILE)) {
 				if (inputDetail.containsKey(Consts.CONST_CONFIG_LOGTYPE)) {
 					if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE)
 							.compareTo(Consts.CONST_CONFIG_LOGTYPE_JSON) == 0) {
 						JsonConfigInputDetail res = new JsonConfigInputDetail();
-						res.FromJsonObject(inputDetail);
+						res.fromJsonObject(inputDetail);
 						return res;
 					} else if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE)
 							.compareTo(Consts.CONST_CONFIG_LOGTYPE_DELIMITER) == 0) {
 						DelimiterConfigInputDetail res = new DelimiterConfigInputDetail();
-						res.FromJsonObject(inputDetail);
+						res.fromJsonObject(inputDetail);
 						return res;
 					} else if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE)
 							.compareTo(Consts.CONST_CONFIG_LOGTYPE_APSARA) == 0) {
 						ApsaraLogConfigInputDetail res = new ApsaraLogConfigInputDetail();
-						res.FromJsonObject(inputDetail);
+						res.fromJsonObject(inputDetail);
 						return res;
 					} else if (inputDetail.getString(Consts.CONST_CONFIG_LOGTYPE)
 							.compareTo(Consts.CONST_CONFIG_LOGTYPE_COMMON) == 0) {
 						ConfigInputDetail res = new ConfigInputDetail();
-						res.FromJsonObject(inputDetail);
+						res.fromJsonObject(inputDetail);
 						return res;
 					} else {
 						throw new LogException("FailToGenerateInputDetail", "invlaid logType",

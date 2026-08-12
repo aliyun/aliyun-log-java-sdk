@@ -5,6 +5,7 @@ import com.aliyun.openservices.log.common.Index;
 import com.aliyun.openservices.log.common.IndexKey;
 import com.aliyun.openservices.log.common.IndexKeys;
 import com.aliyun.openservices.log.common.IndexLine;
+import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.QueriedLog;
@@ -194,7 +195,14 @@ public class SlsIndexDataFunctionTest extends MetaAPIBaseFunctionTest {
             List<QueriedLog> queriedLogs = res.getLogs();
             for (QueriedLog log : queriedLogs) {
                 LogItem item = log.GetLogItem();
-                assertEquals(topic, item.GetLogContents().get(0).GetValue());
+                String actualTopic = null;
+                for (LogContent content : item.GetLogContents()) {
+                    if ("__topic__".equals(content.GetKey())) {
+                        actualTopic = content.GetValue();
+                        break;
+                    }
+                }
+                assertEquals(topic, actualTopic);
             }
         } catch (LogException e) {
             fail(e.GetErrorCode() + ":" + e.GetErrorMessage());

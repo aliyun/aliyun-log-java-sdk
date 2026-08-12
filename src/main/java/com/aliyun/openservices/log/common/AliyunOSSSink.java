@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class AliyunOSSSink extends DataSink {
 
@@ -150,7 +151,38 @@ public class AliyunOSSSink extends DataSink {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = new JSONObject();
+        value.put("type", getType().toString());
+        put(value, "roleArn", roleArn);
+        put(value, "bucket", bucket);
+        put(value, "prefix", prefix);
+        put(value, "suffix", suffix);
+        put(value, "pathFormat", pathFormat);
+        put(value, "pathFormatType", pathFormatType);
+        value.put("bufferSize", bufferSize);
+        value.put("bufferInterval", bufferInterval);
+        value.put("delaySeconds", delaySeconds);
+        put(value, "endpoint", endpoint);
+        put(value, "timeZone", timeZone);
+        put(value, "contentType", contentType);
+        put(value, "compressionType", compressionType);
+        if (contentDetail != null) {
+            value.put("contentDetail", contentDetail.toJsonObject());
+        }
+        return value;
+    }
+
+    private static void put(JSONObject value, String key, String item) {
+        if (item != null) {
+            value.put(key, item);
+        }
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         roleArn = value.getString("roleArn");
         bucket = value.getString("bucket");
         prefix = value.getString("prefix");
@@ -174,6 +206,6 @@ public class AliyunOSSSink extends DataSink {
         } else {
             throw new RuntimeException("ContentType should be json/csv/parquet/orc");
         }
-        contentDetail.deserialize(obj);
+        contentDetail.fromJsonObject(obj);
     }
 }

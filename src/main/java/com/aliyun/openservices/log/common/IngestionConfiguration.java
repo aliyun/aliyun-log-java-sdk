@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class IngestionConfiguration extends JobConfiguration {
     private String version;
@@ -43,11 +44,24 @@ public class IngestionConfiguration extends JobConfiguration {
         this.numberOfInstances = numberOfInstances;
     }
 
+    @Override
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (source != null) {
+            value.put("source", source.toJsonObject());
+        }
+        return value;
+    }
+
     private DataSource createSource(JSONObject jsonObject) {
         if (version != null && !version.isEmpty()) {
             return new IngestionGeneralSource();
         }
         DataSourceType type = DataSourceType.fromString(jsonObject.getString("type"));
+        if (type == null) {
+            throw new IllegalArgumentException("Unknown ingestion source type: " + jsonObject.getString("type"));
+        }
         switch (type) {
             case JDBC:
                 return new JDBCSource();
@@ -62,19 +76,18 @@ public class IngestionConfiguration extends JobConfiguration {
             case ALIYUN_CLOUD_MONITOR:
                 return new AliyunCloudMonitorSource();
             default:
-                return null;
+                throw new IllegalArgumentException("Unsupported ingestion source type: " + type);
         }
     }
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         version = value.getString("version");
         logstore = value.getString("logstore");
         numberOfInstances = value.getIntValue("numberOfInstances");
         JSONObject jsonObject = value.getJSONObject("source");
         source = createSource(jsonObject);
-        if (source != null) {
-            source.deserialize(jsonObject);
-        }
+        source.fromJsonObject(jsonObject);
     }
 }

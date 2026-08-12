@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class Ingestion extends ScheduledJob implements Serializable {
 
@@ -23,9 +24,10 @@ public class Ingestion extends ScheduledJob implements Serializable {
         return configuration;
     }
 
-    public void deserialize(JSONObject jsonObject) {
-        super.deserialize(jsonObject);
+    @InternalApi
+    public void fromJsonObject(JSONObject jsonObject) {
+        super.fromJsonObject(jsonObject);
         configuration = new IngestionConfiguration();
-        configuration.deserialize(jsonObject.getJSONObject("configuration"));
+        configuration.fromJsonObject(jsonObject.getJSONObject("configuration"));
     }
 }

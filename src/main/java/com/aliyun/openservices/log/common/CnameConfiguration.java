@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class CnameConfiguration {
 
@@ -213,6 +214,7 @@ public class CnameConfiguration {
                     '}';
         }
 
+        @InternalApi
         public void unmarshal(JSONObject unmarshalled) {
             type = CertType.parse(unmarshalled.getString("type"));
             certId = unmarshalled.getString("certId");
@@ -270,6 +272,7 @@ public class CnameConfiguration {
                 '}';
     }
 
+    @InternalApi
     public void unmarshal(JSONObject unmarshalled) {
         domain = unmarshalled.getString("domain");
         lastModifiedTime = unmarshalled.getLongValue("lastModified");

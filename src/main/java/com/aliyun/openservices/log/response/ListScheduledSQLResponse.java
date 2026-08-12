@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONArray;
+import com.aliyun.openservices.log.annotation.InternalApi;
+import com.aliyun.openservices.log.internal.json.JSONArray;
 import com.aliyun.openservices.log.common.ScheduledSQL;
 import com.aliyun.openservices.log.internal.Unmarshaller;
 import java.io.Serializable;
@@ -11,12 +12,13 @@ public class ListScheduledSQLResponse extends ResponseList<ScheduledSQL> impleme
         super(headers);
     }
     @Override
+    @InternalApi
     public Unmarshaller<ScheduledSQL> unmarshaller() {
         return new Unmarshaller<ScheduledSQL>() {
             @Override
             public ScheduledSQL unmarshal(JSONArray value, int index) {
                 ScheduledSQL scheduledSQL = new ScheduledSQL();
-                scheduledSQL.deserialize(value.getJSONObject(index));
+                scheduledSQL.fromJsonObject(value.getJSONObject(index));
                 return scheduledSQL;
             }
         };

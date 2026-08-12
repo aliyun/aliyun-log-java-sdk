@@ -1,22 +1,20 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class RebuildIndexConfiguration extends JobConfiguration {
 
-    @JSONField
     private String logstore;
 
-    @JSONField
     private Integer fromTime;
 
-    @JSONField
     private Integer toTime;
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         logstore = value.getString("logstore");
         fromTime = JsonUtils.readOptionalInt(value, "fromTime");
         toTime = JsonUtils.readOptionalInt(value, "toTime");

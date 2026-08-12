@@ -1,11 +1,12 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import org.junit.Test;
 
 import java.util.Arrays;
 
+import static com.aliyun.openservices.log.internal.json.JsonAsserts.assertJsonEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -23,7 +24,7 @@ public class LogStoreTest {
                 new ShardingPolicy.ShardHash(Arrays.asList("instanceId", "host"), 4),
                 1764659409L));
 
-        JSONObject request = logStore.ToRequestJson();
+        JSONObject request = logStore.toRequestJson();
         assertTrue(request.containsKey("shardingPolicy"));
         assertTrue(request.getBooleanValue("enableModify"));
         assertFalse(request.containsKey("createTime"));
@@ -37,7 +38,7 @@ public class LogStoreTest {
         assertEquals("host", policy.getJSONObject("shardHash").getJSONArray("keys").getString(1));
 
         LogStore decoded = new LogStore();
-        decoded.FromJsonObject(logStore.ToJsonObject());
+        decoded.fromJsonObject(logStore.toJsonObject());
 
         assertTrue(decoded.isEnableModify());
         assertNotNull(decoded.getShardingPolicy());
@@ -50,7 +51,7 @@ public class LogStoreTest {
         LogStore copied = new LogStore(decoded);
         assertTrue(copied.isEnableModify());
         assertNotSame(decoded.getShardingPolicy(), copied.getShardingPolicy());
-        assertEquals(decoded.ToJsonObject(), copied.ToJsonObject());
+        assertJsonEquals(decoded.toJsonObject().toString(), copied.toJsonObject().toString());
     }
 
     @Test
@@ -58,13 +59,13 @@ public class LogStoreTest {
         LogStore logStore = new LogStore("test-logstore", 7, 16);
 
         assertFalse(logStore.isEnableModify());
-        assertFalse(logStore.ToRequestJson().getBooleanValue("enableModify"));
+        assertFalse(logStore.toRequestJson().getBooleanValue("enableModify"));
 
-        JSONObject dict = logStore.ToJsonObject();
+        JSONObject dict = logStore.toJsonObject();
         dict.remove("enableModify");
 
         LogStore decoded = new LogStore();
-        decoded.FromJsonObject(dict);
+        decoded.fromJsonObject(dict);
 
         assertFalse(decoded.isEnableModify());
     }
@@ -72,11 +73,11 @@ public class LogStoreTest {
     @Test
     public void testShardHashDefaultMaxHashCount() throws LogException {
         ShardingPolicy policy = new ShardingPolicy();
-        policy.FromJsonString("{\"shardHash\":{\"keys\":[\"instanceId\"]}}");
+        policy.fromJsonString("{\"shardHash\":{\"keys\":[\"instanceId\"]}}");
 
         assertNotNull(policy.getShardHash());
         assertEquals(Arrays.asList("instanceId"), policy.getShardHash().getKeys());
         assertEquals(Integer.valueOf(2), policy.getShardHash().getMaxHashCount());
-        assertEquals(2, policy.ToJsonObject().getJSONObject("shardHash").getIntValue("maxHashCount"));
+        assertEquals(2, policy.toJsonObject().getJSONObject("shardHash").getIntValue("maxHashCount"));
     }
 }

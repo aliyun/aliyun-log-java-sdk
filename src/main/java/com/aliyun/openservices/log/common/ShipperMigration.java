@@ -1,15 +1,15 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ShipperMigration implements Serializable {
     private String name = "";
@@ -132,12 +132,12 @@ public class ShipperMigration implements Serializable {
         checkStringEmpty("shipperName", shipperName);
     }
 
-    public String ToCreateJsonString() throws LogException {
+    public String toCreateJsonString() throws LogException {
         JSONObject result = new JSONObject();
         result.put("name", getName());
         result.put("logstore", getLogstore());
         result.put("shipperName", getShipperName());
-        return result.toJSONString();
+        return result.toString();
     }
 
     private void checkStringEmpty(String name, String value) throws IllegalArgumentException {
@@ -146,6 +146,7 @@ public class ShipperMigration implements Serializable {
         }
     }
 
+    @InternalApi
     public static ShipperMigration extractGetMigration(JSONObject body, String requestId) throws LogException {
         ShipperMigration migration = new ShipperMigration("", "", "");
         migration.setName(body.getString("name"));
@@ -162,6 +163,7 @@ public class ShipperMigration implements Serializable {
         return migration;
     }
 
+    @InternalApi
     public static ShipperMigration extractListMigration(JSONObject body, String requestId) throws LogException {
         ShipperMigration migration = new ShipperMigration("", "", "");
         migration.setName(body.getString("name"));
@@ -174,6 +176,7 @@ public class ShipperMigration implements Serializable {
         return migration;
     }
 
+    @InternalApi
     public static List<ShipperMigration> extractMigrations(JSONObject body, String requestId) throws LogException {
         List<ShipperMigration> migrations = new ArrayList<ShipperMigration>();
         JSONArray array = new JSONArray();

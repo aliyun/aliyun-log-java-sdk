@@ -1,13 +1,14 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class AliyunTSDBSink extends DataSink {
 
@@ -216,7 +217,8 @@ public class AliyunTSDBSink extends DataSink {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         endpoint = value.getString("endpoint");
         vpcId = value.getString("vpcId");
         instanceId = value.getString("instanceId");

@@ -78,7 +78,7 @@ public class IndexSample {
         try {
             GetIndexResponse res = client.GetIndex(project, logStoreName);
             System.out.println(res.GetRequestId());
-            System.out.println("index config :" + res.GetIndex().ToJsonString());
+            System.out.println("index config :" + res.GetIndex().toJsonString());
         } catch (LogException e) {
             e.printStackTrace();
         }

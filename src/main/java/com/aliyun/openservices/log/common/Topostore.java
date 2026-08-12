@@ -1,15 +1,16 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class Topostore implements Serializable {
+public class Topostore implements Serializable, JsonSerializable, JsonDeserializable {
     private String name = "";
     private String tag = "{}";
     private String schema = null;
@@ -71,7 +72,7 @@ public class Topostore implements Serializable {
         for(Map.Entry<String, String> kv : tag.entrySet()){
             tagObj.put(kv.getKey(), kv.getValue());
         }
-        setTag(tagObj.toJSONString());
+        setTag(tagObj.toString());
     }
 
     public String getSchema() {
@@ -106,7 +107,8 @@ public class Topostore implements Serializable {
         this.extInfo = extInfo;
     }
 
-    public JSONObject ToJsonObject() throws LogException {
+    @InternalApi
+    public JSONObject toJsonObject() throws LogException {
         JSONObject result = new JSONObject();
         result.put(Consts.TOPOSTORE_NAME, getName());
         result.put(Consts.TOPOSTORE_TAG, getTag());
@@ -128,11 +130,9 @@ public class Topostore implements Serializable {
         return result;
     }
 
-    public String ToJsonString() throws LogException {
-        return ToJsonObject().toJSONString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         setName(dict.getString(Consts.TOPOSTORE_NAME));
         setTag(dict.getString(Consts.TOPOSTORE_TAG));
 
@@ -177,9 +177,9 @@ public class Topostore implements Serializable {
         }
     }
 
-    public void FromJsonString(String content) throws LogException {
+    public void fromJsonString(String content) throws LogException {
         JSONObject dict = JSONObject.parseObject(content);
-        FromJsonObject(dict);
+        fromJsonObject(dict);
     }
 
     public void checkForCreate() throws IllegalArgumentException {

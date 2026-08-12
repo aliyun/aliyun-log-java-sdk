@@ -1,21 +1,19 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class EmailNotification extends Notification {
 
-    @JSONField
     private String subject;
 
-    @JSONField
     private String countryCode;
 
-    @JSONField
     private List<String> emailList;
 
     public EmailNotification() {
@@ -47,8 +45,25 @@ public class EmailNotification extends Notification {
     }
 
     @Override
-    public void deserialize(final JSONObject value) {
-        super.deserialize(value);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (subject != null) {
+            value.put(Consts.SUBJECT, subject);
+        }
+        if (countryCode != null) {
+            value.put("countryCode", countryCode);
+        }
+        if (emailList != null) {
+            value.put(Consts.EMAIL_LIST, JsonCodec.toJsonArray(emailList));
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(final JSONObject value) {
+        super.fromJsonObject(value);
         subject = JsonUtils.readOptionalString(value, Consts.SUBJECT);
         emailList = JsonUtils.readStringList(value, Consts.EMAIL_LIST);
         countryCode = JsonUtils.readOptionalString(value, "countryCode");

@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.shipper;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 import com.aliyun.openservices.log.common.LogStore;
 import com.aliyun.openservices.log.common.ShipperMigration;
 import com.aliyun.openservices.log.exception.LogException;
@@ -52,13 +52,13 @@ public class ShipperMigrationTest extends MetaAPIBaseFunctionTest {
     public void testListMigration() throws LogException {
         ListShipperMigrationRequest request = new ListShipperMigrationRequest(testProject, 0, 0);
         ListShipperMigrationResponse resp = client.listShipperMigration(request);
-        System.out.println(JSONObject.toJSONString(resp));
+        System.out.println(JsonCodec.toJson(resp));
     }
 
     public void testGetMigration() throws LogException {
         GetShipperMigrationRequest request = new GetShipperMigrationRequest(testProject, "migrationjobname2");
         GetShipperMigrationResponse resp = client.getShipperMigration(request);
-        System.out.println(JSONObject.toJSONString(resp));
+        System.out.println(JsonCodec.toJson(resp));
     }
 
     public void testCreateMigration() throws LogException {
@@ -72,6 +72,6 @@ public class ShipperMigrationTest extends MetaAPIBaseFunctionTest {
                 testProject, migration
         );
         CreateShipperMigrationResponse resp = client.createShipperMigration(request);
-        System.out.println(JSONObject.toJSONString(resp));
+        System.out.println(JsonCodec.toJson(resp));
     }
 }

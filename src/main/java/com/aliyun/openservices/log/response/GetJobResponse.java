@@ -3,9 +3,10 @@ package com.aliyun.openservices.log.response;
 import com.aliyun.openservices.log.common.Job;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetJobResponse extends Response {
 
@@ -25,12 +26,13 @@ public class GetJobResponse extends Response {
         this.job = job;
     }
 
-    public void deserialize(JSONObject value, String requestId) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject value, String requestId) throws LogException {
         job = new Job();
         try {
-            job.deserialize(value);
+            job.fromJsonObject(value);
         } catch (final Exception ex) {
-            throw new LogException(ErrorCodes.BAD_RESPONSE, "Unable to deserialize JSON to model: " + ex.getMessage(), ex, requestId);
+            throw new LogException(ErrorCodes.BAD_RESPONSE, "Unable to read JSON model: " + ex.getMessage(), ex, requestId);
         }
     }
 }

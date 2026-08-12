@@ -3,12 +3,13 @@ package com.aliyun.openservices.log.common;
 import java.io.Serializable;
 
 import com.aliyun.openservices.log.util.Args;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class LogStore implements Serializable {
+public class LogStore implements Serializable, JsonSerializable, JsonDeserializable {
 
     private static final long serialVersionUID = 7408057477332043832L;
     private String logStoreName = "";
@@ -238,7 +239,8 @@ public class LogStore implements Serializable {
         this.shardingPolicy = shardingPolicy;
     }
 
-    public JSONObject ToRequestJson() {
+    @InternalApi
+    public JSONObject toRequestJson() {
         JSONObject logStoreDict = new JSONObject();
         logStoreDict.put("logstoreName", GetLogStoreName());
         logStoreDict.put("ttl", GetTtl());
@@ -261,33 +263,32 @@ public class LogStore implements Serializable {
             logStoreDict.put("infrequentAccessTTL", infrequentAccessTTL);
         }
         if (this.encryptConf != null) {
-            logStoreDict.put("encrypt_conf", this.encryptConf.ToJsonObject());
+            logStoreDict.put("encrypt_conf", this.encryptConf.toJsonObject());
         }
         if (mode != null) {
             logStoreDict.put("mode", mode);
         }
         if (shardingPolicy != null) {
-            logStoreDict.put("shardingPolicy", shardingPolicy.ToJsonObject());
+            logStoreDict.put("shardingPolicy", shardingPolicy.toJsonObject());
         }
         return logStoreDict;
     }
 
-    public String ToRequestString() {
-        return ToRequestJson().toString();
+    public String toRequestString() {
+        return toRequestJson().toString();
     }
 
-    public JSONObject ToJsonObject() {
-        JSONObject logStoreDict = ToRequestJson();
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject logStoreDict = toRequestJson();
         logStoreDict.put("createTime", GetCreateTime());
         logStoreDict.put("lastModifyTime", GetLastModifyTime());
         return logStoreDict;
     }
 
-    public String ToJsonString() {
-        return ToJsonObject().toString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         try {
             SetLogStoreName(dict.getString("logstoreName"));
             SetTtl(dict.getIntValue("ttl"));
@@ -332,7 +333,7 @@ public class LogStore implements Serializable {
             }
             if (dict.containsKey("encrypt_conf")) {
                 EncryptConf encypt_config = new EncryptConf();
-                encypt_config.FromJsonObject(dict.getJSONObject("encrypt_conf"));
+                encypt_config.fromJsonObject(dict.getJSONObject("encrypt_conf"));
                 this.encryptConf = encypt_config;
             }
             if (dict.containsKey("hot_ttl")) {
@@ -349,7 +350,7 @@ public class LogStore implements Serializable {
                 this.shardingPolicy = null;
                 if (shardingPolicyDict != null) {
                     ShardingPolicy policy = new ShardingPolicy();
-                    policy.FromJsonObject(shardingPolicyDict);
+                    policy.fromJsonObject(shardingPolicyDict);
                     this.shardingPolicy = policy;
                 }
             }
@@ -358,10 +359,10 @@ public class LogStore implements Serializable {
         }
     }
 
-    public void FromJsonString(String logStoreString) throws LogException {
+    public void fromJsonString(String logStoreString) throws LogException {
         try {
             JSONObject dict = JSONObject.parseObject(logStoreString);
-            FromJsonObject(dict);
+            fromJsonObject(dict);
         } catch (JSONException e) {
             throw new LogException("FailToGenerateLogStore", e.getMessage(), e, "");
         }

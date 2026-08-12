@@ -1,25 +1,25 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ResourceWebhookIntegration implements Serializable {
-    @JSONField(name = "id")
+    @SerializedName("id")
     private String id;
-    @JSONField(name = "name")
+    @SerializedName("name")
     private String name;
-    @JSONField(name = "method")
+    @SerializedName("method")
     private String method;
-    @JSONField(name = "url")
+    @SerializedName("url")
     private String url;
-    @JSONField(name = "type")
+    @SerializedName("type")
     private String type;
-    @JSONField(name = "headers")
+    @SerializedName("headers")
     private List<Header> headers;
-    @JSONField(name = "secret")
+    @SerializedName("secret")
     private String secret;
 
     public String getId() {
@@ -79,9 +79,9 @@ public class ResourceWebhookIntegration implements Serializable {
     }
 
     public static class Header {
-        @JSONField(name = "key")
+        @SerializedName("key")
         private String key;
-        @JSONField(name = "value")
+        @SerializedName("value")
         private String value;
 
         public String getKey() {

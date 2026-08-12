@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * @author xizongzheng.xzz
@@ -117,7 +118,8 @@ public class JobDownSamplingConfiguration extends JobConfiguration {
 
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         sourceLogstore = value.getString("sourceLogstore");
         roleArn = value.getString("roleArn");
         sqlType = value.getString("sqlType");

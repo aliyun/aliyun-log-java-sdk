@@ -2,8 +2,9 @@ package com.aliyun.openservices.log.common;
 
 import java.io.Serializable;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class JsonConfigInputDetail extends LocalFileConfigInputDetail implements Serializable {
@@ -38,16 +39,18 @@ public class JsonConfigInputDetail extends LocalFileConfigInputDetail implements
 	}
 	
 	@Override
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject jsonObj = new JSONObject();
-		LocalFileConfigToJsonObject(jsonObj);
+		localFileConfigToJsonObject(jsonObj);
 		jsonObj.put(Consts.CONST_CONFIG_INPUTDETAIL_TIMEKEY, timeKey);
 		return jsonObj;
 	}
 
 	@Override
-	public void FromJsonObject(JSONObject inputDetail) throws LogException {
-		LocalFileConfigFromJsonObject(inputDetail);
+	@InternalApi
+	public void fromJsonObject(JSONObject inputDetail) throws LogException {
+		localFileConfigFromJsonObject(inputDetail);
 		this.timeKey = inputDetail.getString(Consts.CONST_CONFIG_INPUTDETAIL_TIMEKEY);
 	}
 

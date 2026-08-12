@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.response;
 
+import com.aliyun.openservices.log.annotation.InternalApi;
 import com.aliyun.openservices.log.common.Export;
 import com.aliyun.openservices.log.internal.Unmarshaller;
-import com.alibaba.fastjson.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONArray;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -15,12 +16,13 @@ public class ListExportResponse extends ResponseList<Export> implements Serializ
     }
 
     @Override
+    @InternalApi
     public Unmarshaller<Export> unmarshaller() {
         return new Unmarshaller<Export>() {
             @Override
             public Export unmarshal(JSONArray value, int index) {
                 Export export = new Export();
-                export.deserialize(value.getJSONObject(index));
+                export.fromJsonObject(value.getJSONObject(index));
                 return export;
             }
         };

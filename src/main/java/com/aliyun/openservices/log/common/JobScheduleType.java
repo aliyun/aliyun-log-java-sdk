@@ -1,11 +1,12 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
 
-import java.lang.reflect.Type;
+import com.aliyun.openservices.log.internal.json.JsonEnumAdapter;
+import com.aliyun.openservices.log.internal.json.JsonEnumCreator;
+import com.aliyun.openservices.log.internal.json.JsonEnumValue;
 
-public enum JobScheduleType implements JSONSerializable {
+@JsonEnumAdapter
+public enum JobScheduleType {
     /**
      * Trigger in a fixed rate.
      */
@@ -48,11 +49,13 @@ public enum JobScheduleType implements JSONSerializable {
         this.value = value;
     }
 
+    @JsonEnumValue
     @Override
     public String toString() {
         return value;
     }
 
+    @JsonEnumCreator
     public static JobScheduleType fromString(String value) {
         for (JobScheduleType type : JobScheduleType.values()) {
             if (type.value.equals(value)) {
@@ -62,8 +65,4 @@ public enum JobScheduleType implements JSONSerializable {
         return null;
     }
 
-    @Override
-    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-        serializer.write(toString());
-    }
 }

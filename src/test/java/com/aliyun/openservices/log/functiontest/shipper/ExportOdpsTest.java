@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.shipper;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.functiontest.MetaAPIBaseFunctionTest;
@@ -41,10 +41,10 @@ public class ExportOdpsTest extends MetaAPIBaseFunctionTest {
         sink.setFields("acc_access_region", "http_method", "referer", "client_ip");
         sink.setPartitionColumn("bucket");
         sink.setPartitionTimeFormat("%Y");
-        String encoded = JSONObject.toJSONString(sink);
+        String encoded = JsonCodec.toJson(sink);
 
         ExportGeneralSink general = new ExportGeneralSink();
-        general.setFields(JSONObject.parseObject(encoded).getInnerMap());
+        general.setFields(JsonCodec.toMap(JsonCodec.toJsonObject(sink)));
         ExportConfiguration conf = new ExportConfiguration();
         conf.setRoleArn("acs:ram::11111111111:role/aliyunlogdefaultrole");
         conf.setLogstore("source-log");
@@ -64,20 +64,20 @@ public class ExportOdpsTest extends MetaAPIBaseFunctionTest {
         Export export = createExport();
         CreateExportRequest request = new CreateExportRequest(project, export);
         CreateExportResponse resp = client.createExport(request);
-        System.out.println(JSONObject.toJSONString(resp));
+        System.out.println(JsonCodec.toJson(resp));
     }
 
     @Test
     public void testDelete() throws Exception {
         DeleteExportRequest request = new DeleteExportRequest(project, "my-odps-sink");
         DeleteExportResponse resp = client.deleteExport(request);
-        System.out.println(JSONObject.toJSONString(resp));
+        System.out.println(JsonCodec.toJson(resp));
     }
 
     @Test 
     public void testGetResponse() throws Exception {
         GetExportRequest request = new GetExportRequest(project, "my-odps-sink");
         GetExportResponse resp = client.getExport(request);
-        System.out.println(JSONObject.toJSONString(resp));
+        System.out.println(JsonCodec.toJson(resp));
     }
 }

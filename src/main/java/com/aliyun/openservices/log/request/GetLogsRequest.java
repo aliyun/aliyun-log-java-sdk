@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.request;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 
 /**
@@ -385,7 +385,19 @@ public class GetLogsRequest extends Request {
         return toNsPart;
     }
 
-    private static void addParameterIfNotNull(JSONObject dest, String key, Object value) {
+    private static void addParameterIfNotNull(JSONObject dest, String key, Number value) {
+        if (value != null) {
+            dest.put(key, value);
+        }
+    }
+
+    private static void addParameterIfNotNull(JSONObject dest, String key, Boolean value) {
+        if (value != null) {
+            dest.put(key, value);
+        }
+    }
+
+    private static void addParameterIfNotNull(JSONObject dest, String key, String value) {
         if (value != null) {
             dest.put(key, value);
         }

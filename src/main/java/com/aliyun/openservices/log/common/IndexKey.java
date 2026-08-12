@@ -4,17 +4,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * Index config of a key
  * @author log-service-dev
  *
  */
-public class IndexKey implements Serializable {
+public class IndexKey implements Serializable, JsonSerializable, JsonDeserializable {
 
 	private static final long serialVersionUID = -6607480102839653253L;
 	private List<String> token = new ArrayList<String>();
@@ -184,10 +185,13 @@ public class IndexKey implements Serializable {
 		this.vector_index = vector_index;
 	}
 
-	public JSONObject ToRequestJson() throws LogException {
+	@InternalApi
+	public JSONObject toRequestJson() throws LogException {
 		JSONObject allKeys = new JSONObject();
 		JSONArray tokenDict = new JSONArray();
-		tokenDict.addAll(token);
+		for (String item : token) {
+			tokenDict.add(item);
+		}
 
 		allKeys.put("type", GetType());
 		// only text type require token & caseSensitive
@@ -209,19 +213,18 @@ public class IndexKey implements Serializable {
 		return allKeys;
 	}
 
-	public String ToRequestString() throws LogException {
-		return ToRequestJson().toString();
+	public String toRequestString() throws LogException {
+		return toRequestJson().toString();
 	}
 
-	public JSONObject ToJsonObject() throws LogException {
-		return ToRequestJson();
+	@InternalApi
+	public JSONObject toJsonObject() throws LogException {
+		return toRequestJson();
 	}
 
-	public String ToJsonString() throws LogException {
-		return ToJsonObject().toString();
-	}
 
-	public void FromJsonObject(JSONObject dict) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject dict) throws LogException {
 		try {
 
 			if (dict.containsKey("chn")) {
@@ -264,10 +267,10 @@ public class IndexKey implements Serializable {
 		}
 	}
 
-	public void FromJsonString(String indexKeyString) throws LogException {
+	public void fromJsonString(String indexKeyString) throws LogException {
 		try {
 			JSONObject dict = JSONObject.parseObject(indexKeyString);
-			FromJsonObject(dict);
+			fromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateIndexKey", e.getMessage(), e, "");
 		}

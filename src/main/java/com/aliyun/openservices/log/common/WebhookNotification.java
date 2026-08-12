@@ -1,15 +1,15 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.http.client.HttpMethod;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class WebhookNotification extends HttpNotification {
@@ -17,13 +17,11 @@ public class WebhookNotification extends HttpNotification {
     /**
      * Optional headers for http request.
      */
-    @JSONField
     private Map<String, String> headers;
 
     /**
      * Optional method, default to POST.
      */
-    @JSONField
     private HttpMethod method;
 
     public WebhookNotification() {
@@ -47,8 +45,22 @@ public class WebhookNotification extends HttpNotification {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
-        super.deserialize(value);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (headers != null) {
+            value.put(Consts.HEADERS, JsonCodec.toJsonObject(headers));
+        }
+        if (method != null) {
+            value.put(Consts.METHOD, method.toString());
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
+        super.fromJsonObject(value);
         String method = JsonUtils.readOptionalString(value, Consts.METHOD);
         if (method != null) {
             setMethod(HttpMethod.fromString(method));

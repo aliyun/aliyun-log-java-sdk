@@ -2,7 +2,6 @@ package com.aliyun.openservices.log.request;
 
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.exception.LogException;
-import com.alibaba.fastjson.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 

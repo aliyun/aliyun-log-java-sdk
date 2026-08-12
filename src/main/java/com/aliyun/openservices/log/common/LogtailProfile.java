@@ -4,10 +4,11 @@ import java.io.Serializable;
 
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class LogtailProfile implements Serializable {
+public class LogtailProfile implements Serializable, JsonSerializable, JsonDeserializable {
 
 	private static final long serialVersionUID = -6227423811861315096L;
 	
@@ -84,7 +85,8 @@ public class LogtailProfile implements Serializable {
 		this.machineOS = machineOS;
 	}
 	
-	public JSONObject ToJsonObject() {
+	@InternalApi
+	public JSONObject toJsonObject() {
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put(LOGTAILPROFILE_TIME, time);
 		jsonObj.put(LOGTAILPROFILE_SOURCE, source);
@@ -97,11 +99,9 @@ public class LogtailProfile implements Serializable {
 		return jsonObj;
 	}
 	
-	public String ToJsonString() {
-		return ToJsonObject().toString();
-	}
 	
-	public void FromJsonObject(JSONObject dict) throws LogException {
+	@InternalApi
+	public void fromJsonObject(JSONObject dict) throws LogException {
 		try {
 			this.time = dict.getLong(LOGTAILPROFILE_TIME);
 			this.source = dict.getString(LOGTAILPROFILE_SOURCE);
@@ -115,10 +115,10 @@ public class LogtailProfile implements Serializable {
 		}
 	}
 	
-	public void FromJsonString(String logtailProfileString) throws LogException {
+	public void fromJsonString(String logtailProfileString) throws LogException {
 		try {
 			JSONObject dict = JSONObject.parseObject(logtailProfileString);
-			FromJsonObject(dict);
+			fromJsonObject(dict);
 		} catch (JSONException e) {
 			throw new LogException("FailToGenerateLogtailProfile", e.getMessage(), e, "");
 		}

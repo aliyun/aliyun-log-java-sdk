@@ -1,18 +1,16 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The base class of notifications.
  */
-public abstract class Notification {
+public abstract class Notification implements JsonDeserializable {
 
-    @JSONField
     private NotificationType type;
 
-    @JSONField
     private String content;
 
     public Notification(NotificationType type) {
@@ -40,7 +38,24 @@ public abstract class Notification {
         this.content = content;
     }
 
-    public void deserialize(final JSONObject value) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = new JSONObject();
+        if (type != null) {
+            value.put("type", type.toString());
+        }
+        if (content != null) {
+            value.put("content", content);
+        }
+        return value;
+    }
+
+    @InternalApi
+    public void fromJsonObject(final JSONObject value) {
+        NotificationType parsedType = NotificationType.fromString(value.getString("type"));
+        if (parsedType != null) {
+            type = parsedType;
+        }
         content = value.getString("content");
     }
 }

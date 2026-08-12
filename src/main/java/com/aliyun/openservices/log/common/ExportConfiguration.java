@@ -1,10 +1,10 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ExportConfiguration extends JobConfiguration {
     private String version;
@@ -108,7 +108,18 @@ public class ExportConfiguration extends JobConfiguration {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (sink != null) {
+            value.put("sink", sink.toJsonObject());
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         logstore = value.getString("logstore");
         roleArn = value.getString("roleArn");
         accessKeyId = value.getString("accessKeyId");
@@ -121,19 +132,29 @@ public class ExportConfiguration extends JobConfiguration {
         // if version is exist, use ExportGeneralSink
         if (version != null && !version.isEmpty()) {
             sink = new ExportGeneralSink();
-            sink.deserialize(obj);
+            sink.fromJsonObject(obj);
         } else {
             DataSinkType type = DataSinkType.fromString(obj.getString("type"));
-            if (type == DataSinkType.ALIYUN_ADB) {
-                sink = new AliyunADBSink();
-                sink.deserialize(obj);
-            } else if (type == DataSinkType.ALIYUN_TSDB) {
-                sink = new AliyunTSDBSink();
-                sink.deserialize(obj);
-            } else if (type == DataSinkType.ALIYUN_OSS) {
-                sink = new AliyunOSSSink();
-                sink.deserialize(obj);
+            if (type == null) {
+                throw new IllegalArgumentException("Unknown export sink type: " + obj.getString("type"));
             }
+            switch (type) {
+                case ALIYUN_ADB:
+                    sink = new AliyunADBSink();
+                    break;
+                case ALIYUN_TSDB:
+                    sink = new AliyunTSDBSink();
+                    break;
+                case ALIYUN_OSS:
+                    sink = new AliyunOSSSink();
+                    break;
+                case ALIYUN_ODPS:
+                    sink = new AliyunODPSSink();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported export sink type: " + type);
+            }
+            sink.fromJsonObject(obj);
         }
         parameters = JsonUtils.readOptionalMap(value, "parameters");
     }

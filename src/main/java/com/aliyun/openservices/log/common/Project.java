@@ -1,12 +1,13 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class Project implements Serializable {
+public class Project implements Serializable, JsonSerializable, JsonDeserializable {
 
     /**
      * project resource
@@ -133,7 +134,7 @@ public class Project implements Serializable {
         this.quota = quota;
     }
 
-    private JSONObject ToRequestJson() {
+    private JSONObject toRequestJson() {
         JSONObject projectDict = new JSONObject();
         projectDict.put(Consts.CONST_PROJECTNAME, getProjectName());
         projectDict.put(Consts.CONST_PROJECTSTATUS, getProjectStatus());
@@ -144,42 +145,47 @@ public class Project implements Serializable {
         return projectDict;
     }
 
-    public String ToRequestString() {
-        return ToRequestJson().toString();
+    public String toRequestString() {
+        return toRequestJson().toString();
     }
 
-    public JSONObject ToJsonObject() {
-        JSONObject projectDict = ToRequestJson();
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject projectDict = toRequestJson();
         projectDict.put(Consts.CONST_CREATTIME, getCreateTime());
         projectDict.put(Consts.CONST_LASTMODIFYTIME, getLastModifyTime());
         return projectDict;
     }
 
-    public String ToJsonString() {
-        return ToJsonObject().toString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         try {
             setProjectName(dict.getString(Consts.CONST_PROJECTNAME));
             setProjectDesc(dict.getString(Consts.CONST_PROJECTDESC));
             setProjectOwner(dict.getString(Consts.CONST_PROJECTOWNER));
             setProjectStatus(dict.getString(Consts.CONST_PROJECTSTATUS));
             setRegion(dict.getString(Consts.CONST_PROJECTREGION));
-            setCreateTime(dict.getString(Consts.CONST_CREATTIME));
-            setLastModifyTime(dict.getString(Consts.CONST_LASTMODIFYTIME));
+            setCreateTime(readTime(dict, Consts.CONST_CREATTIME));
+            setLastModifyTime(readTime(dict, Consts.CONST_LASTMODIFYTIME));
             setResourceGroupId(dict.getString(Consts.CONST_RESOURCEGROUPID));
             setDataRedundancyType(DataRedundancyType.parse(dict.getString("dataRedundancyType")));
-            setQuota(ProjectQuota.parseFromJSON(dict.getJSONObject(Consts.CONST_QUOTA)));
+            setQuota(ProjectQuota.parseFromJsonObject(dict.getJSONObject(Consts.CONST_QUOTA)));
         } catch (JSONException e) {
             throw new LogException("FailToGenerateProject", e.getMessage(), e, "");
         }
     }
 
-    public void FromJsonString(String projectString) throws LogException {
+    private static String readTime(JSONObject value, String key) {
+        return value.isNumber(key)
+                ? String.valueOf(value.getLongValue(key))
+                : value.getString(key);
+    }
+
+    public void fromJsonString(String projectString) throws LogException {
         try {
             JSONObject dict = JSONObject.parseObject(projectString);
-            FromJsonObject(dict);
+            fromJsonObject(dict);
         } catch (JSONException e) {
             throw new LogException("FailToGenerateProject", e.getMessage(), e, "");
         }

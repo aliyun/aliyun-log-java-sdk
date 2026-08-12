@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.request;
 
-import com.alibaba.fastjson.JSON;
+import com.aliyun.openservices.log.util.JsonUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -67,6 +67,6 @@ public class UpdateMaterializedViewRequest extends Request {
         aggIntervalMins.ifPresent(arg -> body.put("aggIntervalMins", arg));
         ttl.ifPresent(arg -> body.put("ttl", arg));
         enable.ifPresent(arg -> body.put("enable", arg));
-        return JSON.toJSONString(body).getBytes(StandardCharsets.UTF_8);
+        return JsonUtils.serialize(body).getBytes(StandardCharsets.UTF_8);
     }
 }

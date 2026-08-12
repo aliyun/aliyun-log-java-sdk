@@ -1,9 +1,10 @@
 package com.aliyun.openservices.log.common;
 
 import com.aliyun.openservices.log.util.Args;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 
 public class LoggingDetail implements Serializable {
@@ -33,6 +34,7 @@ public class LoggingDetail implements Serializable {
         this.logstore = logstore;
     }
 
+    @InternalApi
     public JSONObject marshal() {
         JSONObject object = new JSONObject();
         object.put("type", type);
@@ -40,6 +42,7 @@ public class LoggingDetail implements Serializable {
         return object;
     }
 
+    @InternalApi
     public static LoggingDetail unmarshal(final JSONObject object) {
         Args.notNull(object, "object");
         final String type = object.getString("type");

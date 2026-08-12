@@ -235,7 +235,7 @@ public class MachineGroupSample {
             System.out.println("total count:" + res.GetTotal());
             List<Machine> machines = res.GetMachines();
             for (Machine machine : machines) {
-                System.out.println("machine:" + machine.ToJsonString());
+                System.out.println("machine:" + machine.toJsonString());
             }
         } catch (LogException e) {
             e.printStackTrace();

@@ -1,9 +1,10 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.JSONObject;
-import com.aliyun.openservices.log.util.JsonUtils;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import org.junit.Test;
+
+import static com.aliyun.openservices.log.internal.json.JsonAsserts.assertJsonEquals;
 
 import java.util.*;
 
@@ -12,7 +13,7 @@ import static org.junit.Assert.*;
 public class AlertTest {
 
     @Test
-    public void testAlertConfigurationV2Serialize() {
+    public void testAlertConfigurationV2Serialize() throws Exception {
         AlertConfiguration alertConfiguration = new AlertConfiguration();
         alertConfiguration.setVersion("2.0");
         alertConfiguration.setThreshold(1);
@@ -47,34 +48,37 @@ public class AlertTest {
 
         alertConfiguration.setThreshold(1);
         List<AlertConfiguration.Tag> labels = new ArrayList<AlertConfiguration.Tag>();
-        labels.add(new AlertConfiguration.Tag() {{
-            setKey("l1");
-            setValue("v1");
-        }});
-        labels.add(new AlertConfiguration.Tag() {{
-            setKey("l2");
-            setValue("v2");
-        }});
+        AlertConfiguration.Tag label1 = new AlertConfiguration.Tag();
+        label1.setKey("l1");
+        label1.setValue("v1");
+        labels.add(label1);
+        AlertConfiguration.Tag label2 = new AlertConfiguration.Tag();
+        label2.setKey("l2");
+        label2.setValue("v2");
+        labels.add(label2);
         alertConfiguration.setLabels(labels);
 
         List<AlertConfiguration.Tag> annotations = new ArrayList<AlertConfiguration.Tag>();
-        annotations.add(new AlertConfiguration.Tag() {{
-            setKey("ak1");
-            setValue("av1");
-        }});
+        AlertConfiguration.Tag annotation = new AlertConfiguration.Tag();
+        annotation.setKey("ak1");
+        annotation.setValue("av1");
+        annotations.add(annotation);
         alertConfiguration.setAnnotations(annotations);
 
         List<AlertConfiguration.SeverityConfiguration> severityConfigurations = new ArrayList<AlertConfiguration.SeverityConfiguration>();
-        severityConfigurations.add(new AlertConfiguration.SeverityConfiguration() {{
-            setSeverity(AlertConfiguration.Severity.High);
-            setEvalCondition(new AlertConfiguration.ConditionConfiguration() {{
-                setCondition("latency > 90");
-                setCountCondition("__count__ > 3");
-            }});
-        }});
-        severityConfigurations.add(new AlertConfiguration.SeverityConfiguration() {{
-            setSeverity(AlertConfiguration.Severity.Medium);
-        }});
+        AlertConfiguration.SeverityConfiguration highSeverity =
+                new AlertConfiguration.SeverityConfiguration();
+        highSeverity.setSeverity(AlertConfiguration.Severity.High);
+        AlertConfiguration.ConditionConfiguration evalCondition =
+                new AlertConfiguration.ConditionConfiguration();
+        evalCondition.setCondition("latency > 90");
+        evalCondition.setCountCondition("__count__ > 3");
+        highSeverity.setEvalCondition(evalCondition);
+        severityConfigurations.add(highSeverity);
+        AlertConfiguration.SeverityConfiguration mediumSeverity =
+                new AlertConfiguration.SeverityConfiguration();
+        mediumSeverity.setSeverity(AlertConfiguration.Severity.Medium);
+        severityConfigurations.add(mediumSeverity);
         alertConfiguration.setSeverityConfigurations(severityConfigurations);
 
         alertConfiguration.setNoDataFire(true);
@@ -99,8 +103,8 @@ public class AlertTest {
         policyConfiguration.setActionPolicyId("yyyyyyyy");
         alertConfiguration.setPolicyConfiguration(policyConfiguration);
 
-        String body = JsonUtils.serialize(alertConfiguration);
-        assertEquals(body, "{\"annotations\":[{\"key\":\"ak1\",\"value\":\"av1\"}],\"autoAnnotation\":false,\"conditionConfiguration\":{\"condition\":\"name == 'k8s'\",\"countCondition\":\"__count__ > 20\"},\"groupConfiguration\":{\"type\":\"no_group\"},\"joinConfigurations\":[{\"condition\":\"$0.name == $1.name\",\"type\":\"left_join\"}],\"labels\":[{\"key\":\"l1\",\"value\":\"v1\"},{\"key\":\"l2\",\"value\":\"v2\"}],\"noDataFire\":true,\"noDataSeverity\":8,\"notifyThreshold\":1,\"policyConfiguration\":{\"actionPolicyId\":\"yyyyyyyy\",\"alertPolicyId\":\"xxxxxx\",\"repeatInterval\":\"4m\",\"useDefault\":true},\"queryList\":[{\"chartTitle\":\"chart1\",\"end\":\"now\",\"logStore\":\"logstore-test\",\"project\":\"test-project\",\"query\":\"* | select name, count(uid) as uv group by name\",\"region\":\"cn-heyuan\",\"roleArn\":\"acs:*:xxxxx\",\"start\":\"-60s\",\"timeSpanType\":\"Custom\"},{\"end\":\"now\",\"query\":\"* | select name, min(latency) group by name\",\"start\":\"-86400s\",\"store\":\"test-alert-latency\",\"timeSpanType\":\"Relative\"}],\"sendRecoveryMessage\":false,\"sendResolved\":true,\"severityConfigurations\":[{\"evalCondition\":{\"condition\":\"latency > 90\",\"countCondition\":\"__count__ > 3\"},\"severity\":8},{\"severity\":6}],\"threshold\":1,\"type\":\"default\",\"version\":\"2.0\"}");
+        String body = alertConfiguration.toJsonString();
+        assertJsonEquals(body, "{\"annotations\":[{\"key\":\"ak1\",\"value\":\"av1\"}],\"autoAnnotation\":false,\"conditionConfiguration\":{\"condition\":\"name == 'k8s'\",\"countCondition\":\"__count__ > 20\"},\"groupConfiguration\":{\"type\":\"no_group\"},\"joinConfigurations\":[{\"condition\":\"$0.name == $1.name\",\"type\":\"left_join\"}],\"labels\":[{\"key\":\"l1\",\"value\":\"v1\"},{\"key\":\"l2\",\"value\":\"v2\"}],\"noDataFire\":true,\"noDataSeverity\":8,\"notifyThreshold\":1,\"policyConfiguration\":{\"actionPolicyId\":\"yyyyyyyy\",\"alertPolicyId\":\"xxxxxx\",\"repeatInterval\":\"4m\",\"useDefault\":true},\"queryList\":[{\"chartTitle\":\"chart1\",\"end\":\"now\",\"logStore\":\"logstore-test\",\"project\":\"test-project\",\"query\":\"* | select name, count(uid) as uv group by name\",\"region\":\"cn-heyuan\",\"roleArn\":\"acs:*:xxxxx\",\"start\":\"-60s\",\"timeSpanType\":\"Custom\"},{\"end\":\"now\",\"query\":\"* | select name, min(latency) group by name\",\"start\":\"-86400s\",\"store\":\"test-alert-latency\",\"timeSpanType\":\"Relative\"}],\"sendRecoveryMessage\":false,\"sendResolved\":true,\"severityConfigurations\":[{\"evalCondition\":{\"condition\":\"latency > 90\",\"countCondition\":\"__count__ > 3\"},\"severity\":8},{\"severity\":6}],\"threshold\":1,\"type\":\"default\",\"version\":\"2.0\"}");
     }
 
     @Test
@@ -108,7 +112,7 @@ public class AlertTest {
         String body = "{\"annotations\":[{\"key\":\"ak1\",\"value\":\"av1\"}],\"conditionConfiguration\":{\"condition\":\"name == 'k8s'\",\"countCondition\":\"__count__ > 20\"},\"groupConfiguration\":{\"type\":\"no_group\"},\"joinConfigurations\":[{\"condition\":\"$0.name == $1.name\",\"type\":\"left_join\"}],\"labels\":[{\"key\":\"l1\",\"value\":\"v1\"},{\"key\":\"l2\",\"value\":\"v2\"}],\"noDataFire\":true,\"noDataSeverity\":8,\"notifyThreshold\":1,\"policyConfiguration\":{\"actionPolicyId\":\"yyyyyyyy\",\"alertPolicyId\":\"xxxxxx\",\"repeatInterval\":\"4m\",\"useDefault\":true},\"queryList\":[{\"chartTitle\":\"chart1\",\"end\":\"now\",\"logStore\":\"logstore-test\",\"project\":\"test-project\",\"query\":\"* | select name, count(uid) as uv group by name\",\"region\":\"cn-heyuan\",\"roleArn\":\"acs:*:xxxxx\",\"start\":\"-60s\",\"timeSpanType\":\"Custom\"},{\"end\":\"now\",\"query\":\"* | select name, min(latency) group by name\",\"start\":\"-86400s\",\"store\":\"test-alert-latency\",\"timeSpanType\":\"Relative\"}],\"sendRecoveryMessage\":false,\"sendResolved\":true,\"severityConfigurations\":[{\"evalCondition\":{\"condition\":\"latency > 90\",\"countCondition\":\"__count__ > 3\"},\"severity\":8},{\"severity\":6}],\"threshold\":1,\"type\":\"default\",\"version\":\"2.0\"}";
 
         AlertConfiguration alertConfiguration = new AlertConfiguration();
-        alertConfiguration.deserialize(JSONObject.parseObject(body));
+        alertConfiguration.fromJsonObject(JSONObject.parseObject(body));
         assertEquals(alertConfiguration.getVersion(), "2.0");
         assertEquals(alertConfiguration.getType(), "default");
         assertEquals(alertConfiguration.getThreshold(), 1);
@@ -154,7 +158,7 @@ public class AlertTest {
     }
 
     @Test
-    public void testAlertConfigurationSerialize() {
+    public void testAlertConfigurationSerialize() throws Exception {
         AlertConfiguration alertConfiguration = new AlertConfiguration();
         alertConfiguration.setVersion("2.0");
         alertConfiguration.setThreshold(1);
@@ -169,15 +173,15 @@ public class AlertTest {
         templateConfiguration.setTokens(tokens);
         alertConfiguration.setTemplateConfiguration(templateConfiguration);
 
-        String body = JsonUtils.serialize(alertConfiguration);
-        assertEquals(body, "{\"autoAnnotation\":false,\"noDataFire\":false,\"noDataSeverity\":6,\"notifyThreshold\":1,\"sendRecoveryMessage\":false,\"sendResolved\":false,\"templateConfiguration\":{\"lang\":\"cn\",\"tokens\":{\"default.logstore\":\"test_logstore\",\"default.app\":\"sls.audit.alert_policy_default\"},\"type\":\"sys\",\"version\":\"1\"},\"threshold\":1,\"type\":\"tpl\",\"version\":\"2.0\"}");
+        String body = alertConfiguration.toJsonString();
+        assertJsonEquals(body, "{\"autoAnnotation\":false,\"noDataFire\":false,\"noDataSeverity\":6,\"notifyThreshold\":1,\"sendRecoveryMessage\":false,\"sendResolved\":false,\"templateConfiguration\":{\"lang\":\"cn\",\"tokens\":{\"default.logstore\":\"test_logstore\",\"default.app\":\"sls.audit.alert_policy_default\"},\"type\":\"sys\",\"version\":\"1\"},\"threshold\":1,\"type\":\"tpl\",\"version\":\"2.0\"}");
     }
 
     @Test
     public void testConfigurationDeserialize() {
         String body = "{\"noDataFire\":false,\"noDataSeverity\":6,\"notifyThreshold\":1,\"sendRecoveryMessage\":false,\"sendResolved\":false,\"templateConfiguration\":{\"lang\":\"cn\",\"tokens\":{\"default.logstore\":\"test_logstore\",\"default.app\":\"sls.audit.alert_policy_default\"},\"type\":\"sys\",\"version\":\"1\"},\"threshold\":1,\"type\":\"tpl\",\"version\":\"2.0\"}";
         AlertConfiguration alertConfiguration = new AlertConfiguration();
-        alertConfiguration.deserialize(JSONObject.parseObject(body));
+        alertConfiguration.fromJsonObject(JSONObject.parseObject(body));
         assertEquals(alertConfiguration.getVersion(), "2.0");
         assertEquals(alertConfiguration.getType(), "tpl");
         assertEquals(alertConfiguration.getThreshold(), 1);
@@ -202,7 +206,7 @@ public class AlertTest {
     }
 
     @Test
-    public void testAlertSerialize() {
+    public void testAlertSerialize() throws Exception {
         Alert alert = new Alert();
         alert.setType(JobType.ALERT);
         AlertConfiguration alertConfiguration = new AlertConfiguration();
@@ -228,8 +232,8 @@ public class AlertTest {
         schedule.setType(JobScheduleType.FIXED_RATE);
         alert.setSchedule(schedule);
 
-        String body = JsonUtils.serialize(alert);
-        assertEquals(body, "{\"configuration\":{\"autoAnnotation\":false,\"noDataFire\":false,\"noDataSeverity\":6,\"notifyThreshold\":1,\"sendRecoveryMessage\":false,\"sendResolved\":false,\"templateConfiguration\":{\"annotations\":{\"__k2\":\"dwdd\"},\"lang\":\"cn\",\"tokens\":{\"default.logstore\":\"test_logstore\",\"default.app\":\"sls.audit.alert_policy_default\"},\"type\":\"sys\",\"version\":\"1\"},\"threshold\":1,\"type\":\"tpl\",\"version\":\"2.0\"},\"recyclable\":false,\"schedule\":{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"status\":\"Enabled\",\"type\":\"Alert\"}");
+        String body = alert.toJsonString();
+        assertJsonEquals(body, "{\"configuration\":{\"autoAnnotation\":false,\"noDataFire\":false,\"noDataSeverity\":6,\"notifyThreshold\":1,\"sendRecoveryMessage\":false,\"sendResolved\":false,\"templateConfiguration\":{\"annotations\":{\"__k2\":\"dwdd\"},\"lang\":\"cn\",\"tokens\":{\"default.logstore\":\"test_logstore\",\"default.app\":\"sls.audit.alert_policy_default\"},\"type\":\"sys\",\"version\":\"1\"},\"threshold\":1,\"type\":\"tpl\",\"version\":\"2.0\"},\"recyclable\":false,\"schedule\":{\"interval\":\"60s\",\"runImmediately\":false,\"type\":\"FixedRate\"},\"status\":\"Enabled\",\"type\":\"Alert\"}");
     }
 
     @Test
@@ -243,7 +247,7 @@ public class AlertTest {
                 "\"recyclable\":false,\"schedule\":{\"interval\":\"60s\",\"runImmediately\":false," +
                 "\"type\":\"FixedRate\"},\"status\":\"Enabled\",\"type\":\"Alert\"}";
         Alert alert = new Alert();
-        alert.deserialize(JSONObject.parseObject(body));
+        alert.fromJsonObject(JSONObject.parseObject(body));
 
         assertEquals("alert-1", alert.getName());
         assertNull(alert.getDescription());
@@ -261,7 +265,7 @@ public class AlertTest {
                 "\"Custom\"}]},\"name\":\"alertTest\",\"schedule\":{\"interval\":\"60s\"," +
                 "\"type\":\"FixedRate\"},\"state\":\"Enabled\",\"type\":\"Alert\",\"createTime\":1542763714,\"lastModifiedTime\":1542763714}";
         Alert alert = new Alert();
-        alert.deserialize(JSONObject.parseObject(body));
+        alert.fromJsonObject(JSONObject.parseObject(body));
 
         assertEquals("alertTest", alert.getName());
         assertNull(alert.getDescription());
@@ -314,7 +318,7 @@ public class AlertTest {
                 "{\"severity\":6,\"evalCondition\":{\"condition\":\"\",\"countCondition\":\"\"}}]," +
                 "\"policyConfiguration\":{\"useDefault\":false,\"repeatInterval\":\"3m\",\"alertPolicyId\":\"sls.builtin.dynamic\",\"actionPolicyId\":\"test-action-policy-1\"}}";
         AlertConfiguration alertConfiguration = new AlertConfiguration();
-        alertConfiguration.deserialize(JSONObject.parseObject(configuration));
+        alertConfiguration.fromJsonObject(JSONObject.parseObject(configuration));
     }
 
 }

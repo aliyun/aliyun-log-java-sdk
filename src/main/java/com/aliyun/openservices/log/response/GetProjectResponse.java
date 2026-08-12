@@ -7,8 +7,9 @@ import com.aliyun.openservices.log.common.DataRedundancyType;
 import com.aliyun.openservices.log.common.ProjectQuota;
 import com.aliyun.openservices.log.exception.LogException;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetProjectResponse extends Response {
 
@@ -33,7 +34,8 @@ public class GetProjectResponse extends Response {
         super(headers);
     }
 
-    public void FromJsonObject(JSONObject obj) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject obj) throws LogException {
         try {
             description = obj.getString("description");
             status = obj.getString("status");
@@ -41,14 +43,20 @@ public class GetProjectResponse extends Response {
             region = obj.getString("region");
             owner = obj.getString("owner");
             dataRedundancyType = DataRedundancyType.parse(obj.getString("dataRedundancyType"));
-            quota = ProjectQuota.parseFromJSON(obj.getJSONObject(Consts.CONST_QUOTA));
+            quota = ProjectQuota.parseFromJsonObject(obj.getJSONObject(Consts.CONST_QUOTA));
             transferAcceleration = obj.getString("transferAcceleration");
-            setCreateTime(obj.getString(Consts.CONST_CREATTIME));
-            setLastModifyTime(obj.getString(Consts.CONST_LASTMODIFYTIME));
+            setCreateTime(readTime(obj, Consts.CONST_CREATTIME));
+            setLastModifyTime(readTime(obj, Consts.CONST_LASTMODIFYTIME));
             deletionProtection = obj.getBoolean("deletionProtection");
         } catch (JSONException e) {
             throw new LogException("InvalidErrorResponse", e.getMessage(), GetRequestId());
         }
+    }
+
+    private static String readTime(JSONObject value, String key) {
+        return value.isNumber(key)
+                ? String.valueOf(value.getLongValue(key))
+                : value.getString(key);
     }
 
     public String GetProjectDescription() {

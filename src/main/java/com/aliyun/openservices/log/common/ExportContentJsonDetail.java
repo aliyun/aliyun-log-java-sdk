@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ExportContentJsonDetail extends ExportContentDetail {
 
@@ -21,7 +22,16 @@ public class ExportContentJsonDetail extends ExportContentDetail {
     }
 
     @Override
-    public void deserialize(JSONObject value) {
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        value.put("enableTag", enableTag);
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(JSONObject value) {
         enableTag = value.getBooleanValue("enableTag");
     }
 }

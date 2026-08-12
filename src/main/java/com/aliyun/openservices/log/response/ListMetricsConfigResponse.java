@@ -1,13 +1,14 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.MetricsConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ListMetricsConfigResponse extends Response {
 
@@ -22,7 +23,8 @@ public class ListMetricsConfigResponse extends Response {
         this.metricsConfigList = metricsConfigList;
     }
 
-    public void fromJSON(JSONObject object) {
+    @InternalApi
+    public void fromJsonObject(JSONObject object) {
         metricsConfigList = new ArrayList<MetricsConfigWrap>();
         if (object == null) {
             return;
@@ -34,7 +36,7 @@ public class ListMetricsConfigResponse extends Response {
                 continue;
             }
             String metricStore = jsonObject.getString("metricStore");
-            MetricsConfig metricsConfig = JSONObject.parseObject(jsonObject.getString("metricsConfigDetail"), MetricsConfig.class);
+            MetricsConfig metricsConfig = JsonCodec.fromJson(jsonObject.getString("metricsConfigDetail"), MetricsConfig.class);
             MetricsConfigWrap metricsConfigWrap = new MetricsConfigWrap(metricStore, metricsConfig);
             metricsConfigList.add(metricsConfigWrap);
         }
@@ -49,9 +51,7 @@ public class ListMetricsConfigResponse extends Response {
     }
 
     public static class MetricsConfigWrap {
-        @JSONField
         private String metricStore;
-        @JSONField
         private MetricsConfig metricsConfigDetail;
 
         public MetricsConfigWrap(String metricStore, MetricsConfig metricsConfig) {

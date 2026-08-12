@@ -1,7 +1,8 @@
 package com.aliyun.openservices.log.functiontest.others;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.*;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.functiontest.MetaAPIBaseFunctionTest;
@@ -43,7 +44,7 @@ public class TagResourcesTest extends MetaAPIBaseFunctionTest {
         client.CreateMachineGroup(TEST_PROJECT, new MachineGroup(machineGroupName, "ip", new ArrayList<String>(Arrays.asList("127.0.0.1"))));
         String str = "{\"createTime\":1565005860,\"configName\":\"" + logtailConfigName + "\",\"inputDetail\":{\"delayAlarmBytes\":0,\"filterRegex\":[],\"logBeginRegex\":\".*\",\"timeFormat\":\"\",\"dockerIncludeLabel\":{},\"preserve\":true,\"maxSendRate\":-1,\"discardUnmatch\":false,\"preserveDepth\":1,\"priority\":0,\"mergeType\":\"topic\",\"enableTag\":false,\"advanced\":{\"force_multiconfig\":false},\"localStorage\":true,\"key\":[\"a\",\"b\",\"c\",\"d\",\"e\",\"f\",\"g\",\"h\",\"i\",\"j\",\"k\"],\"logTimezone\":\"\",\"topicFormat\":\"none\",\"plugin\": {\"processors\": [{\"type\":\"processor_default\", \"detail\":{}},{\"type\":\"processor_default\", \"detail\":{}}]},\"adjustTimezone\":false,\"logPath\":\"/root/test/regex-parse-apache\",\"regex\":\"([0-9\\\\.\\\\-]+)\\\\s([\\\\w\\\\.\\\\-]+)\\\\s([\\\\w\\\\.\\\\-]+)\\\\s(\\\\[[^\\\\[\\\\]]+\\\\]|\\\\-)\\\\s\\\\\\\"(\\\\S+)\\\\s(\\\\S+)\\\\s(\\\\S+)\\\\\\\"\\\\s(\\\\d{3}|\\\\-)\\\\s(\\\\d+|\\\\-)\\\\s\\\\\\\"([^\\\\\\\"]+)\\\\\\\"\\\\s\\\\\\\"([^\\\\\\\"]+)\\\\\\\"\",\"fileEncoding\":\"utf8\",\"tailExisted\":false,\"sendRateExpire\":0,\"dockerExcludeEnv\":{},\"delaySkipBytes\":0,\"filePattern\":\"*.log\",\"maxDepth\":100,\"enableRawLog\":false,\"dockerFile\":false,\"sensitive_keys\":[],\"discardNonUtf8\":false,\"filterKey\":[],\"shardHashKey\":[],\"dockerIncludeEnv\":{},\"logType\":\"common_reg_log\",\"dockerExcludeLabel\":{}},\"inputType\":\"file\",\"outputType\":\"LogService\",\"outputDetail\":{\"logstoreName\":\"logstore1\",\"endpoint\":\"cn-hangzhou-intranet.log.aliyuncs.com\"},\"logSample\":\"192.168.1.9 - - [05/May/2019:19:26:12 +0800] \\\"POST /favicon.ico HTTP/1.1\\\" 200 209 \\\"http://localhost/x0.html\\\" \\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36\\\"\",\"lastModifyTime\":1565005860}";
         Config config = new Config();
-        config.FromJsonString(str);
+        config.fromJsonString(str);
         client.CreateConfig(TEST_PROJECT, config);
         Dashboard dashboard = new Dashboard(dashboardName, "Dashboard", new ArrayList<Chart>());
         client.createDashboard(new CreateDashboardRequest(TEST_PROJECT, dashboard));
@@ -171,7 +172,7 @@ public class TagResourcesTest extends MetaAPIBaseFunctionTest {
     private String createTagSources(String type, String id, int length, boolean untag) {
         JSONObject object = new JSONObject();
         object.put("resourceType", type);
-        object.put("resourceId", Arrays.asList(id));
+        object.put("resourceId", JsonCodec.toJsonArray(Arrays.asList(id)));
         JSONArray array = new JSONArray();
         for (int i = 0; i < length; i++) {
             if (untag) {
@@ -180,10 +181,10 @@ public class TagResourcesTest extends MetaAPIBaseFunctionTest {
                 Map<String, String> tags = new HashMap<String, String>(2);
                 tags.put("key", "tag-key-" + i);
                 tags.put("value", "tag-value-" + i);
-                array.add(tags);
+                array.add(JsonCodec.toJsonObject(tags));
             }
         }
         object.put("tags", array);
-        return object.toJSONString();
+        return object.toString();
     }
 }

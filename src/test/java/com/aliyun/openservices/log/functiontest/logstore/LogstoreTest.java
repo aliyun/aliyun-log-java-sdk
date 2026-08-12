@@ -86,7 +86,7 @@ public class LogstoreTest extends FunctionTest {
     public void testGetIndex() throws Exception {
         String project = makeProjectName();
         Index index = new Index();
-        index.FromJsonString(INDEX_STRING);
+        index.fromJsonString(INDEX_STRING);
         client.CreateProject(project, "");
         Map<Integer, Integer> autoDetectEnabled = new HashMap<>();
 

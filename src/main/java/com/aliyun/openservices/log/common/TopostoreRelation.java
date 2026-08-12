@@ -1,14 +1,15 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.exception.LogException;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class TopostoreRelation implements Serializable {
+public class TopostoreRelation implements Serializable, JsonSerializable, JsonDeserializable {
     private String relationId = "";
     private String relationType = "";
     private String srcNodeId = null;
@@ -98,7 +99,7 @@ public class TopostoreRelation implements Serializable {
         for(Map.Entry<String, String> kv : properties.entrySet()){
             proObj.put(kv.getKey(), kv.getValue());
         }
-        setProperty(proObj.toJSONString());
+        setProperty(proObj.toString());
     }
 
     public String getDescription() {
@@ -117,7 +118,8 @@ public class TopostoreRelation implements Serializable {
         this.displayName = displayName;
     }
 
-    public JSONObject ToJsonObject() throws LogException {
+    @InternalApi
+    public JSONObject toJsonObject() throws LogException {
         JSONObject result = new JSONObject();
         result.put(Consts.TOPOSTORE_RELATION_ID, getRelationId());
         result.put(Consts.TOPOSTORE_RELATION_TYPE, getRelationType());
@@ -139,11 +141,9 @@ public class TopostoreRelation implements Serializable {
         return result;
     }
 
-    public String ToJsonString() throws LogException {
-        return ToJsonObject().toJSONString();
-    }
 
-    public void FromJsonObject(JSONObject dict) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject dict) throws LogException {
         setRelationId(dict.getString(Consts.TOPOSTORE_RELATION_ID));
         setRelationType(dict.getString(Consts.TOPOSTORE_RELATION_TYPE));
         setSrcNodeId(dict.getString(Consts.TOPOSTORE_RELATION_SRC_NODE_ID));
@@ -173,9 +173,9 @@ public class TopostoreRelation implements Serializable {
         }
     }
 
-    public void FromJsonString(String content) throws LogException {
+    public void fromJsonString(String content) throws LogException {
         JSONObject dict = JSONObject.parseObject(content);
-        FromJsonObject(dict);
+        fromJsonObject(dict);
     }
 
     public void checkForCreate() throws IllegalArgumentException {

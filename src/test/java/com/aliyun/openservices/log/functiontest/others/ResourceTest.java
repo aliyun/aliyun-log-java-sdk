@@ -1,6 +1,6 @@
 package com.aliyun.openservices.log.functiontest.others;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
 import com.aliyun.openservices.log.common.ResourceName;
 import com.aliyun.openservices.log.common.ResourceRecord;
 import com.aliyun.openservices.log.common.ResourceUser;
@@ -36,15 +36,15 @@ public class ResourceTest extends FunctionTest {
         resourceUser.setUserName(userName);
         resourceUser.setCountryCode("86");
         resourceUser.setPhone("13888888888");
-        resourceUser.setEmail(new ArrayList<String>() {{
-            add("java_log_sdk_regresstion_test_a@test.com");
-            add("java_log_sdk_regresstion_test_b@test.com");
-        }});
+        ArrayList<String> emails = new ArrayList<String>();
+        emails.add("java_log_sdk_regresstion_test_a@test.com");
+        emails.add("java_log_sdk_regresstion_test_b@test.com");
+        resourceUser.setEmail(emails);
         resourceUser.setEnabled(true);
         resourceUser.setVoiceEnabled(false);
         resourceUser.setSmsEnabled(true);
 
-        String resourceUserJsonString = JSONObject.toJSONString(resourceUser);
+        String resourceUserJsonString = JsonCodec.toJson(resourceUser);
         ResourceRecord resourceRecord = new ResourceRecord();
         resourceRecord.setId(userId);
         resourceRecord.setTag(userName);
@@ -60,15 +60,15 @@ public class ResourceTest extends FunctionTest {
         resourceUser.setUserName(userName);
         resourceUser.setCountryCode("86");
         resourceUser.setPhone("13888888888");
-        resourceUser.setEmail(new ArrayList<String>() {{
-            add("test_a@test.com");
-            add("test_b@test.com");
-        }});
+        ArrayList<String> emails = new ArrayList<String>();
+        emails.add("test_a@test.com");
+        emails.add("test_b@test.com");
+        resourceUser.setEmail(emails);
         resourceUser.setEnabled(true);
         resourceUser.setVoiceEnabled(false);
         resourceUser.setSmsEnabled(true);
 
-        String resourceUserJsonString = JSONObject.toJSONString(resourceUser);
+        String resourceUserJsonString = JsonCodec.toJson(resourceUser);
         ResourceRecord resourceRecord = new ResourceRecord();
         resourceRecord.setId(userId);
         resourceRecord.setTag(userName);
@@ -86,7 +86,7 @@ public class ResourceTest extends FunctionTest {
         assertEquals(record.getTag(), userName);
         String userJsonString = record.getValue();
         assertNotNull(userJsonString);
-        ResourceUser resourceUser = JSONObject.parseObject(userJsonString, ResourceUser.class);
+        ResourceUser resourceUser = JsonCodec.fromJson(userJsonString, ResourceUser.class);
         assertTrue(resourceUser.isEnabled());
         assertEquals(resourceUser.getUserId(), userId);
         assertEquals(resourceUser.getUserName(), userName);
@@ -102,9 +102,9 @@ public class ResourceTest extends FunctionTest {
         assertEquals(record.getTag(), userName);
         String userJsonString = record.getValue();
         assertNotNull(userJsonString);
-        ResourceUser resourceUser = JSONObject.parseObject(userJsonString, ResourceUser.class);
+        ResourceUser resourceUser = JsonCodec.fromJson(userJsonString, ResourceUser.class);
         resourceUser.setUserName(userNewName);
-        record.setValue(JSONObject.toJSONString(resourceUser));
+        record.setValue(JsonCodec.toJson(resourceUser));
 
         // update user name
         UpdateResourceRecordRequest updateResourceRecordRequest = new UpdateResourceRecordRequest(ResourceName.USER.toString(), record);
@@ -117,7 +117,7 @@ public class ResourceTest extends FunctionTest {
         assertEquals(record.getTag(), userName);
         userJsonString = record.getValue();
         assertNotNull(userJsonString);
-        resourceUser = JSONObject.parseObject(userJsonString, ResourceUser.class);
+        resourceUser = JsonCodec.fromJson(userJsonString, ResourceUser.class);
         assertEquals(resourceUser.getUserName(), userNewName);
     }
 

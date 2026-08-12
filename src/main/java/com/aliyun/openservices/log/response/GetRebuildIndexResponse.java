@@ -3,9 +3,10 @@ package com.aliyun.openservices.log.response;
 import com.aliyun.openservices.log.common.RebuildIndex;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.internal.ErrorCodes;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class GetRebuildIndexResponse extends Response {
 
@@ -21,13 +22,14 @@ public class GetRebuildIndexResponse extends Response {
         return rebuildIndex;
     }
 
-    public void deserialize(JSONObject value, String requestId) throws LogException {
+    @InternalApi
+    public void fromJsonObject(JSONObject value, String requestId) throws LogException {
         rebuildIndex = new RebuildIndex();
         try {
-            rebuildIndex.deserialize(value);
+            rebuildIndex.fromJsonObject(value);
         } catch (final Exception ex) {
             throw new LogException(ErrorCodes.BAD_RESPONSE,
-                    "Unable to deserialize JSON to model: " + ex.getMessage(), ex, requestId);
+                    "Unable to read JSON model: " + ex.getMessage(), ex, requestId);
         }
     }
 }

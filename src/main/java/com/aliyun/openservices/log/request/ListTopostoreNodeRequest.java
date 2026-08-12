@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.util.Utils;
 
@@ -174,7 +174,7 @@ public class ListTopostoreNodeRequest extends TopostoreRequest {
             
             try{
                 SetParam(Consts.TOPOSTORE_NODE_PROPERTIES, URLEncoder.encode(new String(
-                    Base64.getEncoder().encodeToString(proObj.toJSONString().getBytes())), "utf-8"));
+                    Base64.getEncoder().encodeToString(proObj.toString().getBytes())), "utf-8"));
             } catch(UnsupportedEncodingException e){
                 throw new RuntimeException(e);
             }

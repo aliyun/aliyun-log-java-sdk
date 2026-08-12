@@ -1,15 +1,17 @@
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.ConsumerGroupShardCheckPoint;
 
 import java.util.*;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class ProjectConsumerGroupCheckPointResponse extends Response {
     private static final long serialVersionUID = -5446935677776563121L;
     private Map<String, List<ConsumerGroupShardCheckPoint>> checkPoints;
 
+    @InternalApi
     public ProjectConsumerGroupCheckPointResponse(Map<String, String> headers, JSONObject checkPointsMap) {
         super(headers);
         checkPoints = new HashMap<String, List<ConsumerGroupShardCheckPoint>>();
@@ -20,7 +22,7 @@ public class ProjectConsumerGroupCheckPointResponse extends Response {
 
             for (int i = 0; i < cpJsonArray.size(); ++i) {
                 ConsumerGroupShardCheckPoint cp = new ConsumerGroupShardCheckPoint();
-                cp.Deserialize(cpJsonArray.getJSONObject(i));
+                cp.fromJsonObject(cpJsonArray.getJSONObject(i));
                 cpList.add(cp);
             }
             checkPoints.put(logStore, cpList);

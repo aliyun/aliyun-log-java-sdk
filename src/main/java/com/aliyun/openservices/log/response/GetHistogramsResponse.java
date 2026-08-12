@@ -3,15 +3,16 @@
  */
 package com.aliyun.openservices.log.response;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONException;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.Consts;
 import com.aliyun.openservices.log.common.Histogram;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 /**
  * The response of the GetHistogram API from sls server
@@ -111,7 +112,8 @@ public class GetHistogramsResponse extends Response {
         return histogram;
     }
 
-    public void fromJSON(JSONArray items) {
+    @InternalApi
+    public void fromJsonArray(JSONArray items) {
         histogram.clear();
         count = 0;
         if (items == null) {

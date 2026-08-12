@@ -104,13 +104,25 @@ while(true) {
 ```
 
 ## Maven dependency
+
+During the transition, `master` continues to publish `0.6.x` releases that
+retain fastjson, while `non-fastjson` publishes `0.6.x-non-fastjson` releases
+without fastjson. The current non-fastjson version is a release, not a SNAPSHOT, and
+must be selected explicitly:
+
 ```
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.97</version>
+    <version>0.6.161-non-fastjson.1</version>
 </dependency>
 ```
+
+Do not put `0.6.161` and `0.6.161-non-fastjson.1` in the same dependency graph.
+They use the same Maven coordinates but expose different JSON APIs, and Maven
+`ComparableVersion` sorts an unknown qualifier after the unqualified release,
+so `0.6.161-non-fastjson.1` is newer than `0.6.161`. See [MIGRATION.md](MIGRATION.md)
+for application migration.
 
 ## protobuf conflicts
 If the project pulls in a conflicting `protobuf-java` version, use the special variant provided by Aliyun LOG Java SDK:
@@ -118,7 +130,7 @@ If the project pulls in a conflicting `protobuf-java` version, use the special v
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.97</version>
+    <version>0.6.161-non-fastjson.1</version>
     <classifier>jar-with-dependencies</classifier>
     <exclusions>
         <exclusion>
@@ -128,6 +140,9 @@ If the project pulls in a conflicting `protobuf-java` version, use the special v
     </exclusions>
 </dependency>
 ```
+
+The resulting fat JAR is named
+`aliyun-log-0.6.161-non-fastjson.1-jar-with-dependencies.jar`.
 
 ## FAQ
 **Q**: Version conflict between `aliyun-log-java-sdk` and `aliyun-sls-xxx-inner` — symptom and fix.

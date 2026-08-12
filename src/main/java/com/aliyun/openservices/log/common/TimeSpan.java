@@ -1,10 +1,11 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.io.Serializable;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
-public class TimeSpan implements Serializable {
+public class TimeSpan implements Serializable, JsonDeserializable {
     private int queryTimeType;
     private String start;
     private String end;
@@ -51,7 +52,8 @@ public class TimeSpan implements Serializable {
         this.endTime = endTime;
     }
 
-    public void deserialize(JSONObject timeSpan) {
+    @InternalApi
+    public void fromJsonObject(JSONObject timeSpan) {
         queryTimeType = timeSpan.getIntValue("queryTimeType");
         start = timeSpan.getString("start");
         end = timeSpan.getString("end");

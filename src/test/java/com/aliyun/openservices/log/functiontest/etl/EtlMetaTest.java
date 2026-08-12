@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.functiontest.etl;
 
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.EtlMeta;
 import com.aliyun.openservices.log.exception.LogException;
 import com.aliyun.openservices.log.response.ListEtlMetaResponse;
@@ -37,7 +38,7 @@ public class EtlMetaTest extends JobIntgTest {
         metaValueObj.put("logstore", "slb-log");
         String roleArn = "acs:ram::" + userAliuid + ":role/aliyunlogwriteonlyrole";
         metaValueObj.put("roleArn", roleArn);
-        meta.setMetaValue(metaValueObj);
+        meta.setMetaValue(JsonCodec.toMap(metaValueObj));
         client.createEtlMeta(TEST_PROJECT, meta);
 
         ListEtlMetaResponse listEtlMetaResponse = client.getEtlMeta(TEST_PROJECT, etlMetaName_1, metaKey);
@@ -49,7 +50,7 @@ public class EtlMetaTest extends JobIntgTest {
             assertEquals(etlMeta.getMetaName(), etlMetaName_1);
             assertTrue(etlMeta.isEnable());
             assertEquals(etlMeta.getMetaTag(), etlMetaKeyPrefxi_1);
-            JSONObject mv = etlMeta.getMetaValue();
+            JSONObject mv = JsonCodec.toJsonObject(etlMeta.getMetaValue());
             assertEquals(userAliuid, mv.getString("aliuid"));
             assertEquals(userRegion, mv.getString("region"));
             assertEquals(userProject, mv.getString("project"));
@@ -58,7 +59,7 @@ public class EtlMetaTest extends JobIntgTest {
         }
 
         metaValueObj.put("logstore", "test-log");
-        meta.setMetaValue(metaValueObj);
+        meta.setMetaValue(JsonCodec.toMap(metaValueObj));
         client.updateEtlMeta(TEST_PROJECT, meta);
 
         ListEtlMetaResponse listEtlMetaResponse2 = client.getEtlMeta(TEST_PROJECT, etlMetaName_1, metaKey);
@@ -70,7 +71,7 @@ public class EtlMetaTest extends JobIntgTest {
             assertEquals(etlMeta.getMetaName(), etlMetaName_1);
             assertTrue(etlMeta.isEnable());
             assertEquals(etlMeta.getMetaTag(), etlMetaKeyPrefxi_1);
-            JSONObject mv = etlMeta.getMetaValue();
+            JSONObject mv = JsonCodec.toJsonObject(etlMeta.getMetaValue());
             assertEquals(userAliuid, mv.getString("aliuid"));
             assertEquals(userRegion, mv.getString("region"));
             assertEquals(userProject, mv.getString("project"));

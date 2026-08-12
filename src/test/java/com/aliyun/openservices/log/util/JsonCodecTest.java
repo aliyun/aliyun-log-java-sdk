@@ -1,32 +1,33 @@
 package com.aliyun.openservices.log.util;
 
-import com.alibaba.fastjson.JSONObject;
-import com.aliyun.openservices.log.common.Config;
-import com.aliyun.openservices.log.exception.LogException;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class FastJsonTest {
+import com.aliyun.openservices.log.common.Config;
+import com.aliyun.openservices.log.exception.LogException;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
+
+public class JsonCodecTest {
+
     @Test
     public void testConfig() throws LogException {
         Config config = new Config();
         HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put("configName","1");
-        map.put("inputType","2");
-//        JSONObject object = new JSONObject(3,true);
-//        map.put("inputDetail",object);
-//        map.put("outputDetail",object);
-        map.put("createTime","123456");
-        map.put("lastModifyTime","654321");
-        map.put("logSample","666");
-        String jsonString = JSONObject.toJSONString(map);
-        config.FromJsonString(jsonString);
-        Assert.assertEquals(config.GetConfigName(),"1");
+        map.put("configName", "1");
+        map.put("inputType", "2");
+        map.put("createTime", 123456);
+        map.put("lastModifyTime", 654321);
+        map.put("logSample", "666");
+        String jsonString = JsonCodec.toJson(map);
+        config.fromJsonString(jsonString);
+        Assert.assertEquals(config.GetConfigName(), "1");
     }
+
     @Test
     public void testECSRoleCredentials() {
         String response = "{\n" +

@@ -2,8 +2,9 @@ package com.aliyun.openservices.log.request;
 
 import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JSONArray;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 import com.aliyun.openservices.log.common.TopostoreRelation;
 
 public class UpsertTopostoreRelationRequest extends TopostoreRequest{
@@ -18,8 +19,7 @@ public class UpsertTopostoreRelationRequest extends TopostoreRequest{
 
     public String getPostBody() {
         JSONObject result = new JSONObject();
-        JSONArray encodedRelations = new JSONArray();
-        encodedRelations.addAll(topostoreRelations);
+        JSONArray encodedRelations = JsonCodec.toJsonArray(topostoreRelations);
         result.put("relations", encodedRelations);
         return result.toString();
     }

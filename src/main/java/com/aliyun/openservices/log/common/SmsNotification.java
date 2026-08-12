@@ -1,15 +1,15 @@
 package com.aliyun.openservices.log.common;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.aliyun.openservices.log.util.JsonUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.log.internal.json.JsonCodec;
+import com.aliyun.openservices.log.internal.json.JSONObject;
 
 import java.util.List;
+import com.aliyun.openservices.log.annotation.InternalApi;
 
 public class SmsNotification extends Notification {
 
-    @JSONField
     private List<String> mobileList;
 
     SmsNotification(NotificationType type) {
@@ -29,8 +29,19 @@ public class SmsNotification extends Notification {
     }
 
     @Override
-    public void deserialize(final JSONObject value) {
-        super.deserialize(value);
+    @InternalApi
+    public JSONObject toJsonObject() {
+        JSONObject value = super.toJsonObject();
+        if (mobileList != null) {
+            value.put(Consts.MOBILE_LIST, JsonCodec.toJsonArray(mobileList));
+        }
+        return value;
+    }
+
+    @Override
+    @InternalApi
+    public void fromJsonObject(final JSONObject value) {
+        super.fromJsonObject(value);
         mobileList = JsonUtils.readStringList(value, Consts.MOBILE_LIST);
     }
 

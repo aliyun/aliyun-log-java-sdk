@@ -1,8 +1,9 @@
 package com.aliyun.openservices.log.response;
 
+import com.aliyun.openservices.log.annotation.InternalApi;
 import com.aliyun.openservices.log.common.Ingestion;
 import com.aliyun.openservices.log.internal.Unmarshaller;
-import com.alibaba.fastjson.JSONArray;
+import com.aliyun.openservices.log.internal.json.JSONArray;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -16,12 +17,13 @@ public class ListIngestionResponse extends ResponseList<Ingestion> implements Se
     }
 
     @Override
+    @InternalApi
     public Unmarshaller<Ingestion> unmarshaller() {
         return new Unmarshaller<Ingestion>() {
             @Override
             public Ingestion unmarshal(JSONArray value, int index) {
                 Ingestion ingestion = new Ingestion();
-                ingestion.deserialize(value.getJSONObject(index));
+                ingestion.fromJsonObject(value.getJSONObject(index));
                 return ingestion;
             }
         };

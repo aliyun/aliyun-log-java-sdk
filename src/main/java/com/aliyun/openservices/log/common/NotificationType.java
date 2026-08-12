@@ -1,11 +1,12 @@
 package com.aliyun.openservices.log.common;
 
-import com.alibaba.fastjson.serializer.JSONSerializable;
-import com.alibaba.fastjson.serializer.JSONSerializer;
 
-import java.lang.reflect.Type;
+import com.aliyun.openservices.log.internal.json.JsonEnumAdapter;
+import com.aliyun.openservices.log.internal.json.JsonEnumCreator;
+import com.aliyun.openservices.log.internal.json.JsonEnumValue;
 
-public enum NotificationType implements JSONSerializable {
+@JsonEnumAdapter
+public enum NotificationType {
     /**
      * Ding ding web hook.
      */
@@ -37,6 +38,7 @@ public enum NotificationType implements JSONSerializable {
         this.value = value;
     }
 
+    @JsonEnumCreator
     public static NotificationType fromString(String value) {
         for (NotificationType type : NotificationType.values()) {
             if (type.value.equals(value)) {
@@ -46,13 +48,10 @@ public enum NotificationType implements JSONSerializable {
         return null;
     }
 
+    @JsonEnumValue
     @Override
     public String toString() {
         return value;
     }
 
-    @Override
-    public void write(JSONSerializer serializer, Object fieldName, Type fieldType, int features) {
-        serializer.write(toString());
-    }
 }
