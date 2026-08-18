@@ -14,7 +14,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.Strictness;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
@@ -25,13 +24,15 @@ final class JsonTree {
     private JsonTree() {
     }
 
+    @SuppressWarnings("deprecation")
     static JsonElement parse(String text) {
         if (text == null) {
             throw new JSONException("JSON text must not be null");
         }
         try {
             JsonReader reader = new JsonReader(new StringReader(text));
-            reader.setStrictness(Strictness.STRICT);
+            // setLenient(false) equals Strictness.STRICT but exists in all Gson versions
+            reader.setLenient(false);
             if (reader.peek() == JsonToken.END_DOCUMENT) {
                 throw new JSONException("JSON document must not be empty");
             }
@@ -49,12 +50,14 @@ final class JsonTree {
         }
     }
 
+    @SuppressWarnings("deprecation")
     static String write(JsonElement element) {
         StringWriter output = new StringWriter();
         JsonWriter writer = new JsonWriter(output);
         writer.setSerializeNulls(false);
         writer.setHtmlSafe(false);
-        writer.setStrictness(Strictness.STRICT);
+        // setLenient(false) equals Strictness.STRICT but exists in all Gson versions
+        writer.setLenient(false);
         try {
             GsonHolder.gson().getAdapter(JsonElement.class).write(writer, element);
             return output.toString();

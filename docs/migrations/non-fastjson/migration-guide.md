@@ -13,9 +13,9 @@
 | `0.6.x` | 保留 | 尚未开始迁移的应用 |
 | `0.6.x-non-fastjson` | 移除 | 已完成本文检查和改造的应用 |
 
-例如，当前推荐使用 `0.6.161-non-fastjson.1`。`-non-fastjson` 是正式版本号的一部分，不是 classifier，也不是 SNAPSHOT。Maven 会认为 `0.6.161-non-fastjson.1` 高于 `0.6.161`，但应用仍应显式指定要使用的版本。迁移完成前，不带后缀的版本仍会继续维护一段时间。
+例如，当前推荐使用 `0.6.161-non-fastjson.2`。`-non-fastjson` 是正式版本号的一部分，不是 classifier，也不是 SNAPSHOT。Maven 会认为 `0.6.161-non-fastjson.2` 高于 `0.6.161`，但应用仍应显式指定要使用的版本。迁移完成前，不带后缀的版本仍会继续维护一段时间。
 
-同一个应用只能选择其中一条版本线。不要在同一依赖图中同时引入 `0.6.161` 和 `0.6.161-non-fastjson.1`，否则 Maven 最终只会仲裁出其中一个版本，而依赖它们的代码可能按另一套 API 编译。
+同一个应用只能选择其中一条版本线。不要在同一依赖图中同时引入 `0.6.161` 和 `0.6.161-non-fastjson.2`，否则 Maven 最终只会仲裁出其中一个版本，而依赖它们的代码可能按另一套 API 编译。
 
 ## 2. 修改 Maven 依赖
 
@@ -35,7 +35,7 @@
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.161-non-fastjson.1</version>
+    <version>0.6.161-non-fastjson.2</version>
 </dependency>
 ```
 
@@ -45,12 +45,12 @@
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.161-non-fastjson.1</version>
+    <version>0.6.161-non-fastjson.2</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
 
-对应文件名是 `aliyun-log-0.6.161-non-fastjson.1-jar-with-dependencies.jar`。
+对应文件名是 `aliyun-log-0.6.161-non-fastjson.2-jar-with-dependencies.jar`。
 
 ## 3. 升级前检查
 
@@ -190,4 +190,4 @@ for (LogContent content : item.GetLogContents()) {
 4. 运行单元测试和集成测试，重点覆盖配置创建/更新、Job、Alert、Shipper、GetLogs 和异常处理。
 5. 对应用生成的请求 JSON 做语义比较，确认字段和值符合预期，同时确认可选空值没有被发送。
 
-如果升级后需要临时回退，只需恢复成配对的不带后缀版本，例如从 `0.6.161-non-fastjson.1` 恢复为 `0.6.161`；不要同时保留两个版本。
+如果升级后需要临时回退，只需恢复成配对的不带后缀版本，例如从 `0.6.161-non-fastjson.2` 恢复为 `0.6.161`；不要同时保留两个版本。

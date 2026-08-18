@@ -108,13 +108,13 @@ fastjson 的 `0.6.x-non-fastjson`。当前 non-fastjson 版本不是 SNAPSHOT，
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.161-non-fastjson.1</version>
+    <version>0.6.161-non-fastjson.2</version>
 </dependency>
 ```
 
-`0.6.161` 与 `0.6.161-non-fastjson.1` 不能在同一个依赖图中共存。两者具有相同的
+`0.6.161` 与 `0.6.161-non-fastjson.2` 不能在同一个依赖图中共存。两者具有相同的
 Maven coordinates，但公开 JSON API 不同；Maven `ComparableVersion` 会把未知 qualifier
-排在无 qualifier 版本之后，即 `0.6.161-non-fastjson.1` 大于 `0.6.161`。迁移方式参见
+排在无 qualifier 版本之后，即 `0.6.161-non-fastjson.2` 大于 `0.6.161`。迁移方式参见
 [MIGRATION.md](MIGRATION.md)。
 
 ## protobuf 冲突
@@ -123,7 +123,7 @@ Maven coordinates，但公开 JSON API 不同；Maven `ComparableVersion` 会把
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.161-non-fastjson.1</version>
+    <version>0.6.161-non-fastjson.2</version>
     <classifier>jar-with-dependencies</classifier>
     <exclusions>
         <exclusion>
@@ -135,7 +135,7 @@ Maven coordinates，但公开 JSON API 不同；Maven `ComparableVersion` 会把
 ```
 
 对应的 fat jar 文件名为
-`aliyun-log-0.6.161-non-fastjson.1-jar-with-dependencies.jar`。
+`aliyun-log-0.6.161-non-fastjson.2-jar-with-dependencies.jar`。
 
 ## FAQ
 **Q**: `aliyun-log-java-sdk` 和 `aliyun-sls-xxx-inner` 版本冲突的问题及解决方案。
