@@ -17,6 +17,8 @@ public class PutLogStoreMultimodalConfigurationRequest extends Request {
     private String logStore;
     private MultimodalStatus status;
     private AnonymousWriteStatus anonymousWrite;
+    private String ossBucket;
+    private String roleArn;
 
     /**
      * Construct a put logstore multimodal configuration request.
@@ -106,6 +108,42 @@ public class PutLogStoreMultimodalConfigurationRequest extends Request {
     }
 
     /**
+     * Get OSS bucket name.
+     *
+     * @return OSS bucket name
+     */
+    public String getOssBucket() {
+        return ossBucket;
+    }
+
+    /**
+     * Set OSS bucket name.
+     *
+     * @param ossBucket OSS bucket name
+     */
+    public void setOssBucket(String ossBucket) {
+        this.ossBucket = ossBucket;
+    }
+
+    /**
+     * Get role ARN.
+     *
+     * @return role ARN
+     */
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    /**
+     * Set role ARN.
+     *
+     * @param roleArn role ARN
+     */
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    /**
      * Get request body as JSON string.
      *
      * @return JSON string representation of the request body
@@ -115,6 +153,12 @@ public class PutLogStoreMultimodalConfigurationRequest extends Request {
         body.put("status", status != null ? status.getValue() : null);
         if (anonymousWrite != null) {
             body.put("anonymousWrite", anonymousWrite.getValue());
+        }
+        if (ossBucket != null) {
+            body.put("ossBucket", ossBucket);
+        }
+        if (roleArn != null) {
+            body.put("roleArn", roleArn);
         }
         return body.toString();
     }

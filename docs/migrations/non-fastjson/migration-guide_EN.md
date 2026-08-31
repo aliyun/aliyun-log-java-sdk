@@ -13,9 +13,9 @@ Two release lines are maintained during the migration period:
 | `0.6.x` | retained | applications that have not migrated yet |
 | `0.6.x-non-fastjson` | removed | applications that have completed the checks in this guide |
 
-For example, the current recommended release is `0.6.161-non-fastjson.1`. The suffix is part of a normal release version. It is not a classifier and does not make the artifact a SNAPSHOT. Maven considers `0.6.161-non-fastjson.1` newer than `0.6.161`, but applications should still select the intended version explicitly. Unqualified `0.6.x` releases will remain available during the transition.
+For example, the current recommended release is `0.6.162-non-fastjson.1`. The suffix is part of a normal release version. It is not a classifier and does not make the artifact a SNAPSHOT. Maven considers `0.6.162-non-fastjson.1` newer than `0.6.162`, but applications should still select the intended version explicitly. Unqualified `0.6.x` releases will remain available during the transition.
 
-An application must select exactly one line. Do not put `0.6.161` and `0.6.161-non-fastjson.1` in the same dependency graph: Maven will select only one of them, while downstream code may have been compiled against the other API.
+An application must select exactly one line. Do not put `0.6.162` and `0.6.162-non-fastjson.1` in the same dependency graph: Maven will select only one of them, while downstream code may have been compiled against the other API.
 
 ## 2. Change the Maven dependency
 
@@ -26,7 +26,7 @@ For the regular JAR, change only the version:
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.161</version>
+    <version>0.6.162</version>
 </dependency>
 ```
 
@@ -35,7 +35,7 @@ For the regular JAR, change only the version:
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.161-non-fastjson.1</version>
+    <version>0.6.162-non-fastjson.1</version>
 </dependency>
 ```
 
@@ -45,12 +45,12 @@ If you use the fat JAR, keep the `jar-with-dependencies` classifier:
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.161-non-fastjson.1</version>
+    <version>0.6.162-non-fastjson.1</version>
     <classifier>jar-with-dependencies</classifier>
 </dependency>
 ```
 
-The resulting file is `aliyun-log-0.6.161-non-fastjson.1-jar-with-dependencies.jar`.
+The resulting file is `aliyun-log-0.6.162-non-fastjson.1-jar-with-dependencies.jar`.
 
 ## 3. Check your application before upgrading
 
@@ -184,4 +184,4 @@ for (LogContent content : item.GetLogContents()) {
 4. Run unit and integration tests, especially configuration create/update, Job, Alert, Shipper, GetLogs, and error handling.
 5. Compare generated request JSON semantically, including the omission of optional null fields.
 
-For a temporary rollback, restore the paired unqualified version—for example, change `0.6.161-non-fastjson.1` back to `0.6.161`. Do not retain both versions.
+For a temporary rollback, restore the paired unqualified version—for example, change `0.6.162-non-fastjson.1` back to `0.6.162`. Do not retain both versions.

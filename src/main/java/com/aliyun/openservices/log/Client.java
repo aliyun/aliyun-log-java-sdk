@@ -973,6 +973,31 @@ public class Client implements LogService {
     }
 
 	@Override
+	public VoidResponse deleteObject(String project, String logStore, String objectName) throws LogException {
+		return deleteObject(new DeleteObjectRequest(project, logStore, objectName));
+	}
+
+	@Override
+	public VoidResponse deleteObject(DeleteObjectRequest request) throws LogException {
+		CodingUtils.assertParameterNotNull(request, "request");
+		String project = request.GetProject();
+		String logStore = request.getLogStore();
+		String objectName = request.getObjectName();
+		CodingUtils.assertStringNotNullOrEmpty(project, "project");
+		CodingUtils.assertStringNotNullOrEmpty(logStore, "logStore");
+		CodingUtils.assertParameterNotNull(objectName, "objectName");
+		CodingUtils.validateLogstore(logStore);
+
+		String resourceUri = "/logstores/" + logStore + "/objects/" + encodeObjectName(objectName);
+		Map<String, String> urlParameter = request.GetAllParams();
+		Map<String, String> headParameter = GetCommonHeadPara(project);
+
+		ResponseMessage message = SendData(project, HttpMethod.DELETE,
+				resourceUri, urlParameter, headParameter);
+		return new VoidResponse(message.getHeaders());
+	}
+
+	@Override
 	public VoidResponse enableLogStoreModify(String project, String logStore) throws LogException {
 		return enableLogStoreModify(new EnableLogStoreModifyRequest(project, logStore));
 	}
@@ -1023,6 +1048,24 @@ public class Client implements LogService {
         ResponseMessage message = SendData(project, HttpMethod.GET,
                 resourceUri, urlParameter, headParameter, new byte[0]);
         GetLogStoreMultimodalConfigurationResponse response = new GetLogStoreMultimodalConfigurationResponse(message.getHeaders());
+        response.fromJsonObject(parseResponseBody(message, message.getRequestId()));
+        return response;
+    }
+
+    @Override
+    public GeneratePresignedUrlResponse generatePresignedUrl(GeneratePresignedUrlRequest request) throws LogException {
+        CodingUtils.assertParameterNotNull(request, "request");
+        Map<String, String> urlParameter = request.GetAllParams();
+        String project = request.GetProject();
+        String logstore = request.getLogStore();
+        Map<String, String> headParameter = GetCommonHeadPara(project);
+        CodingUtils.validateLogstore(logstore);
+        String resourceUri = "/logstores/" + logstore + "/presign";
+        byte[] body = encodeToUtf8(request.getRequestBody());
+        headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
+        ResponseMessage message = SendData(project, HttpMethod.POST,
+                resourceUri, urlParameter, headParameter, body);
+        GeneratePresignedUrlResponse response = new GeneratePresignedUrlResponse(message.getHeaders());
         response.fromJsonObject(parseResponseBody(message, message.getRequestId()));
         return response;
     }
@@ -3026,7 +3069,7 @@ public class Client implements LogService {
 		}
 		List<SubStoreKey> list = new ArrayList<SubStoreKey>();
 		list.add(new SubStoreKey("__name__", "text"));
-		list.add(new SubStoreKey("__labels__", "text"));
+		list.add(new SubStoreKey("__labels__", "labels"));
 		list.add(new SubStoreKey("__time_nano__", "long"));
 		list.add(new SubStoreKey("__value__", "double"));
 		SubStore subStore = new SubStore("prom", metricStore.GetTtl(), 2, 2, list);
@@ -7032,7 +7075,31 @@ public class Client implements LogService {
 		Map<String, String> resHeaders = response.getHeaders();
 		String requestId = GetRequestId(resHeaders);
 		JSONObject object = parseResponseBody(response, requestId);
-        return new GetMaterializedViewResponse(
+		GetMaterializedViewResponse.Status status = null;
+		JSONObject statusObj = object.getJSONObject("status");
+		if (statusObj != null) {
+			int maxCursorTime = statusObj.getIntValue("maxCursorTime");
+			int lastRunTime = statusObj.getIntValue("lastRunTime");
+			GetMaterializedViewResponse.Status.Stats stats = null;
+			JSONObject statsObj = statusObj.getJSONObject("stats");
+			if (statsObj != null) {
+				List<String> queries = new ArrayList<>();
+				JSONArray queriesObj = statsObj.getJSONArray("queries");
+				if (queriesObj != null) {
+					for (int i = 0; i < queriesObj.size(); i++) {
+						queries.add(String.valueOf(queriesObj.getString(i)));
+					}
+				}
+				stats = new GetMaterializedViewResponse.Status.Stats(
+						statsObj.getLongValue("hits"), queries);
+			}
+			status = new GetMaterializedViewResponse.Status(
+					maxCursorTime,
+					lastRunTime,
+					statusObj.getString("lastRunError"),
+					stats);
+		}
+		return new GetMaterializedViewResponse(
 				resHeaders,
 				object.getString("name"),
 				object.getString("logstore"),
@@ -7040,7 +7107,10 @@ public class Client implements LogService {
 				object.getIntValue("aggIntervalMins"),
 				object.getIntValue("startTime"),
 				object.getIntValue("ttl"),
-				object.getBoolean("enabled"));
+				object.getIntValue("shardCount"),
+				object.getLongValue("createTime"),
+				object.getBooleanValue("enabled"),
+				status);
 	}
 
 	@Override

@@ -17,6 +17,7 @@ public class SubStoreKey {
             return false;
         }
         if (!"text".equals(this.type) &&
+                !"labels".equals(this.type) &&
                 !"long".equals(this.type) &&
                 !"double".equals(this.type)) {
             return false;

@@ -555,6 +555,26 @@ public interface LogService {
 	ListObjectsResponse listObjects(ListObjectsRequest request) throws LogException;
 
 	/**
+	 * Delete an object from the specified logstore.
+	 *
+	 * @param project    project name
+	 * @param logStore   logstore name
+	 * @param objectName object name
+	 * @return VoidResponse
+	 * @throws LogException if any error happens when deleting the object
+	 */
+	VoidResponse deleteObject(String project, String logStore, String objectName) throws LogException;
+
+	/**
+	 * Delete an object from the specified logstore.
+	 *
+	 * @param request the delete object request
+	 * @return VoidResponse
+	 * @throws LogException if any error happens when deleting the object
+	 */
+	VoidResponse deleteObject(DeleteObjectRequest request) throws LogException;
+
+	/**
 	 * Put logstore multimodal configuration.
 	 *
 	 * @param request the put logstore multimodal configuration request
@@ -571,6 +591,18 @@ public interface LogService {
 	 * @throws LogException if any error happens when getting the configuration
 	 */
 	GetLogStoreMultimodalConfigurationResponse getLogStoreMultimodalConfiguration(GetLogStoreMultimodalConfigurationRequest request) throws LogException;
+
+	/**
+	 * Generate a presigned url for an object in the specified logstore.
+	 * The expiration time of the presigned url (in seconds) can be set via
+	 * {@link GeneratePresignedUrlRequest#setExpires(Long)}; if not set,
+	 * the server side default is used.
+	 *
+	 * @param request the generate presigned url request
+	 * @return GeneratePresignedUrlResponse containing the presigned url
+	 * @throws LogException if any error happens when generating the presigned url
+	 */
+	GeneratePresignedUrlResponse generatePresignedUrl(GeneratePresignedUrlRequest request) throws LogException;
 
 	/**
 	 * Get cursor from log service server

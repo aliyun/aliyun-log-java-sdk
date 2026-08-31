@@ -18,6 +18,8 @@ public class GetLogStoreMultimodalConfigurationResponse extends Response {
 
     private MultimodalStatus status;
     private AnonymousWriteStatus anonymousWrite;
+    private String ossBucket;
+    private String roleArn;
 
     /**
      * Construct the response with http headers.
@@ -65,6 +67,42 @@ public class GetLogStoreMultimodalConfigurationResponse extends Response {
     }
 
     /**
+     * Get OSS bucket name.
+     *
+     * @return OSS bucket name
+     */
+    public String getOssBucket() {
+        return ossBucket;
+    }
+
+    /**
+     * Set OSS bucket name.
+     *
+     * @param ossBucket OSS bucket name
+     */
+    public void setOssBucket(String ossBucket) {
+        this.ossBucket = ossBucket;
+    }
+
+    /**
+     * Get role ARN.
+     *
+     * @return role ARN
+     */
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    /**
+     * Set role ARN.
+     *
+     * @param roleArn role ARN
+     */
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    /**
      * Read fields from a JSON object.
      *
      * @param asJson JSON object
@@ -75,5 +113,7 @@ public class GetLogStoreMultimodalConfigurationResponse extends Response {
         status = statusStr != null ? MultimodalStatus.fromValue(statusStr) : null;
         String anonymousWriteStr = asJson.getString("anonymousWrite");
         anonymousWrite = anonymousWriteStr != null ? AnonymousWriteStatus.fromValue(anonymousWriteStr) : null;
+        ossBucket = asJson.getString("ossBucket");
+        roleArn = asJson.getString("roleArn");
     }
 }

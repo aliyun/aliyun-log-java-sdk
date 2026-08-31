@@ -11,7 +11,7 @@
 | 项目 | 保留 fastjson 的版本线 | 移除 fastjson 的版本线 |
 |---|---|---|
 | 版本格式 | `0.6.x` | `0.6.x-non-fastjson` |
-| 当前推荐版本 | `0.6.161` | `0.6.161-non-fastjson.1` |
+| 当前推荐版本 | `0.6.162` | `0.6.162-non-fastjson.1` |
 | fastjson 传递依赖 | 保留 | 移除 |
 | fat JAR classifier | `jar-with-dependencies` | `jar-with-dependencies` |
 

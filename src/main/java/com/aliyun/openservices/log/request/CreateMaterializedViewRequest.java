@@ -13,6 +13,7 @@ public class CreateMaterializedViewRequest extends Request {
     private final int aggIntervalMins;
     private final int startTime;
     private final int ttl;
+    private final Integer shardCount;
 
     public CreateMaterializedViewRequest(String project,
                                          String name,
@@ -21,6 +22,28 @@ public class CreateMaterializedViewRequest extends Request {
                                          int aggIntervalMins,
                                          int startTime,
                                          int ttl) {
+        this(project, name, logstore, originalSql, aggIntervalMins, startTime, ttl, null);
+    }
+
+    public CreateMaterializedViewRequest(String project,
+                                         String name,
+                                         String logstore,
+                                         String originalSql,
+                                         int aggIntervalMins,
+                                         int startTime,
+                                         int ttl,
+                                         int shardCount) {
+        this(project, name, logstore, originalSql, aggIntervalMins, startTime, ttl, Integer.valueOf(shardCount));
+    }
+
+    private CreateMaterializedViewRequest(String project,
+                                          String name,
+                                          String logstore,
+                                          String originalSql,
+                                          int aggIntervalMins,
+                                          int startTime,
+                                          int ttl,
+                                          Integer shardCount) {
         super(project);
         this.name = name;
         this.logstore = logstore;
@@ -28,6 +51,7 @@ public class CreateMaterializedViewRequest extends Request {
         this.aggIntervalMins = aggIntervalMins;
         this.startTime = startTime;
         this.ttl = ttl;
+        this.shardCount = shardCount;
     }
 
     public String getName() {
@@ -54,6 +78,10 @@ public class CreateMaterializedViewRequest extends Request {
         return ttl;
     }
 
+    public Integer getShardCount() {
+        return shardCount;
+    }
+
     public byte[] getRequestBody() {
         Map<String, Object> body = new HashMap<>();
         body.put("name", name);
@@ -62,6 +90,9 @@ public class CreateMaterializedViewRequest extends Request {
         body.put("aggIntervalMins", aggIntervalMins);
         body.put("startTime", startTime);
         body.put("ttl", ttl);
+        if (shardCount != null) {
+            body.put("shardCount", shardCount);
+        }
         return JsonUtils.serialize(body).getBytes(StandardCharsets.UTF_8);
     }
 }

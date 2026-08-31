@@ -114,14 +114,14 @@ must be selected explicitly:
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.161-non-fastjson.1</version>
+    <version>0.6.162-non-fastjson.1</version>
 </dependency>
 ```
 
-Do not put `0.6.161` and `0.6.161-non-fastjson.1` in the same dependency graph.
+Do not put `0.6.162` and `0.6.162-non-fastjson.1` in the same dependency graph.
 They use the same Maven coordinates but expose different JSON APIs, and Maven
 `ComparableVersion` sorts an unknown qualifier after the unqualified release,
-so `0.6.161-non-fastjson.1` is newer than `0.6.161`. See [MIGRATION.md](MIGRATION.md)
+so `0.6.162-non-fastjson.1` is newer than `0.6.162`. See [MIGRATION.md](MIGRATION.md)
 for application migration.
 
 ## protobuf conflicts
@@ -130,7 +130,7 @@ If the project pulls in a conflicting `protobuf-java` version, use the special v
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log</artifactId>
-    <version>0.6.161-non-fastjson.1</version>
+    <version>0.6.162-non-fastjson.1</version>
     <classifier>jar-with-dependencies</classifier>
     <exclusions>
         <exclusion>
@@ -142,7 +142,7 @@ If the project pulls in a conflicting `protobuf-java` version, use the special v
 ```
 
 The resulting fat JAR is named
-`aliyun-log-0.6.161-non-fastjson.1-jar-with-dependencies.jar`.
+`aliyun-log-0.6.162-non-fastjson.1-jar-with-dependencies.jar`.
 
 ## FAQ
 **Q**: Version conflict between `aliyun-log-java-sdk` and `aliyun-sls-xxx-inner` — symptom and fix.
