@@ -16,6 +16,7 @@ public class IndexLine {
 	private List<String> includeKeys = new ArrayList<String>();
 	private List<String> excludeKeys = new ArrayList<String>();
 	private boolean autoKeyDetect = false;
+	private List<String> autoTextKeys = new ArrayList<String>();
 	private Integer autoKeyCountLimit;
 
 	public IndexLine() {
@@ -41,6 +42,7 @@ public class IndexLine {
 		SetIncludeKeys(other.GetIncludeKeys());
 		SetExcludeKeys(other.GetExcludeKeys());
 		setAutoKeyDetect(other.isAutoKeyDetect());
+		setAutoTextKeys(other.getAutoTextKeys());
 		setAutoKeyCountLimit(other.getAutoKeyCountLimit());
 	}
 
@@ -129,6 +131,28 @@ public class IndexLine {
 		this.autoKeyDetect = autoKeyDetect;
 	}
 
+	/**
+	 * @return automatically discovered text fields, empty by default
+	 */
+	public List<String> getAutoTextKeys() {
+		return autoTextKeys;
+	}
+
+	/**
+	 * Sets the complete list of keys treated as automatically discovered text field
+	 * indexes. Statistical analysis is enabled for these field indexes. Tokenization
+	 * and case sensitivity inherit the full-text (line) index settings.
+	 * Disabling auto key detection stops discovery of new fields; existing
+	 * autoTextKeys remain effective and are retained unless explicitly cleared.
+	 * Updates replace this list, so preserve existing fields when changing other
+	 * index settings.
+	 *
+	 * @param autoTextKeys fields to retain; null is treated as an empty list
+	 */
+	public void setAutoTextKeys(List<String> autoTextKeys) {
+		this.autoTextKeys = autoTextKeys == null ? new ArrayList<String>() : new ArrayList<String>(autoTextKeys);
+	}
+
 	public Integer getAutoKeyCountLimit() {
 		return autoKeyCountLimit;
 	}
@@ -164,6 +188,9 @@ public class IndexLine {
 		line.put("caseSensitive", GetCaseSensitive());
 		line.put("chn", GetChn());
 		line.put("auto_key_detect", isAutoKeyDetect());
+		JSONArray autoTextKeysDict = new JSONArray();
+		autoTextKeysDict.addAll(autoTextKeys);
+		line.put("auto_text_keys", autoTextKeysDict);
 		if (autoKeyCountLimit != null) {
 			line.put("auto_key_count_limit", autoKeyCountLimit);
 		}
@@ -216,8 +243,13 @@ public class IndexLine {
 					excludeKeys.add(excludeKeysDict.getString(i));
 				}
 			}
-			if (dict.containsKey("auto_key_detect")) {
-				autoKeyDetect = dict.getBoolean("auto_key_detect");
+			autoKeyDetect = dict.getBooleanValue("auto_key_detect");
+			autoTextKeys = new ArrayList<String>();
+			JSONArray autoTextKeysDict = dict.getJSONArray("auto_text_keys");
+			if (autoTextKeysDict != null) {
+				for (int i = 0; i < autoTextKeysDict.size(); i++) {
+					autoTextKeys.add(autoTextKeysDict.getString(i));
+				}
 			}
 			if (dict.containsKey("auto_key_count_limit")) {
 				autoKeyCountLimit = dict.getIntValue("auto_key_count_limit");
