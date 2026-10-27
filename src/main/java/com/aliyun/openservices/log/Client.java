@@ -5829,6 +5829,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		EtlJob etlJob = request.getEtlJob();
 		CodingUtils.assertParameterNotNull(etlJob, "etlJob");
+		CodingUtils.validateETLJob(etlJob.getJobName());
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		byte[] body = encodeToUtf8(etlJob.toJsonString(true, true));
 		headParameter.put(Consts.CONST_CONTENT_TYPE, Consts.CONST_SLS_JSON);
@@ -5845,7 +5846,7 @@ public class Client implements LogService {
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		String etlJobName = request.getEtlJobName();
-		CodingUtils.validateETLJob(etlJobName);
+		CodingUtils.validateExistingETLJob(etlJobName);
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		String resourceUri = Consts.CONST_ETLJOB_URI + "/" + etlJobName;
 		Map<String, String> urlParameter = request.GetAllParams();
@@ -5861,7 +5862,7 @@ public class Client implements LogService {
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		EtlJob etlJob = request.getEtlJob();
 		CodingUtils.assertParameterNotNull(etlJob, "etlJob");
-		CodingUtils.validateETLJob(etlJob.getJobName());
+		CodingUtils.validateExistingETLJob(etlJob.getJobName());
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		byte[] body = encodeToUtf8(etlJob.toJsonString(false, false));
 
@@ -5879,7 +5880,7 @@ public class Client implements LogService {
 		String project = request.GetProject();
 		CodingUtils.assertStringNotNullOrEmpty(project, "project");
 		String etlJobName = request.getEtlJobName();
-		CodingUtils.validateETLJob(etlJobName);
+		CodingUtils.validateExistingETLJob(etlJobName);
 		Map<String, String> headParameter = GetCommonHeadPara(project);
 		String resourceUri = Consts.CONST_ETLJOB_URI + "/" + etlJobName;
 		Map<String, String> urlParameter = request.GetAllParams();
